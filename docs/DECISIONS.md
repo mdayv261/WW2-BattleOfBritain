@@ -278,3 +278,16 @@ Phase 0.
 - the swastika on Luftwaffe tails, under generic markings;
 - the multiplayer Worker question above.
 
+## D15. Wikipedia only as a pointer to sources (24 Oct 2026, Phase 0)
+
+**Decision (product owner):** the "No Wikipedia" rule in CLAUDE.md stays. Wikipedia may be read to find the
+documents and books it cites. Figures are recorded only from those sources that can actually be read. If a figure is
+found nowhere else, it may come from Wikipedia, rated `estimate` and flagged to the product owner.
+
+**Why:** the product owner pointed to Wikipedia's He 111 article. Its specification box is for the later H-16, not
+the 1940 H-3, and every figure in it comes from printed books. Following the references keeps the source trail
+checkable without lowering the standard for the other aircraft.
+
+**First use:** the He 111 article led to printed books that are not online. A separate search of the Internet
+Archive found two period documents, S28 and S29 in AIRCRAFT_DATA.md.
+

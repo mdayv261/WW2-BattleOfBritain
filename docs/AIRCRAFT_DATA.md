@@ -71,12 +71,15 @@ All values are stored in SI units. The original figure and unit from the source 
 | S25 | Air Fighting Development Unit, RAF Duxford, Report No. 38 (A.F.C. 123), "Tactical Trials – Messerschmitt 110" (aircraft force-landed in England July 1940; trials from 13 Oct 1941; RAE copy stamped 24 Mar 1942) | http://www.wwiiaircraftperformance.org/me110/Me-110_Tactical_Trials.pdf | Period trial report (scan on archive site) |
 | S26 | Deutsches Museum, Flugwerft Schleissheim, CASA 2.111B exhibit page | https://www.deutsches-museum.de/en/flugwerft-schleissheim/exhibition/military-aviation/casa-2111 | Museum page (licence-built close variant, see Notes) |
 | S27 | US Office of the Chief of Ordnance, "Catalog of Enemy Ordnance" (1945): MG 17 and MG 15 entries | https://www.lonesentry.com/ordnance/tag/mg-17/ and https://www.lonesentry.com/ordnance/tag/mg-15/ | Period US government publication (transcription on archive site) |
+| S28 | L.Dv.T. 583/3, "He 111 H, P und D – Bedienungsvorschrift für die bewegliche und starre Schußwaffe", October 1940 (released by the RLM 10 Dec 1940), with Anhang 1 for the He 111 H-5 (December 1940) | https://archive.org/details/flugzeuchhandbucher (file "He 111 H P D Bedienungsvorschrift Schusswaffe.pdf") | Luftwaffe weapons manual (scan on archive site) |
+| S29 | Scientific Testing Institute of the Red Army Air Force (NII VVS), 4th Department, "German bomber Heinkel He-111 (types H-6 and H-11)", Moscow, 1943 | https://archive.org/details/111-1943 | Period government description and test data of captured aircraft, in Russian (scan on archive site, public-domain mark) |
 
 **Archive sites used (D8):**
 - wwiiaircraftperformance.org;
 - spitfireperformance.com, read through the Internet Archive because the domain has lapsed;
 - kurfurst.org;
-- lonesentry.com.
+- lonesentry.com;
+- the Internet Archive (archive.org), for the scans S28 and S29.
 
 Each source above names the original document. The site owners' own commentary was not used.
 
@@ -85,7 +88,14 @@ Each source above names the original document. The site owners' own commentary w
 - Science Museum Group collection: blocked automated reading; not bypassed.
 - HQ AASF, "Report of Comparative Trials of Hurricane versus Messerschmitt 109", 7 May 1940: qualitative only.
 - Messerschmitt "Wendezeiten" turn-time chart of 26 Aug 1940: the scan is too poor to read.
-- Wikipedia, forums, hobby and game sites: excluded by policy.
+- Imperial War Museums online collection (24 Oct 2026): no He 111 records are online. Three items need a visit or a
+  copy request (see gaps).
+- Wikipedia's He 111 article: used only as a pointer to its cited sources (product owner, 24 Oct 2026). Its
+  specification box is for the H-16 and cites printed books (mainly Nowarra 1980), not available online.
+- Internet Archive uploads of modern copyrighted books (for example Squadron/Signal titles): not used; they appear
+  to be unauthorised copies.
+- He 111 H-16 Flugzeug-Handbuch Teil 9A (Internet Archive): equipment only, no flight data.
+- Forums, hobby and game sites: excluded by policy.
 
 ---
 
@@ -390,12 +400,33 @@ flagged as a deviation. S24 and S25 come from RAF flying of an aircraft captured
 
 ## Heinkel He 111 H-3 (AI only)
 
-Very little was found in allowed sources. The He 111 is flown by the AI only, so Phase 1 does not need it, but Phase 3
-does. See the open research gaps and the question to the product owner in PROGRESS.md.
+Two period documents were found on 24 Oct 2026:
+- the Luftwaffe weapons manual of October 1940 (S28), which gives the defensive guns of the He 111 H;
+- a Soviet 1943 description of the later H-6 and H-11 (S29).
+
+The S29 dimensions are used as close-variant data. Its weights and performance belong to aircraft with more powerful
+engines, so they are recorded only as an upper reference. H-3 performance is still a gap.
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
-| Wingspan | 22.6 | m | 22.6 m | S26 | medium | Museum record of a CASA 2.111B, the licence-built He 111 H with Merlin engines; the wing is taken as the same. |
+| Wingspan | 22.6 | m | 22.6 m (S26); 22,45 m (S29) | S26, S29 | medium | Two close variants (CASA 2.111B; H-6/H-11) disagree by 0.15 m. S26 is used. |
+| Length | 16.4 | m | 16,4 m | S29 | medium | H-6/H-11. |
+| Height at rest | 4.61 | m | 4,61 m при стоянке | S29 | medium | H-6/H-11. |
+| Airscrews | Junkers VS-11, three wooden blades | — | трехлопастные, типа Юнкерс VS-11, с деревянными лопастями | S29 | medium | H-6/H-11. The H-3's airscrew is not confirmed. |
+| Crew stations | pilot; bomb-aimer (A-Stand gun); radio operator (B-Stand gun); gunner (C-Stand gun) | — | A-Stand durch den Bombenschützen, B-Stand durch den Funker, C-Stand durch Schützen | S28 | medium | The two waist guns and the rear MG 17 are worked by the radio operator or the C-Stand gunner (S28). S29 gives a crew of 4–5. |
+| A-Stand (nose) gun | 1 × MG 15 in a GD-A 1114 ball mount, 13 double drums | — | 1 MG 15 in Kuppellafette GD-A 1114; 13 Doppeltrommeln Dt 15 | S28 | medium | The MG 15 double (saddle) drum holds 75 rounds (S25, S27), so 975 rounds. |
+| B-Stand (dorsal) gun | 1 × MG 15 on a D 30 ring mount, 14 double drums | — | 1 MG 15 in Drehkranz D 30; 14 Doppeltrommeln Dt 15 | S28 | medium | 1,050 rounds. |
+| C-Stand (ventral gondola) gun | 1 × MG 15 in an LL-K or L 15/1 mount, 15 double drums | — | 1 MG 15 in kleiner Linsenlafette LL-K oder in Lafette L 15/1; 15 Doppeltrommeln Dt 15 | S28 | medium | 1,125 rounds. The H-5 carried an MG FF/M here instead (S28, Anhang 1). |
+| Waist guns | 2 × MG 15, one each side, 10 double drums shared | — | 2 MG 15 … je 1 MG 15 rechts und links; 10 Doppeltrommeln Dt 15 | S28 | medium | |
+| Tail gun | 1 × MG 17, fixed, firing rearwards | — | 1 MG 17 in starrer Lagerung (Heck-Stand) | S28 | medium | Fired electrically by the radio operator or the C-Stand gunner. |
+| Empty weight (H-6/H-11) | 8550 | kg | вес пустого самолета 8550 кг | S29 | medium | Later variant; the H-3 weight is a gap. |
+| Flying weight (H-6/H-11) | 12270 | kg | полетный вес 12270 кг | S29 | medium | Overload up to 14,000–15,000 kg (S29). |
+| Engine power (H-6/H-11, Jumo 211F-1) | 993 | kW | 1350 л. с. take-off | S29 | medium | Rated 1,020 hp at 5,500 m. The H-3's Jumo 211 had less power, so these figures are an upper bound for the H-3. |
+| Maximum speed at sea level (H-11, 11,500 kg) | 91.7 | m/s | 330 km/h | S29 | medium | Later variant with more power: an upper reference only, not an H-3 calibration figure. |
+| Maximum speed (H-11, 11,500 kg) | 111.1 | m/s | 400 km/h at 5,700 m | S29 | medium | As above. |
+| Time to 5,000 m (H-11, 11,500 kg) | 1200 | s | 20 min | S29 | medium | As above. |
+| Service ceiling (H-11, 11,500 kg) | 8750 | m | практический потолок 8750 м | S29 | medium | As above. |
+| Time for a 360° turn (H-11) | 48.3 | s | 48,3 сек при скорости 281 км/час | S29 | medium | At 281 km/h. |
 | Fuel and oil tanks self-sealing | yes | — | similar construction to those used on the Heinkel 111H | S25 | medium | |
 
 ## Guns (Phase 5 completes this section)
@@ -432,7 +463,7 @@ does. See the open research gaps and the question to the product owner in PROGRE
 | Bf 109 E turn times (Messerschmitt chart of 26 Aug 1940 unreadable) | AI and validation | A better scan |
 | Bf 110 C-4 weights: armour; C-4 compared with the C-2 | Mass | Bf 110 C-4 Ladeplan or handbook |
 | Bf 110 engine spacing, critical engine, airscrew rotation directions | Twin-engine model | Bf 110 handbook; drawings |
-| He 111 H-3: engine sub-type (Jumo 211 A-3 or D are both claimed in non-allowed sources), dimensions other than span, weights, speeds, climb, ceiling, bomb load, crew positions, gun positions and arcs, formation cruise speed | Phase 3 (twin engines) and Phase 6 (gunners) | He 111 H Flugzeug-Handbuch or Kennblatt; RAE or AFDU reports on captured He 111s; a printed reference book the product owner can supply |
+| He 111 H-3: engine sub-type (Jumo 211 A-3 or D-1; even Wikipedia's own pages give both), wing area, weights, speeds, climb, ceiling, bomb load, airscrew, gun arcs, formation cruise speed | Phase 3 (twin engines) and Phase 6 (gunners) | IWM: RAE 1940 report "Enemy aircraft Heinkel He 111H, examination of electrical equipment" (LBY K. 70191); Nowarra, "Heinkel He 111: A Documentary History" (LBY 81/2079); Air Ministry German aero-engine files including the Jumo 211 (Documents.13462). None is online; each needs a visit or a copy request. Also the He 111 H Flugzeug-Handbuch Teil 0 or a Kennblatt |
 | Browning .303 Mk II rate of fire and muzzle velocity; .303 ball and incendiary bullet data | Weapons (Phase 5) | Royal Armouries records; A.P. 1641 (Browning gun manual) |
 | MG FF and MG FF/M rate of fire, muzzle velocity, shell mass | Weapons (Phase 5) | US Catalog of Enemy Ordnance (MG FF entry not found); Rheinmetall or Ikaria handbook |
 | Gun harmonisation ranges in August 1940 (RAF and Luftwaffe) | Weapons (Phase 5) | Fighter Command orders; AFDU reports |

@@ -30,7 +30,7 @@ low-polygon, not photorealistic.
 | Supermarine Spitfire Mk I | RAF | 1 × Rolls-Royce Merlin III | Player or AI |
 | Messerschmitt Bf 109 E-4 | Luftwaffe | 1 × Daimler-Benz DB 601A | Player or AI |
 | Messerschmitt Bf 110 C-4 | Luftwaffe | 2 × Daimler-Benz DB 601A | Player or AI; the rear gun is always AI-manned |
-| Heinkel He 111 H-3 | Luftwaffe | 2 × Junkers Jumo 211D | AI only |
+| Heinkel He 111 H-3 | Luftwaffe | 2 × Junkers Jumo 211 (A-3 or D-1, to be confirmed) | AI only |
 
 The variants modelled are recorded in docs/DECISIONS.md (D9). The RAF fighters are modelled as
 they were in mid-August 1940: constant-speed propellers, 100-octane fuel, and +12 lb/sq in emergency
@@ -125,7 +125,8 @@ Every deviation from a historical or published figure is flagged to the product 
     with 60-round drums (the E-4's MG FF/M version is still to be confirmed).
   - Bf 110 C-4: four MG 17s and two MG FF in the nose, plus an MG 15 in the rear cockpit on a
     flexible mount (AI-manned).
-  - He 111 H-3: MG 15s on flexible mounts (AI-manned).
+  - He 111 H: MG 15s in the nose, dorsal, ventral and two waist positions, and a fixed rear-firing MG 17 in
+    the tail (AI-manned; L.Dv.T. 583/3, October 1940).
 - **Guns:**
   - wing guns are harmonised to converge at a set range, as documented;
   - nose guns fire straight ahead;

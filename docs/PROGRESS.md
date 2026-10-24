@@ -5,8 +5,9 @@ Read this at the start of every session.
 ## Current status (24 Oct 2026)
 
 Phase 0 (foundations and research) is done. The product owner reviewed it and answered the Phase 0 questions (D14).
-With the product owner's permission, the GitHub repository is being created and the game published to
-https://mdayv261.github.io/WW2-BattleOfBritain/. The He 111 search continues.
+The repository https://github.com/mdayv261/WW2-BattleOfBritain was created with the product owner's permission. The
+game is live at https://mdayv261.github.io/WW2-BattleOfBritain/: the first deployment, run 40090564335, passed its tests
+and deployed. The He 111 search continues (below).
 
 ## Phase 0: Foundations and research
 
@@ -88,7 +89,21 @@ https://mdayv261.github.io/WW2-BattleOfBritain/. The He 111 search continues.
 - **+12 lb boost:** no fixed time limit.
 - **Bf 109 E:** calibrate to the Luftwaffe's 460 km/h at sea level.
 - **Close variants:** accepted (Spitfire VA, Hurricane II, Bf 109 E-3, Bf 110 C-2).
-- **He 111:** keep searching, including the Imperial War Museum records.
+- **He 111:** keep searching, including the Imperial War Museum records. Use Wikipedia only to find its sources (D15).
+
+## He 111 search (24 Oct 2026)
+
+- **Imperial War Museums:** no He 111 records are online. Three items would need a visit or a copy request:
+  - an RAE 1940 report on a captured He 111 H (LBY K. 70191);
+  - Nowarra's "Heinkel He 111: A Documentary History" (LBY 81/2079);
+  - Air Ministry files on German engines, including the Jumo 211 (Documents.13462).
+- **Wikipedia:** its specifications are for the later H-16 and come from printed books that are not online.
+- **Found and recorded (AIRCRAFT_DATA.md S28, S29):**
+  - the Luftwaffe's October 1940 weapons manual for the He 111 H: every gun position, its mount, and its drums;
+  - a Soviet 1943 report on the later H-6 and H-11: dimensions, weights, speeds, climb, ceiling and turn time,
+    recorded as close-variant data and as an upper reference.
+- **Still missing for the H-3:** engine sub-type, wing area, weights, performance, bomb load, airscrew and gun arcs.
+  Needed by Phase 3.
 - **Bf 110 in multiplayer:** yes, with an AI rear gunner.
 - **Single player:** the player may fly the Luftwaffe side.
 - **RAF radar:** gives bearing only.
