@@ -21,10 +21,8 @@ product owner at the start of Phase 9. Nothing here is built yet. Open points ar
   room.
   - It runs the flight model, the guns and the hits for every aircraft.
   - Browsers send only their controls.
-- **Cloudflare:** the same Cloudflare set-up as Dawn Patrol's multiplayer (product owner, 24 Oct 2026). **To
-  decide:** whether this game shares Dawn Patrol's Worker or has its own Worker on the same account. A separate
-  Worker (proposed name `bob1940-mp`) keeps a fault or an update in one game from affecting the other, at no extra
-  cost.
+- **Cloudflare:** a separate Worker for this game (proposed name `bob1940-mp`) on Dawn Patrol's existing
+  Cloudflare account (D16). A fault or an update in one game cannot affect the other, and there is no extra cost.
 - **Why this approach** (to be re-checked against Cloudflare's limits in Phase 9):
   - it is the only approach where no player, the host included, can cheat by editing their copy;
   - nobody gets a host's zero-delay advantage;

@@ -111,6 +111,41 @@ and deployed. The He 111 search continues (below).
 - **Markings:** generic RAF and Luftwaffe.
 - **Multiplayer server:** the same Cloudflare set-up as Dawn Patrol.
 
+## Decisions made by the product owner, second round (24 Oct 2026, D16)
+
+- **Multiplayer server:** a separate Worker on Dawn Patrol's Cloudflare account.
+- **Markings:** the swastika on Luftwaffe tails.
+- **Bf 110 rear gun:** in single player the player can swap to the rear gun while an AI pilot flies.
+- **Map:** real map data.
+- **Modes:** one realistic mode with optional assists.
+- **Units:** each side's own.
+- **Cockpits:** 3D cockpits.
+- **Ranks:** based on kills only.
+
+All Phase 0 questions are answered. Defaults recorded for confirmation:
+- multiplayer kills do not count towards ranks;
+- the map data source and its exact extent are proposed in the Phase 4 plan.
+
+## He 111 search (24 Oct 2026)
+
+- **Imperial War Museums:** no He 111 records are online. Three items would need a visit or a copy request:
+  - an RAE 1940 report on a captured He 111 H (LBY K. 70191);
+  - Nowarra's "Heinkel He 111: A Documentary History" (LBY 81/2079);
+  - Air Ministry files on German engines, including the Jumo 211 (Documents.13462).
+- **Wikipedia:** its specifications are for the later H-16 and come from printed books that are not online.
+- **Found and recorded (AIRCRAFT_DATA.md S28, S29):**
+  - the Luftwaffe's October 1940 weapons manual for the He 111 H: every gun position, its mount, and its drums;
+  - a Soviet 1943 report on the later H-6 and H-11: dimensions, weights, speeds, climb, ceiling and turn time,
+    recorded as close-variant data and as an upper reference.
+- **Still missing for the H-3:** engine sub-type, wing area, weights, performance, bomb load, airscrew and gun arcs.
+  Needed by Phase 3.
+- **Bf 110 in multiplayer:** yes, with an AI rear gunner.
+- **Single player:** the player may fly the Luftwaffe side.
+- **RAF radar:** gives bearing only.
+- **Controls:** Logitech Extreme 3D Pro joystick and keyboard.
+- **Markings:** generic RAF and Luftwaffe.
+- **Multiplayer server:** the same Cloudflare set-up as Dawn Patrol.
+
 ## Decisions still needed from the product owner
 
 1. **Multiplayer Worker (Phase 9).** "The same Cloudflare server as Dawn Patrol" could mean either of two things:

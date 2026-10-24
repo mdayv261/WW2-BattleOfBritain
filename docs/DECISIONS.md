@@ -291,3 +291,21 @@ checkable without lowering the standard for the other aircraft.
 **First use:** the He 111 article led to printed books that are not online. A separate search of the Internet
 Archive found two period documents, S28 and S29 in AIRCRAFT_DATA.md.
 
+## D16. Product owner's remaining Phase 0 answers (24 Oct 2026, Phase 0)
+
+**Decisions:**
+1. **Multiplayer server:** a separate Cloudflare Worker for this game (proposed name `bob1940-mp`) on Dawn Patrol's
+   existing Cloudflare account. This settles the open point in D14.
+2. **Luftwaffe markings:** generic markings include the swastika on the tail, as on the real aircraft of 1940.
+3. **Bf 110 rear gun in single player:** the player can swap between the pilot's seat and the rear gun. While the
+   player mans the gun, an AI pilot flies the aircraft. In multiplayer the rear gun stays AI-manned (D14).
+4. **Map:** the brief's area (south-east England, the Channel, the Pas-de-Calais) built from real map data. The data
+   source and its licence, and the exact extent, are proposed in the Phase 4 plan.
+5. **Modes:** one realistic mode with optional assists.
+6. **Units:** each side's own units only, as in CLAUDE.md.
+7. **Cockpits:** full 3D period cockpits for the four flyable aircraft.
+8. **Ranks:** based on kills only. Default, unless the product owner says otherwise: single-player kills count,
+   multiplayer kills do not (as in Dawn Patrol).
+
+**Why:** the product owner's answers to the last Phase 0 questions. All Phase 0 questions are now answered.
+

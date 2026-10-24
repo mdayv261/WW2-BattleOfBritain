@@ -116,7 +116,7 @@ Every deviation from a historical or published figure is flagged to the product 
   mixture where needed, radiator, flaps, undercarriage, trim, fire (guns and cannon, separately where
   the aircraft had them), views.
 - **Optional assists:** auto-rudder, stall warning, g warning, engine management (automatic rpm and
-  radiator). All are off in the realistic setting.
+  radiator). There is one realistic mode; each assist is off unless the player switches it on (D16).
 
 ## 6. Weapons and damage
 - **Period guns, at their documented rates of fire:**
@@ -157,11 +157,12 @@ Every deviation from a historical or published figure is flagged to the product 
 
 ## 8. World
 - **Area:** south-east England, the Channel and the Pas-de-Calais, in daylight, July-October 1940.
-  The exact area and the map data source are to be decided (see PROGRESS.md).
+  Built from real map data (D16). The data source, its licence and the exact extent are proposed in the Phase 4
+  plan.
 - **Ground features:** coastlines, chalk cliffs, farmland, woods, towns, RAF airfields on the
   English side, Luftwaffe airfields on the French side, a few recognisable landmarks.
 - **Markings:** typical generic RAF and Luftwaffe markings (national insignia and camouflage of summer 1940),
-  not particular squadrons or pilots (product owner, 24 Oct 2026, D14).
+  not particular squadrons or pilots (D14). Luftwaffe aircraft carry the tail swastika, as in 1940 (D16).
 - **Sky:** sun, haze, cumulus cloud and summer visibility. The altitude range suits the period
   aircraft (above 10,000 m).
 
@@ -175,10 +176,15 @@ Every deviation from a historical or published figure is flagged to the product 
 - **RAF radar information:** RAF players are given the bearing of an incoming raid only, as an intercept aid.
   Height, numbers and range are not given (product owner, 24 Oct 2026, D14).
 - **Cockpit:**
-  - instruments matching each aircraft's period layout and units;
+  - full 3D period cockpits for the four flyable aircraft (D16), with instruments matching each aircraft's period
+    layout and its side's units;
   - an optional modern HUD;
   - each aircraft's period reflector gunsight (types to be researched).
-- **Settings:** controls, graphics quality, sound volume, assists.
+- **Settings:** controls, graphics quality, sound volume, assists. There is one realistic mode; assists are
+  optional (D16).
+- **Bf 110 crew positions:** in single player the player can swap between pilot and rear gunner. An AI pilot flies
+  while the player mans the gun (D16).
+- **Ranks:** earned by kills only (D16).
 
 ## 10. Audio
 - Web Audio API.
@@ -195,7 +201,6 @@ Every deviation from a historical or published figure is flagged to the product 
   Spitfire, Bf 109 and Bf 110. No AI aircraft. The Bf 110's rear gun is AI-manned, the one AI element allowed in
   multiplayer (product owner, 24 Oct 2026, D14).
 - An authoritative room server on Cloudflare Workers + Durable Objects runs the same flight model
-  for every aircraft and decides every hit. It uses the same Cloudflare set-up as Dawn Patrol's multiplayer
-  (product owner, 24 Oct 2026). Whether that means Dawn Patrol's own Worker, or a separate Worker on the same
-  account, is to be confirmed (see PROGRESS.md).
+  for every aircraft and decides every hit. It is a separate Worker for this game on Dawn Patrol's existing
+  Cloudflare account (D16).
 - Outline: docs/MULTIPLAYER_SPEC.md. The details are designed in Phase 9.
