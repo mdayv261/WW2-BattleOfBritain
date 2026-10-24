@@ -157,8 +157,8 @@ Every deviation from a historical or published figure is flagged to the product 
 
 ## 8. World
 - **Area:** south-east England, the Channel and the Pas-de-Calais, in daylight, July-October 1940.
-  Built from real map data (D16). The data source, its licence and the exact extent are proposed in the Phase 4
-  plan.
+  Built from basic real map data that needs no licence: public domain only (D16, D17). The source and the exact
+  extent are proposed in the Phase 4 plan.
 - **Ground features:** coastlines, chalk cliffs, farmland, woods, towns, RAF airfields on the
   English side, Luftwaffe airfields on the French side, a few recognisable landmarks.
 - **Markings:** typical generic RAF and Luftwaffe markings (national insignia and camouflage of summer 1940),
@@ -173,8 +173,10 @@ Every deviation from a historical or published figure is flagged to the product 
   - dogfights;
   - intercepting bomber raids (RAF);
   - escorting bombers (Luftwaffe): the player may fly the Luftwaffe side (product owner, 24 Oct 2026, D14).
-- **RAF radar information:** RAF players are given the bearing of an incoming raid only, as an intercept aid.
-  Height, numbers and range are not given (product owner, 24 Oct 2026, D14).
+- **RAF radar display (RAF aircraft only, D17):**
+  - a transparent radar screen with a 360° compass ring and enemy blips;
+  - whether a blip shows the bearing only or the bearing and the distance is settled in the Phase 7 plan;
+  - height and numbers are not shown.
 - **Cockpit:**
   - full 3D period cockpits for the four flyable aircraft (D16), with instruments matching each aircraft's period
     layout and its side's units;
@@ -184,7 +186,7 @@ Every deviation from a historical or published figure is flagged to the product 
   optional (D16).
 - **Bf 110 crew positions:** in single player the player can swap between pilot and rear gunner. An AI pilot flies
   while the player mans the gun (D16).
-- **Ranks:** earned by kills only (D16).
+- **Ranks:** earned by single-player kills only (D16).
 
 ## 10. Audio
 - Web Audio API.

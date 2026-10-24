@@ -122,9 +122,12 @@ and deployed. The He 111 search continues (below).
 - **Cockpits:** 3D cockpits.
 - **Ranks:** based on kills only.
 
-All Phase 0 questions are answered. Defaults recorded for confirmation:
-- multiplayer kills do not count towards ranks;
-- the map data source and its exact extent are proposed in the Phase 4 plan.
+Confirmed the same day (D17):
+- only single-player kills count towards ranks;
+- basic map data that needs no licence (public domain only);
+- RAF aircraft get a transparent radar screen with enemy blips and a 360° compass ring.
+
+All Phase 0 questions are answered. **Phase 0 is complete; Phase 1 started on 24 Oct 2026 (in planning).**
 
 ## He 111 search (24 Oct 2026)
 
@@ -171,7 +174,7 @@ All Phase 0 questions are answered. Defaults recorded for confirmation:
 
 Each phase's acceptance test is a proposal, agreed with the product owner when the phase starts.
 
-- **Phase 0: Foundations and research.** Done locally; awaiting review.
+- **Phase 0: Foundations and research.** Done and signed off (24 Oct 2026).
   - Acceptance: the documents are reviewed, `npm test` passes, and the site deploys and shows the placeholder.
 - **Phase 1: Single-engine flight model.** Hurricane I, Spitfire I and Bf 109 E-4.
   - Model: six degrees of freedom, standard atmosphere, lift and drag curves with stall and spin, supercharged

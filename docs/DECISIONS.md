@@ -304,8 +304,21 @@ Archive found two period documents, S28 and S29 in AIRCRAFT_DATA.md.
 5. **Modes:** one realistic mode with optional assists.
 6. **Units:** each side's own units only, as in CLAUDE.md.
 7. **Cockpits:** full 3D period cockpits for the four flyable aircraft.
-8. **Ranks:** based on kills only. Default, unless the product owner says otherwise: single-player kills count,
-   multiplayer kills do not (as in Dawn Patrol).
+8. **Ranks:** based on kills only. Only single-player kills count (confirmed by the product owner, 24 Oct 2026).
 
 **Why:** the product owner's answers to the last Phase 0 questions. All Phase 0 questions are now answered.
+
+## D17. Map data licence and the RAF radar display (24 Oct 2026, Phase 0)
+
+**Decisions (product owner):**
+1. **Map data:** use basic map data that needs no licence. That means public-domain data, such as Natural Earth
+   coastlines, rivers and towns. The candidate sources are checked and named in the Phase 4 plan; nothing that
+   needs attribution (such as OpenStreetMap, under ODbL) is used.
+2. **RAF radar display:** RAF aircraft only.
+   - A transparent radar screen with enemy blips and a 360° compass ring.
+   - This supersedes the "bearing only" text information of D14, item 8.
+   - Still to settle in the Phase 7 plan: whether a blip shows only the bearing (a blip on the compass ring) or the
+     bearing and the distance.
+
+**Why:** the product owner's instruction. Public-domain data avoids any licence or credit obligations.
 
