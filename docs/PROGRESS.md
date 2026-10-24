@@ -4,8 +4,9 @@ Read this at the start of every session.
 
 ## Current status (24 Oct 2026)
 
-Phase 0 (foundations and research) is done locally and awaits the product owner's review. Nothing has been pushed:
-the GitHub repository does not exist yet. It will be created and pushed only with the product owner's permission.
+Phase 0 (foundations and research) is done. The product owner reviewed it and answered the Phase 0 questions (D14).
+With the product owner's permission, the GitHub repository is being created and the game published to
+https://mdayv261.github.io/WW2-BattleOfBritain/. The He 111 search continues.
 
 ## Phase 0: Foundations and research
 
@@ -81,54 +82,40 @@ the GitHub repository does not exist yet. It will be created and pushed only wit
 - Some archive scans are only partly read: the RAE "Morgan" Bf 109 handling report, RAE 109 speed charts, Dowding's
   1 August 1940 Merlin letter. They are listed as gaps for Phase 1.
 
-## Decisions needed from the product owner
+## Decisions made by the product owner (24 Oct 2026, D14)
 
-**Now:**
-1. **GitHub.** May I create the public repository `mdayv261/WW2-BattleOfBritain`, push `main`, and set Pages to
-   "GitHub Actions"? The first deployment then runs automatically.
+- **GitHub:** create the public repository, push, and publish with Pages.
+- **+12 lb boost:** no fixed time limit.
+- **Bf 109 E:** calibrate to the Luftwaffe's 460 km/h at sea level.
+- **Close variants:** accepted (Spitfire VA, Hurricane II, Bf 109 E-3, Bf 110 C-2).
+- **He 111:** keep searching, including the Imperial War Museum records.
+- **Bf 110 in multiplayer:** yes, with an AI rear gunner.
+- **Single player:** the player may fly the Luftwaffe side.
+- **RAF radar:** gives bearing only.
+- **Controls:** Logitech Extreme 3D Pro joystick and keyboard.
+- **Markings:** generic RAF and Luftwaffe.
+- **Multiplayer server:** the same Cloudflare set-up as Dawn Patrol.
 
-**Before Phase 1 (they affect the flight model):**
-2. **+12 lb boost time limit.** Keep 5 minutes as a game rule (recorded as a deviation until a source is found), or
-   use no fixed limit and model engine wear instead, as the 1940 instructions imply?
-3. **Bf 109 E speed.** Calibrate to the Luftwaffe data sheet (460 km/h at sea level, my recommendation), to the
-   manufacturer's specification (500 km/h), or between them?
-4. **Close variants.** May I use the NACA Spitfire VA and Hurricane II data for wing geometry, stall and roll? This is
-   my recommendation: same airframes, measured data. Likewise the E-3 and C-2 data for the E-4 and C-4, with the
-   armour weight added as an estimate once found?
+## Decisions still needed from the product owner
 
-**Before Phase 3 (the He 111):**
-5. **He 111 H-3 data.** Allowed online sources give only the wingspan. Options:
-   - (a) you lend or buy a reference book and I work from it;
-   - (b) I keep searching period documents (slow, uncertain);
-   - (c) the He 111 uses clearly marked estimates, since it is AI-only.
+1. **Multiplayer Worker (Phase 9).** "The same Cloudflare server as Dawn Patrol" could mean either of two things:
+   - (a) the same Cloudflare account, with a separate Worker for this game. This is my recommendation: an update or
+     fault in one game cannot affect the other, and it costs nothing extra.
+   - (b) one shared Worker serving both games.
 
-   The engine sub-type (Jumo 211 A-3 or D) is also disputed.
-
-**Design questions (any time before the phase named):**
-6. **Bf 110 in multiplayer (Phase 9).** It is a fighter (Zerstörer). May a human fly it, with an AI rear gunner,
-   given that multiplayer is otherwise humans only?
-7. **Single-player roles (Phase 7).**
-   - Can the player fly for the Luftwaffe, including escorting He 111s?
-   - Can the player man the Bf 110's rear gun?
-8. **Map (Phase 4).**
+   The original brief said "separate from the Dawn Patrol server", so please confirm which you meant.
+2. **Swastika on Luftwaffe tails (Phase 4).** Generic markings normally include it historically, but German law and
+   many app stores restrict it. Most historical games show a plain tail or the Balkenkreuz only. Please confirm.
+3. **Can the player man the Bf 110's rear gun in single player (Phase 7)?**
+4. **Map (Phase 4).**
    - Real coastline and towns from open map data (Natural Earth is public domain; OpenStreetMap needs a credit), or
      an invented coast in the right style?
    - How large: Dover to Calais only, or out to London and the Kent airfields?
-9. **Radar and fighter control (Phase 7).** Should RAF missions include radar plots and vectoring by a controller,
-   or start in the air near the enemy?
-10. **Controller (Phase 2).** Is the Logitech Extreme 3D Pro joystick again the main controller, and in which phase?
-11. **Modes (Phase 8).** One realistic mode with optional assists (as in Dawn Patrol), or realistic and arcade
-    presets?
-12. **Units shown (Phase 2).** Each side's own units, as in the real cockpits (mph, ft and lb boost for the RAF;
-    km/h, m and ata for the Luftwaffe; already written into CLAUDE.md), or a player setting?
-13. **Cockpits (Phase 7).** Full 3D period cockpits for all four flyable aircraft, or simpler panels?
-14. **Ranks or career.** Something like Dawn Patrol's Roll Call, or nothing?
-15. **Markings (Phase 4).** Real squadrons and codes, or generic ones?
-16. **Swastika on the tail (Phase 4).** German law and many app stores restrict it. Most historical games show a plain
-    tail or the Balkenkreuz only. Please confirm.
-17. **Multiplayer server (Phase 9).**
-    - Is the name `bob1940-mp` acceptable?
-    - Will you use the same free Cloudflare account as Dawn Patrol?
+5. **Modes (Phase 8).** One realistic mode with optional assists (as in Dawn Patrol), or realistic and arcade
+   presets?
+6. **Units shown (Phase 2).** Each side's own units, as in CLAUDE.md, or also a player setting?
+7. **Cockpits (Phase 7).** Full 3D period cockpits for all four flyable aircraft, or simpler panels?
+8. **Ranks or career.** Something like Dawn Patrol's Roll Call, or nothing?
 
 ## Phase list
 

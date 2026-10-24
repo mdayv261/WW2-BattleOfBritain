@@ -6,8 +6,8 @@ product owner at the start of Phase 9. Nothing here is built yet. Open points ar
 
 ## 1. Goal and rules
 - **Players:** 2 to 4 human players in a private room. No AI aircraft in multiplayer.
-- **Teams:** RAF (Hurricane Mk I, Spitfire Mk I) against Luftwaffe (Bf 109 E-4; the Bf 110 C-4
-  **to decide**, because its rear gun is AI-manned). Each player picks a side, then a fighter of
+- **Teams:** RAF (Hurricane Mk I, Spitfire Mk I) against Luftwaffe (Bf 109 E-4, Bf 110 C-4). The Bf 110's rear
+  gun is manned by the AI on the server, the one AI element allowed (product owner, 24 Oct 2026, D14). Each player picks a side, then a fighter of
   that side. Uneven teams (1 v 2, 1 v 3) are allowed.
 - **No bombers:** the He 111 is not in multiplayer.
 - **Rooms:** private, for family and friends. The host creates a room and shares a short code; the
@@ -21,8 +21,10 @@ product owner at the start of Phase 9. Nothing here is built yet. Open points ar
   room.
   - It runs the flight model, the guns and the hits for every aircraft.
   - Browsers send only their controls.
-- **Separate from Dawn Patrol's server:** its own Worker, its own name (**to decide**, proposed
-  `bob1940-mp`) and its own protocol version.
+- **Cloudflare:** the same Cloudflare set-up as Dawn Patrol's multiplayer (product owner, 24 Oct 2026). **To
+  decide:** whether this game shares Dawn Patrol's Worker or has its own Worker on the same account. A separate
+  Worker (proposed name `bob1940-mp`) keeps a fault or an update in one game from affecting the other, at no extra
+  cost.
 - **Why this approach** (to be re-checked against Cloudflare's limits in Phase 9):
   - it is the only approach where no player, the host included, can cheat by editing their copy;
   - nobody gets a host's zero-delay advantage;
@@ -64,8 +66,7 @@ product owner at the start of Phase 9. Nothing here is built yet. Open points ar
 
 ## 7. Accounts, costs and permissions
 - **Testing on the Mac:** `wrangler dev`; no account needed.
-- **Cloudflare account:** created by the product owner. Possibly the same free account as Dawn
-  Patrol (**to decide**).
+- **Cloudflare account:** Dawn Patrol's existing free account (product owner, 24 Oct 2026).
 - **Permission each time:** every deployment to Cloudflare and every push to GitHub. No spending
   without permission.
 

@@ -34,8 +34,8 @@ low-polygon, not photorealistic.
 
 The variants modelled are recorded in docs/DECISIONS.md (D9). The RAF fighters are modelled as
 they were in mid-August 1940: constant-speed propellers, 100-octane fuel, and +12 lb/sq in emergency
-boost. The 1940 sources limit +12 lb boost only to "short periods". The time limit used in the game is still to be
-settled (see PROGRESS.md).
+boost. The 1940 sources allow +12 lb boost only for "short periods" and give no number of minutes, so the game sets
+no fixed time limit (product owner, 24 Oct 2026, D14). The engine's heat model applies as at any other setting.
 
 Every performance and dimension figure comes from a documented source and is recorded in
 docs/AIRCRAFT_DATA.md with its value, unit, original figure, source, and confidence (high, medium
@@ -66,16 +66,17 @@ Every deviation from a historical or published figure is flagged to the product 
 - **Engines:** supercharged piston engines.
   - Power depends on altitude, boost or manifold pressure, and rpm, with the full-throttle height
     of each supercharger.
-  - Rated, combat and take-off settings come with their time limits.
+  - Rated, combat and take-off settings come with their documented time limits. Where the sources give none
+    (the Merlin's +12 lb emergency boost), no timer is invented.
   - Overspeed and overheating damage the engine.
 - **Propellers:**
   - constant-speed propellers on the Merlin aircraft (the governor holds the rpm the pilot sets);
   - the VDM propeller on the Daimler-Benz engines, with automatic or manual pitch as documented;
   - propeller thrust and efficiency against airspeed.
 - **Fuel systems:**
-  - the Merlin's float carburettor cuts out under negative g;
+  - the Merlin's carburettor cuts out under negative g;
   - the DB 601's direct fuel injection keeps running under negative g;
-  - the Jumo 211D is also fuel-injected.
+  - the Jumo 211's fuel system is to be confirmed from a source.
 - **Bf 109 automatic leading-edge slats:** they open at high angle of attack, delaying the stall.
   An uneven opening can cause a wing drop or aileron snatch.
 - **Flaps and undercarriage:** retractable undercarriage, landing flaps, and their speed limits.
@@ -89,8 +90,9 @@ Every deviation from a historical or published figure is flagged to the product 
   - feathering where the aircraft had it.
 - **Controls:**
   - control surface authority scales with dynamic pressure;
-  - stick forces get heavier at high speed, for example the Spitfire's heavy ailerons above about
-    400 mph, if sources support it;
+  - stick forces get heavier at high speed, as measured in the NACA and RAF tests (for example, the
+    Spitfire's ailerons cannot reach full travel much above 140 mph, and the 109's controls become very heavy
+    above about 250 mph);
   - trim (elevator on all; rudder where fitted).
 - **Propeller effects:** torque, slipstream and gyroscopic effects from the propeller and engine.
 - **Structural limits:** g limits and diving speed limits from Pilot's Notes and handbooks; going past
@@ -106,9 +108,10 @@ Every deviation from a historical or published figure is flagged to the product 
 
 ## 5. Controls
 - **Inputs:**
-  - keyboard and mouse by default, fully rebindable;
-  - a USB joystick and throttle through the Gamepad API (the controller and the phase are to be
-    confirmed with the product owner).
+  - the Logitech Extreme 3D Pro joystick (stick, twist rudder, throttle slider, hat, buttons) together with the
+    keyboard: the primary controls (product owner, 24 Oct 2026, D14);
+  - keyboard and mouse alone also work;
+  - all controls are rebindable (Phase 8).
 - **Controls to map:** pitch, roll, yaw, throttle, propeller rpm (Merlin aircraft) or pitch (VDM),
   mixture where needed, radiator, flaps, undercarriage, trim, fire (guns and cannon, separately where
   the aircraft had them), views.
@@ -156,6 +159,8 @@ Every deviation from a historical or published figure is flagged to the product 
   The exact area and the map data source are to be decided (see PROGRESS.md).
 - **Ground features:** coastlines, chalk cliffs, farmland, woods, towns, RAF airfields on the
   English side, Luftwaffe airfields on the French side, a few recognisable landmarks.
+- **Markings:** typical generic RAF and Luftwaffe markings (national insignia and camouflage of summer 1940),
+  not particular squadrons or pilots (product owner, 24 Oct 2026, D14).
 - **Sky:** sun, haze, cumulus cloud and summer visibility. The altitude range suits the period
   aircraft (above 10,000 m).
 
@@ -165,7 +170,9 @@ Every deviation from a historical or published figure is flagged to the product 
 - **Missions:**
   - dogfights;
   - intercepting bomber raids (RAF);
-  - escorting bombers (Luftwaffe, if the product owner approves the player flying that side).
+  - escorting bombers (Luftwaffe): the player may fly the Luftwaffe side (product owner, 24 Oct 2026, D14).
+- **RAF radar information:** RAF players are given the bearing of an incoming raid only, as an intercept aid.
+  Height, numbers and range are not given (product owner, 24 Oct 2026, D14).
 - **Cockpit:**
   - instruments matching each aircraft's period layout and units;
   - an optional modern HUD;
@@ -183,8 +190,11 @@ Every deviation from a historical or published figure is flagged to the product 
 - Physics constants live in data files (`src/aircraft/*.js`), never hard-coded.
 
 ## 12. Multiplayer
-- 2-4 human players in private rooms joined by a code. RAF against Luftwaffe. Fighters only. No AI
-  aircraft. Whether the Bf 110, with its AI rear gunner, counts as a fighter here is to be decided.
+- 2-4 human players in private rooms joined by a code. RAF against Luftwaffe. Fighters only: Hurricane,
+  Spitfire, Bf 109 and Bf 110. No AI aircraft. The Bf 110's rear gun is AI-manned, the one AI element allowed in
+  multiplayer (product owner, 24 Oct 2026, D14).
 - An authoritative room server on Cloudflare Workers + Durable Objects runs the same flight model
-  for every aircraft and decides every hit. It is separate from the Dawn Patrol server.
+  for every aircraft and decides every hit. It uses the same Cloudflare set-up as Dawn Patrol's multiplayer
+  (product owner, 24 Oct 2026). Whether that means Dawn Patrol's own Worker, or a separate Worker on the same
+  account, is to be confirmed (see PROGRESS.md).
 - Outline: docs/MULTIPLAYER_SPEC.md. The details are designed in Phase 9.

@@ -171,8 +171,8 @@ was chosen by the product owner on 24 Oct 2026.
 | He 111 H-3 | 2 × Jumo 211D (AI only) |
 
 **Time limit on +12 lb/sq in:** the question put to the product owner said "5 minutes". The 1940 sources found so far
-(A.P. 1565A, A.P. 1590B/J.2-W) say only "short periods" in an emergency. The 5-minute figure is therefore not yet
-sourced. It is flagged to the product owner and listed as an open research gap.
+(A.P. 1565A, A.P. 1590B/J.2-W) say only "short periods" in an emergency. On 24 Oct 2026 the product owner decided
+there is no fixed limit (D14).
 
 **Hurricane airscrew:** new Hurricane Is were delivered with Rotol constant-speed airscrews by June 1940. Conversion of the
 older de Havilland two-pitch airscrews was not to start before mid-September 1940 (MAP letter of 29 Jun 1940, source
@@ -240,3 +240,41 @@ these to the Dawn Patrol set:
 
 **Phase 0 note:** `npm run validate` exists from Phase 0 (`scripts/validate.mjs`). With no flight
 models yet it only reports that there is nothing to validate. Phase 1 builds the real comparison.
+
+## D14. Product owner's decisions after the Phase 0 review (24 Oct 2026, Phase 0)
+
+**Decisions:**
+1. **GitHub:** create the public repository `mdayv261/WW2-BattleOfBritain`, push, and publish with GitHub Pages.
+2. **+12 lb/sq in emergency boost:** no fixed time limit.
+   - The 1940 sources say only "short periods" and give no minutes.
+   - The engine's normal heat model applies; no wear penalty is invented.
+3. **Bf 109 E level speed:** calibrate to the Luftwaffe data sheet, 460 km/h at sea level (AIRCRAFT_DATA.md S16).
+   The manufacturer's 500 km/h (S17) is recorded as the other published figure.
+4. **Close variants accepted:**
+   - NACA Spitfire VA and Hurricane II data for wing geometry, stall and roll;
+   - Bf 109 E-3 data for the E-4, and Bf 110 C-2 data for the C-4, with the armour weight added once found.
+5. **He 111 H-3:** keep searching period documents and museum records, including the Imperial War Museum's.
+   No estimates yet.
+6. **Bf 110 in multiplayer:** allowed, with its rear gun manned by the AI. This is the one AI element in otherwise
+   human-only multiplayer.
+7. **Luftwaffe side in single player:** the player may fly for the Luftwaffe, including escort missions.
+8. **RAF radar information:** RAF players get the bearing of an incoming raid only; no height, numbers or range.
+9. **Controls:** the Logitech Extreme 3D Pro joystick with the keyboard are the primary controls.
+10. **Markings:** typical generic RAF and Luftwaffe markings, not particular squadrons or pilots.
+11. **Multiplayer server:** use the same Cloudflare set-up as Dawn Patrol's multiplayer. Whether this means sharing
+    Dawn Patrol's Worker or a separate Worker on the same account is to be confirmed. It matters because the
+    original brief said the server should be separate from Dawn Patrol's.
+
+**Why:** the product owner's answers to the Phase 0 questions. Points 2 and 3 settle the two deviations flagged in
+Phase 0.
+
+**Still open:**
+- the map area and data source;
+- cockpits;
+- modes and assists;
+- units (CLAUDE.md already says each side's own);
+- ranks;
+- whether the player can man the Bf 110's rear gun;
+- the swastika on Luftwaffe tails, under generic markings;
+- the multiplayer Worker question above.
+

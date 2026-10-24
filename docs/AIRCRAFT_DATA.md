@@ -233,7 +233,7 @@ Its airframe and wing are the Mk I's, so it is used for geometry, stall and hand
 | Normal maximum boost | 144.4 | kPa | +6¼ lb/sq in | S4, S6 | high | Absolute pressure. |
 | Emergency boost (100-octane fuel) | 184.1 | kPa | +12 lb/sq in | S6, S7, S8 | high | Absolute pressure. Obtained by pulling the boost-control cut-out. |
 | Altitude to which +12 lb/sq in can be held | 3048 | m | about 10,000 ft | S7, S8 | high | Above it, boost falls to normal at the operational height. |
-| Time limit at +12 lb/sq in | short periods (emergency) | — | for short periods under emergency conditions | S6, S7 | high | No minutes given. Dowding's 1 Aug 1940 letter on Merlin handling (on the archive site) is not yet read. The chosen 5-minute game limit is therefore a modelling choice, flagged in DECISIONS.md D9. |
+| Time limit at +12 lb/sq in | short periods (emergency) | — | for short periods under emergency conditions | S6, S7 | high | No minutes given. Dowding's 1 Aug 1940 letter on Merlin handling (on the archive site) is not yet read. The product owner chose no fixed limit in the game (D14). |
 | Fuel consumption increase at +12 lb/sq in | 40 | % | about 40 per cent | S7 | medium | |
 | Combat rpm limit below 6,096 m | 298.5 | rad/s | 2,850 rpm (½ hr limit) | S6 | medium | Crankshaft speed. Above 20,000 ft: 3,000 rpm (½ hr). |
 | Diving rpm limit | 3,600 rpm for 20 s | — | maximum 3,600 r.p.m.; 3,000 may be exceeded only for 20 s with throttle at least one third open | S6 | medium | Read from the Pilot's Notes extract. |
@@ -311,7 +311,7 @@ in armament and armour (details and weights are open gaps). This is flagged as a
   500 km/h, with a stated ±5% tolerance.
 - S17 also quotes higher engine ratings (1,175 PS for take-off at 2,500 rpm) than the October 1940 engine manual (S18:
   1,100 PS at 2,400 rpm).
-- Phase 1 will calibrate to S16 (an in-service document) and report the gap to S17.
+- Phase 1 calibrates to S16, 460 km/h (product owner's decision, D14), and reports the gap to S17.
 - The Rechlin comparison (S22) says the 109 E was about 20 km/h faster than the Spitfire at sea level. Against S3's
   283 mph (455 km/h) for the Spitfire, that supports a 109 E sea-level speed nearer 475 km/h.
 
@@ -417,7 +417,7 @@ does. See the open research gaps and the question to the product owner in PROGRE
 | Gap | Needed for | Where to look next |
 |---|---|---|
 | Any test of a Spitfire I or Hurricane I at +12 lb/sq in boost (speeds and climb) | Phase 1 validation of the chosen mid-August 1940 configuration | Rolls-Royce or RAE reports of 1940; A&AEE reports on later Hurricane I serials; H.C.T. Dowding, "Handling of Merlin in Hurricane, Spitfire and Defiant Aircraft", 1 Aug 1940 (on the archive site, not yet read) |
-| Time limit for +12 lb/sq in in mid-1940 | The game's emergency-boost timer (the 5 minutes in the question to the product owner is not sourced) | Pilot's Notes A.P. 1564A (Hurricane I) and A.P. 1565A (Spitfire I) full text; Dowding letter above |
+| Time limit for +12 lb/sq in in mid-1940 | Historical note only: the game has no fixed limit (D14) | Pilot's Notes A.P. 1564A (Hurricane I) and A.P. 1565A (Spitfire I) full text; Dowding letter above |
 | Hurricane I Rotol airscrew diameter and pitch range | Propeller model | A&AEE report on a Rotol Hurricane I; Rotol type records |
 | Hurricane I with Rotol airscrew: level speeds and climb (S1/S2 do not state the airscrew) | Validation | A&AEE reports (the archive lists L1547 and L2026 with two-pitch airscrews only) |
 | Merlin III reduction gear ratio, supercharger gear ratio, bore and stroke, dry weight | Engine model | A.P. 1590B full text; RAF Museum or Science Museum engine records |
@@ -427,7 +427,7 @@ does. See the open research gaps and the question to the product owner in PROGRE
 | Spitfire I fabric-covered aileron area and travel (S11 is a metal-aileron VA) | Roll model | A&AEE or RAE reports on the Spitfire I |
 | Bf 109 E-4 armament (MG FF or MG FF/M) and weights: armour plate, cannon installation, any canopy change | Mass and CG | E-4 Ladeplan; Flugzeug-Handbuch E-4 |
 | Whether the 109 E-4 of August 1940 had the DB 601A or DB 601Aa | Engine model | Kennblatt or Flugzeug-Handbuch E-4; DB 601 Aa data sheet (the archive page is empty) |
-| Bf 109 E level speed: the 460 km/h (S16) against 500 km/h (S17) disagreement | Calibration choice | Rechlin Meßprotokolle; British RAE tests of the captured E-3 (charts listed on the archive site, not yet read) |
+| Bf 109 E level speed: the 460 km/h (S16) against 500 km/h (S17) disagreement | Background only: calibration is to S16 (D14) | Rechlin Meßprotokolle; British RAE tests of the captured E-3 (charts listed on the archive site, not yet read) |
 | Bf 109 E roll rate and stick forces | Roll model | RAE report by Morgan, "Messerschmitt Me 109 Handling and Manoeuvrability Tests" (on kurfurst.org, downloaded but not yet read) |
 | Bf 109 E turn times (Messerschmitt chart of 26 Aug 1940 unreadable) | AI and validation | A better scan |
 | Bf 110 C-4 weights: armour; C-4 compared with the C-2 | Mass | Bf 110 C-4 Ladeplan or handbook |
