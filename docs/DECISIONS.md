@@ -322,3 +322,122 @@ Archive found two period documents, S28 and S29 in AIRCRAFT_DATA.md.
 
 **Why:** the product owner's instruction. Public-domain data avoids any licence or credit obligations.
 
+---
+
+# Phase 1 decisions (single-engine flight model)
+
+## D18. Phase 1 scope choices (24 Oct 2026, Phase 1)
+
+**Decisions (product owner):**
+1. **Dawn Patrol modules approved for adapting (D10 procedure):**
+   - `src/physics/atmosphere.js` (International Standard Atmosphere);
+   - `src/physics/rigidBody.js` (six-degrees-of-freedom motion with the gyroscopic term).
+
+   Both are generic, tested physics. No other Dawn Patrol code is used.
+2. **Test flying in Phase 1:** keyboard plus basic Logitech Extreme 3D Pro joystick support (stick, twist rudder,
+   throttle slider, trigger). Full mapping and rebinding stay in Phases 2 and 8.
+3. **Bf 109 E propeller pitch:** manual by default, as in 1940. The pilot used a thumb switch with a clock-face
+   pitch indicator (AIRCRAFT_DATA.md S15, S21). The optional engine-management assist sets it automatically.
+
+**Why:** the product owner's answers when Phase 1 was planned. Adapting the two generic modules avoids rewriting
+textbook physics. Manual pitch keeps the 109 as it was flown in August 1940.
+
+## D19. Flight-model structure (24 Oct 2026, Phase 1 checkpoint 1)
+
+**Decision:**
+- **Rigid body:** six degrees of freedom at 120 Hz (`src/physics/rigidBody.js`, adapted from Dawn Patrol, D18). The
+  gyroscopic term comes from the propeller's spin.
+- **Wing as two halves (`src/physics/aero.js`).** Each half has its own angle of attack, changed by roll rate and, via
+  dihedral, by sideslip. It also has its own local airspeed (changed by yaw rate) and, on the Bf 109, its own slat.
+  This one model produces:
+  - roll damping;
+  - dihedral effect;
+  - wing drop at the stall;
+  - autorotation and spins;
+  - yaw toward the dropping wing;
+  - the 109's slat flick.
+
+  Lift peaks at exactly the sourced maximum lift coefficient.
+- **Slipstream.** Extra dynamic pressure behind the propeller (thrust ÷ disc area) acts on a share of the wing and on
+  the tail. That share is fitted to the Spitfire's power-on stall.
+- **Fixed rigging for torque and swirl.** Each aircraft is rigged so it flies straight hands-off at cruise. Away from
+  cruise the pilot corrects, as in the real aircraft.
+
+**Why:**
+- The half-wing approach replaces several separate rules (stall bias, autorotation gain, slat asymmetry) with one
+  physical mechanism.
+- Fitting maximum lift exactly makes the stall speeds testable against NACA data.
+
+## D20. Engine model (24 Oct 2026, Phase 1 checkpoint 1)
+
+**Decision (`src/physics/engine.js`):**
+- **Curves.** For each boost rating, two curves against altitude at the reference engine speed: constant boost, and
+  full throttle.
+- **Manifold pressure.** The pressure the supercharger can reach comes from the ratio of the two curves. The throttle
+  demands a pressure; the boost control holds it while it can.
+- **Power at a given pressure.**
+  - Merlin: interpolated between the +6¼ and +12 lb curves. This implies about 33-36 kPa for zero power, which agrees
+    with the DB 601's fitted 0.30 ata.
+  - DB 601: in proportion above its zero-power pressure.
+- **Engine speed.** Supercharger delivery is proportional to engine speed; power changes with speed by a sourced or
+  fitted exponent:
+  - Merlin: exponent 0, from N3171;
+  - DB 601: exponent 0.5, fitted to the manual's ratings.
+- **Above the charts.** The manifold pressure falls with outside pressure (fixed supercharger ratio).
+- **Ram air.** Half the dynamic pressure is recovered at the intake. This is the mean of the values implied by the
+  Spitfire (0.62) and the Hurricane (0.37).
+- **Negative g.** The Merlin's carburettor cuts out under negative g after a short delay and recovers after a
+  flooding delay. The DB 601 does not cut out.
+
+**Why:** the data give power curves, not engine internals. This keeps the curves exact at their sourced points and
+interpolates physically between them.
+
+## D21. Propeller model from NACA Report 640 (24 Oct 2026, Phase 1 checkpoint 1)
+
+**Decision (`src/physics/propeller.js`, data `src/aircraft/naca640.js`):**
+- **Data.** All three fighters use the full-scale thrust and efficiency curves of NACA's 3-blade, 10 ft Clark Y
+  propeller (S30), scaled to each propeller's diameter.
+  - The thrust curves were traced from the report's figure by pixel measurement.
+  - The efficiency curves were read by eye (about ±0.02).
+  - The power coefficient is computed as CT × J ÷ efficiency.
+- **Outside the measured range.** Blade angles beyond the measured 15-45° stretch the nearest curve so that the
+  zero-thrust point moves at the measured rate.
+- **Physical limits.** Efficiency is capped at the measured envelope peak (0.86), and a windmilling propeller cannot
+  return more power than the air gives up.
+- **Blade-angle control:**
+  - Merlin aircraft: a governor holds the rpm the pilot sets.
+  - Bf 109: the pilot drives the pitch with a thumb switch (D18), or the engine-management assist holds 2400 rpm.
+
+**Why:** it is the best measured full-scale data found for 3-blade propellers of the period. It is an approximation:
+the Rotol and VDM blades were wider and differently shaped. This is the likeliest cause of the Spitfire's slow climb
+at altitude (FLIGHT_VALIDATION.md).
+
+## D22. What is calibrated, and to what (24 Oct 2026, Phase 1 checkpoint 1)
+
+**Decision:** only three kinds of value are fitted, each to one sourced figure (`npm run calibrate`). The results are
+copied into the data files by hand and recorded in AIRCRAFT_DATA.md:
+- **Zero-lift drag, to one level speed per aircraft:**
+  - Spitfire: 354 mph at 18,900 ft (S4);
+  - Hurricane: 316 mph at 17,750 ft (S1);
+  - Bf 109: 460 km/h at sea level (S16, D14).
+- **Aileron power:** to NACA's full-aileron roll (S13).
+- **Share of the wing in the slipstream:** to the Spitfire's power-on stall (S31). The same share is used for all
+  three aircraft.
+
+Every other sourced figure is an independent check (FLIGHT_VALIDATION.md). The aileron stick-force factor is
+calculated directly from NACA's 30 lb measurement.
+
+**Why:** fitting one value to one figure keeps the rest of the comparison honest; tuning factors are not used to hide
+deviations.
+
+## D23. Corrections made while building the model (24 Oct 2026, Phase 1 checkpoint 1)
+
+1. **Stalled-wing drag:** 1.3, not the 1.98 of an infinitely long flat strip. A wing of aspect ratio about 6 across
+   the flow is nearer 1.2-1.3.
+2. **Bf 109 closed-throttle pressure:** lowered from an estimated 0.50 to 0.35 ata. At 0.50 ata the "power off" stall
+   still had about 200 PS.
+3. **Stall speeds in the British trials:**
+   - The A&AEE stall speeds for N3171 (78 and 68 mph, S4) match NACA's power-on stalls (77 and 69 mph, S31), not its
+     power-off ones (90 and 80 mph).
+   - The power-off NACA figures are used for maximum lift. The power-on figure calibrates the slipstream.
+

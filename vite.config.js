@@ -8,5 +8,6 @@ export default defineConfig({
   base: BASE_PATH,
   test: {
     include: ['tests/**/*.test.js'],
+    testTimeout: 120000, // the validation tests run the performance solver many times
   },
 });

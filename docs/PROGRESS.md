@@ -5,9 +5,47 @@ Read this at the start of every session.
 ## Current status (24 Oct 2026)
 
 Phase 0 (foundations and research) is done. The product owner reviewed it and answered the Phase 0 questions (D14).
-The repository https://github.com/mdayv261/WW2-BattleOfBritain was created with the product owner's permission. The
-game is live at https://mdayv261.github.io/WW2-BattleOfBritain/: the first deployment, run 40090564335, passed its tests
-and deployed. The He 111 search continues (below).
+Phase 0 is signed off. The game is live at https://mdayv261.github.io/WW2-BattleOfBritain/ (repository
+https://github.com/mdayv261/WW2-BattleOfBritain). **Phase 1 checkpoint 1 (physics core and validation) is done
+locally**; checkpoint 2 (a flyable test version) is next. Nothing from Phase 1 has been pushed yet.
+
+## Phase 1 checkpoint 1: physics core and validation (24 Oct 2026)
+
+**Done:**
+- **Research for Phase 1** (AIRCRAFT_DATA.md):
+  - NACA Report 640 full-scale propeller data (S30): thrust curves traced by pixel measurement; efficiency curves.
+  - NACA Spitfire VA stall report (S31): power-off and power-on maximum lift.
+  - Merlin III and DB 601A power curves, read from their charts (the DB chart's altitude scale is not linear).
+- **Physics code** (`src/physics/`):
+  - `atmosphere.js` and `rigidBody.js` (adapted from Dawn Patrol, approved, D18);
+  - `aero.js`: half-wing aerodynamics with stall, slats and slipstream (D19);
+  - `engine.js`: supercharged engines with boost control, ram air and the negative-g cut-out (D20);
+  - `propeller.js`: NACA 640 coefficients, governor and manual pitch (D21);
+  - `controls.js`: stick force limits, flaps, undercarriage, trim, slats;
+  - `flightModel.js`: the complete aircraft stepped at 120 Hz;
+  - `performance.js` and `validation.js`: steady-state performance.
+- **Data files** (`src/aircraft/`): the three fighters, both engines, the propeller data, common parameters and the
+  validation cases. Every number has a keyed row in AIRCRAFT_DATA.md, and a new test (`tests/aircraftCode.test.js`)
+  fails if code and document disagree.
+- **Tools:** `npm run validate` (prints model against source) and `npm run calibrate` (fits the three calibrated
+  quantities, D22).
+- **Results** (docs/FLIGHT_VALIDATION.md): 46 of 52 sourced checks within tolerance.
+  - All level speeds within 5%; the Spitfire's within 1%.
+  - All stalls within 1.5%; the roll checks within 0.2%.
+- **Tests:** 316 pass (`npm test`, about 35 s). The build works.
+
+**Known issues (reported, not tuned away):**
+1. **Spitfire:** climbs 5-10% slower than N3171; ceiling 7% low. Likely cause: the NACA test propeller's narrower
+   blades (D21).
+2. **Bf 109:** climbs 8-16% slower than Messerschmitt's specification, but within 4% of the Rechlin figure.
+3. **Bf 109 drag coefficient (0.0273)** is high, a result of calibrating to 460 km/h.
+4. **Handling values are first estimates:** stability, damping, elevator and rudder power, rigging, slats, inertia.
+   Checkpoint 3 tests and tunes them, then you fly.
+5. **Nothing is flyable in the browser yet** (checkpoint 2).
+
+**Decision for the product owner:**
+- **Spitfire propeller:** may I fit a blade-width correction to the climb? It would bring the climb and ceiling
+  within tolerance, but it is a tuning factor. The default is to leave it and report it.
 
 ## Phase 0: Foundations and research
 

@@ -73,6 +73,8 @@ All values are stored in SI units. The original figure and unit from the source 
 | S27 | US Office of the Chief of Ordnance, "Catalog of Enemy Ordnance" (1945): MG 17 and MG 15 entries | https://www.lonesentry.com/ordnance/tag/mg-17/ and https://www.lonesentry.com/ordnance/tag/mg-15/ | Period US government publication (transcription on archive site) |
 | S28 | L.Dv.T. 583/3, "He 111 H, P und D – Bedienungsvorschrift für die bewegliche und starre Schußwaffe", October 1940 (released by the RLM 10 Dec 1940), with Anhang 1 for the He 111 H-5 (December 1940) | https://archive.org/details/flugzeuchhandbucher (file "He 111 H P D Bedienungsvorschrift Schusswaffe.pdf") | Luftwaffe weapons manual (scan on archive site) |
 | S29 | Scientific Testing Institute of the Red Army Air Force (NII VVS), 4th Department, "German bomber Heinkel He-111 (types H-6 and H-11)", Moscow, 1943 | https://archive.org/details/111-1943 | Period government description and test data of captured aircraft, in Russian (scan on archive site, public-domain mark) |
+| S30 | E. P. Hartman and D. Biermann, "The Aerodynamic Characteristics of Full-Scale Propellers Having 2, 3, and 4 Blades of Clark Y and R.A.F. 6 Airfoil Sections", NACA Report 640, 1938 (propeller 5868-9, 3 blades, 10 ft) | https://ntrs.nasa.gov/citations/19930091715 | Government research report |
+| S31 | J. R. Vensel and W. H. Phillips, "Stalling Characteristics of the Supermarine Spitfire VA Airplane", NACA Advance Confidential Report, Sept 1942 | https://ntrs.nasa.gov/citations/19930092581 | Government research report |
 
 **Archive sites used (D8):**
 - wwiiaircraftperformance.org;
@@ -107,14 +109,14 @@ so it is used for wing geometry, control surfaces, stall and handling only, rate
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
-| Wingspan | 12.192 | m | 40 ft | S1, S12 | high | S12 (Mk II, same wing) also gives 40 ft. |
-| Gross wing area | 23.97 | m² | 258 sq ft | S1, S12 | high | S12 measured 257.6 sq ft. |
-| Length | 9.576 | m | 31 ft 5 in | S1 | medium | S12's Mk II is 31 ft 6 in (longer Merlin XX nose). |
+| Wingspan (`geometry.span`) | 12.192 | m | 40 ft | S1, S12 | high | S12 (Mk II, same wing) also gives 40 ft. |
+| Gross wing area (`geometry.wingArea`) | 23.97 | m² | 258 sq ft | S1, S12 | high | S12 measured 257.6 sq ft. |
+| Length (`geometry.length`) | 9.576 | m | 31 ft 5 in | S1 | medium | S12's Mk II is 31 ft 6 in (longer Merlin XX nose). |
 | Height | 3.200 | m | 10 ft 6 in | S1 | medium | Attitude not stated. S12 gives 12 ft 2 in with the datum line level, a different attitude. |
 | Aspect ratio | 6.22 | — | 6.22 | S12 | medium | Close variant (same wing). Consistent with S1: 40² / 258 = 6.20. |
-| Mean aerodynamic chord | 2.141 | m | 84.3 in | S12 | medium | 5.2 in behind the wing leading edge (S12). |
+| Mean aerodynamic chord (`geometry.mac`) | 2.141 | m | 84.3 in | S12 | medium | 5.2 in behind the wing leading edge (S12). |
 | Taper ratio | 2.03 | — | 2.03:1 | S12 | medium | |
-| Dihedral, outer panels | 3.5 | deg | +3.5° | S12 | medium | |
+| Dihedral, outer panels (`aero.dihedral`) | 3.5 | deg | +3.5° | S12 | medium | |
 | Wing incidence to fuselage datum | 2.0 | deg | +2.0° ± ½° | S12 | medium | |
 | Leading-edge sweepback | 5.1 | deg | 5.1° | S12 | medium | |
 | Aerofoil, root | Clark YH 19% | — | Clark YH 19 percent modified | S12, S14 | high | S12 says "modified". |
@@ -128,7 +130,7 @@ so it is used for wing geometry, control surfaces, stall and handling only, rate
 | Elevator travel | 26 | deg | ±26° | S12 | medium | |
 | Tare weight | 2374 | kg | 5,234 lb | S1 | medium | |
 | Light weight (no fuel, bombs or ammunition) | 2640 | kg | 5,820 lb | S1 | medium | |
-| Mean weight | 2921 | kg | 6,440 lb | S1 | medium | The weight the S1 performance figures are quoted at. |
+| Mean weight (`mass.flying`) | 2921 | kg | 6,440 lb | S1 | medium | The weight the S1 performance figures are quoted at. |
 | Maximum weight | 3081 | kg | 6,793 lb | S1 | medium | |
 | Fuel carried | 441 | L | 97 gallons | S1 | medium | Imperial gallons. |
 | Engine | Rolls-Royce Merlin III | — | Merlin III | S1, S2 | high | Single-speed supercharged V-12, glycol-cooled, carburettor (S7). |
@@ -156,13 +158,54 @@ so it is used for wing geometry, control surfaces, stall and handling only, rate
 | Rounds per gun | 334 | rounds | 334 | S1 | medium | |
 | Stalling speed, flaps and gear up, power off | 38.7 | m/s | 86.5 mph IAS | S12 | medium | Mk II at 7,014 lb, gun ports closed. With ports open: 89.5 mph. |
 | Stalling speed, landing condition | 31.4 | m/s | 70.3 mph IAS | S12 | medium | Mk II at 7,014 lb, ports closed. Ports open: 72.6 mph. |
-| Maximum lift coefficient, flaps up, power off | 1.41 | — | 1.41 | S12 | medium | Ports closed; ports open 1.31. |
-| Maximum lift coefficient, landing condition | 2.14 | — | 2.14 | S12 | medium | Ports closed; ports open 2.00. |
+| Maximum lift coefficient, flaps up, power off (`aero.clMax`) | 1.41 | — | 1.41 | S12 | medium | Ports closed; ports open 1.31. |
+| Maximum lift coefficient, landing condition (`aero.clMaxFlaps`) | 2.14 | — | 2.14 | S12 | medium | Ports closed; ports open 2.00. |
 | Stall behaviour | Root stalls first; buffet warning before roll-off | — | flow separation first at the centre section | S12 | medium | Qualitative; used to shape the stall model. |
 | Stick-force gradient in manoeuvres | 36.0 | N/g | 8.1 lb per g | S12 | medium | Above the 6 lb/g upper limit NACA recommended. |
 | Roll helix angle, full aileron | 0.082 | rad | pb/2V 0.082 | S13 | medium | Low speed, where full deflection can be reached. |
 | Roll helix angle with 30 lb stick force at 230 mph IAS, 10,000 ft | 0.057 | rad | pb/2V 0.057 | S13 | medium | |
 | Roll rate with 30 lb stick force at 230 mph IAS, 10,000 ft | 1.117 | rad/s | 64 deg/s | S13 | medium | Heavy ailerons limit high-speed roll (S13). |
+| Roll moment of inertia (`mass.ixx`) | 6783 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.25 (roll, of b/2), 0.38 (pitch, of L/2) and 0.39 (yaw, of (b+L)/4) are typical of single-engine propeller aircraft (method after Roskam; the ratios are not checked against the book). |
+| Pitch moment of inertia (`mass.iyy`) | 9670 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.25 (roll, of b/2), 0.38 (pitch, of L/2) and 0.39 (yaw, of (b+L)/4) are typical of single-engine propeller aircraft (method after Roskam; the ratios are not checked against the book). |
+| Yaw moment of inertia (`mass.izz`) | 13,150 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.25 (roll, of b/2), 0.38 (pitch, of L/2) and 0.39 (yaw, of (b+L)/4) are typical of single-engine propeller aircraft (method after Roskam; the ratios are not checked against the book). |
+| Zero-lift angle of attack, body axis (`aero.alphaZeroLift`) | -5 | deg | — | ASSUMPTION | estimate | A Clark Y section has zero lift near −3°; less the 2° incidence (S12). Sets the fuselage attitude only. |
+| Zero-lift drag coefficient (`aero.cd0`) | 0.025 | — | — | ASSUMPTION | estimate | Fitted (`npm run calibrate`) so the level top speed at 17,750 ft, 3000 rpm, +6¼ lb and 2921 kg equals the data sheet's 316 mph (S1). |
+| Oswald span efficiency (`aero.oswald`) | 0.8 | — | — | ASSUMPTION | estimate | No measured value found. Typical of a monoplane fighter (fuselage and gun ports lower it). |
+| Drag of fully lowered split flaps (`aero.flapCd`) | 0.08 | — | — | ASSUMPTION | estimate | Typical of large split flaps; only affects the approach and glide. |
+| Drag of the lowered undercarriage (`aero.gearCd`) | 0.02 | — | — | ASSUMPTION | estimate | Typical of a single-engine fighter. |
+| Extra drag with the radiator flap fully open (`aero.radiatorCd`) | 0.004 | — | — | ASSUMPTION | estimate | About 1-2% of total drag at cruise. |
+| Fraction of the wing in the propeller slipstream (`aero.slipstreamWing`) | 0.243 | — | — | S31, ASSUMPTION | estimate | Fitted (`npm run calibrate`) to the NACA power-on stall of the Spitfire VA (S31): 77 mph IAS, CL 1.63 at 36.9 in Hg and 2650 rpm. The same value is used for all three aircraft. The disc width over the span would suggest about 0.3. |
+| Static margin (`aero.staticMargin`) | 0.05 | fraction | — | S12, ASSUMPTION | estimate | S12 found static stability satisfactory except in the climb at low speed. Set larger than the Spitfire's. |
+| Pitching moment coefficient at zero lift (`aero.cmZero`) | 0.02 | — | — | ASSUMPTION | estimate | Set so that the trim range covers cruise to approach. Tuned by flying (checkpoint 3). |
+| Pitch damping Cmq (`aero.cmq`) | -12 | per unit q c/2V | — | ASSUMPTION | estimate | Typical order for a single-engine fighter. No measured value found. |
+| Pitching moment coefficient at full up elevator (`aero.elevatorCm`) | 0.2 | — | — | ASSUMPTION | estimate | No source; similar to the Spitfire's, tuned by flying. |
+| Pitching moment range of the elevator trimmer (`aero.trimCm`) | 0.03 | — | — | ASSUMPTION | estimate | Enough to trim hands-off from the approach to top speed. |
+| Pitching moment from fully lowered flaps (`aero.flapCm`) | -0.02 | — | — | ASSUMPTION | estimate | A small nose-down change. S24 reports a larger temporary change on the Bf 110; not modelled yet. |
+| Roll moment coefficient at full aileron (`aero.aileronCl`) | 0.0313 | — | — | S13, ASSUMPTION | estimate | Fitted (`npm run calibrate`) to the NACA full-aileron helix angle pb/2V 0.082 (S13). |
+| Adverse yaw at full aileron (`aero.adverseYaw`) | -0.00313 | — | — | ASSUMPTION | estimate | One tenth of the aileron roll moment, opposite to the turn. Typical. |
+| Weathercock stability Cnβ (`aero.cnBeta`) | 0.07 | per rad | — | ASSUMPTION | estimate | Typical of a single-engine fighter. No measured value found. |
+| Yaw damping Cnr (`aero.cnr`) | -0.1 | per unit r b/2V | — | ASSUMPTION | estimate | Typical. No measured value found. |
+| Yaw moment coefficient at full rudder (`aero.rudderCn`) | 0.06 | — | — | ASSUMPTION | estimate | Typical. No measured value found. |
+| Side force from sideslip Cyβ (`aero.cyBeta`) | -0.6 | per rad | — | ASSUMPTION | estimate | Typical of a fuselage and fin. No measured value found. |
+| Slipstream swirl acting on the fin (`aero.swirl`) | 0.15 | fraction | — | ASSUMPTION | estimate | Yaw moment = swirl × thrust × propeller diameter, yawing against the propeller rotation; set so that a few degrees of rudder are needed at climbing power. |
+| Rigging against engine torque (`aero.rollRig`) | 0.003 | — | — | ASSUMPTION | estimate | About equal to the engine's torque reaction at cruise (about 4,000 N m at 3,000 m and 110 m/s), so the aircraft holds its wings level hands-off at cruise; at other powers the pilot holds some aileron. |
+| Fixed fin offset or rudder tab (`aero.yawRig`) | 0.0015 | — | — | ASSUMPTION | estimate | Cancels the slipstream swirl at cruise, as a fixed fin offset or ground-set tab would; at other powers the pilot uses rudder. |
+| Roll bias when stalled (wing drop) (`aero.stallBias`) | 0 | — | — | S12, ASSUMPTION | estimate | None: S12 found the stall began at the wing root with buffeting before any roll. |
+| Elevator stick force at full deflection per unit dynamic pressure (`controls.pitchHinge`) | 0.03 | N/Pa | — | S12, ASSUMPTION | estimate | S12 measured a stick-force gradient of 8.1 lb/g. Tuned to match it in checkpoint 3. |
+| Aileron stick force at full deflection per unit dynamic pressure (`controls.rollHinge`) | 0.0297 | N/Pa | — | S13 | medium | S13: 30 lb at 230 mph IAS gave pb/2V 0.057 of the full 0.082 (0.695 of full deflection). |
+| Rudder pedal force at full deflection per unit dynamic pressure (`controls.yawHinge`) | 0.06 | N/Pa | — | ASSUMPTION | estimate | No source. With the 150 lb pedal limit, full rudder is available to about 300 mph. |
+| Flap travel time (`controls.flapTime`) | 5 | s | — | ASSUMPTION | estimate | No source; typical of hydraulic split flaps. |
+| Undercarriage travel time (`controls.gearTime`) | 6 | s | — | ASSUMPTION | estimate | No source. Typical of the period. |
+| Airscrew diameter (`propeller.diameter`) | 3.454 | m | 11 ft 4 in | S12 | medium | Rotol on the NACA Hurricane II (close variant). The Hurricane I Rotol diameter was not found. |
+| Reduction gear ratio (propeller turns per engine turn) (`propeller.gearRatio`) | 0.477 | — | 0.477:1 | S12 | medium | Merlin XX (close variant). |
+| Rotation (+1 clockwise seen from the cockpit) (`propeller.rotation`) | 1 | — | — | ASSUMPTION | estimate | Same Merlin and Rotol arrangement as the Spitfire (S4). |
+| Fine pitch stop (`propeller.betaMin`) | 23.33 | deg | — | ASSUMPTION | estimate | Taken from the Spitfire's Rotol (S4). |
+| Coarse pitch stop (`propeller.betaMax`) | 58.33 | deg | — | ASSUMPTION | estimate | Taken from the Spitfire's Rotol (S4). |
+| Lowest governed engine speed (`propeller.rpmMin`) | 1800 | rpm | — | ASSUMPTION | estimate | Typical lower end of the constant-speed lever. |
+| Highest governed engine speed (`propeller.rpmMax`) | 3000 | rpm | 3000 rpm | S6, S8 | medium | Merlin III combat limit. |
+| Rotating inertia at propeller speed (propeller and engine) (`propeller.inertia`) | 50 | kg m² | — | ASSUMPTION | estimate | Three blades of about 25 kg plus the engine's rotating parts referred to propeller speed. Sets how quickly rpm changes and the gyroscopic effect. |
+| Governor gain (blade-angle rate per fractional rpm error) (`propeller.governorGain`) | 3 | rad/s | — | ASSUMPTION | estimate | Settles the rpm in about a second. |
+| Maximum blade-angle rate (`propeller.pitchRate`) | 0.17 | rad/s | — | ASSUMPTION | estimate | About 10°/s; no source. |
 
 ## Supermarine Spitfire Mk I (Merlin III)
 
@@ -172,17 +215,17 @@ Its airframe and wing are the Mk I's, so it is used for geometry, stall and hand
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
-| Wingspan | 11.252 | m | 36 ft 11 in | S11 | medium | Close variant (VA). Area × aspect ratio in S11 gives 36 ft 10.5 in. The commonly quoted 36 ft 10 in was not found in an allowed source. |
-| Wing area | 22.48 | m² | 242 sq ft | S11 | medium | Close variant. |
+| Wingspan (`geometry.span`) | 11.252 | m | 36 ft 11 in | S11 | medium | Close variant (VA). Area × aspect ratio in S11 gives 36 ft 10.5 in. The commonly quoted 36 ft 10 in was not found in an allowed source. |
+| Wing area (`geometry.wingArea`) | 22.48 | m² | 242 sq ft | S11 | medium | Close variant. |
 | Aspect ratio | 5.62 | — | 5.62 | S11 | medium | |
-| Mean aerodynamic chord | 2.159 | m | 7 ft 1 in | S11 | medium | 4.8 in behind the leading edge of the wing root (approximate, S11). |
+| Mean aerodynamic chord (`geometry.mac`) | 2.159 | m | 7 ft 1 in | S11 | medium | 4.8 in behind the leading edge of the wing root (approximate, S11). |
 | Planform | elliptical | — | elliptical | S11 | medium | |
-| Dihedral (leading edge) | 6.0 | deg | 6.0° | S11 | medium | |
+| Dihedral (leading edge) (`aero.dihedral`) | 6 | deg | 6.0° | S11 | medium | |
 | Wing incidence, root | 2.1 | deg | 2.1° from thrust axis | S11 | medium | |
 | Wing incidence, tip | 0 | deg | 0° | S11 | medium | 2.1° of washout. |
 | Aerofoil, root | NACA 2213 | — | NACA 2212 (S11); NACA 2213 (S14) | S11, S14 | medium | Sources disagree on thickness. S14 is used; S11's figure is noted. |
 | Aerofoil, tip | NACA 2209.4 | — | NACA 2208 (S11); NACA 2209.4 (S14) | S11, S14 | medium | As above. |
-| Length | 9.119 | m | 29 ft 11 in | S11 | medium | Close variant; the Mk V nose is similar. |
+| Length (`geometry.length`) | 9.119 | m | 29 ft 11 in | S11 | medium | Close variant; the Mk V nose is similar. |
 | Height (datum level) | 3.327 | m | 10 ft 11 in | S11 | medium | |
 | Split flaps, total area | 1.449 | m² | 15.6 sq ft | S11 | medium | Flap span 17 ft 10 in. |
 | Split flaps, travel | 85 | deg | 85° | S11 | medium | |
@@ -190,12 +233,12 @@ Its airframe and wing are the Mk I's, so it is used for geometry, stall and hand
 | Tailplane area | 1.867 | m² | 20.1 sq ft (including 2.15 sq ft fuselage) | S11 | medium | 0° incidence. |
 | Elevator area | 1.232 | m² | 13.26 sq ft | S11 | medium | Trim tab 0.84 sq ft. |
 | Tare weight (N3171) | 2138 | kg | 4,713 lb | S4 | medium | As tested, with armour over the fuel tank and a bullet-proof windscreen. |
-| Flying weight on trials (N3171) | 2744 | kg | 6,050 lb | S4 | medium | |
+| Flying weight on trials (N3171) (`mass.flying`) | 2744 | kg | 6,050 lb | S4 | medium | |
 | Fuel carried | 382 | L | 84 gallons | S4, S5 | high | Two separate A&AEE reports. S11 (VA) gives 85 gallons. |
 | Oil carried | 25 | L | 5½ gallons | S4, S5 | high | |
 | Engine | Rolls-Royce Merlin III | — | Merlin III | S4 | medium | Normal rating 950/990 bhp at 12,250 ft, 2,600 rpm, +6¼ lb/sq in (S4). |
 | Airscrew | Rotol constant-speed, 3 blades | — | Rotol, 3 blades | S4 | medium | |
-| Airscrew diameter | 3.277 | m | 10 ft 9 in | S4 | medium | S11 (VA, Rotol) gives 10 ft 10 in. |
+| Airscrew diameter (`propeller.diameter`) | 3.277 | m | 10 ft 9 in | S4 | medium | S11 (VA, Rotol) gives 10 ft 10 in. |
 | Airscrew pitch range | 35 | deg | 35° 0′ | S4 | medium | Fine 23° 20′; coarse 58° 20′ (the coarse figure is estimated in S4 itself). |
 | Maximum speed (+6¼ lb/sq in, 3,000 rpm) | 158.2 | m/s | 354 mph at 18,900 ft | S4 | medium | N3171, bullet-proof windscreen. S3 shows 354 mph at about 18,500 ft. |
 | Maximum speed altitude | 5761 | m | 18,900 ft | S4 | medium | Full-throttle height. |
@@ -232,6 +275,48 @@ Its airframe and wing are the Mk I's, so it is used for geometry, stall and hand
 | Maximum speed, undercarriage down | 71.5 | m/s | 160 mph IAS | S6 | medium | |
 | Maximum speed, flaps down | 62.6 | m/s | 140 mph IAS | S6 | medium | |
 | Armament | 8 × .303 in machine guns in the wings | — | eight guns | S4 | medium | Rounds per gun not found (see gaps). |
+| Roll moment of inertia (`mass.ixx`) | 5429 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.25 (roll, of b/2), 0.38 (pitch, of L/2) and 0.39 (yaw, of (b+L)/4) are typical of single-engine propeller aircraft (method after Roskam; the ratios are not checked against the book). |
+| Pitch moment of inertia (`mass.iyy`) | 8238 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.25 (roll, of b/2), 0.38 (pitch, of L/2) and 0.39 (yaw, of (b+L)/4) are typical of single-engine propeller aircraft (method after Roskam; the ratios are not checked against the book). |
+| Yaw moment of inertia (`mass.izz`) | 10,820 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.25 (roll, of b/2), 0.38 (pitch, of L/2) and 0.39 (yaw, of (b+L)/4) are typical of single-engine propeller aircraft (method after Roskam; the ratios are not checked against the book). |
+| Zero-lift angle of attack, body axis (`aero.alphaZeroLift`) | -3.5 | deg | — | ASSUMPTION | estimate | A 2%-camber NACA 22-series section has zero lift near −2°; less the 2.1° root incidence (S11) and part of the washout. Sets the fuselage attitude only. |
+| Maximum lift coefficient, power off, flaps up (`aero.clMax`) | 1.18 | — | 1.18 | S31 | medium | Spitfire VA at 6184 lb, gun ports covered, gliding: 90 mph IAS. Close variant (D14). The model's peak lift equals this. |
+| Maximum lift coefficient, power off, flaps and undercarriage down (`aero.clMaxFlaps`) | 1.51 | — | 1.51 | S31 | medium | As above, landing condition, throttle closed: 80 mph IAS. |
+| Zero-lift drag coefficient (`aero.cd0`) | 0.0187 | — | — | ASSUMPTION | estimate | Fitted (`npm run calibrate`) so the level top speed at 18,900 ft, 3000 rpm, +6¼ lb and 2744 kg equals N3171's 354 mph (S4). Every other speed is an independent check. |
+| Oswald span efficiency (`aero.oswald`) | 0.8 | — | — | ASSUMPTION | estimate | No measured value found. Typical of a monoplane fighter (fuselage and gun ports lower it). |
+| Drag of fully lowered split flaps (`aero.flapCd`) | 0.07 | — | — | ASSUMPTION | estimate | Typical of large split flaps; only affects the approach and glide. |
+| Drag of the lowered undercarriage (`aero.gearCd`) | 0.02 | — | — | ASSUMPTION | estimate | Typical of a single-engine fighter. |
+| Extra drag with the radiator flap fully open (`aero.radiatorCd`) | 0.004 | — | — | ASSUMPTION | estimate | About 1-2% of total drag at cruise. |
+| Fraction of the wing in the propeller slipstream (`aero.slipstreamWing`) | 0.243 | — | — | S31, ASSUMPTION | estimate | Fitted (`npm run calibrate`) to the NACA power-on stall of the Spitfire VA (S31): 77 mph IAS, CL 1.63 at 36.9 in Hg and 2650 rpm. The same value is used for all three aircraft. The disc width over the span would suggest about 0.3. |
+| Static margin (`aero.staticMargin`) | 0.02 | fraction | — | S11, ASSUMPTION | estimate | S11 found the Spitfire's static longitudinal stability "neutral" (centre of gravity at 31.4% MAC); a small positive margin is used. |
+| Pitching moment coefficient at zero lift (`aero.cmZero`) | 0.01 | — | — | ASSUMPTION | estimate | Set so that the trim range covers cruise to approach. Tuned by flying (checkpoint 3). |
+| Pitch damping Cmq (`aero.cmq`) | -12 | per unit q c/2V | — | ASSUMPTION | estimate | Typical order for a single-engine fighter. No measured value found. |
+| Pitching moment coefficient at full up elevator (`aero.elevatorCm`) | 0.17 | — | — | S11, ASSUMPTION | estimate | S11: about 3° of up elevator took the aircraft from CL 0.3 to the stall. Sized so full up elevator gives several times that. |
+| Pitching moment range of the elevator trimmer (`aero.trimCm`) | 0.03 | — | — | ASSUMPTION | estimate | Enough to trim hands-off from the approach to top speed. |
+| Pitching moment from fully lowered flaps (`aero.flapCm`) | -0.02 | — | — | ASSUMPTION | estimate | A small nose-down change. S24 reports a larger temporary change on the Bf 110; not modelled yet. |
+| Roll moment coefficient at full aileron (`aero.aileronCl`) | 0.0315 | — | — | S13, ASSUMPTION | estimate | Fitted (`npm run calibrate`) to the NACA full-aileron helix angle pb/2V 0.085 (S13), with the roll damping of the half-wing model. |
+| Adverse yaw at full aileron (`aero.adverseYaw`) | -0.00315 | — | — | ASSUMPTION | estimate | One tenth of the aileron roll moment, opposite to the turn. Typical. |
+| Weathercock stability Cnβ (`aero.cnBeta`) | 0.07 | per rad | — | ASSUMPTION | estimate | Typical of a single-engine fighter. No measured value found. |
+| Yaw damping Cnr (`aero.cnr`) | -0.1 | per unit r b/2V | — | ASSUMPTION | estimate | Typical. No measured value found. |
+| Yaw moment coefficient at full rudder (`aero.rudderCn`) | 0.06 | — | — | ASSUMPTION | estimate | Typical. No measured value found. |
+| Side force from sideslip Cyβ (`aero.cyBeta`) | -0.6 | per rad | — | ASSUMPTION | estimate | Typical of a fuselage and fin. No measured value found. |
+| Slipstream swirl acting on the fin (`aero.swirl`) | 0.15 | fraction | — | ASSUMPTION | estimate | Yaw moment = swirl × thrust × propeller diameter, yawing against the propeller rotation; set so that a few degrees of rudder are needed at climbing power. |
+| Rigging against engine torque (`aero.rollRig`) | 0.003 | — | — | ASSUMPTION | estimate | About equal to the engine's torque reaction at cruise (about 4,000 N m at 3,000 m and 110 m/s), so the aircraft holds its wings level hands-off at cruise; at other powers the pilot holds some aileron. |
+| Fixed fin offset or rudder tab (`aero.yawRig`) | 0.0015 | — | — | ASSUMPTION | estimate | Cancels the slipstream swirl at cruise, as a fixed fin offset or ground-set tab would; at other powers the pilot uses rudder. |
+| Roll bias when stalled (wing drop) (`aero.stallBias`) | 0 | — | — | S31, ASSUMPTION | estimate | None: S31 describes a mild stall with no consistent wing drop. |
+| Elevator stick force at full deflection per unit dynamic pressure (`controls.pitchHinge`) | 0.03 | N/Pa | — | S11, ASSUMPTION | estimate | S11 measured a stick-force gradient of 5.0 lb/g. Tuned to match it in checkpoint 3. |
+| Aileron stick force at full deflection per unit dynamic pressure (`controls.rollHinge`) | 0.035 | N/Pa | — | S13 | medium | S13: 30 lb at 230 mph IAS (q = 6,473 Pa) gave pb/2V 0.050 of the full 0.085, so full deflection would need 30 lb ÷ 0.588. The model reproduces the 30 lb point. |
+| Rudder pedal force at full deflection per unit dynamic pressure (`controls.yawHinge`) | 0.06 | N/Pa | — | ASSUMPTION | estimate | No source. With the 150 lb pedal limit, full rudder is available to about 300 mph. |
+| Flap travel time (`controls.flapTime`) | 5 | s | — | ASSUMPTION | estimate | No source. The Spitfire's pneumatic flaps went straight to fully down. |
+| Undercarriage travel time (`controls.gearTime`) | 6 | s | — | ASSUMPTION | estimate | No source. Typical of the period. |
+| Reduction gear ratio (propeller turns per engine turn) (`propeller.gearRatio`) | 0.477 | — | 0.477:1 | S11 | medium | Merlin 45 (close variant); also given for the Merlin XX (S12). Not found for the Merlin III itself. |
+| Rotation (+1 clockwise seen from the cockpit) (`propeller.rotation`) | 1 | — | Rt. Hd. | S4 | medium | Right-hand tractor airscrew. |
+| Fine pitch stop (`propeller.betaMin`) | 23.33 | deg | 23° 20′ | S4 | medium | Rotol on N3171. The blade station is not stated; taken as the 0.75 R station of the NACA data (assumption). |
+| Coarse pitch stop (`propeller.betaMax`) | 58.33 | deg | 58° 20′ (estimated in S4) | S4 | medium | As above. |
+| Lowest governed engine speed (`propeller.rpmMin`) | 1800 | rpm | — | ASSUMPTION | estimate | Typical lower end of the constant-speed lever. |
+| Highest governed engine speed (`propeller.rpmMax`) | 3000 | rpm | 3000 rpm | S6 | medium | Combat limit. |
+| Rotating inertia at propeller speed (propeller and engine) (`propeller.inertia`) | 50 | kg m² | — | ASSUMPTION | estimate | Three blades of about 25 kg plus the engine's rotating parts referred to propeller speed. Sets how quickly rpm changes and the gyroscopic effect. |
+| Governor gain (blade-angle rate per fractional rpm error) (`propeller.governorGain`) | 3 | rad/s | — | ASSUMPTION | estimate | Settles the rpm in about a second. |
+| Maximum blade-angle rate (`propeller.pitchRate`) | 0.17 | rad/s | — | ASSUMPTION | estimate | About 10°/s; no source. |
 
 ## Rolls-Royce Merlin III (Hurricane I and Spitfire I)
 
@@ -240,8 +325,8 @@ Its airframe and wing are the Mk I's, so it is used for geometry, stall and hand
 | Layout | 12-cylinder 60° V, glycol-cooled, geared, single-speed supercharger | — | 12-cylinder V-type … glycol-cooled, geared and highly supercharged | S7 | medium | A.P. 1590B p. 16 (Merlin II; the Merlin III is "basically similar", p. 17). |
 | Carburation | Two carburettors, coolant-jacketed and oil-heated | — | two coolant-jacketed and oil heated carburettors | S7 | medium | The carburettor type is not named in S7. S22 reports that the carburettor cuts out under negative g and that the Luftwaffe exploited this. |
 | Reduction gear ratio | 0.477 | — | 0.477:1 | S11, S12 | medium | Given for the Merlin 45 (S11) and the Merlin XX (S12). Not found for the Merlin III itself. |
-| Normal maximum boost | 144.4 | kPa | +6¼ lb/sq in | S4, S6 | high | Absolute pressure. |
-| Emergency boost (100-octane fuel) | 184.1 | kPa | +12 lb/sq in | S6, S7, S8 | high | Absolute pressure. Obtained by pulling the boost-control cut-out. |
+| Normal maximum boost (`ratings.normal.map`) | 144.4 | kPa | +6¼ lb/sq in | S4, S6 | high | Absolute pressure. |
+| Emergency boost (100-octane fuel) (`ratings.emergency.map`) | 184.1 | kPa | +12 lb/sq in | S6, S7, S8 | high | Absolute pressure. Obtained by pulling the boost-control cut-out. |
 | Altitude to which +12 lb/sq in can be held | 3048 | m | about 10,000 ft | S7, S8 | high | Above it, boost falls to normal at the operational height. |
 | Time limit at +12 lb/sq in | short periods (emergency) | — | for short periods under emergency conditions | S6, S7 | high | No minutes given. Dowding's 1 Aug 1940 letter on Merlin handling (on the archive site) is not yet read. The product owner chose no fixed limit in the game (D14). |
 | Fuel consumption increase at +12 lb/sq in | 40 | % | about 40 per cent | S7 | medium | |
@@ -252,6 +337,20 @@ Its airframe and wing are the Mk I's, so it is used for geometry, stall and hand
 | Power at sea level, +12 lb/sq in, 3,000 rpm | 884 | kW | about 1,185 bhp | S9 | medium | Read from chart (±10 bhp). |
 | Peak power, +12 lb/sq in, 3,000 rpm | 977 | kW | about 1,310 bhp | S9 | medium | Read from chart (±10 bhp), at about 9,000 ft in level flight. The height is uncertain (chart scale). |
 | Peak power, +6¼ lb/sq in, 3,000 rpm | 768 | kW | 1,030 bhp at 16,250 ft | S1, S9 | high | S1 and the chart agree. |
+| Engine speed of the power curves (`refSpeed`) | 3000 | rpm | 3000 rpm | S9 | medium | The chart is drawn at 3000 rpm. |
+| Power at +6¼ lb against altitude, constant-boost line (altitude m : power) (`ratings.normal.cb`) | 0:653.233, 4846:766.579 | kW | 876 hp at sea level, 1028 hp at about 15,900 ft | S9 | medium | Read from the chart (±10 hp). Extended in a straight line above the full-throttle height for the boost interpolation. Treated as without ram: the in-flight full-throttle heights (S1, S4) are higher, which the ram model supplies. |
+| Power at +6¼ lb, full-throttle line (altitude m : power) (`ratings.normal.ft`) | 0:653.233, 4846:766.579, 6096:662.181, 7370:554.801 | kW | falls to about 744 hp at 24,200 ft | S9 | medium | Above the last point the manifold pressure falls in proportion to the outside pressure (fixed supercharger ratio; the chart's own last segment agrees within 4%). |
+| Power at +12 lb against altitude, constant-boost line (altitude m : power) (`ratings.emergency.cb`) | 0:885.146, 2659:977.613 | kW | 1187 hp at sea level, 1311 hp at about 8,700 ft | S9 | medium | Read from the chart (±10 hp). |
+| Power at +12 lb, full-throttle line (altitude m : power) (`ratings.emergency.ft`) | 0:885.146, 2659:977.613, 4846:766.579, 6096:662.181, 7370:554.801 | kW | joins the +6¼ lb line at its full-throttle height | S9 | medium | As above. |
+| Closed-throttle manifold pressure (`idleMap`) | 39 | kPa | about −9 lb/sq in | ASSUMPTION | estimate | Typical; gives about 50 hp at 3000 rpm. |
+| Change of power with engine speed at constant boost (exponent) (`rpmPowerExponent`) | 0 | — | 17 bhp less at 3000 than at 2800 rpm | S4 | medium | Taken as zero: S4 found power almost independent of rpm at +6¼ lb. |
+| Change of supercharger delivery with engine speed (exponent) (`mapSpeedExponent`) | 1 | — | full-throttle height 2,000 ft lower at 2800 rpm | S4 | medium | An exponent of 1 reproduces the 2,000 ft. |
+| Load factor below which the carburettor cuts out (`negativeG.threshold`) | 0 | g | negative g | S22, ASSUMPTION | estimate | S22 describes the cut on a sudden push forward. The exact threshold is not sourced. |
+| Time under negative g before the cut (`negativeG.delay`) | 0.15 | s | — | ASSUMPTION | estimate | No source; a brief push should not cut the engine. |
+| Time for the power to fall away (`negativeG.cutTime`) | 0.2 | s | — | ASSUMPTION | estimate | No source; the float chamber empties quickly. |
+| Delay after positive g returns (flooding) (`negativeG.recoverDelay`) | 1 | s | — | ASSUMPTION | estimate | No source; the engine floods briefly before it picks up. |
+| Time for the power to return (`negativeG.recoverTime`) | 1 | s | — | ASSUMPTION | estimate | No source; power returns over about a second. |
+| Combat engine-speed limit (`maxSpeed`) | 3000 | rpm | 3000 rpm | S6 | medium | Not yet used (warnings come in Phase 8). |
 
 ## Messerschmitt Bf 109 E-4 (DB 601A)
 
@@ -260,15 +359,15 @@ in armament and armour (details and weights are open gaps). This is flagged as a
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
-| Wingspan | 9.90 | m | 9,90 m | S16, S17 | high | |
-| Wing area | 16.40 | m² | 16,4 m² | S16, S17 | high | |
-| Length | 8.76 | m | 8,76 m (S17); 8,8 m (S16) | S16, S17 | high | Agree within S16's rounding. |
+| Wingspan (`geometry.span`) | 9.90 | m | 9,90 m | S16, S17 | high | |
+| Wing area (`geometry.wingArea`) | 16.40 | m² | 16,4 m² | S16, S17 | high | |
+| Length (`geometry.length`) | 8.76 | m | 8,76 m (S17); 8,8 m (S16) | S16, S17 | high | Agree within S16's rounding. |
 | Height | 2.45 | m | 2,45 m (S17); 2,6 m (S16) | S16, S17 | medium | Sources disagree, possibly a different attitude. |
 | Aerofoil, root | NACA 2R1 14.2 | — | NACA 2R1 14.2 | S14 | medium | |
 | Aerofoil, tip | NACA 2R1 11 | — | NACA 2R1 11 | S14 | medium | |
 | Empty weight (E-3) | 1865 | kg | Leergewicht 1865 kg | S16 | medium | |
 | Equipped weight (E-3) | 2053 | kg | Rüstgewicht 2053 kg | S16 | medium | Empty plus 188 kg of additional equipment. |
-| Flying weight, full (E-3, no armour plate) | 2608 | kg | Fluggewicht voll 2608 kg | S16 | medium | S17 gives 2,540 kg for an earlier specification. |
+| Flying weight, full (E-3, no armour plate) (`mass.flying`) | 2608 | kg | Fluggewicht voll 2608 kg | S16 | medium | S17 gives 2,540 kg for an earlier specification. |
 | Fuel | 304 | kg | Kraftstoff 400 Liter, 0–304 kg | S16, S17 | high | 400 L. S17: 400 L = 303 kg. |
 | Oil | 27 | kg | Schmierstoff 29,5 Liter, 9–27 kg | S16 | medium | S17: 30 L = 27 kg. |
 | Pilot with parachute | 100 | kg | Führer + Fallschirm + Sonderbekleidung 70–100 kg | S16 | medium | |
@@ -277,7 +376,7 @@ in armament and armour (details and weights are open gaps). This is flagged as a
 | Engine | Daimler-Benz DB 601A | — | DB 601 A | S16 | medium | Inverted V-12, direct fuel injection, 33.93 L, 87-octane fuel (S19). |
 | Reduction gear ratio | 1.55 | — | 1 : 1,55 | S16, S19 | high | Engine turns 1.55 times per airscrew turn. |
 | Airscrew | VDM three-blade, 3.1 m diameter | — | Luftschraube 3flügelig, 3,1 Ø | S16 | medium | VDM airscrew; automatic pitch control could be fitted (S19). |
-| Airscrew diameter | 3.1 | m | 3,1 m | S16 | medium | |
+| Airscrew diameter (`propeller.diameter`) | 3.1 | m | 3,1 m | S16 | medium | |
 | Airscrew rotation | left, seen from the power-output side (DIN 9001) | — | left (seen from the power transition side DIN 9001) | S19 | medium | The direction seen from the cockpit must be worked out in Phase 1. S20 reports a slight swing right on take-off, then left once airborne. |
 | Maximum speed at sea level (E-1) | 127.8 | m/s | 460 km/h | S16 | medium | S17's specification gives 500 km/h (±5%). This is a large disagreement: see the deviation note below. |
 | Maximum speed at 1 km | 133.3 | m/s | 480 km/h | S16 | medium | |
@@ -315,6 +414,54 @@ in armament and armour (details and weights are open gaps). This is flagged as a
 | Engine 30-minute rating (erhöhte Dauerleistung) | 2300 rpm, 1.20–1.23 ata | — | 2300 U/min, 1,20 ata (S15); 1,23 ata (S18) | S15, S18 | medium | The two sources differ by 0.03 ata. |
 | Engine continuous rating (Dauerleistung) | 2200 rpm, 1.15 ata | — | 2200 U/min, 1,15 ata | S15, S18 | high | |
 | Armament (E-3) | 2 × MG 17 (2,000 rounds total) and 2 × MG FF (120 rounds total) | — | Munition für R.-MG 17 (2000 Schuß); Munition für Fl.-FF (120 Schuß) | S16 | medium | E-4 cannon version not confirmed (see gaps). Ammunition weights 59 kg and 40 kg (S16). |
+| Roll moment of inertia (`mass.ixx`) | 3994 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.25 (roll, of b/2), 0.38 (pitch, of L/2) and 0.39 (yaw, of (b+L)/4) are typical of single-engine propeller aircraft (method after Roskam; the ratios are not checked against the book). |
+| Pitch moment of inertia (`mass.iyy`) | 7225 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.25 (roll, of b/2), 0.38 (pitch, of L/2) and 0.39 (yaw, of (b+L)/4) are typical of single-engine propeller aircraft (method after Roskam; the ratios are not checked against the book). |
+| Yaw moment of inertia (`mass.izz`) | 8627 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.25 (roll, of b/2), 0.38 (pitch, of L/2) and 0.39 (yaw, of (b+L)/4) are typical of single-engine propeller aircraft (method after Roskam; the ratios are not checked against the book). |
+| Zero-lift angle of attack, body axis (`aero.alphaZeroLift`) | -2.5 | deg | — | ASSUMPTION | estimate | NACA 2R1 sections have zero lift near −1.5°; the wing incidence was not found (about 1° assumed). |
+| Mean aerodynamic chord (`geometry.mac`) | 1.71 | m | — | ASSUMPTION | estimate | Not found. Wing area over span is 1.66 m; a little more for the taper. |
+| Maximum lift coefficient, power off, flaps up, slats open (`aero.clMax`) | 1.47 | — | — | S20, ASSUMPTION | estimate | From the 150 km/h ASI stall (S20) at 2608 kg; the weight of the tested aircraft is not stated. The S20 validation check is therefore not independent. |
+| Maximum lift coefficient, flaps and undercarriage down (`aero.clMaxFlaps`) | 2.06 | — | — | S17, ASSUMPTION | estimate | From the 125 km/h landing speed at 2540 kg (S17), taken as the stall speed. S20's 100 km/h would give an impossible 3.3 (probably airspeed error), so it is not used. |
+| Wing dihedral (`aero.dihedral`) | 5 | deg | — | ASSUMPTION | estimate | Not found; typical of the period's low-wing fighters. |
+| Zero-lift drag coefficient (`aero.cd0`) | 0.0273 | — | — | ASSUMPTION | estimate | Fitted (`npm run calibrate`) to 460 km/h at sea level, 1.30 ata and 2400 rpm at 2608 kg (S16), as the product owner decided (D14). High compared with the RAF fighters: the manufacturer's 500 km/h (S17) would need about 0.021. |
+| Oswald span efficiency (`aero.oswald`) | 0.8 | — | — | ASSUMPTION | estimate | No measured value found. Typical of a monoplane fighter (fuselage and gun ports lower it). |
+| Drag of fully lowered split flaps (`aero.flapCd`) | 0.07 | — | — | ASSUMPTION | estimate | Typical of large split flaps; only affects the approach and glide. |
+| Drag of the lowered undercarriage (`aero.gearCd`) | 0.02 | — | — | ASSUMPTION | estimate | Typical of a single-engine fighter. |
+| Extra drag with the radiator flap fully open (`aero.radiatorCd`) | 0.004 | — | — | ASSUMPTION | estimate | About 1-2% of total drag at cruise. |
+| Fraction of the wing in the propeller slipstream (`aero.slipstreamWing`) | 0.243 | — | — | S31, ASSUMPTION | estimate | Fitted (`npm run calibrate`) to the NACA power-on stall of the Spitfire VA (S31): 77 mph IAS, CL 1.63 at 36.9 in Hg and 2650 rpm. The same value is used for all three aircraft. The disc width over the span would suggest about 0.3. |
+| Static margin (`aero.staticMargin`) | 0.05 | fraction | — | ASSUMPTION | estimate | No source; a typical stable fighter. |
+| Pitching moment coefficient at zero lift (`aero.cmZero`) | 0.02 | — | — | ASSUMPTION | estimate | Set so that the trim range covers cruise to approach. Tuned by flying (checkpoint 3). |
+| Pitch damping Cmq (`aero.cmq`) | -12 | per unit q c/2V | — | ASSUMPTION | estimate | Typical order for a single-engine fighter. No measured value found. |
+| Pitching moment coefficient at full up elevator (`aero.elevatorCm`) | 0.2 | — | — | ASSUMPTION | estimate | No source; tuned by flying. |
+| Pitching moment range of the elevator trimmer (`aero.trimCm`) | 0.03 | — | — | ASSUMPTION | estimate | Enough to trim hands-off from the approach to top speed. |
+| Pitching moment from fully lowered flaps (`aero.flapCm`) | -0.02 | — | — | ASSUMPTION | estimate | A small nose-down change. S24 reports a larger temporary change on the Bf 110; not modelled yet. |
+| Roll moment coefficient at full aileron (`aero.aileronCl`) | 0.0314 | — | — | ASSUMPTION | estimate | No measured roll data; the mean of the two RAF fighters' fitted values. RAE Morgan report (not yet read) may give a figure. |
+| Adverse yaw at full aileron (`aero.adverseYaw`) | -0.00314 | — | — | ASSUMPTION | estimate | One tenth of the aileron roll moment, opposite to the turn. Typical. |
+| Weathercock stability Cnβ (`aero.cnBeta`) | 0.07 | per rad | — | ASSUMPTION | estimate | Typical of a single-engine fighter. No measured value found. |
+| Yaw damping Cnr (`aero.cnr`) | -0.1 | per unit r b/2V | — | ASSUMPTION | estimate | Typical. No measured value found. |
+| Yaw moment coefficient at full rudder (`aero.rudderCn`) | 0.06 | — | — | ASSUMPTION | estimate | Typical. No measured value found. |
+| Side force from sideslip Cyβ (`aero.cyBeta`) | -0.6 | per rad | — | ASSUMPTION | estimate | Typical of a fuselage and fin. No measured value found. |
+| Slipstream swirl acting on the fin (`aero.swirl`) | 0.15 | fraction | — | ASSUMPTION | estimate | Yaw moment = swirl × thrust × propeller diameter, yawing against the propeller rotation; set so that a few degrees of rudder are needed at climbing power. |
+| Rigging against engine torque (`aero.rollRig`) | -0.003 | — | — | ASSUMPTION | estimate | Negative: the propeller turns the other way. About equal to the torque reaction at cruise. |
+| Fixed fin offset or rudder tab (`aero.yawRig`) | -0.0015 | — | — | ASSUMPTION | estimate | Cancels the slipstream swirl at cruise, as a fixed fin offset or ground-set tab would; at other powers the pilot uses rudder. |
+| Roll bias when stalled (wing drop) (`aero.stallBias`) | -0.02 | — | — | S20, ASSUMPTION | estimate | S20: the left wing tends to drop at the stall. Size chosen to give a clear but recoverable drop. |
+| Elevator stick force at full deflection per unit dynamic pressure (`controls.pitchHinge`) | 0.0755 | N/Pa | — | S20, S21, ASSUMPTION | estimate | S20, S21: controls heavy above about 250 mph; the elevator almost immovable in a dive at 400 mph. Set so only about 15% of elevator travel is available at 400 mph with a 50 lb pull. |
+| Aileron stick force at full deflection per unit dynamic pressure (`controls.rollHinge`) | 0.0272 | N/Pa | — | S20, S21, ASSUMPTION | estimate | Set so that full aileron is available to about 200 mph with 30 lb, and about a quarter at 400 mph. |
+| Rudder pedal force at full deflection per unit dynamic pressure (`controls.yawHinge`) | 0.06 | N/Pa | — | ASSUMPTION | estimate | No source. With the 150 lb pedal limit, full rudder is available to about 300 mph. |
+| Flap travel time (`controls.flapTime`) | 8 | s | — | ASSUMPTION | estimate | No source. Hand-operated flaps, assumed slower than the RAF fighters'. |
+| Undercarriage travel time (`controls.gearTime`) | 8 | s | — | ASSUMPTION | estimate | No source. Typical of the period. |
+| Reduction gear ratio (propeller turns per engine turn) (`propeller.gearRatio`) | 0.6452 | — | 1 : 1.55 | S16, S19 | high | Engine 1.55 turns per propeller turn. |
+| Rotation (+1 clockwise seen from the cockpit) (`propeller.rotation`) | -1 | — | left (seen from the power-output side, DIN 9001) | S19, S20, ASSUMPTION | estimate | Anticlockwise from the cockpit assumed: consistent with S20's slight swing to the right on take-off. The DIN viewing convention needs checking. |
+| Fine pitch stop (`propeller.betaMin`) | 20 | deg | — | ASSUMPTION | estimate | VDM pitch range not found; chosen to cover the speed range like the Rotol's 35°. |
+| Coarse pitch stop (`propeller.betaMax`) | 55 | deg | — | ASSUMPTION | estimate | As for the fine stop. |
+| Lowest engine speed the assist will hold (`propeller.rpmMin`) | 1500 | rpm | — | ASSUMPTION | estimate | Only used by the engine-management assist. |
+| Engine speed held by the engine-management assist (`propeller.rpmMax`) | 2400 | rpm | 2400 rpm | S15, S18 | high | 5-minute rating. |
+| Rotating inertia at propeller speed (propeller and engine) (`propeller.inertia`) | 50 | kg m² | — | ASSUMPTION | estimate | Three blades of about 25 kg plus the engine's rotating parts referred to propeller speed. Sets how quickly rpm changes and the gyroscopic effect. |
+| Governor gain (blade-angle rate per fractional rpm error) (`propeller.governorGain`) | 3 | rad/s | — | ASSUMPTION | estimate | Settles the rpm in about a second. Used only by the engine-management assist. |
+| Maximum blade-angle rate (`propeller.pitchRate`) | 0.07 | rad/s | — | ASSUMPTION | estimate | The VDM pitch was changed electrically with a thumb switch; assumed slow (about 4°/s), no source. |
+| Slat opening starts (local angle from zero lift) (`slats.openAlpha`) | 11.5 | deg | — | ASSUMPTION | estimate | No source. Set so the slats open well before the closed-slat stall, as in S21's hard turns. |
+| Slat fully open (local angle from zero lift) (`slats.fullAlpha`) | 13.75 | deg | — | ASSUMPTION | estimate | No source; about 2° after opening starts. |
+| Maximum lift coefficient with the slats closed (`slats.clMaxClosed`) | 1.15 | — | — | ASSUMPTION | estimate | No source; slats assumed to add about 0.3. |
+| Slat travel rate (`slats.rate`) | 4 | 1/s | — | ASSUMPTION | estimate | No source. Fast but not instant; uneven opening gives the flick S21 describes. |
 
 **Deviation note, Bf 109 E level speed.**
 - The handbook-family data sheet (S16) gives 460 km/h at sea level. The manufacturer's specification (S17) gives
@@ -345,6 +492,15 @@ in armament and armour (details and weights are open gaps). This is flagged as a
 | Power tolerance | 2.5 | % | ± 2,5 % | S18 | medium | rpm ± 2%. |
 | Peak 5-minute power, about 2.1 km | 780 | kW | about 1,060 PS (read from Bild 6) | S18 | medium | Read from chart (±10 PS). |
 | Fuel flow, 5-minute power at ground level | 300 | L/h | 300 l/h | S18 | medium | Take-off 375 l/h; continuous 250 l/h. |
+| Engine speed of the power curves (`refSpeed`) | 2400 | rpm | 2400 U/min | S18 | medium | 5-minute rating. |
+| 5-minute rating manifold pressure (`ratings.normal.map`) | 1.3 | ata | 1,30 ata | S15, S18 | high | Absolute. |
+| 5-minute power (1.30 ata, 2400 rpm) against altitude (altitude m : power) (`ratings.normal.cb`) | 0:728.144, 500:736.031, 1000:752.176, 1500:766.119, 2000:781.568, 2100:783.918, 2500:773.991, 3000:763.426, 3500:755.821, 4000:751.185, 4500:750.209 | kW | 990 PS at 0 km … 1,020 PS at 4.5 km | S18 | medium | Bild 6 read by pixel measurement (its altitude scale is not linear), scaled to the manual's table values at 0 and 4.5 km (the chart reads about 1% low). Without ram. |
+| Full-throttle power at 2400 rpm against altitude (altitude m : power) (`ratings.normal.ft`) | 0:728.144, 500:736.031, 1000:752.176, 1500:766.119, 2000:781.568, 2100:783.918, 2500:773.991, 3000:763.426, 3500:755.821, 4000:751.185, 4500:750.209, 5000:707.014, 5500:666.741, 6000:626.468, 7000:553.38, 8000:483.276, 9000:423.612, 10,000:369.169, 11,000:316.963 | kW | falls to about 425 PS at 11 km | S18 | medium | As above; above 5 km the shared full-throttle line at 2400 rpm. |
+| Manifold pressure at which net power would be zero (`zeroPowerMap`) | 0.3 | ata | — | S18, ASSUMPTION | estimate | Fitted so the 30-minute (2300 rpm, 1.23 ata, 910 PS) and continuous (2200 rpm, 1.15 ata, 810 PS) ratings come out within 1%. |
+| Closed-throttle manifold pressure (`idleMap`) | 0.35 | ata | — | ASSUMPTION | estimate | Gives about 50 PS at 2400 rpm, like the Merlin's idle. |
+| Change of power with engine speed at constant pressure (exponent) (`rpmPowerExponent`) | 0.5 | — | — | S18, ASSUMPTION | estimate | Fitted with the zero-power pressure above. |
+| Change of supercharger delivery with engine speed (exponent) (`mapSpeedExponent`) | 1 | — | — | S18, ASSUMPTION | estimate | Reproduces the gap between the 2200 and 2400 rpm full-throttle lines at 7 km within 1%. |
+| 5-minute engine-speed limit (`maxSpeed`) | 2400 | rpm | 2400 U/min | S15, S18 | high | Not yet used (warnings come in Phase 8). |
 
 ## Messerschmitt Bf 110 C-4 (2 × DB 601A)
 
@@ -429,6 +585,45 @@ engines, so they are recorded only as an upper reference. H-3 performance is sti
 | Time for a 360° turn (H-11) | 48.3 | s | 48,3 сек при скорости 281 км/час | S29 | medium | At 281 km/h. |
 | Fuel and oil tanks self-sealing | yes | — | similar construction to those used on the Heinkel 111H | S25 | medium | |
 
+## Common flight-model parameters
+
+Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or estimates.
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Lift slope of a wing section (`sectionLiftSlope`) | 5.655 | per rad | 0.9 × 2π | ASSUMPTION | estimate | Thin-aerofoil theory gives 2π per radian; real sections reach about 90%. The whole-wing slope follows from Helmbold's equation with each aircraft's aspect ratio. |
+| Sharpness of the stall (`stallWidth`) | 0.026 | rad | — | ASSUMPTION | estimate | Lift falls away over about 1.5°. A tuning choice. |
+| Drag coefficient of a fully stalled wing (`flatPlateCd`) | 1.3 | — | — | ASSUMPTION | estimate | A flat plate of aspect ratio about 6 across the flow is about 1.2-1.3 (an infinitely long strip about 2.0). |
+| Lift centroid of a wing half (`halfWingArm`) | 0.424 | fraction | 4/(3π) | ASSUMPTION | estimate | Theory: the centroid of an elliptical lift distribution. Gives roll damping and dihedral effect of the usual size. |
+| Ram recovery at the supercharger intake (`ramRecovery`) | 0.5 | fraction | — | S1, S4, S9, ASSUMPTION | estimate | Comparing the chart's full-throttle height with those in flight implies 0.62 (Spitfire, S4) and 0.37 (Hurricane, S1); the mean is used for all engines. |
+| Share of the slipstream's extra dynamic pressure at the tail (`tailSlipstream`) | 0.5 | fraction | — | ASSUMPTION | estimate | No source; the tail sits partly in the slipstream. |
+| Pilot's maximum pull on the stick (`pilotMaxForce.pitch`) | 222 | N | 50 lb | ASSUMPTION | estimate | No source; a firm one-handed pull. |
+| Pilot's maximum sideways force on the stick (`pilotMaxForce.roll`) | 133 | N | 30 lb | S13 | medium | NACA: 30 lb is a reasonable upper limit for manoeuvring at high speed. |
+| Pilot's maximum pedal force (`pilotMaxForce.yaw`) | 667 | N | 150 lb | ASSUMPTION | estimate | No source; a strong push with one leg. |
+
+## Propeller data: NACA Report 640
+
+All three fighters use the full-scale coefficients of NACA Report 640's 3-blade Clark Y propeller 5868-9 (`src/aircraft/naca640.js`), scaled to each propeller's diameter. The Rotol and VDM blades were of different shape and width, so this is an approximation: it is the best measured full-scale data found for 3-blade propellers of the period. Blade angles beyond the measured 15-45° reuse the nearest curve, stretched in J so that its zero-thrust point moves on at the measured rate. The power coefficient is computed as CT J / efficiency, so thrust, power and efficiency stay consistent.
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Thrust coefficient CT at 15° (J : CT) (`ct.b15`) | 0:0.141, 0.1:0.131, 0.2:0.1178, 0.3:0.1014, 0.4:0.0837, 0.5:0.065, 0.6:0.0461, 0.7:0.0257, 0.8:0.0035, 0.817:0 | — | Fig. 9 | S30 | medium | Traced from Fig. 9 by pixel measurement; J = 0 from the dashed start of the curve; the last point is where thrust reaches zero. |
+| Thrust coefficient CT at 20° (J : CT) (`ct.b20`) | 0:0.157, 0.1:0.1528, 0.2:0.1485, 0.3:0.1411, 0.4:0.1272, 0.5:0.1113, 0.6:0.0929, 0.7:0.0729, 0.8:0.0523, 0.9:0.0313, 1:0.0084, 1.055:0 | — | Fig. 9 | S30 | medium | Traced from Fig. 9 by pixel measurement; J = 0 from the dashed start of the curve; the last point is where thrust reaches zero. |
+| Thrust coefficient CT at 25° (J : CT) (`ct.b25`) | 0:0.16, 0.1:0.1577, 0.2:0.1553, 0.3:0.153, 0.4:0.1506, 0.5:0.1469, 0.6:0.1355, 0.7:0.119, 0.8:0.1014, 0.9:0.0814, 1:0.0611, 1.1:0.0387, 1.2:0.0178, 1.3:0 | — | Fig. 9 | S30 | medium | Traced from Fig. 9 by pixel measurement; J = 0 from the dashed start of the curve; the last point is where thrust reaches zero. |
+| Thrust coefficient CT at 30° (J : CT) (`ct.b30`) | 0:0.168, 0.1:0.1675, 0.2:0.167, 0.3:0.1665, 0.4:0.1649, 0.5:0.1586, 0.6:0.1534, 0.7:0.1503, 0.8:0.1434, 0.9:0.129, 1:0.1122, 1.1:0.0922, 1.2:0.0716, 1.3:0.051, 1.4:0.029, 1.5:0.009, 1.56:0 | — | Fig. 9 | S30 | medium | Traced from Fig. 9 by pixel measurement; J = 0 from the dashed start of the curve; the last point is where thrust reaches zero. |
+| Thrust coefficient CT at 35° (J : CT) (`ct.b35`) | 0:0.175, 0.1:0.1746, 0.2:0.1742, 0.3:0.1738, 0.4:0.1724, 0.5:0.1661, 0.6:0.1597, 0.7:0.157, 0.8:0.1552, 0.9:0.1521, 1:0.1466, 1.1:0.134, 1.2:0.118, 1.3:0.1008, 1.4:0.0818, 1.5:0.0637, 1.6:0.045, 1.7:0.0262, 1.8:0.0055, 1.835:0 | — | Fig. 9 | S30 | medium | Traced from Fig. 9 by pixel measurement; J = 0 from the dashed start of the curve; the last point is where thrust reaches zero. |
+| Thrust coefficient CT at 40° (J : CT) (`ct.b40`) | 0:0.18, 0.1:0.1794, 0.2:0.1789, 0.3:0.1783, 0.4:0.1756, 0.5:0.1709, 0.6:0.1668, 0.7:0.1631, 0.8:0.1581, 0.9:0.1515, 1:0.1466, 1.1:0.1473, 1.2:0.1461, 1.3:0.1409, 1.4:0.1291, 1.5:0.1145, 1.6:0.0979, 1.7:0.0813, 1.8:0.0642, 1.9:0.0475, 2:0.0313, 2.1:0.0145, 2.19:0 | — | Fig. 9 | S30 | medium | Traced from Fig. 9 by pixel measurement; J = 0 from the dashed start of the curve; the last point is where thrust reaches zero. |
+| Thrust coefficient CT at 45° (J : CT) (`ct.b45`) | 0:0.181, 0.1:0.1819, 0.2:0.1828, 0.3:0.1837, 0.4:0.186, 0.5:0.1886, 0.6:0.1883, 0.7:0.1846, 0.8:0.1789, 0.9:0.1728, 1:0.1675, 1.1:0.1628, 1.2:0.1596, 1.3:0.1581, 1.4:0.1579, 1.5:0.1578, 1.6:0.153, 1.7:0.1424, 1.8:0.1288, 1.9:0.1144, 2:0.0992, 2.1:0.085, 2.2:0.071, 2.3:0.0554, 2.4:0.0388, 2.5:0.0228, 2.6:0.0061, 2.635:0 | — | Fig. 9 | S30 | medium | Traced from Fig. 9 by pixel measurement; J = 0 from the dashed start of the curve; the last point is where thrust reaches zero. |
+| Efficiency at 15° (J : efficiency) (`eta.b15`) | 0.3:0.53, 0.45:0.682, 0.55:0.743, 0.65:0.785, 0.7:0.775, 0.75:0.72, 0.785:0.4, 0.817:0 | — | Fig. 12 | S30 | medium | Read by eye from Fig. 12, about ±0.02. Peaks agree with the 3-blade envelope of Fig. 39 (0.86 at J 1.2) within 0.01. |
+| Efficiency at 20° (J : efficiency) (`eta.b20`) | 0.3:0.45, 0.45:0.615, 0.55:0.69, 0.65:0.765, 0.75:0.811, 0.85:0.829, 0.91:0.837, 0.975:0.8, 1.016:0.6, 1.037:0.4, 1.055:0 | — | Fig. 12 | S30 | medium | Read by eye from Fig. 12, about ±0.02. Peaks agree with the 3-blade envelope of Fig. 39 (0.86 at J 1.2) within 0.01. |
+| Efficiency at 25° (J : efficiency) (`eta.b25`) | 0.3:0.37, 0.45:0.521, 0.55:0.59, 0.65:0.68, 0.75:0.75, 0.85:0.793, 0.95:0.84, 1.1:0.853, 1.18:0.8, 1.245:0.6, 1.268:0.4, 1.3:0 | — | Fig. 12 | S30 | medium | Read by eye from Fig. 12, about ±0.02. Peaks agree with the 3-blade envelope of Fig. 39 (0.86 at J 1.2) within 0.01. |
+| Efficiency at 30° (J : efficiency) (`eta.b30`) | 0.3:0.27, 0.45:0.393, 0.55:0.491, 0.65:0.591, 0.75:0.667, 0.85:0.735, 0.95:0.785, 1.05:0.813, 1.15:0.838, 1.33:0.855, 1.487:0.8, 1.527:0.6, 1.54:0.4, 1.56:0 | — | Fig. 12 | S30 | medium | Read by eye from Fig. 12, about ±0.02. Peaks agree with the 3-blade envelope of Fig. 39 (0.86 at J 1.2) within 0.01. |
+| Efficiency at 35° (J : efficiency) (`eta.b35`) | 0.3:0.21, 0.45:0.31, 0.55:0.386, 0.65:0.458, 0.75:0.526, 0.85:0.608, 0.95:0.683, 1.05:0.743, 1.15:0.791, 1.35:0.835, 1.55:0.853, 1.7:0.8, 1.77:0.6, 1.8:0.4, 1.835:0 | — | Fig. 12 | S30 | medium | Read by eye from Fig. 12, about ±0.02. Peaks agree with the 3-blade envelope of Fig. 39 (0.86 at J 1.2) within 0.01. |
+| Efficiency at 40° (J : efficiency) (`eta.b40`) | 0.3:0.17, 0.45:0.257, 0.55:0.316, 0.65:0.376, 0.75:0.434, 0.85:0.493, 0.95:0.55, 1.05:0.609, 1.15:0.673, 1.25:0.728, 1.45:0.8, 1.65:0.834, 1.85:0.85, 2.01:0.8, 2.12:0.6, 2.16:0.4, 2.19:0 | — | Fig. 12 | S30 | medium | Read by eye from Fig. 12, about ±0.02. Peaks agree with the 3-blade envelope of Fig. 39 (0.86 at J 1.2) within 0.01. |
+| Efficiency at 45° (J : efficiency) (`eta.b45`) | 0.3:0.14, 0.45:0.214, 0.55:0.266, 0.65:0.316, 0.75:0.364, 0.85:0.413, 0.95:0.459, 1.05:0.506, 1.15:0.55, 1.25:0.593, 1.45:0.69, 1.65:0.76, 1.85:0.8, 2.12:0.83, 2.4:0.8, 2.5:0.6, 2.555:0.4, 2.635:0 | — | Fig. 12 | S30 | medium | Read by eye from Fig. 12, about ±0.02. Peaks agree with the 3-blade envelope of Fig. 39 (0.86 at J 1.2) within 0.01. |
+| Peak efficiency of the 3-blade envelope (`etaMax`) | 0.86 | — | about 0.86 at J 1.2 | S30 | medium | Fig. 39, read by eye. Used as a ceiling so that extrapolated coefficients never beat the measured propeller. |
+| Static power coefficient at J = 0 (blade angle in degrees : CP) (`cpStatic`) | 15:0.06, 20:0.089, 25:0.148, 30:0.21, 35:0.267, 40:0.313, 45:0.397 | — | Fig. 11 | S30 | medium | Read from the dashed starts of the curves, about ±0.005. Only take-off depends on it. |
+
 ## Guns (Phase 5 completes this section)
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
@@ -449,7 +644,10 @@ engines, so they are recorded only as an upper reference. H-3 performance is sti
 |---|---|---|
 | Any test of a Spitfire I or Hurricane I at +12 lb/sq in boost (speeds and climb) | Phase 1 validation of the chosen mid-August 1940 configuration | Rolls-Royce or RAE reports of 1940; A&AEE reports on later Hurricane I serials; H.C.T. Dowding, "Handling of Merlin in Hurricane, Spitfire and Defiant Aircraft", 1 Aug 1940 (on the archive site, not yet read) |
 | Time limit for +12 lb/sq in in mid-1940 | Historical note only: the game has no fixed limit (D14) | Pilot's Notes A.P. 1564A (Hurricane I) and A.P. 1565A (Spitfire I) full text; Dowding letter above |
-| Hurricane I Rotol airscrew diameter and pitch range | Propeller model | A&AEE report on a Rotol Hurricane I; Rotol type records |
+| Hurricane I Rotol airscrew diameter and pitch range (the Mk II's 11 ft 4 in and the Spitfire's pitch range are used) | Propeller model | A&AEE report on a Rotol Hurricane I; Rotol type records |
+| Blade width (solidity) and blade sections of the Rotol and VDM airscrews | Propeller efficiency at high blade angles: likely cause of the Spitfire's slow climb at altitude (FLIGHT_VALIDATION.md) | Rotol and VDM type records; A&AEE airscrew reports |
+| Measured stability and control data (static margins, damping, rudder and elevator power) for any of the three | Handling (all estimates now) | NACA reports S11 and S12 contain stick-fixed stability measurements not yet used; RAE Morgan report on the Bf 109 |
+| Bf 109 VDM pitch range, pitch-change rate, rotation convention (DIN 9001) | Propeller model | VDM or Bf 109 handbook |
 | Hurricane I with Rotol airscrew: level speeds and climb (S1/S2 do not state the airscrew) | Validation | A&AEE reports (the archive lists L1547 and L2026 with two-pitch airscrews only) |
 | Merlin III reduction gear ratio, supercharger gear ratio, bore and stroke, dry weight | Engine model | A.P. 1590B full text; RAF Museum or Science Museum engine records |
 | A Merlin III power curve with a stated source (S9's origin is not named) | Engine model | Rolls-Royce Heritage Trust; A.P. 1590B |
