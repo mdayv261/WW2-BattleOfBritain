@@ -1,6 +1,6 @@
 // Joystick support through the Gamepad API (Logitech Extreme 3D Pro): stick, twist rudder, throttle
-// slider, the hat (to look around) and buttons (brakes, flaps, undercarriage, view). Phase 8 adds the full
-// rebinding screen.
+// slider, the hat (to look around) and buttons (elevator trim, brakes, flaps, undercarriage, view). Phase 8
+// adds the full rebinding screen.
 //
 // Axis numbers differ between browsers and systems, so the mapping is editable in the joystick panel
 // (J) and kept in this browser's storage. The stick and rudder are used as soon as a joystick is
@@ -15,15 +15,20 @@ const DEADZONE = 0.05;
 
 // Mapping of the product owner's Extreme 3D Pro in Chrome on macOS, as read in the joystick panel
 // (25 Oct 2026): stick X axis 0, stick Y axis 1, twist axis 5, throttle slider axis 6 (-1 idle, +1 full).
-// Buttons are numbered from 0, one less than the number printed on the stick: 1 is the thumb button (2).
-// The hat usually reports as one axis that steps through eight directions (checked in the J panel).
+// Buttons are numbered from 0 here, one less than the number printed on the stick (the J panel shows the
+// printed numbers). The product owner's layout (25 Oct 2026), by printed number: trim nose up 2 (thumb),
+// trim nose down 4, flaps up 3, flaps down 5, undercarriage 11, cockpit view 10; brakes on 6 (chosen by
+// Claude, the thumb button having gone to trim). The hat usually reports as one axis that steps through
+// eight directions (checked in the J panel).
+export const MAPPING_VERSION = 2;
 export const DEFAULT_MAPPING = {
+  version: MAPPING_VERSION,
   roll: { axis: 0, invert: false },
   pitch: { axis: 1, invert: false }, // pulling back gives +1 on this axis
   yaw: { axis: 5, invert: false },
   throttle: { axis: 6, invert: false },
   hat: { axis: 9 },
-  buttons: { brake: 1, flapsUp: 2, flapsDown: 3, gear: 4, view: 5 },
+  buttons: { trimUp: 1, trimDown: 3, flapsUp: 2, flapsDown: 4, brake: 5, gear: 10, view: 9 },
 };
 
 /**
@@ -38,8 +43,16 @@ export function hatDirection(v) {
 function loadMapping() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    // Mappings saved before the hat and buttons existed get the new defaults.
-    if (saved && saved.roll && saved.pitch && saved.yaw && saved.throttle) return { ...structuredClone(DEFAULT_MAPPING), ...saved };
+    if (saved && saved.roll && saved.pitch && saved.yaw && saved.throttle) {
+      const mapping = { ...structuredClone(DEFAULT_MAPPING), ...saved };
+      // Mappings saved before this button layout keep their axes but take the new hat and buttons.
+      if ((saved.version ?? 1) < MAPPING_VERSION) {
+        mapping.hat = structuredClone(DEFAULT_MAPPING.hat);
+        mapping.buttons = structuredClone(DEFAULT_MAPPING.buttons);
+        mapping.version = MAPPING_VERSION;
+      }
+      return mapping;
+    }
   } catch {
     // storage blocked or corrupt: use the defaults
   }
@@ -99,10 +112,11 @@ export class Joystick {
   }
 
   /**
-   * Writes stick, rudder, (once moved) throttle, brakes, flaps and undercarriage into the control input.
+   * Writes stick, rudder, (once moved) throttle, elevator trim (while its buttons are held, at the aircraft's
+   * own trim speed), brakes, flaps and undercarriage into the control input, for a frame of dt seconds.
    * Returns null with no joystick, else { hat: direction or null, view: true on a press of the view button }.
    */
-  update(input, ac) {
+  update(input, ac, dt = 0) {
     if (!this.poll()) return null;
     input.roll = clamp(shape(this.read('roll')), -1, 1);
     input.pitch = clamp(shape(this.read('pitch')), -1, 1);
@@ -111,6 +125,8 @@ export class Joystick {
     if (this.throttleStart === null) this.throttleStart = slider;
     if (Math.abs(slider - this.throttleStart) > 0.05) this.throttleLive = true;
     if (this.throttleLive) input.throttle = clamp((slider + 1) / 2, 0, 1);
+    const trim = (this.held('trimUp') ? 1 : 0) - (this.held('trimDown') ? 1 : 0);
+    if (trim) input.trim = clamp((input.trim ?? 0) + trim * (2 / ac.controls.trimTime) * dt, -1, 1);
     if (this.held('brake')) input.brake = 1;
     if (this.pressed('flapsDown')) input.flaps = stepFlaps(ac, input.flaps, 1);
     if (this.pressed('flapsUp')) input.flaps = stepFlaps(ac, input.flaps, -1);

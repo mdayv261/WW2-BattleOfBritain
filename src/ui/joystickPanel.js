@@ -1,14 +1,19 @@
 // Joystick check panel (J): shows every raw axis and button live, and lets the player choose which
 // axis drives roll, pitch, rudder, throttle and the hat (and whether each is reversed), and which button
-// works the brakes, flaps, undercarriage and view. Kept in browser storage.
+// works the elevator trim, brakes, flaps, undercarriage and view. Kept in browser storage.
 
 import { DEFAULT_MAPPING, hatDirection } from '../input/joystick.js';
 
 const FUNCTIONS = [['roll', 'Roll'], ['pitch', 'Pitch (pull back = +)'], ['yaw', 'Rudder (twist)'], ['throttle', 'Throttle slider']];
-const BUTTONS = [['brake', 'Brakes (hold)'], ['flapsUp', 'Flaps up a stop'], ['flapsDown', 'Flaps down a stop'], ['gear', 'Undercarriage'], ['view', 'Cockpit / outside']];
+const BUTTONS = [
+  ['trimUp', 'Elevator trim nose up (hold)'], ['trimDown', 'Elevator trim nose down (hold)'], ['brake', 'Brakes (hold)'],
+  ['flapsUp', 'Flaps up a stop'], ['flapsDown', 'Flaps down a stop'], ['gear', 'Undercarriage'], ['view', 'Cockpit / outside'],
+];
 const HAT_NAMES = ['up', 'up-right', 'right', 'down-right', 'down', 'down-left', 'left', 'up-left'];
 
 const options = (n) => [...Array(n).keys()].map((i) => `<option value="${i}">${i}</option>`).join('');
+// Buttons are listed by the number printed on the stick (one more than the browser's index).
+const buttonOptions = (n) => [...Array(n).keys()].map((i) => `<option value="${i}">${i + 1}</option>`).join('');
 
 export class JoystickPanel {
   constructor(joystick) {
@@ -25,9 +30,9 @@ export class JoystickPanel {
         <td>axis <select data-fn="${key}">${options(10)}</select></td>
         <td><label><input type="checkbox" data-inv="${key}"> reverse</label></td></tr>`).join('')}
         <tr><td>Hat (look around)</td><td>axis <select data-hat="1">${options(10)}</select></td><td></td></tr>
-        ${BUTTONS.map(([key, label]) => `<tr><td>${label}</td><td>button <select data-btn="${key}">${options(12)}</select></td><td></td></tr>`).join('')}
+        ${BUTTONS.map(([key, label]) => `<tr><td>${label}</td><td>button <select data-btn="${key}">${buttonOptions(12)}</select></td><td></td></tr>`).join('')}
       </table>
-      <div style="margin-top:6px;opacity:0.8">Buttons count from 0: button 1 is the one printed "2" (the thumb button).</div>
+      <div style="margin-top:6px;opacity:0.8">Buttons are numbered as printed on the stick (the trigger is 1, the thumb button 2).</div>
       <button id="joy-reset" style="margin-top:8px">Reset to default</button>`;
     const save = () => this.joystick.saveMapping();
     this.el.querySelectorAll('select[data-fn]').forEach((s) => s.addEventListener('change', () => {
@@ -80,7 +85,7 @@ export class JoystickPanel {
       return `[${'#'.repeat(n).padEnd(20, '.')}] ${v.toFixed(2).padStart(5)}`;
     };
     this.el.querySelector('#joy-axes').innerHTML = pad.axes.map((v, i) => `axis ${i}: ${bar(v)}`).join('<br>');
-    this.el.querySelector('#joy-buttons').textContent = `buttons pressed: ${pad.buttons.map((b, i) => (b.pressed ? i : null)).filter((i) => i !== null).join(' ') || 'none'}`;
+    this.el.querySelector('#joy-buttons').textContent = `buttons pressed: ${pad.buttons.map((b, i) => (b.pressed ? i + 1 : null)).filter((i) => i !== null).join(' ') || 'none'}`;
     const dir = hatDirection(pad.axes[this.joystick.mapping.hat.axis]);
     this.el.querySelector('#joy-hat').textContent = `hat: ${dir === null ? 'centred' : HAT_NAMES[dir]}`;
   }

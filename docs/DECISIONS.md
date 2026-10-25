@@ -681,13 +681,14 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
   - B brakes (with rudder for one side);
   - , and . rudder trim (Spitfire);
   - F and Shift+F flaps down and up one stop.
-- **Joystick buttons by default:**
-  - 1 (the thumb button, printed 2) brakes;
-  - 2 and 3 flaps up and down;
-  - 4 undercarriage;
-  - 5 cockpit or outside view.
-- **Hat:** looked for on axis 9. Every button and the hat axis can be changed in the J panel. The product owner to
-  confirm them on the Extreme 3D Pro.
+- **Joystick buttons, by the number printed on the stick:** the product owner's layout (25 Oct 2026):
+  - 2 (thumb) and 4: elevator trim nose up and nose down, while held, at each aircraft's own trim speed;
+  - 3 and 5: flaps up and down a stop;
+  - 11: undercarriage;
+  - 10: cockpit or outside view;
+  - 6: brakes (Claude's choice, since the thumb button went to trim).
+- **Hat:** looked for on axis 9. Every button and the hat axis can be changed in the J panel, which now lists buttons by
+  their printed numbers. Mappings saved before this layout keep their axes but take the new buttons.
 
 **Found in testing:** at full power from a standstill the propeller's slipstream swing needs about 70% rudder. With no
 rudder, a castoring-tailwheel aircraft ground-loops and can tip onto a wingtip at walking pace. The swing directions

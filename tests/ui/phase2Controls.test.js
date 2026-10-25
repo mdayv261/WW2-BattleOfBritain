@@ -118,6 +118,26 @@ describe('joystick buttons and hat', () => {
     expect(hatDirection(undefined)).toBeNull();
   });
 
+  it('uses the product owner\'s button layout (printed numbers: trim 2 and 4, flaps 3 and 5, gear 11, view 10)', () => {
+    const printed = (name) => DEFAULT_MAPPING.buttons[name] + 1;
+    expect([printed('trimUp'), printed('trimDown'), printed('flapsUp'), printed('flapsDown')]).toEqual([2, 4, 3, 5]);
+    expect([printed('gear'), printed('view'), printed('brake')]).toEqual([11, 10, 6]);
+  });
+
+  it('trims the elevator while the trim buttons are held, at the aircraft\'s own rate', () => {
+    const joy = new Joystick();
+    const buttons = Array.from({ length: 12 }, () => ({ pressed: false }));
+    joy.poll = () => (joy.pad = { axes: [0, 0, 0, 0, 0, 0, -1, 0, 0, 1.2857], buttons });
+    const input = { flaps: 0, gear: 1, throttle: 0, trim: 0 };
+    buttons[DEFAULT_MAPPING.buttons.trimUp].pressed = true;
+    joy.update(input, bf109e4, 1);
+    expect(input.trim).toBeCloseTo(2 / bf109e4.controls.trimTime, 6);
+    buttons[DEFAULT_MAPPING.buttons.trimUp].pressed = false;
+    buttons[DEFAULT_MAPPING.buttons.trimDown].pressed = true;
+    joy.update(input, bf109e4, 1);
+    expect(input.trim).toBeCloseTo(0, 6);
+  });
+
   it('works the brakes, flaps, undercarriage and view from the mapped buttons', () => {
     const joy = new Joystick();
     const buttons = Array.from({ length: 12 }, () => ({ pressed: false }));

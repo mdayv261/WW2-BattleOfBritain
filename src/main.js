@@ -59,7 +59,7 @@ renderer.setAnimationLoop((now) => {
   last = now;
   gameKeys();
   keyboard.update(sim.input, sim.ac, dt);
-  const stick = joystick.update(sim.input, sim.ac);
+  const stick = joystick.update(sim.input, sim.ac, dt);
   if (stick?.view) view.rig.toggleCockpit();
   view.rig.hatLook = stick && stick.hat !== null ? HAT_LOOKS[stick.hat] : null;
   sim.advance(dt);
