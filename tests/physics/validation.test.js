@@ -6,7 +6,7 @@ import { validateAircraft } from '../../src/physics/validation.js';
 import { UNIT } from '../../src/core/constants.js';
 
 const TOLERANCE = {
-  speed: 0.05, climbTime: 0.10, ceiling: 0.05, roll: 0.15, takeoffRun: 0.15, takeoffScreen: 0.15, landingRun: 0.15, landingScreen: 0.15,
+  bankTime: 0.15, speed: 0.05, climbTime: 0.10, ceiling: 0.05, roll: 0.15, takeoffRun: 0.15, takeoffScreen: 0.15, landingRun: 0.15, landingScreen: 0.15,
 };
 const STALL_TOLERANCE = 5 * UNIT.MPH;
 const CALIBRATION_TOLERANCE = 0.01;
@@ -20,6 +20,8 @@ const KNOWN = {
   'bf109e4|climbTime|4000': 'as above; the Rechlin figure (S22) agrees within 4%',
   'bf109e4|climbTime|5000': 'as above',
   'bf109e4|climbTime|6000': 'as above',
+  'spitfire|bankTime|3048': 'RAE time to 45 degrees at 400 mph (4 s) about three times the model\'s 1.2 s (D30)',
+  'bf109e4|bankTime|3048': 'as for the Spitfire: the 109 is fitted to roll like the model\'s Spitfire there, as S32 found (D30)',
   // Phase 2 take-offs and landings (scripted pilot, D29).
   'spitfire|takeoffScreen|': 'climb to 50 ft too long: the model lifts off close to its (NACA) stalling speed',
   'spitfire|landingRun|': 'landing run too long: the wing still carries most of the weight for the first part of the run',

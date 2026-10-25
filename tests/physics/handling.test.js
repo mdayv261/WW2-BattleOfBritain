@@ -1,7 +1,7 @@
 // Handling checks in the time-stepped simulation (Phase 1 checkpoint 3). Each test names its source;
 // where the source is qualitative the test checks the direction or ordering it describes.
 import { describe, it, expect } from 'vitest';
-import { stallTest, spinTest, rollTest, hardPull, swingTest, stallEas } from '../../src/dev/flightTests.js';
+import { stallTest, spinTest, rollTest, hardPull, swingTest, stallEas, bankTime } from '../../src/dev/flightTests.js';
 import { stickForcePerG } from '../../src/physics/performance.js';
 import { authority } from '../../src/physics/controls.js';
 import { common } from '../../src/aircraft/common.js';
@@ -76,11 +76,17 @@ describe('control forces', () => {
     expect(at300).toBeLessThan(0.55);
   });
 
-  it('makes the Bf 109 heavy above 250 mph and nearly immovable in pitch at 400 mph (S20, S21)', () => {
-    const { pitch, roll } = common.pilotMaxForce;
-    expect(authority(bf109e4.controls.rollHinge, roll, qAt(200 * MPH))).toBeGreaterThan(0.95);
-    expect(authority(bf109e4.controls.pitchHinge, pitch, qAt(400 * MPH))).toBeLessThan(0.2);
-    expect(authority(bf109e4.controls.rollHinge, roll, qAt(400 * MPH))).toBeLessThan(0.35);
+  it('makes the Bf 109 elevator nearly immovable at 400 mph (S20, S21)', () => {
+    expect(authority(bf109e4.controls.pitchHinge, common.pilotMaxForce.pitch, qAt(400 * MPH))).toBeLessThan(0.2);
+  });
+
+  it('allows about one-fifth aileron at 400 mph in both the Bf 109 and the Spitfire (S32 Table 5)', () => {
+    const { roll } = common.pilotMaxForce;
+    expect(authority(bf109e4.controls.rollHinge, roll, qAt(400 * MPH))).toBeCloseTo(0.2, 2);
+    // The Spitfire's aileron force comes from NACA (S13), so this is an independent check.
+    const spit = authority(spitfire.controls.rollHinge, roll, qAt(400 * MPH));
+    expect(spit).toBeGreaterThan(0.16);
+    expect(spit).toBeLessThan(0.24);
   });
 });
 
@@ -100,5 +106,13 @@ describe('engine torque at full power and low speed', () => {
     const raf = swingTest(spitfire).sideslip;
     const lw = swingTest(bf109e4).sideslip;
     expect(Math.sign(raf)).toBe(-Math.sign(lw));
+  });
+});
+
+describe('Bf 109 against the Spitfire at high speed (S32 Table 5)', () => {
+  it('takes as long as the Spitfire to bank 45 degrees at 400 mph with the stick force available', () => {
+    const t109 = bankTime(bf109e4, 400 * MPH).time;
+    const tSpit = bankTime(spitfire, 400 * MPH).time;
+    expect(Math.abs(t109 - tSpit) / tSpit).toBeLessThan(0.05);
   });
 });

@@ -1,7 +1,7 @@
 # Flight Validation
 
 The flight model compared with sourced performance figures. Generated from `npm run validate`
-(updated 25 Oct 2026, Phase 2 checkpoint 1); the same comparison runs in `npm test`
+(updated 25 Oct 2026, Phase 2: Bf 109 recalibrated from the RAE report, D30); the same comparison runs in `npm test`
 (`tests/physics/validation.test.js`). Sources are the S-numbers in `docs/AIRCRAFT_DATA.md`.
 
 ## Method
@@ -17,7 +17,9 @@ The flight model compared with sourced performance figures. Generated from `npm 
   - the aileron power, to NACA's roll with 30 lb at 230 mph IAS (time-stepped, rudder fixed);
   - the share of the wing in the slipstream, to the Spitfire's power-on stall;
   - the Spitfire's propeller blade width, to N3171's time to 20,000 ft (product owner's decision, D24);
-  - the RAF fighters' elevator force factor, to NACA's stick force per g (5.0 and 8.1 lb/g; not a table row).
+  - the RAF fighters' elevator force factor, to NACA's stick force per g (5.0 and 8.1 lb/g; not a table row);
+  - the Bf 109's slat opening (lift coefficient 0.865), aileron heaviness (one-fifth aileron at 400 mph) and aileron
+    power (45° of bank at 400 mph as quickly as the Spitfire), all from the RAE report S32 (D30; not table rows).
 - **Handling checks** in the time-stepped simulation are in `tests/physics/handling.test.js` (`npm run handling` prints
   them): stalls, spins, rolls, sideslip in a roll, control heaviness, slats and torque swing.
 - **Tolerances** (the proposed Phase 1 acceptance test):
@@ -56,6 +58,7 @@ The flight model compared with sourced performance figures. Generated from `npm 
 
 | Source | Check | Height | Conditions | Source value | Model | Error |
 |---|---|---|---|---|---|---|
+| S32 | Time to 45° bank, 400 mph IAS | 10,000 ft | RAE: 45 degrees of bank at 400 mph IAS with one-fifth aileron (height not stated) | 4.0 s | 1.2 s | -69.0% |
 | S4 | Level speed | 18,901 ft | N3171, 3000 rpm, +6 1/4 lb **(calibration point)** | 354.0 mph | 354.1 mph | +0.0% |
 | S4 | Level speed | 10,000 ft | N3171, 3000 rpm, +6 1/4 lb | 320.5 mph | 321.7 mph | +0.4% |
 | S4 | Level speed | 15,000 ft | N3171, 3000 rpm, +6 1/4 lb | 339.0 mph | 340.6 mph | +0.5% |
@@ -81,23 +84,26 @@ The flight model compared with sourced performance figures. Generated from `npm 
 
 | Source | Check | Height | Conditions | Source value | Model | Error |
 |---|---|---|---|---|---|---|
-| S16 | Level speed | 0 m | Data sheet level speeds (1.30 ata, 2400 rpm) **(calibration point)** | 460 km/h | 460 km/h | +0.0% |
-| S16 | Level speed | 1000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 480 km/h | 477 km/h | -0.6% |
-| S16 | Level speed | 2000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 500 km/h | 502 km/h | +0.3% |
-| S16 | Level speed | 3000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 520 km/h | 516 km/h | -0.8% |
-| S16 | Level speed | 4000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 540 km/h | 527 km/h | -2.3% |
-| S16 | Level speed | 5000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 555 km/h | 542 km/h | -2.3% |
-| S16 | Level speed | 6000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 555 km/h | 538 km/h | -3.0% |
-| S16 | Level speed | 7000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 550 km/h | 531 km/h | -3.4% |
-| S17 | Time to height | 1000 m | Specification climb (2540 kg; 30-minute rating assumed) | 1.0 min | 1.1 min | +9.5% |
-| S17 | Time to height | 2000 m | Specification climb (2540 kg; 30-minute rating assumed) | 1.9 min | 2.2 min | +13.4% |
-| S17 | Time to height | 3000 m | Specification climb (2540 kg; 30-minute rating assumed) | 3.0 min | 3.3 min | +8.5% |
-| S17 | Time to height | 4000 m | Specification climb (2540 kg; 30-minute rating assumed) | 3.8 min | 4.4 min | +16.3% |
-| S17 | Time to height | 5000 m | Specification climb (2540 kg; 30-minute rating assumed) | 4.9 min | 5.6 min | +15.1% |
-| S17 | Time to height | 6000 m | Specification climb (2540 kg; 30-minute rating assumed) | 6.3 min | 7.1 min | +12.0% |
-| S17 | Service ceiling | — | Specification climb (2540 kg; 30-minute rating assumed) | 11000 m | 11382 m | +3.5% |
-| S22 | Time to height | 4000 m | Rechlin comparison flights, time to 4 km | 4.4 min | 4.6 min | +4.0% |
-| S20 | Stall (IAS) | 1500 m | A&AEE stall, flaps and undercarriage up (weight not stated) | 150 km/h | 148 km/h | -1.2% |
+| S32 | Stall (IAS) | 1,500 m | RAE stalls, trailing-static airspeed, gliding (5,580 lb) | 154 km/h | 150 km/h | -2.5% |
+| S32 | Stall (IAS) | 1,500 m | RAE stalls, trailing-static airspeed, gliding (5,580 lb), flaps and undercarriage down | 130 km/h | 128 km/h | -1.8% |
+| S32 | Time to 45° bank, 400 mph IAS | 3,048 m | RAE: 45 degrees of bank at 400 mph IAS with one-fifth aileron (height not stated) | 4.0 s | 1.2 s | -69.0% |
+| S16 | Level speed | 0 m | Data sheet level speeds (1.30 ata, 2400 rpm) **(calibration point)** | 460 km/h | 460 km/h | -0.0% |
+| S16 | Level speed | 1,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 480 km/h | 477 km/h | -0.6% |
+| S16 | Level speed | 2,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 500 km/h | 501 km/h | +0.3% |
+| S16 | Level speed | 3,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 520 km/h | 516 km/h | -0.8% |
+| S16 | Level speed | 4,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 540 km/h | 527 km/h | -2.4% |
+| S16 | Level speed | 5,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 555 km/h | 542 km/h | -2.3% |
+| S16 | Level speed | 6,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 555 km/h | 538 km/h | -3.1% |
+| S16 | Level speed | 7,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 550 km/h | 531 km/h | -3.5% |
+| S17 | Time to height | 1,000 m | Specification climb (2540 kg; 30-minute rating assumed) | 1.0 min | 1.1 min | +9.8% |
+| S17 | Time to height | 2,000 m | Specification climb (2540 kg; 30-minute rating assumed) | 1.9 min | 2.2 min | +13.7% |
+| S17 | Time to height | 3,000 m | Specification climb (2540 kg; 30-minute rating assumed) | 3.0 min | 3.3 min | +8.8% |
+| S17 | Time to height | 4,000 m | Specification climb (2540 kg; 30-minute rating assumed) | 3.8 min | 4.4 min | +16.6% |
+| S17 | Time to height | 5,000 m | Specification climb (2540 kg; 30-minute rating assumed) | 4.9 min | 5.7 min | +15.5% |
+| S17 | Time to height | 6,000 m | Specification climb (2540 kg; 30-minute rating assumed) | 6.3 min | 7.1 min | +12.4% |
+| S17 | Service ceiling | — | Specification climb (2540 kg; 30-minute rating assumed) | 11000 m | 11339 m | +3.1% |
+| S22 | Time to height | 4,000 m | Rechlin comparison flights, time to 4 km | 4.4 min | 4.6 min | +4.2% |
+| S20 | Stall (IAS) | 1,500 m | A&AEE stall, flaps and undercarriage up (weight not stated) | 150 km/h | 152 km/h | +1.4% |
 
 ## Take-offs and landings (Phase 2)
 
@@ -121,9 +127,9 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
 | Spitfire Mk I | S4 | Landing run with brakes | 310 yd | 458 yd | +48% |
 | Hurricane Mk I | S1 | Take-off to clear 50 ft (maximum weight) | 470 yd | 468 yd | -0.5% |
 | Hurricane Mk I | S1 | Landing from 50 ft (light weight) | 540 yd | 518 yd | -4.1% |
-| Bf 109 E-4 | S15 | Take-off ground run (20° flap) | 260 m | 185 m | -28.8% |
-| Bf 109 E-4 | S15 | Take-off to clear 20 m | 470 m | 363 m | -22.7% |
-| Bf 109 E-4 | S15 | Landing from 20 m | 530 m | 566 m | +6.8% |
+| Bf 109 E-4 | S15 | Take-off ground run (20° flap) | 260 m | 196 m | -24.8% |
+| Bf 109 E-4 | S15 | Take-off to clear 20 m | 470 m | 378 m | -19.5% |
+| Bf 109 E-4 | S15 | Landing from 20 m | 530 m | 563 m | +6.3% |
 | Spitfire Mk I | S33 | Engine speed at full throttle on the ground | 2650-2700 rpm | 2700 rpm | within |
 
 **Ground behaviour already checked** (`tests/physics/ground.test.js`):
@@ -137,10 +143,11 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
 
 ## Summary
 
-- **Within tolerance:** 45 of 52 rows, including all the calibration points.
+- **Within tolerance:** 47 of 56 performance rows, including all the calibration points. The two outside that are new
+  are the RAE's 400 mph bank times (item 12).
 - **Level speeds:** all within 5%; the Spitfire's N3171 speeds within 0.5%.
 - **Spitfire climb:** within 4% at every height.
-- **Stalls:** within 1.5%, power off and on, flaps up and down.
+- **Stalls:** within 3%, power off and on, flaps up and down (the Bf 109 now against the RAE's calibrated figures).
 - **Roll:** the 30 lb rolls are the calibration points. The full-aileron checks are −9% (Hurricane) and −15% (Spitfire).
 
 ## Known deviations (reported to the product owner, not tuned away)
@@ -157,8 +164,8 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
    - Within tolerance. Consistent with the DB 601A curves being static (no ram) and the ram estimate being an average.
 6. **Hurricane level speed at sea level and at 30,000 ft: 4-5% slow.**
    - Within tolerance. The RAE chart (S2) does not state the airscrew.
-7. **Bf 109 stall check (S20) is not independent:** the maximum lift was derived from the same figure, at an assumed
-   weight.
+7. **Bf 109 stall checks (S32) are not independent:** the maximum lift comes from the same RAE measurements (D30).
+   S20's 150 km/h, read on the pilot's indicator, also agrees within 2 mph.
 8. **Bf 109 drag coefficient (0.0272)** is higher than the RAF fighters' (0.0183 and 0.0249).
    - This follows from calibrating to the Luftwaffe data sheet's 460 km/h (D14).
    - The manufacturer's 500 km/h would need about 0.021.
@@ -169,8 +176,15 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
     - The model lifts off and lands close to its stalling speeds. These come from NACA's calibrated tests (S31, about
       90 mph clean and 80 mph flaps down), higher than S4's uncorrected 78 and 68 mph.
     - After touchdown the wing still carries most of the weight, so braking only bites as the speed falls.
-11. **Bf 109 take-off too short** (Phase 2): ground run -29%, to 20 m -23% against the handbook (S15).
-    - The scripted pilot lifts off at about 130 km/h, using the 20° flap and the slipstream.
+11. **Bf 109 take-off too short** (Phase 2): ground run -25%, to 20 m -20% against the handbook (S15). With the RAE's
+    lower maximum lift (D30) these were -29% and -23%.
+    - The scripted pilot lifts off at about 135 km/h, using the 20° flap and the slipstream.
     - S32 says pilots held the 109 on the ground for a while after the tail came up. That technique is not copied: one
       technique is used for all three types.
     - The handbook's take-off power (1.40 ata) is not modelled; the 5-minute rating is used.
+12. **Time to 45° of bank at 400 mph about three times quicker than the RAE measured** (S32: about 4 s for both the
+    Spitfire and the Bf 109; model 1.2 s for both).
+    - The Spitfire's aileron power comes from NACA's tests (S13), so its model time is an independent result.
+    - The RAE figure probably includes the time to move the stick and the loss of aileron power as the wing twists at
+      high speed. Neither is modelled.
+    - The 109 is fitted to match the model's Spitfire at that speed, as the RAE found the two equal (D30).

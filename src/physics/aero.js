@@ -227,9 +227,13 @@ export function aeroCoefficients(ac, flow, surfaces) {
     - common.stallNoseDown * innerStall * Math.sin(2 * aw);
 
   const stalledOf = (ps) => Math.max(ps[0].stalled, ps[1].stalled);
+  // The slats respond to the outer wing's angle to the air, which the (inboard) flaps do not change: with
+  // flaps down they open at a higher lift coefficient, as the RAE measured (S32).
+  const flapShift = steeper * ((flaps * pc.flaps) / w.clAlpha);
   return {
     cl, cd, cy, croll, cyaw, cpitch,
     alphaLeft: left[1].alpha, alphaRight: right[1].alpha, stalledLeft: stalledOf(left), stalledRight: stalledOf(right),
+    slatAlphaLeft: left[1].alpha - flapShift, slatAlphaRight: right[1].alpha - flapShift,
     outerStall, innerStall,
   };
 }

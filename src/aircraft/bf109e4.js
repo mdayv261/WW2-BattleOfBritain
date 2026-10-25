@@ -11,19 +11,19 @@ export const bf109e4 = {
   name: 'Bf 109 E-4',
   side: 'Luftwaffe',
   engine: 'db601a',
-  geometry: { span: 9.9, wingArea: 16.4, mac: 1.71, length: 8.76 },
+  geometry: { span: 9.9, wingArea: 16.4, mac: 1.634, length: 8.76 },
   mass: { flying: 2608, ixx: 3994, iyy: 7225, izz: 8627 },
   aero: {
-    alphaZeroLift: -2.5 * DEG,
-    clMax: 1.47, // slats open
-    clMaxFlaps: 2.06,
-    cd0: 0.0272,
+    alphaZeroLift: -3.5 * DEG,
+    clMax: 1.4, // slats open
+    clMaxFlaps: 1.9,
+    cd0: 0.0273,
     oswald: 0.8,
     flapCd: 0.07,
     gearCd: 0.02,
     radiatorCd: 0.004,
-    washout: 1 * DEG,
-    dihedral: 5 * DEG,
+    washout: 0, // no wing twist
+    dihedral: 5.75 * DEG,
     slipstreamWing: 0.196,
     staticMargin: 0.05,
     cmZero: 0.02,
@@ -31,7 +31,7 @@ export const bf109e4 = {
     elevatorCm: 0.2,
     trimCm: 0.03,
     flapCm: -0.02,
-    aileronCl: 0.0412,
+    aileronCl: 0.0507,
     adverseYaw: -0.008,
     cnBeta: 0.07,
     cnr: -0.1,
@@ -43,7 +43,7 @@ export const bf109e4 = {
     stallBias: -0.02, // left wing drops at the stall
   },
   controls: {
-    pitchHinge: 0.0755, rollHinge: 0.0272, yawHinge: 0.06, flapTime: 8, gearTime: 8,
+    pitchHinge: 0.0755, rollHinge: 0.034, yawHinge: 0.06, flapTime: 8, gearTime: 8,
     flapStops: 4, // handwheel; marked 0 to 40 degrees in tens
     trimTime: 18, // s: tailplane trim wheel from one end to the other
   },
@@ -72,7 +72,7 @@ export const bf109e4 = {
     diameter: 3.1,
     gearRatio: 0.6452, // engine 1.55 : propeller 1
     rotation: -1, // anticlockwise seen from the cockpit
-    betaMin: 20 * DEG,
+    betaMin: 22.5 * DEG,
     betaMax: 55 * DEG,
     inertia: 35, // rotating inertia at propeller speed (rpm changes)
     gyroInertia: 25, // net gyroscopic inertia at propeller speed
@@ -81,5 +81,5 @@ export const bf109e4 = {
     rpmMin: 1500 * RPM,
     rpmMax: 2400 * RPM,
   },
-  slats: { openAlpha: 10.5 * DEG, fullAlpha: 12.5 * DEG, clMaxClosed: 1.15, sectionGain: 0.3, rate: 4 },
+  slats: { openAlpha: 12.4 * DEG, fullAlpha: 14.4 * DEG, clMaxClosed: 1.15, sectionGain: 0.3, rate: 4 },
 };

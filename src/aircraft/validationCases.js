@@ -4,7 +4,8 @@
 //
 // kinds: 'speed' (level speed at an altitude), 'climbTime' (seconds from sea level), 'ceiling',
 // 'stall' (1 g stall, indicated airspeed = equivalent), 'roll' (pb/2V in a time-stepped roll with full stick,
-// rudder fixed: at 230 mph IAS the pilot's 30 lb limits the aileron; at 140 mph full deflection is reached).
+// rudder fixed: at 230 mph IAS the pilot's 30 lb limits the aileron; at 140 mph full deflection is reached),
+// 'bankTime' (seconds from level to 45 degrees of bank with full stick, pilot strength limited).
 // Phase 2 adds take-offs and landings flown by the scripted pilot (src/dev/groundTests.js) on grass:
 // 'takeoffRun' (ground run, m), 'takeoffScreen' (distance to clear a screen of `screen` m),
 // 'landingRun' (touchdown to stop, braking), 'landingScreen' (from the screen to a stop).
@@ -20,6 +21,10 @@ const KMH = UNIT.KMH;
 
 export const validationCases = {
   spitfire: [
+    {
+      source: 'S32', label: 'RAE: 45 degrees of bank at 400 mph IAS with one-fifth aileron (height not stated)', mass: 2722,
+      points: [{ kind: 'bankTime', eas: 400 * MPH, altitude: 3048, value: 4 }],
+    },
     {
       source: 'S4', label: 'N3171, 3000 rpm, +6 1/4 lb', mass: 2744,
       setting: { speed: 3000 * RPM, throttle: 1 },
@@ -145,6 +150,18 @@ export const validationCases = {
     },
   ],
   bf109e4: [
+    {
+      source: 'S32', label: 'RAE stalls, trailing-static airspeed, gliding (5,580 lb)', mass: 2531,
+      setting: { speed: 2400 * RPM, throttle: 0 },
+      points: [
+        { kind: 'stall', altitude: 1500, value: 95.5 * MPH },
+        { kind: 'stall', altitude: 1500, value: 81 * MPH, flaps: 1, gear: 1 },
+      ],
+    },
+    {
+      source: 'S32', label: 'RAE: 45 degrees of bank at 400 mph IAS with one-fifth aileron (height not stated)', mass: 2531,
+      points: [{ kind: 'bankTime', eas: 400 * MPH, altitude: 3048, value: 4 }],
+    },
     {
       source: 'S15', label: 'Handbook take-off (20 degrees of flap, S32) and landing', mass: 2608, flaps: 0.5,
       points: [

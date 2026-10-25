@@ -119,6 +119,7 @@ export function computeLoads(plane, input) {
       rpm: plane.omega, beta_prop: plane.beta, j: prop.j, thrust: prop.thrust,
       lift: co.cl * qBar * S, drag: co.cd * qBar * S, cl: co.cl, cd: co.cd,
       alphaLeft: co.alphaLeft, alphaRight: co.alphaRight, stalledLeft: co.stalledLeft, stalledRight: co.stalledRight,
+      slatAlphaLeft: co.slatAlphaLeft, slatAlphaRight: co.slatAlphaRight,
       slatLeft: surfaces.slatLeft, slatRight: surfaces.slatRight, cutout: plane.cutout.factor,
       groundHeight, groundEffect, onGround: ground.wheels.some(Boolean), wheelLoads: ground.wheels.map((w) => w?.load ?? 0),
     },
@@ -137,7 +138,7 @@ export function stepAircraft(plane, input, dt) {
 
   const loads = computeLoads(plane, input);
   plane.lastSlipQ = Math.max(loads.thrust, 0) / ((Math.PI * pr.diameter * pr.diameter) / 4);
-  updateSlats(ac, surfaces, loads.diag.alphaLeft, loads.diag.alphaRight, dt);
+  updateSlats(ac, surfaces, loads.diag.slatAlphaLeft, loads.diag.slatAlphaRight, dt);
   updateCutout(plane.engine, plane.cutout, loads.loadFactor, dt);
 
   // Propeller and engine rotation: engine power drives, propeller torque resists.

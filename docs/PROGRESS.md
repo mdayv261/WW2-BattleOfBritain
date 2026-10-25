@@ -9,8 +9,8 @@ Phase 0 is signed off. The game is live at https://mdayv261.github.io/WW2-Battle
 https://github.com/mdayv261/WW2-BattleOfBritain). **Phase 1 checkpoint 1 (physics core and validation) is done
 **Phase 1 (single-engine flight model) is signed off** (25 Oct 2026, D27): the product owner flew it and accepted the
 acceptance test and the documented deviations. **Phase 2 (controls, cameras, ground)** is under way: the plan was approved (D28) and **checkpoint 1 (ground physics and
-take-off and landing validation) is done locally**. Next: checkpoint 2 (airfield, cameras, cockpit view, instruments and
-controls). Nothing from Phase 1 or 2 has been pushed yet; pushing needs the product owner's permission.
+take-off and landing validation) is done locally**. The product owner then decided to replace the Bf 109 estimates with the RAE report (S32) and recalibrate (D30):
+done. Next: checkpoint 2 (airfield, cameras, cockpit view, instruments and controls). Nothing from Phase 1 or 2 has been pushed yet; pushing needs the product owner's permission.
 
 ## Phase 2 checkpoint 1: ground physics and take-off and landing validation (25 Oct 2026)
 
@@ -46,10 +46,23 @@ controls). Nothing from Phase 1 or 2 has been pushed yet; pushing needs the prod
 4. **Ground and sea in the test scene:** the test view still shows the sea, but the physics treats everywhere as level
    grass until the airfield arrives in checkpoint 2.
 
-**Decisions needed from the product owner:**
-- **Accept the two take-off and landing deviations above?**
-- **Replace the Bf 109 estimates with S32's sourced values?** The values are the mean chord, dihedral, VDM pitch range
-  and wing area. Doing so means recalibrating the 109's drag and checking Phase 1 again.
+**Decision needed from the product owner:** accept the two take-off and landing deviations above?
+
+## Bf 109 recalibrated from the RAE report (25 Oct 2026, D30)
+
+**Done:**
+- **Sourced from S32:** the mean chord, dihedral, wing twist (none), fine pitch stop, and the maximum lift clean and
+  with flaps (calibrated airspeeds).
+- **Fitted to S32:** the slat opening point, aileron heaviness and aileron power. The drag was refitted.
+- **Validation:** the S32 stalls and the 400 mph bank times were added. The take-off and landing table was re-run.
+
+**Results:**
+- speeds, climbs and stalls unchanged or within 2.5%;
+- the 109's take-off deviation reduced (-25% ground run);
+- the handling checks all pass.
+
+**New known deviation:** the RAE's 4 s to bank 45° at 400 mph is about three times the model's 1.2 s for both the
+Spitfire and the 109. It is probably stick-movement time and wing twist, neither of which is modelled.
 
 ## Phase 1 checkpoint 3: handling checks and tuning (25 Oct 2026)
 

@@ -594,3 +594,48 @@ These are reported as deviations, not tuned away (FLIGHT_VALIDATION.md, items 10
 S33: 2,700 rpm (2,650-2,700). With the brakes on, full throttle tips a Spitfire onto its nose, which agrees with
 S33's two men on the tail.
 
+## D30. Bf 109 estimates replaced with the RAE report (S32) and recalibrated (25 Oct 2026, Phase 2)
+
+The product owner decided to use the RAE "Morgan" report's figures in place of Phase 1 estimates, and to
+recalibrate. This reopens part of the signed-off Phase 1 Bf 109.
+
+**Values now taken from S32:**
+- mean chord 1.634 m (was 1.71 m);
+- dihedral 5.75° (was 5°);
+- no wing twist (was 1° of washout);
+- fine pitch stop 22.5° (was 20°);
+- maximum lift 1.4 clean and 1.9 with flaps, from stalls timed against a trailing static (was 1.47 from S20 and 2.06
+  from S17). The pilot's indicator read about 20 mph low near the stall, which explains S20's low figures.
+
+**Changed for better reasons, still estimates:**
+- zero-lift angle -3.5°, from the S32 sections and the root set about 1.5° above the thrust line.
+
+**Fitted to S32 (`npm run calibrate`):**
+- **Slats:** they start to open at a wing lift coefficient of 0.865 (Table 4), giving 12.4°. They now respond to the
+  outer wing's angle without the flaps' effect, so with the flaps down they open at a higher lift coefficient, as
+  measured.
+- **Aileron heaviness:** one-fifth aileron is all the pilot can reach at 400 mph (Table 5), with the common 30 lb pilot.
+  S32's own stick forces are about twice NACA's for the Spitfire, so the deflection is used, not the force.
+- **Aileron power:** S32 found the 109 and the Spitfire both took about 4 s to bank 45° at 400 mph. The model's
+  Spitfire, with its aileron power from NACA, takes 1.2 s. So the 109 is fitted to match the Spitfire (0.0507), not the
+  4 s, and the absolute time is a known deviation for both.
+- **Drag:** refitted to 460 km/h: 0.0273 (was 0.0272).
+
+**Not taken:**
+- **Coarse pitch stop.** S32 gives 90° (fully feathering), but the NACA propeller data stop at 45°. Stretching them
+  further gives an unphysical feathered propeller, so the model keeps 55°. Feathering is for Phase 3.
+- **Wing span and area.** They stay at the German figures (S16, S17: two sources). S32's area is 174 sq ft, about 1.4%
+  less.
+
+**Results:**
+- level speeds unchanged within 0.1%;
+- climbs and ceiling within 0.5% of before;
+- the S32 and S20 stalls within 2.5%;
+- the take-off deviation smaller (ground run -25%, from -29%);
+- the stall still drops the left wing;
+- the slats open in a hard pull and stay shut in cruise;
+- all six spins enter and recover.
+
+**Test-script correction:** the spin test now applies rudder against the actual rotation. Asked for a right spin, the
+109 drops its left wing (S20) and rolls the other way; the old script then held rudder that fed the real spin.
+

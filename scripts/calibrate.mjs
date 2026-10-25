@@ -6,10 +6,18 @@
 //   aero.slipstreamWing - to the NACA power-on stall of the Spitfire (applied to all three)
 //   propeller.solidity  - Spitfire only: blade width relative to the NACA propeller, to N3171's climb
 //   controls.pitchHinge - RAF fighters: to NACA's stick-force gradient at 230 mph IAS, 10,000 ft (S11, S12)
+//   Bf 109, from the RAE report (S32):
+//     slats.openAlpha   - the slats start to open at a wing lift coefficient of 0.865, flaps up (Table 4)
+//     controls.rollHinge - one-fifth aileron is all the pilot can reach at 400 mph IAS (Table 5)
+//     aero.aileronCl    - with it, 45 degrees of bank takes as long as in the Spitfire (Table 5: both about 4 s;
+//                         the model's Spitfire takes 1.2 s, so the comparison, not the time, is matched, D30)
 import { aircraftList } from '../src/aircraft/index.js';
 import { validationCases } from '../src/aircraft/validationCases.js';
 import { modelValue } from '../src/physics/validation.js';
 import { stickForcePerG } from '../src/physics/performance.js';
+import { aeroCoefficients } from '../src/physics/aero.js';
+import { common } from '../src/aircraft/common.js';
+import { bankTime } from '../src/dev/flightTests.js';
 import { UNIT } from '../src/core/constants.js';
 
 // NACA stick-force gradients in turns (lb per g): Spitfire VA (S11), Hurricane II (S12).
@@ -42,6 +50,20 @@ console.log(`slipstreamWing (all aircraft): ${slip.toFixed(3)}`);
 for (const ac0 of aircraftList) {
   const ac = withAero(ac0, { slipstreamWing: slip });
   const out = {};
+  let ac1 = ac;
+  if (ac.id === 'bf109e4') {
+    // Slat onset: the outer panel's angle when the whole wing (slats shut, flaps up) gives CL 0.865.
+    const surfaces = { elevator: 0, aileron: 0, rudder: 0, trim: 0, flaps: 0, gear: 0, radiator: 0, slatLeft: 0, slatRight: 0 };
+    const flow = (alpha) => ({ alpha, beta: 0, p: 0, q: 0, r: 0, airspeed: 60, qBar: 2205, slipQ: 0 });
+    const alpha = fit(-0.1, 0.4, (a) => aeroCoefficients(ac, flow(a), surfaces).cl - 0.865, true);
+    out.openAlpha = aeroCoefficients(ac, flow(alpha), surfaces).slatAlphaLeft / UNIT.DEG;
+    // Aileron heaviness: the pilot's strength reaches one-fifth of the travel at 400 mph IAS.
+    const q400 = 0.5 * 1.225 * (400 * UNIT.MPH) ** 2;
+    out.rollHinge = common.pilotMaxForce.roll / (0.2 * q400);
+    ac1 = { ...ac, controls: { ...ac.controls, rollHinge: out.rollHinge } };
+    const spitfireTime = bankTime(spit, 400 * UNIT.MPH, 3048).time;
+    out.aileronCl = fit(0.01, 0.2, (k) => bankTime(withAero(ac1, { aileronCl: k }), 400 * UNIT.MPH, 3048).time - spitfireTime, false);
+  }
   const roll = calibrationPoint(ac.id, 'roll');
   if (roll) out.aileronCl = fit(0.005, 0.2, (k) => modelValue(withAero(ac, { aileronCl: k }), roll.c, roll.p) - roll.p.value, true);
   const speed = calibrationPoint(ac.id, 'speed');

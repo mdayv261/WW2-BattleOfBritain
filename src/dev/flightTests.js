@@ -63,8 +63,9 @@ export function stallTest(ac) {
 }
 
 /**
- * Spin: full back stick and full rudder at idle for 6 s; then full opposite rudder with the stick
- * eased forward until the rotation stops, then controls central (the usual recovery).
+ * Spin: full back stick and full rudder at idle for 6 s; then full rudder against the rotation (whichever
+ * way the aircraft is actually turning) with the stick eased forward until it stops, then controls central
+ * (the usual recovery).
  */
 export function spinTest(ac, side = -1) {
   const { plane, input } = start(ac, { eas: 1.25 * stallEas(ac), throttle: 0 });
@@ -80,7 +81,7 @@ export function spinTest(ac, side = -1) {
     if (stopped === null && t > 6.5 && Math.abs(r) < 0.3) stopped = t;
     if (stopped === null) {
       i.pitch = -0.3;
-      i.yaw = -side;
+      i.yaw = -Math.sign(r);
     } else {
       i.pitch = 0;
       i.yaw = 0;
@@ -111,6 +112,20 @@ export function rollTest(ac, eas, altitude) {
   const p = late.reduce((a, s) => a + s.p, 0) / late.length;
   const maxBeta = Math.max(...trace.map((s) => Math.abs(s.beta)));
   return { rollRate: p / DEG, pb2v: (p * ac.geometry.span) / (2 * plane.last.airspeed), maxSideslip: maxBeta / DEG };
+}
+
+/**
+ * Time to roll from level to 45 degrees of bank with full stick (pilot strength limited) at an indicated
+ * airspeed and height, rudder fixed (RAE comparison, S32 Table 5).
+ */
+export function bankTime(ac, eas, altitude = 3048) {
+  const { plane, input } = start(ac, { eas, altitude });
+  let t45 = Infinity;
+  run(plane, input, 8, (t, p, i) => {
+    i.roll = 1;
+    if (t45 === Infinity && Math.abs(attitude(p.body.quaternion).bank) >= 45 * DEG) t45 = t;
+  });
+  return { time: t45, aileron: plane.surfaces.aileron };
 }
 
 /** Hard pull: abrupt full back stick at a speed, recording slats, bank excursion and peak g. */
