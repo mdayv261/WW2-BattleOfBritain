@@ -827,3 +827,27 @@ With the fighters' 0.8 the Bf 110 climbed 15% too quickly to 8 km and its ceilin
 distribution make a lower figure than a single-engine fighter's plausible. The drag was refitted (0.0264) and the
 rigging recomputed. The climb to 4-8 km is now within 10% and the ceiling 6.6% high; the low-level climb is 17-23% slow
 (FLIGHT_VALIDATION.md item 14).
+
+## D38. Bf 109 panel redrawn after the product owner's photograph (25 Oct 2026)
+
+The product owner asked for the Bf 109 panel to look like a photograph of a preserved panel. It is now drawn in its
+own module (`src/ui/bf109Panel.js`, dials in `src/ui/luftwaffeDials.js`) with the photograph's outline, raised centre
+plate, square dial mountings and positions measured from the picture:
+- **Centre plate:** altimeter (Höhe km) and fine altimeter (one turn per km, with the millibar window) on the left;
+  repeater compass and turn and bank (DREHT / HÄNGT) in the middle; airspeed (km/h) and climb (Steigt / Sinkt, m/s) on
+  the right.
+- **Right:** rev counter (U/min x 100) above the manifold pressure gauge (ata), with red marks at the 5-minute rating
+  from the aircraft data (2,400 rpm, 1.30 ata).
+- **Left:** clock (time of day), ammeter, light switch, ball compass.
+- **Bottom:** fuel contents, oil pressure, oil temperature and coolant temperature, with their coloured rings.
+
+**Deviations from the photograph, flagged to the product owner:**
+- The photographed panel is from a later Bf 109 (automatic airscrew, two-speed supercharger, bomb release). The E-4
+  has a manually set airscrew, so its pitch clock (S32) stays, on the blank plate at the upper left.
+- The later aircraft's bomb switch boxes and bomb-release placard are left out; the undercarriage lamps and the flap
+  indicator (D34) take their places.
+- The speed placard gives the E-4's diving limit, 750 km/h (S15), not the photograph's 600 km/h. The warning plates
+  under the turn indicator carry only "Achtung!", because their text is for the later aircraft.
+- The fuel, oil and coolant gauges are not working yet: there is no fuel or engine-heat model until a later phase,
+  so their hands rest at typical running values.
+- The panel takes up to half the screen height (the RAF panel 40%) so the dials stay readable.

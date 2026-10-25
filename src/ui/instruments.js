@@ -3,18 +3,18 @@
 //   RAF: the blind-flying panel (airspeed, artificial horizon, rate of climb, altimeter, direction indicator,
 //        turn and slip), boost, rpm, undercarriage lamps and flap position. 1940 styles: an all-black horizon,
 //        a heading drum in the direction indicator, and rate 1-3 marks on the turn indicator.
-//   Bf 109: airspeed (km/h), altimeter (m), turn and bank (its only blind-flying instrument, S20), compass,
-//        manifold pressure (ata), rpm, the propeller pitch clock (S32) and the undercarriage and flaps.
-// Each side's panel is laid out after a photograph of the real one (D32).
+//   Bf 109: its own module, src/ui/bf109Panel.js (D38).
+// Each side's panel is laid out after a photograph of the real one (D32, D38).
 
 import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
-import { face, needle, scale, horizon, headingDrum, turnAndSlip, lamp, label, flapIndicator } from './dials.js';
+import { face, needle, scale, headingDrum, lamp, label, flapIndicator } from './dials.js';
 import { rafAltimeter, luftwaffeAltimeter } from './altimeters.js';
 import { rafAirspeed } from './airspeed.js';
 import { rafTachometer } from './engineGauges.js';
 import { rafHorizon, rafClimb, rafTurnSlip } from './rafBlindFlying.js';
+import { BF109_LAYOUT, bf109Panel } from './bf109Panel.js';
 
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
@@ -42,6 +42,8 @@ export function instrumentReadings(sim) {
     rpm: plane.omega / UNIT.RPM,
     manifold: raf ? (d.map - ISA.P0) / UNIT.PSI : d.map / UNIT.ATA,
     pitchClock: raf ? null : { hours: (minutes / 60) % 12, minutes: minutes % 60 },
+    // Red marks on the Luftwaffe engine gauges: the 5-minute rating's rpm and manifold pressure.
+    limits: { rpm: [ac.propeller.rpmMax / UNIT.RPM], manifold: raf ? [] : [d.ratedMap / UNIT.ATA] },
     gearDown: plane.surfaces.gear > 0.99,
     gearUp: plane.surfaces.gear < 0.01,
     flaps: plane.surfaces.flaps, // fraction of travel
@@ -115,46 +117,6 @@ function rafPanel(g, x0, y0, r, v) {
   flapIndicator(g, at(L.flaps)[0], at(L.flaps)[1] + r * 0.55, r * 1.5, v, { up: 'UP', down: 'DOWN', takeoff: 'T/O', landing: 'LAND' });
 }
 
-// Bf 109 E panel layout, after a photograph of a preserved E (D32): the propeller pitch clock at the top
-// centre; altimeter above airspeed on the left; the compass above the turn and bank in the middle (as the
-// product owner placed them); a gap for the
-// gunsight placard, then the rpm gauge with the smaller manifold-pressure gauge beside it on the right; the
-// undercarriage indicator and flap position on the left. Positions in dial radii from the top centre.
-const LW_LAYOUT = {
-  width: 12.8, height: 5.9,
-  pitchClock: [0, 0.66], altimeter: [-2.4, 2.3], airspeed: [-2.4, 4.6], compass: [0, 2.3], turn: [0, 4.6],
-  rpm: [3.5, 2.6], ata: [5.4, 2.6], gear: [-4.9, 2.5], flaps: [-4.9, 4.4],
-  sizes: { pitchClock: 0.56, ata: 0.72 },
-};
-
-function luftwaffePanel(g, x0, y0, r, v) {
-  const L = LW_LAYOUT;
-  const at = ([dx, dy]) => [x0 + dx * r, y0 + dy * r];
-  luftwaffeAltimeter(g, ...at(L.altimeter), r, v.altitude, 1013);
-  gauge(g, ...at(L.airspeed), r, v.airspeed, { min: 0, max: 750, ...ARC, major: 100, minor: 50, label: (s) => String(s) });
-  label(g, at(L.airspeed)[0], at(L.airspeed)[1] + r * 0.66, r * 0.7, 'km/h');
-  turnAndSlip(g, ...at(L.turn), r, v.turnRate, v.sideG);
-  headingDrum(g, ...at(L.compass), r, v.heading);
-  gauge(g, ...at(L.rpm), r, v.rpm / 100, { min: 0, max: 36, ...ARC, major: 4, minor: 2, label: (s) => String(s) });
-  label(g, at(L.rpm)[0], at(L.rpm)[1] + r * 0.66, r * 0.7, 'U/min ×100');
-  const ra = r * L.sizes.ata;
-  gauge(g, ...at(L.ata), ra, v.manifold, { min: 0.6, max: 1.8, ...ARC, major: 0.2, minor: 0.1, label: (s) => s.toFixed(1) });
-  label(g, at(L.ata)[0], at(L.ata)[1] + ra * 0.66, ra * 0.9, 'ata');
-  // Propeller pitch clock: hour and minute hands (S32).
-  const rc = r * L.sizes.pitchClock;
-  const [cx, cy] = at(L.pitchClock);
-  face(g, cx, cy, rc);
-  scale(g, cx, cy, rc, { min: 0, max: 12, start: 0, end: Math.PI * 2, major: 1, minor: 1, label: (s) => (s === 0 ? '12' : s === 12 ? '' : String(s)) });
-  needle(g, cx, cy, rc * 0.5, (v.pitchClock.hours / 12) * Math.PI * 2, 4);
-  needle(g, cx, cy, rc * 0.82, (v.pitchClock.minutes / 60) * Math.PI * 2, 2);
-  const [gx, gy] = at(L.gear);
-  lamp(g, gx - r * 0.35, gy, r * 0.17, '#3fbf4a', v.gearDown, 'AUS');
-  lamp(g, gx + r * 0.35, gy, r * 0.17, '#d8402e', v.gearUp, 'EIN');
-  label(g, gx, gy - r * 0.45, r * 1.3, 'FAHRWERK');
-  label(g, ...at(L.flaps), r * 1.3, 'KLAPPEN');
-  flapIndicator(g, at(L.flaps)[0], at(L.flaps)[1] + r * 0.55, r * 1.5, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'START', landing: 'LANDUNG' });
-}
-
 export class InstrumentPanel {
   constructor() {
     this.canvas = document.createElement('canvas');
@@ -187,13 +149,15 @@ export class InstrumentPanel {
     if (!this.visible) return;
     const v = instrumentReadings(sim);
     const width = window.innerWidth;
-    const L = v.raf ? RAF_LAYOUT : LW_LAYOUT;
-    const r = Math.min(66, (width * 0.92) / L.width, (window.innerHeight * 0.4) / L.height);
+    const L = v.raf ? RAF_LAYOUT : BF109_LAYOUT;
+    const r = Math.min(66, (width * 0.96) / L.width, (window.innerHeight * (L.screenShare ?? 0.4)) / L.height);
     const height = L.height * r + 6;
     const g = this.context(width, height);
-    g.fillStyle = 'rgba(18, 18, 16, 0.94)';
-    g.fillRect((width - L.width * r) / 2, 0, L.width * r, height);
+    if (!L.ownBackground) {
+      g.fillStyle = 'rgba(18, 18, 16, 0.94)';
+      g.fillRect((width - L.width * r) / 2, 0, L.width * r, height);
+    }
     if (v.raf) rafPanel(g, width / 2, 0, r, v);
-    else luftwaffePanel(g, width / 2, 0, r, v);
+    else bf109Panel(g, width / 2, 0, r, v);
   }
 }

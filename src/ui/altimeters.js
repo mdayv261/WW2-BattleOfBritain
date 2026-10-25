@@ -133,7 +133,7 @@ export function rafAltimeter(g, x, y, r, feet, millibar, title) {
  * bottom and 3 at the top, marks every 100 m (longer every 500 m), the white millibar window under the 3
  * and "Höhe km" in the lower half. Altitude in metres; the setting window shows `millibar`.
  */
-export function luftwaffeAltimeter(g, x, y, r, metres, millibar, title) {
+export function luftwaffeAltimeter(g, x, y, r, metres, millibar, title, withWindow = true) {
   face(g, x, y, r);
   const angle = (m) => Math.PI + (m / 6000) * Math.PI * 2; // 0 km at six o'clock, clockwise
   g.strokeStyle = LUMINOUS;
@@ -154,10 +154,41 @@ export function luftwaffeAltimeter(g, x, y, r, metres, millibar, title) {
     const a = angle(k * 1000);
     g.fillText(String(k), x + Math.sin(a) * r * 0.63, y - Math.cos(a) * r * 0.63);
   }
-  // Millibar window: a white scale sliding behind an index under the 3.
+  if (withWindow) millibarWindow(g, x, y - r * 0.3, r, millibar);
+  g.font = `bold ${Math.round(r * 0.17)}px ui-sans-serif, Helvetica, sans-serif`;
+  g.fillText('Höhe', x, y + r * 0.32);
+  g.font = `bold ${Math.round(r * 0.13)}px ui-sans-serif, Helvetica, sans-serif`;
+  g.fillText('km', x, y + r * 0.48);
+  // The hand: cream pointer with a broad dark tail.
+  g.save();
+  g.translate(x, y);
+  g.rotate(angle(metres % 6000));
+  g.fillStyle = '#1c1c1a';
+  g.beginPath();
+  g.moveTo(-r * 0.05, 0);
+  g.lineTo(-r * 0.12, r * 0.28);
+  g.lineTo(r * 0.12, r * 0.28);
+  g.lineTo(r * 0.05, 0);
+  g.fill();
+  g.strokeStyle = LUMINOUS;
+  g.lineWidth = 3;
+  g.lineCap = 'round';
+  g.beginPath();
+  g.moveTo(0, -r * 0.05);
+  g.lineTo(0, -r * 0.85);
+  g.stroke();
+  g.restore();
+  g.fillStyle = '#1c1c1a';
+  g.beginPath();
+  g.arc(x, y, r * 0.06, 0, Math.PI * 2);
+  g.fill();
+  if (title) caption(g, x, y, r, title);
+}
+
+/** Millibar window: a white scale sliding behind an index, centred at (x, wy), sized for a dial of radius r. */
+export function millibarWindow(g, x, wy, r, millibar) {
   const ww = r * 0.6;
   const wh = r * 0.2;
-  const wy = y - r * 0.3;
   g.save();
   g.beginPath();
   g.rect(x - ww / 2, wy - wh / 2, ww, wh);
@@ -187,32 +218,4 @@ export function luftwaffeAltimeter(g, x, y, r, metres, millibar, title) {
   g.fillStyle = LUMINOUS;
   g.font = `${Math.round(r * 0.08)}px ui-sans-serif, Helvetica, sans-serif`;
   g.fillText('Millibar', x, wy + wh * 0.85);
-  g.font = `bold ${Math.round(r * 0.17)}px ui-sans-serif, Helvetica, sans-serif`;
-  g.fillText('Höhe', x, y + r * 0.32);
-  g.font = `bold ${Math.round(r * 0.13)}px ui-sans-serif, Helvetica, sans-serif`;
-  g.fillText('km', x, y + r * 0.48);
-  // The hand: cream pointer with a broad dark tail.
-  g.save();
-  g.translate(x, y);
-  g.rotate(angle(metres % 6000));
-  g.fillStyle = '#1c1c1a';
-  g.beginPath();
-  g.moveTo(-r * 0.05, 0);
-  g.lineTo(-r * 0.12, r * 0.28);
-  g.lineTo(r * 0.12, r * 0.28);
-  g.lineTo(r * 0.05, 0);
-  g.fill();
-  g.strokeStyle = LUMINOUS;
-  g.lineWidth = 3;
-  g.lineCap = 'round';
-  g.beginPath();
-  g.moveTo(0, -r * 0.05);
-  g.lineTo(0, -r * 0.85);
-  g.stroke();
-  g.restore();
-  g.fillStyle = '#1c1c1a';
-  g.beginPath();
-  g.arc(x, y, r * 0.06, 0, Math.PI * 2);
-  g.fill();
-  if (title) caption(g, x, y, r, title);
 }
