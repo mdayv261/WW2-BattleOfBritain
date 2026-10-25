@@ -75,6 +75,8 @@ All values are stored in SI units. The original figure and unit from the source 
 | S29 | Scientific Testing Institute of the Red Army Air Force (NII VVS), 4th Department, "German bomber Heinkel He-111 (types H-6 and H-11)", Moscow, 1943 | https://archive.org/details/111-1943 | Period government description and test data of captured aircraft, in Russian (scan on archive site, public-domain mark) |
 | S30 | E. P. Hartman and D. Biermann, "The Aerodynamic Characteristics of Full-Scale Propellers Having 2, 3, and 4 Blades of Clark Y and R.A.F. 6 Airfoil Sections", NACA Report 640, 1938 (propeller 5868-9, 3 blades, 10 ft) | https://ntrs.nasa.gov/citations/19930091715 | Government research report |
 | S31 | J. R. Vensel and W. H. Phillips, "Stalling Characteristics of the Supermarine Spitfire VA Airplane", NACA Advance Confidential Report, Sept 1942 | https://ntrs.nasa.gov/citations/19930092581 | Government research report |
+| S32 | M. B. Morgan and R. Smelt, "Aerodynamic Features of German Aircraft: Messerschmitt Me 109 Handling and Manoeuvrability Tests", RAE Report, September 1940 (captured Bf 109 E-3, tested May-June 1940): text, Table 1 and Figs. 1, 3 and 5 | http://www.kurfurst.org/Tactical_trials/109E_UKtrials/Morgan.html | Period test report (transcription with the report's figures, on archive site) |
+| S33 | Air Ministry, Air Publication 1565A Vol. I, "Pilot's Notes: The Spitfire I Aeroplane, Merlin II or III Engine" (loose-leaf, pages dated September 1941 to May 1942), The Museum of Flight Library, Manuals Collection, call number MANACT.S8.S65.3 | https://digitalcollections.museumofflight.org/nodes/view/2854 | Museum record (scan of the Pilot's Notes) |
 
 **Archive sites used (D8):**
 - wwiiaircraftperformance.org;
@@ -209,6 +211,50 @@ so it is used for wing geometry, control surfaces, stall and handling only, rate
 | Governor gain (blade-angle rate per fractional rpm error) (`propeller.governorGain`) | 3 | rad/s | — | ASSUMPTION | estimate | Settles the rpm in about a second. |
 | Maximum blade-angle rate (`propeller.pitchRate`) | 0.17 | rad/s | — | ASSUMPTION | estimate | About 10°/s; no source. |
 
+
+### Undercarriage and ground contact (Phase 2)
+
+Positions are from the centre of gravity in body axes (x forward, y up, z right), wheels with their legs extended.
+They were measured from the source's scaled drawing; the centre of gravity's height is not stated anywhere, so it is
+assumed to lie on the thrust line, which makes the heights estimates.
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Main wheel centre, ahead of the centre of gravity (`gear.main.x`) | 0.25 | m | about 10 in | S12 | medium | Measured from S12 Fig. 4 (Hurricane II three-view; same undercarriage as the Mk I). The centre of gravity is 27.8 in behind the wing leading edge (S12). |
+| Main wheel centre, height (`gear.main.y`) | -1.752 | m | — | S12, ASSUMPTION | estimate | Measured from S12 Fig. 4 below the thrust line; the centre of gravity's height is assumed to be on the thrust line. |
+| Half the main wheel track (`gear.main.z`) | 1.194 | m | track 7 ft 10 in | S12 | medium | Dimensioned on S12 Fig. 4. |
+| Main wheel radius (`gear.main.radius`) | 0.29 | m | — | S12 | medium | Measured from S12 Fig. 4. |
+| Tailwheel centre, x (`gear.tail.x`) | -5.54 | m | — | S12 | medium | Measured from S12 Fig. 4. |
+| Tailwheel centre, height (`gear.tail.y`) | -0.828 | m | — | S12, ASSUMPTION | estimate | Set so the parked aircraft sits at the 10.2° ground angle measured on S12 Fig. 4 (the tailwheel as drawn gives 9.8°). |
+| Tailwheel radius (`gear.tail.radius`) | 0.115 | m | — | S12 | medium | Measured from S12 Fig. 4. |
+| Ground angle: thrust line to the ground on all three wheels (`gear.groundAngle`) | 10.2 | deg | — | S12 | medium | Measured on S12 Fig. 4 (the ground line is drawn but not labelled). S12: the ground angle is below the stalling attitude, so tail-first landings could be made. |
+| Main leg and tyre squash under the parked weight (`gear.mainDeflection`) | 0.1 | m | — | ASSUMPTION | estimate | No source. Sets the spring rate of each main leg (the parked weight divided by this). |
+| Tailwheel squash under the parked weight (`gear.tailDeflection`) | 0.06 | m | — | ASSUMPTION | estimate | No source. Sets the tailwheel's spring rate. |
+| Oleo damping, fraction of critical (`gear.dampingRatio`) | 0.6 | fraction | — | ASSUMPTION | estimate | No source; typical of an oleo-pneumatic leg. Stops the aircraft bouncing on its legs. |
+| Most braking force as a fraction of the wheel's load (`gear.brake`) | 0.3 | fraction | — | ASSUMPTION | estimate | No measured value; typical of drum brakes on grass. The tail-lift limit, not this, mostly sets how hard the scripted pilot can brake (FLIGHT_VALIDATION.md). |
+| Tailwheel castors freely (1 = yes) (`gear.tail.castor`) | 1 | — | — | ASSUMPTION | estimate | Castoring tailwheel assumed; steering is by rudder and differential brakes. Not confirmed from a source (see gaps). |
+| Left wingtip, x (`contacts.leftTip.x`) | -0.3 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Left wingtip, y (`contacts.leftTip.y`) | -0.26 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Left wingtip, z (`contacts.leftTip.z`) | -6.1 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Right wingtip, x (`contacts.rightTip.x`) | -0.3 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Right wingtip, y (`contacts.rightTip.y`) | -0.26 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Right wingtip, z (`contacts.rightTip.z`) | 6.1 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the nose, x (`contacts.nose.x`) | 1.55 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the nose, y (`contacts.nose.y`) | -0.55 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the nose, z (`contacts.nose.z`) | 0 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the belly (radiator), x (`contacts.belly.x`) | -1.08 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the belly (radiator), y (`contacts.belly.y`) | -1.17 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the belly (radiator), z (`contacts.belly.z`) | 0 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, x (`contacts.tail.x`) | -5.4 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, y (`contacts.tail.y`) | -0.78 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, z (`contacts.tail.z`) | 0 | m | — | S12, ASSUMPTION | estimate | Crash point, read approximately from S12 Fig. 4. Touching the ground with it ends the flight. |
+| Propeller hub ahead of the centre of gravity (`propHub.x`) | 2.22 | m | — | S12 | medium | Measured from S12 Fig. 4. |
+| Propeller hub height (`propHub.y`) | 0 | m | — | ASSUMPTION | estimate | On the thrust line, which is assumed to pass through the centre of gravity. |
+| Pilot's eye, x (`eye.x`) | -0.89 | m | — | S12, ASSUMPTION | estimate | Read from S12 Fig. 4 (cockpit position); the eye position itself is estimated. |
+| Pilot's eye, height (`eye.y`) | 0.65 | m | — | S12, ASSUMPTION | estimate | A little below the canopy top in S12 Fig. 4. |
+| Flap positions besides up (`controls.flapStops`) | 4 | — | — | ASSUMPTION | estimate | Hydraulic flaps that could be stopped part-way assumed; the Mk I Pilot's Notes were not found (see gaps). |
+| Elevator trim, time from one end to the other (`controls.trimTime`) | 8 | s | — | ASSUMPTION | estimate | No source; a handwheel. S12: no rudder trim tab was fitted, so none is modelled. |
+
 ## Supermarine Spitfire Mk I (Merlin III)
 
 S4 is the key test: a production Spitfire I with the Merlin III and a Rotol constant-speed airscrew. It was flown at
@@ -322,6 +368,61 @@ Its airframe and wing are the Mk I's, so it is used for geometry, stall and hand
 | Net gyroscopic inertia at propeller speed (`propeller.gyroInertia`) | 20 | kg m² | — | ASSUMPTION | estimate | The propeller's spin, less the crankshaft's: through a single spur reduction gear the crankshaft turns the other way, cancelling part of the propeller's gyroscopic effect. Estimate; checkpoint 3 found 50 kg m² made spins tumble. |
 | Governor gain (blade-angle rate per fractional rpm error) (`propeller.governorGain`) | 3 | rad/s | — | ASSUMPTION | estimate | Settles the rpm in about a second. |
 | Maximum blade-angle rate (`propeller.pitchRate`) | 0.17 | rad/s | — | ASSUMPTION | estimate | About 10°/s; no source. |
+
+
+### Undercarriage and ground contact (Phase 2)
+
+Positions are from the centre of gravity in body axes (x forward, y up, z right), wheels with their legs extended.
+They were measured from the source's scaled drawing; the centre of gravity's height is not stated anywhere, so it is
+assumed to lie on the thrust line, which makes the heights estimates.
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Main wheel centre, ahead of the centre of gravity (`gear.main.x`) | 0.26 | m | about 10 in | S11 | medium | Measured from S11 Fig. 4 (Spitfire VA three-view; same undercarriage on the Mk I). The centre of gravity is 31.4 in behind the wing root leading edge (S11). |
+| Main wheel centre, height (`gear.main.y`) | -1.6 | m | — | S11, ASSUMPTION | estimate | Measured from S11 Fig. 4 below the thrust line; the centre of gravity's height is assumed to be on the thrust line. |
+| Half the main wheel track (`gear.main.z`) | 0.889 | m | track 5 ft 10 in | S11 | medium | Dimensioned on S11 Fig. 4. |
+| Main wheel radius (`gear.main.radius`) | 0.31 | m | — | S11 | medium | Measured from S11 Fig. 4 (about 24 in diameter). |
+| Tailwheel centre, x (`gear.tail.x`) | -6.01 | m | — | S11 | medium | Measured from S11 Fig. 4. |
+| Tailwheel centre, height (`gear.tail.y`) | -0.523 | m | — | S11, ASSUMPTION | estimate | Set so the parked aircraft sits at the 11.2° ground angle of S11 Fig. 4. The tailwheel as drawn gives 12.5°; this places it 0.12 m lower. |
+| Tailwheel radius (`gear.tail.radius`) | 0.09 | m | — | S11 | medium | Measured from S11 Fig. 4. |
+| Ground angle: thrust line to the ground on all three wheels (`gear.groundAngle`) | 11.2 | deg | 11.2° | S11 | medium | Dimensioned on S11 Fig. 4 (Spitfire VA; close variant). The model's parked attitude equals it. |
+| Main leg and tyre squash under the parked weight (`gear.mainDeflection`) | 0.1 | m | — | ASSUMPTION | estimate | No source. Sets the spring rate of each main leg (the parked weight divided by this). |
+| Tailwheel squash under the parked weight (`gear.tailDeflection`) | 0.06 | m | — | ASSUMPTION | estimate | No source. Sets the tailwheel's spring rate. |
+| Oleo damping, fraction of critical (`gear.dampingRatio`) | 0.6 | fraction | — | ASSUMPTION | estimate | No source; typical of an oleo-pneumatic leg. Stops the aircraft bouncing on its legs. |
+| Most braking force as a fraction of the wheel's load (`gear.brake`) | 0.3 | fraction | — | ASSUMPTION | estimate | No measured value; typical of drum brakes on grass. The tail-lift limit, not this, mostly sets how hard the scripted pilot can brake (FLIGHT_VALIDATION.md). |
+| Tailwheel castors freely (1 = yes) (`gear.tail.castor`) | 1 | — | — | ASSUMPTION | estimate | Castoring tailwheel assumed; steering is by rudder and differential brakes. Not confirmed from a source (see gaps). |
+| Left wingtip, x (`contacts.leftTip.x`) | -0.3 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Left wingtip, y (`contacts.leftTip.y`) | 0.04 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Left wingtip, z (`contacts.leftTip.z`) | -5.62 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Right wingtip, x (`contacts.rightTip.x`) | -0.3 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Right wingtip, y (`contacts.rightTip.y`) | 0.04 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Right wingtip, z (`contacts.rightTip.z`) | 5.62 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the nose, x (`contacts.nose.x`) | 1.6 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the nose, y (`contacts.nose.y`) | -0.55 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the nose, z (`contacts.nose.z`) | 0 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the belly (radiator), x (`contacts.belly.x`) | 0 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the belly (radiator), y (`contacts.belly.y`) | -0.97 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Lowest point of the belly (radiator), z (`contacts.belly.z`) | 0 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, x (`contacts.tail.x`) | -5.7 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, y (`contacts.tail.y`) | -0.36 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, z (`contacts.tail.z`) | 0 | m | — | S11, ASSUMPTION | estimate | Crash point, read approximately from S11 Fig. 4. Touching the ground with it ends the flight. |
+| Propeller hub ahead of the centre of gravity (`propHub.x`) | 2.18 | m | — | S11 | medium | Measured from S11 Fig. 4 (plane of the airscrew). |
+| Propeller hub height (`propHub.y`) | 0 | m | — | ASSUMPTION | estimate | On the thrust line, which is assumed to pass through the centre of gravity. |
+| Pilot's eye, x (`eye.x`) | -1.39 | m | — | S11, ASSUMPTION | estimate | Read from S11 Fig. 4 (cockpit position); the eye position itself is estimated. |
+| Pilot's eye, height (`eye.y`) | 0.48 | m | — | S11, ASSUMPTION | estimate | About 2 in below the canopy top in S11 Fig. 4. |
+| Flap positions besides up (1 = up or fully down only) (`controls.flapStops`) | 1 | — | two positions only, up and fully down | S33 | medium | Pneumatic split flaps; they 'cannot therefore be used to assist take-off' (S33). |
+| Elevator trim, time from one end to the other (`controls.trimTime`) | 8 | s | — | ASSUMPTION | estimate | No source; a handwheel. |
+| Yaw moment of the rudder trim tab at full travel (`aero.rudderTrimCn`) | 0.02 | — | — | S11, S33, ASSUMPTION | estimate | S11 lists a rudder trim tab and S33 sets it 'fully to starboard' for take-off. Its power was not found: a third of the rudder's assumed. |
+
+### Take-off, landing and ground running (validation data, Phase 2)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Landing run with brakes | 283.5 | m | 310 yd | S4 | medium | N3171, from touchdown; corrected to zero wind and standard atmosphere. Best landing speed 66 mph by the pilot's indicator, gliding in at 87 mph (S4). |
+| Take-off distance to clear 50 ft | 338 | m | 370 yd | S4 | medium | N3171, zero wind, standard atmosphere. |
+| Engine speed at full throttle on the ground | 2675 | rpm | 2650 - 2700 | S33 | medium | Static run-up with the propeller control fully forward; 'TWO men on the tail' are required for it (S33). |
+| Approach speeds | 38 | m/s | engine assisted about 85 mph IAS; glide 90 mph IAS | S33 | medium | Flaps and undercarriage down. S33's position-error table adds 10 mph at 100-110 mph, so these readings are about 10 mph below the true indicated airspeed. |
+| Maximum speed, flaps down | 62.6 | m/s | 140 mph IAS | S33 | medium | Undercarriage down: 160 mph (S6, S33). |
 
 ## Rolls-Royce Merlin III (Hurricane I and Spitfire I)
 
@@ -480,6 +581,57 @@ in armament and armour (details and weights are open gaps). This is flagged as a
 - The Rechlin comparison (S22) says the 109 E was about 20 km/h faster than the Spitfire at sea level. Against S3's
   283 mph (455 km/h) for the Spitfire, that supports a 109 E sea-level speed nearer 475 km/h.
 
+
+### Undercarriage and ground contact (Phase 2)
+
+Positions are from the centre of gravity in body axes (x forward, y up, z right), wheels with their legs extended.
+They were measured from the source's scaled drawing; the centre of gravity's height is not stated anywhere, so it is
+assumed to lie on the thrust line, which makes the heights estimates.
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Main wheel centre, ahead of the centre of gravity (`gear.main.x`) | 0.584 | m | about 23 in | S32 | medium | Measured from the RAE's scaled side view (S32 Fig. 5). The centre of gravity is 24.8 in behind the root leading edge (S32); S32: 'unusually far behind the main wheels'. |
+| Main wheel centre, height (`gear.main.y`) | -1.365 | m | — | S32, ASSUMPTION | estimate | Measured from S32 Fig. 5 below the thrust line; the centre of gravity's height is assumed to be on the thrust line. |
+| Half the main wheel track (`gear.main.z`) | 0.95 | m | — | S32, ASSUMPTION | estimate | Track about 1.9 m (± 0.1 m) measured from the small front view of S32 Fig. 1 against its scale; not dimensioned. |
+| Main wheel radius (`gear.main.radius`) | 0.315 | m | — | S32 | medium | Measured from S32 Fig. 5. |
+| Tailwheel centre, x (`gear.tail.x`) | -5.22 | m | — | S32 | medium | Measured from S32 Fig. 5. |
+| Tailwheel centre, height (`gear.tail.y`) | 0.047 | m | — | S32, ASSUMPTION | estimate | Set so the parked aircraft sits at the 15.5° ground angle (the tailwheel as drawn gives 15.0°). |
+| Tailwheel radius (`gear.tail.radius`) | 0.07 | m | — | S32 | medium | Measured from S32 Fig. 5 (a small drawing). |
+| Ground angle: thrust line to the ground on all three wheels (`gear.groundAngle`) | 15.5 | deg | 17° at the wing root | S32 | medium | S32: 'the ground attitude has been made large, 17 deg. at the wing root'. The thrust line measures 15.5° on S32 Fig. 5, so the root is set about 1.5° above the thrust line (not stated). |
+| Main leg and tyre squash under the parked weight (`gear.mainDeflection`) | 0.1 | m | — | ASSUMPTION | estimate | No source. Sets the spring rate of each main leg (the parked weight divided by this). |
+| Tailwheel squash under the parked weight (`gear.tailDeflection`) | 0.06 | m | — | ASSUMPTION | estimate | No source. Sets the tailwheel's spring rate. |
+| Oleo damping, fraction of critical (`gear.dampingRatio`) | 0.6 | fraction | — | ASSUMPTION | estimate | No source; typical of an oleo-pneumatic leg. Stops the aircraft bouncing on its legs. |
+| Most braking force as a fraction of the wheel's load (`gear.brake`) | 0.3 | fraction | — | ASSUMPTION | estimate | No measured value; typical of drum brakes on grass. The tail-lift limit, not this, mostly sets how hard the scripted pilot can brake (FLIGHT_VALIDATION.md). |
+| Tailwheel castors freely (1 = yes) (`gear.tail.castor`) | 1 | — | — | ASSUMPTION | estimate | Castoring tailwheel assumed; steering is by rudder and differential brakes. Not confirmed from a source (see gaps). |
+| Left wingtip, x (`contacts.leftTip.x`) | -0.2 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Left wingtip, y (`contacts.leftTip.y`) | 0.1 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Left wingtip, z (`contacts.leftTip.z`) | -4.95 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Right wingtip, x (`contacts.rightTip.x`) | -0.2 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Right wingtip, y (`contacts.rightTip.y`) | 0.1 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Right wingtip, z (`contacts.rightTip.z`) | 4.95 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Lowest point of the nose, x (`contacts.nose.x`) | 1.4 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Lowest point of the nose, y (`contacts.nose.y`) | -0.61 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Lowest point of the nose, z (`contacts.nose.z`) | 0 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Lowest point of the belly (radiator), x (`contacts.belly.x`) | -0.6 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Lowest point of the belly (radiator), y (`contacts.belly.y`) | -0.65 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Lowest point of the belly (radiator), z (`contacts.belly.z`) | 0 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, x (`contacts.tail.x`) | -5.0 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, y (`contacts.tail.y`) | 0.2 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, z (`contacts.tail.z`) | 0 | m | — | S32, ASSUMPTION | estimate | Crash point, read approximately from S32 Fig. 5. Touching the ground with it ends the flight. |
+| Propeller hub ahead of the centre of gravity (`propHub.x`) | 2.41 | m | — | S32 | medium | Measured from S32 Fig. 5. |
+| Propeller hub height (`propHub.y`) | 0 | m | — | ASSUMPTION | estimate | On the thrust line, which is assumed to pass through the centre of gravity. |
+| Pilot's eye, x (`eye.x`) | -0.89 | m | — | S32, ASSUMPTION | estimate | Read from S32 Fig. 5 (cockpit position); the eye position itself is estimated. |
+| Pilot's eye, height (`eye.y`) | 0.556 | m | — | S32, ASSUMPTION | estimate | A little below the canopy top in S32 Fig. 5. S20: the hood touches the head of a normal pilot. |
+| Flap positions besides up (`controls.flapStops`) | 4 | — | marked from zero to 40 degrees (fully down) in tens of degrees | S20 | medium | Handwheel; any position could be set (S32), the markings are every 10°. S32 takes off with 20°. |
+| Tailplane trim, time from one end to the other (`controls.trimTime`) | 18 | s | can be moved over the whole range in about 18 seconds | S20 | medium | Trim by a movable tailplane (S20, S32). Neither rudder nor aileron trim was fitted (S20). |
+
+### Take-off and landing (validation data, Phase 2)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Take-off ground run | 260 | m | 260 m | S15 | medium | Handbook figure; flap setting not stated. S32 used 20° for take-off. |
+| Approach speed | 41.6 | m/s | about 90 mph (S32); best gliding speed 93 mph (S20) | S20, S32 | medium | Flaps and undercarriage down, pilot's indicator. |
+
 ## Daimler-Benz DB 601A (Bf 109 E-4 and Bf 110 C-4)
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
@@ -614,6 +766,14 @@ Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or es
 | Pilot's maximum pull on the stick (`pilotMaxForce.pitch`) | 222 | N | 50 lb | ASSUMPTION | estimate | No source; a firm one-handed pull. |
 | Pilot's maximum sideways force on the stick (`pilotMaxForce.roll`) | 133 | N | 30 lb | S13 | medium | NACA: 30 lb is a reasonable upper limit for manoeuvring at high speed. |
 | Pilot's maximum pedal force (`pilotMaxForce.yaw`) | 667 | N | 150 lb | ASSUMPTION | estimate | No source; a strong push with one leg. |
+| Rolling resistance of a tyre on grass (`grass.rolling`) | 0.06 | fraction | — | ASSUMPTION | estimate | Typical of short dry grass in take-off calculations (about 0.05-0.08); no specific source checked. Changes take-off runs by a few per cent. |
+| Most grip of a tyre on grass (`grass.friction`) | 0.5 | fraction | — | ASSUMPTION | estimate | Sideways and braking together (a friction circle). Typical of dry grass; no source. |
+| Tyre slip angle at the peak side force (`grass.slipPeak`) | 0.14 | rad | about 8° | ASSUMPTION | estimate | Typical of an aircraft tyre; no source. |
+| Sideways drag of a castoring tailwheel (`castorFriction`) | 0.1 | fraction | — | ASSUMPTION | estimate | Friction in the tailwheel's pivot, as a fraction of its load; no source. |
+| Sliding speed below which tyre friction fades out (`slipSpeed`) | 0.1 | m/s | — | ASSUMPTION | estimate | Numerical: lets a parked or braked aircraft stand still without jittering. |
+| Ground-effect constant (`groundEffect`) | 16 | — | — | ASSUMPTION | estimate | Induced drag near the ground is multiplied by (16h/b)² / (1 + (16h/b)²), with h the height and b the span: the approximation usually attributed to McCormick (1979; the book was not consulted). The lift slope rises to match the larger effective aspect ratio. |
+| Lowest airspeed for the aerodynamic angles (`lowSpeed`) | 15 | m/s | — | ASSUMPTION | estimate | Below this (taxiing) the angles of attack and sideslip and the rotation terms are worked out as at this speed: the slipstream, not the free stream, sets the flow over the aircraft, and the terms would otherwise grow without limit. Below every Phase 1 test speed. |
+| Wheel descent rate that collapses the undercarriage (`sinkLimit`) | 3.5 | m/s | — | ASSUMPTION | estimate | About 11.5 ft/s. The period design figure was not found (see gaps). |
 
 ## Propeller data: NACA Report 640
 
@@ -681,4 +841,10 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 | Gun harmonisation ranges in August 1940 (RAF and Luftwaffe) | Weapons (Phase 5) | Fighter Command orders; AFDU reports |
 | Armour plate thickness and positions for all four fighters | Damage (Phase 5) | A&AEE and AFDU reports; Luftwaffe Ladepläne |
 | Moments of inertia (all aircraft) | Flight model | No measured data expected; Phase 1 estimates with the method shown |
+| Tailwheel types: castoring, fixed or lockable (all three) | Ground handling | Pilot's Notes A.P. 1564A (Hurricane I); Bf 109 E Flugzeug-Handbuch; Spitfire I descriptive A.P. |
+| Undercarriage design descent rate, oleo travel and tyre sizes | Hard landings, ground handling | A.P. 970 (design requirements); Dunlop and VDM/Elektron undercarriage records |
+| Height of the centre of gravity (all three) | Ground handling (wheel and tailwheel heights) | Weight and balance schedules; Luftwaffe Ladepläne |
+| Hurricane I Pilot's Notes (A.P. 1564A): flap selector, take-off and landing speeds | Controls and validation | Museum archives; the Mk II notes (A.P. 1564B) are a close variant |
+| Bf 109 E wheel track (dimensioned) | Ground handling | Flugzeug-Handbuch Teil 0; the S32 front view gives about 1.9 m |
+| Bf 109 E data from S32 not yet used in the Phase 1 model: mean chord 5.36 ft, dihedral 5.75°, VDM pitch range 22.5° to 90°, wing area 174 sq ft, CG at 0.302 of the mean chord | Flight model (the Phase 1 values are estimates) | Product owner to decide whether to replace the estimates (it would mean recalibrating the 109) |
 | Coolant system data (radiator area, temperature limits) for the Merlin III and DB 601A | Cooling model | Pilot's Notes; DB 601 manual (temperatures partly in S24 for the Bf 110) |

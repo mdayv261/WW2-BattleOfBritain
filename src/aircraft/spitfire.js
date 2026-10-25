@@ -41,8 +41,34 @@ export const spitfire = {
     rollRig: 0.0018,
     yawRig: 0.00092,
     stallBias: 0,
+    rudderTrimCn: 0.02, // yaw moment of the rudder trim tab at full travel
   },
-  controls: { pitchHinge: 0.0434, rollHinge: 0.035, yawHinge: 0.06, flapTime: 5, gearTime: 6 },
+  controls: {
+    pitchHinge: 0.0434, rollHinge: 0.035, yawHinge: 0.06, flapTime: 5, gearTime: 6,
+    flapStops: 1, // up or fully down only
+    trimTime: 8, // s: elevator trim from one end to the other
+  },
+  // Undercarriage and ground contact (Phase 2). Positions are from the centre of gravity in body axes
+  // (+x forward, +y up, +z right), wheels with their legs extended, measured from NACA's scaled drawing.
+  gear: {
+    main: { x: 0.26, y: -1.6, z: 0.889, radius: 0.31 },
+    tail: { x: -6.01, y: -0.523, radius: 0.09, castor: 1 },
+    groundAngle: 11.2 * DEG, // thrust line to the ground, sitting on all three wheels
+    mainDeflection: 0.1, // m: how far each main leg and tyre squash under the parked weight
+    tailDeflection: 0.06,
+    dampingRatio: 0.6,
+    brake: 0.3, // most braking force as a fraction of the wheel's load
+  },
+  // Points that must not touch the ground (a crash if they do).
+  contacts: {
+    leftTip: { x: -0.3, y: 0.04, z: -5.62 },
+    rightTip: { x: -0.3, y: 0.04, z: 5.62 },
+    nose: { x: 1.6, y: -0.55, z: 0 },
+    belly: { x: 0, y: -0.97, z: 0 },
+    tail: { x: -5.7, y: -0.36, z: 0 },
+  },
+  propHub: { x: 2.18, y: 0 },
+  eye: { x: -1.39, y: 0.48 },
   propeller: {
     type: 'constantSpeed',
     diameter: 3.277,

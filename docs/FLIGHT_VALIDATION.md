@@ -1,7 +1,7 @@
 # Flight Validation
 
 The flight model compared with sourced performance figures. Generated from `npm run validate`
-(updated 25 Oct 2026, Phase 1 checkpoint 3); the same comparison runs in `npm test`
+(updated 25 Oct 2026, Phase 2 checkpoint 1); the same comparison runs in `npm test`
 (`tests/physics/validation.test.js`). Sources are the S-numbers in `docs/AIRCRAFT_DATA.md`.
 
 ## Method
@@ -99,6 +99,42 @@ The flight model compared with sourced performance figures. Generated from `npm 
 | S22 | Time to height | 4000 m | Rechlin comparison flights, time to 4 km | 4.4 min | 4.6 min | +4.0% |
 | S20 | Stall (IAS) | 1500 m | A&AEE stall, flaps and undercarriage up (weight not stated) | 150 km/h | 148 km/h | -1.2% |
 
+## Take-offs and landings (Phase 2)
+
+A scripted test pilot (`src/dev/groundTests.js`) flies each case on level grass with no wind, as the sources were
+corrected to zero wind:
+- **take-off:** the throttle is opened over two seconds to full (no +12 lb). The stick is held forward until the tail
+  is up. At 0.9 times the power-off stalling speed the pilot eases the nose up toward the three-point attitude, so the
+  aircraft flies itself off. It then climbs at the power-off stalling speed (well above the power-on one). The Bf 109
+  uses 20° of flap (S32), the RAF fighters none.
+- **landing:** a power-off glide at 1.2 times the flaps-down stalling speed, then a flare and hold-off to a
+  three-point touchdown. The stick is then held back with as much brake as keeps the tail down.
+
+The approach speed matches the sources once the airspeed indicator's error is allowed for. The Spitfire's Pilot's
+Notes (S33) add 10 mph near 100 mph, so their 85-90 mph approach is about 1.2 times the NACA stalling speed.
+Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes these distances.
+
+| Aircraft | Source | Check | Source value | Model | Error |
+|---|---|---|---|---|---|
+| Spitfire Mk I | S4 | Take-off run (N3171, 2744 kg) | 225 yd | 254 yd | +12.7% |
+| Spitfire Mk I | S4 | Take-off to clear 50 ft | 370 yd | 451 yd | +22.0% |
+| Spitfire Mk I | S4 | Landing run with brakes | 310 yd | 458 yd | +48% |
+| Hurricane Mk I | S1 | Take-off to clear 50 ft (maximum weight) | 470 yd | 468 yd | -0.5% |
+| Hurricane Mk I | S1 | Landing from 50 ft (light weight) | 540 yd | 518 yd | -4.1% |
+| Bf 109 E-4 | S15 | Take-off ground run (20° flap) | 260 m | 185 m | -28.8% |
+| Bf 109 E-4 | S15 | Take-off to clear 20 m | 470 m | 363 m | -22.7% |
+| Bf 109 E-4 | S15 | Landing from 20 m | 530 m | 566 m | +6.8% |
+| Spitfire Mk I | S33 | Engine speed at full throttle on the ground | 2650-2700 rpm | 2700 rpm | within |
+
+**Ground behaviour already checked** (`tests/physics/ground.test.js`):
+- **Parked attitude:** each aircraft sits at its sourced ground angle within 0.5°.
+- **Bf 109 tailwheel load:** the 109 carries far more weight on its tailwheel than the RAF fighters (S32).
+- **Brakes on, full throttle:**
+  - the Spitfire tips onto its nose, which is why S33 wants "TWO men on the tail" for a run-up;
+  - the 109's tail stays down (S20, S32).
+- **Take-off swing:** the take-off script's rudder holds the RAF fighters against a swing to the left (about 4°)
+  and the 109 against one to the right (about 5°), as S12 and S20 describe. An automated check follows in checkpoint 3.
+
 ## Summary
 
 - **Within tolerance:** 45 of 52 rows, including all the calibration points.
@@ -129,3 +165,12 @@ The flight model compared with sourced performance figures. Generated from `npm 
 9. **Spins are flat.** The angle of attack settles at 60-80° with full back stick, steeper than a typical fighter spin.
    Entry and recovery behave as required (recovery within half a turn with opposite rudder and stick forward). No
    sourced spin data were found.
+10. **Spitfire take-off and landing distances long** (Phase 2): to 50 ft +22%, landing run +48% against N3171 (S4).
+    - The model lifts off and lands close to its stalling speeds. These come from NACA's calibrated tests (S31, about
+      90 mph clean and 80 mph flaps down), higher than S4's uncorrected 78 and 68 mph.
+    - After touchdown the wing still carries most of the weight, so braking only bites as the speed falls.
+11. **Bf 109 take-off too short** (Phase 2): ground run -29%, to 20 m -23% against the handbook (S15).
+    - The scripted pilot lifts off at about 130 km/h, using the 20° flap and the slipstream.
+    - S32 says pilots held the 109 on the ground for a while after the tail came up. That technique is not copied: one
+      technique is used for all three types.
+    - The handbook's take-off power (1.40 ata) is not modelled; the 5-minute rating is used.

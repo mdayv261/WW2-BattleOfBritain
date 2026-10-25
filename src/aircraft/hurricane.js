@@ -42,7 +42,31 @@ export const hurricane = {
     yawRig: 0.00116,
     stallBias: -0.01,
   },
-  controls: { pitchHinge: 0.0609, rollHinge: 0.0297, yawHinge: 0.06, flapTime: 5, gearTime: 6 },
+  controls: {
+    pitchHinge: 0.0609, rollHinge: 0.0297, yawHinge: 0.06, flapTime: 5, gearTime: 6,
+    flapStops: 4, // hydraulic flaps that can be stopped part-way
+    trimTime: 8, // s: elevator trim from one end to the other
+  },
+  // Undercarriage and ground contact (Phase 2). Positions are from the centre of gravity in body axes
+  // (+x forward, +y up, +z right), wheels with their legs extended, measured from NACA's scaled drawing.
+  gear: {
+    main: { x: 0.25, y: -1.752, z: 1.194, radius: 0.29 },
+    tail: { x: -5.54, y: -0.828, radius: 0.115, castor: 1 },
+    groundAngle: 10.2 * DEG, // thrust line to the ground, sitting on all three wheels
+    mainDeflection: 0.1,
+    tailDeflection: 0.06,
+    dampingRatio: 0.6,
+    brake: 0.3,
+  },
+  contacts: {
+    leftTip: { x: -0.3, y: -0.26, z: -6.1 },
+    rightTip: { x: -0.3, y: -0.26, z: 6.1 },
+    nose: { x: 1.55, y: -0.55, z: 0 },
+    belly: { x: -1.08, y: -1.17, z: 0 },
+    tail: { x: -5.4, y: -0.78, z: 0 },
+  },
+  propHub: { x: 2.22, y: 0 },
+  eye: { x: -0.89, y: 0.65 },
   propeller: {
     type: 'constantSpeed',
     diameter: 3.454,

@@ -9,19 +9,31 @@
 // ControlInput fields (all optional):
 //   pitch, roll, yaw: -1..1 (pitch +1 = stick back, roll +1 = right, yaw +1 = right rudder)
 //   throttle 0..1, rpm 0..1 (constant-speed lever), pitchSwitch -1/0/+1 (VDM: +1 coarser)
-//   trim -1..1, flaps 0/1, gear 0 (up) / 1 (down), radiator 0..1,
+//   trim -1..1, rudderTrim -1..1 (+1 right; only where fitted), flaps 0..1 (the selected position),
+//   gear 0 (up) / 1 (down), radiator 0..1, brake 0..1,
 //   emergency (boost cut-out pulled), engineAssist (automatic rpm on the Bf 109)
 
 import { common } from '../aircraft/common.js';
 import { clamp } from './interp.js';
 
 export function createSurfaces() {
-  return { elevator: 0, aileron: 0, rudder: 0, trim: 0, flaps: 0, gear: 0, radiator: 0, slatLeft: 0, slatRight: 0 };
+  return {
+    elevator: 0, aileron: 0, rudder: 0, trim: 0, rudderTrim: 0, flaps: 0, gear: 0, radiator: 0, slatLeft: 0, slatRight: 0,
+  };
 }
 
 /** Fraction of full deflection the pilot can reach on one axis at dynamic pressure q. */
 export function authority(hinge, maxForce, q) {
   return Math.min(1, maxForce / Math.max(hinge * q, 1e-9));
+}
+
+/**
+ * Flap position the selector asks for (0..1), rounded to the aircraft's stops: the Spitfire's flaps go
+ * only up or fully down; the others can be stopped part-way.
+ */
+export function flapTarget(ac, selected) {
+  const stops = ac.controls.flapStops;
+  return Math.round(clamp(Number(selected) || 0, 0, 1) * stops) / stops;
 }
 
 /** Moves a value toward a target at a fixed rate (units per second). */
@@ -40,8 +52,9 @@ export function updateSurfaces(ac, s, input, { q, tailQ }, dt) {
   s.aileron = clamp(input.roll ?? 0, -1, 1) * authority(c.rollHinge, f.roll, q);
   s.rudder = clamp(input.yaw ?? 0, -1, 1) * authority(c.yawHinge, f.yaw, tailQ);
   s.trim = clamp(input.trim ?? 0, -1, 1);
+  s.rudderTrim = ac.aero.rudderTrimCn ? clamp(input.rudderTrim ?? 0, -1, 1) : 0;
   s.radiator = clamp(input.radiator ?? 0, 0, 1);
-  s.flaps = approach(s.flaps, input.flaps ? 1 : 0, 1 / c.flapTime, dt);
+  s.flaps = approach(s.flaps, flapTarget(ac, input.flaps), 1 / c.flapTime, dt);
   s.gear = approach(s.gear, input.gear ? 1 : 0, 1 / c.gearTime, dt);
   return s;
 }

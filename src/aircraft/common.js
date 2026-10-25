@@ -14,4 +14,15 @@ export const common = {
   ramRecovery: 0.5, // fraction of dynamic pressure recovered at the supercharger intake
   tailSlipstream: 0.5, // fraction of the propeller's extra dynamic pressure felt at the tail
   pilotMaxForce: { pitch: 222, roll: 133, yaw: 667 }, // N: 50 lb, 30 lb, 150 lb
+  // Tyres on a grass aerodrome (Phase 2). Friction values are fractions of the wheel's load.
+  grass: {
+    rolling: 0.06, // rolling resistance of a free wheel
+    friction: 0.5, // most grip a tyre can give, sideways and braking together
+    slipPeak: 0.14, // rad: tyre slip angle at which the side force reaches its peak (about 8 degrees)
+  },
+  castorFriction: 0.1, // sideways drag of a castoring tailwheel (friction in its pivot)
+  slipSpeed: 0.1, // m/s: sliding speed below which tyre friction fades out, so a parked aircraft stays still
+  groundEffect: 16, // McCormick's constant: induced drag in ground effect x (16h/b)^2 / (1 + (16h/b)^2)
+  lowSpeed: 15, // m/s: below this the airflow angles and rotation terms are worked out as at this speed
+  sinkLimit: 3.5, // m/s: wheel descent rate at touchdown that collapses the undercarriage
 };

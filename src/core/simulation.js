@@ -61,10 +61,7 @@ export class Simulation {
     if (this.paused || this.crashed) return;
     this.copyPose(this.previous);
     stepAircraft(this.plane, this.input, dt);
-    if (this.plane.body.position.y <= 0) {
-      this.plane.body.position.y = 0;
-      this.crashed = true;
-    }
+    if (this.plane.ground.crash) this.crashed = true;
   }
 
   /** Runs the physics for `elapsed` seconds of real time. */

@@ -19,6 +19,7 @@ export const ISA = {
 // Unit conversions: multiply a value in the named unit to get SI.
 export const UNIT = {
   FT: 0.3048, // m
+  YD: 0.9144, // m
   MPH: 0.44704, // m/s
   KMH: 1 / 3.6, // m/s
   LB: 0.45359237, // kg

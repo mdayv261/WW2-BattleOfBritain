@@ -3,6 +3,7 @@ import { validationCases } from '../aircraft/validationCases.js';
 import { aircraftById } from '../aircraft/index.js';
 import { topSpeed, timeToClimb, ceiling, stallSpeed } from './performance.js';
 import { rollTest } from '../dev/flightTests.js';
+import { takeoffTest, landingTest } from '../dev/groundTests.js';
 import { equivalentAirspeed } from './atmosphere.js';
 
 /** A copy of an aircraft at another mass, with inertia scaled in proportion. */
@@ -28,6 +29,14 @@ export function modelValue(ac, testCase, point) {
     case 'roll':
       // Time-stepped roll with full stick and the rudder fixed, as NACA flew it (S11, S13).
       return rollTest(a, point.eas, point.altitude).pb2v;
+    case 'takeoffRun':
+      return takeoffTest(a, { flaps: testCase.flaps ?? 0 }).groundRun;
+    case 'takeoffScreen':
+      return takeoffTest(a, { flaps: testCase.flaps ?? 0, screen: point.screen }).toScreen;
+    case 'landingRun':
+      return landingTest(a, {}).fromTouchdown;
+    case 'landingScreen':
+      return landingTest(a, { screen: point.screen }).fromScreen;
     default:
       throw new Error(`unknown validation kind ${point.kind}`);
   }

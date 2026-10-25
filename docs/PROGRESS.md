@@ -8,8 +8,48 @@ Phase 0 (foundations and research) is done. The product owner reviewed it and an
 Phase 0 is signed off. The game is live at https://mdayv261.github.io/WW2-BattleOfBritain/ (repository
 https://github.com/mdayv261/WW2-BattleOfBritain). **Phase 1 checkpoint 1 (physics core and validation) is done
 **Phase 1 (single-engine flight model) is signed off** (25 Oct 2026, D27): the product owner flew it and accepted the
-acceptance test and the documented deviations. Next: **Phase 2 (controls, cameras, ground)**, planning first. Nothing
-from Phase 1 has been pushed yet; pushing needs the product owner's permission.
+acceptance test and the documented deviations. **Phase 2 (controls, cameras, ground)** is under way: the plan was approved (D28) and **checkpoint 1 (ground physics and
+take-off and landing validation) is done locally**. Next: checkpoint 2 (airfield, cameras, cockpit view, instruments and
+controls). Nothing from Phase 1 or 2 has been pushed yet; pushing needs the product owner's permission.
+
+## Phase 2 checkpoint 1: ground physics and take-off and landing validation (25 Oct 2026)
+
+**Done:**
+- **Research** (AIRCRAFT_DATA.md):
+  - wheel track, wheel and tailwheel positions, and ground angles, measured from the scaled drawings in S11, S12 and S32;
+  - centres of gravity (S11, S12, S32);
+  - two new sources: S32 (RAE Morgan report on the Bf 109 E-3) and S33 (Spitfire I Pilot's Notes, Museum of Flight).
+- **Ground model** (`src/physics/ground.js`, D28):
+  - oleo and tyre springs, rolling resistance, slip-angle side force and brakes (brake plus rudder);
+  - castoring tailwheels and ground effect;
+  - crash rules: wingtip, nose-over, propeller strike, belly landing, collapsed undercarriage.
+- **Starting on the ground:** `createOnGround` parks an aircraft with the engine idling.
+- **Flaps by aircraft:** the Spitfire's are up or down only (S33); the Hurricane's and 109's can stop part-way.
+- **Rudder trim:** Spitfire only.
+- **Elevator trim times:** each aircraft has its own; the 109's tailplane takes 18 s (S20).
+- **Scripted pilots and validation** (`src/dev/groundTests.js`, D29): run-up, take-off and landing, with the results
+  added to `npm run validate` and FLIGHT_VALIDATION.md.
+- **Tests:** `tests/physics/ground.test.js` covers parked attitude, wheel loads, brakes, run-up, ground effect, flaps and
+  crash rules. The validation test gained the take-off and landing rows.
+
+**Results:**
+- **Parked attitude:** each aircraft sits at its sourced ground angle within 0.5°.
+- **Spitfire full-throttle run-up:** 2,700 rpm (S33: 2,650-2,700). With the brakes on it tips onto its nose (S33: two men
+  on the tail). The 109's tail stays down (S20, S32).
+- **Distances within ±15%:** 4 of 8 (Hurricane take-off and landing, 109 landing, Spitfire take-off run).
+
+**Known issues:**
+1. **Spitfire take-off to 50 ft and landing run long:** +22% and +48%.
+2. **Bf 109 take-off short:** -29% (run) and -23% (to 20 m).
+3. **Taxiing needs constant rudder:** with no rudder a castoring-tailwheel aircraft swings into a ground loop, and can
+   tip onto a wingtip. This is realistic but hard on the keyboard; the auto-rudder assist comes in Phase 8.
+4. **Ground and sea in the test scene:** the test view still shows the sea, but the physics treats everywhere as level
+   grass until the airfield arrives in checkpoint 2.
+
+**Decisions needed from the product owner:**
+- **Accept the two take-off and landing deviations above?**
+- **Replace the Bf 109 estimates with S32's sourced values?** The values are the mean chord, dihedral, VDM pitch range
+  and wing area. Doing so means recalibrating the 109's drag and checking Phase 1 again.
 
 ## Phase 1 checkpoint 3: handling checks and tuning (25 Oct 2026)
 

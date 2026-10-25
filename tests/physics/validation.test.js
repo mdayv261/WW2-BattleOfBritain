@@ -1,11 +1,13 @@
-// Sourced performance figures (docs/FLIGHT_VALIDATION.md). Tolerances are the proposed Phase 1
-// acceptance test. Known deviations are listed with their reasons and must stay outside tolerance
-// (so a fix is noticed and the list updated).
+// Sourced performance figures (docs/FLIGHT_VALIDATION.md). Tolerances are the Phase 1 acceptance test,
+// and the proposed Phase 2 one for take-offs and landings. Known deviations are listed with their reasons
+// and must stay outside tolerance (so a fix is noticed and the list updated).
 import { describe, it, expect } from 'vitest';
 import { validateAircraft } from '../../src/physics/validation.js';
 import { UNIT } from '../../src/core/constants.js';
 
-const TOLERANCE = { speed: 0.05, climbTime: 0.10, ceiling: 0.05, roll: 0.15 };
+const TOLERANCE = {
+  speed: 0.05, climbTime: 0.10, ceiling: 0.05, roll: 0.15, takeoffRun: 0.15, takeoffScreen: 0.15, landingRun: 0.15, landingScreen: 0.15,
+};
 const STALL_TOLERANCE = 5 * UNIT.MPH;
 const CALIBRATION_TOLERANCE = 0.01;
 
@@ -18,6 +20,11 @@ const KNOWN = {
   'bf109e4|climbTime|4000': 'as above; the Rechlin figure (S22) agrees within 4%',
   'bf109e4|climbTime|5000': 'as above',
   'bf109e4|climbTime|6000': 'as above',
+  // Phase 2 take-offs and landings (scripted pilot, D29).
+  'spitfire|takeoffScreen|': 'climb to 50 ft too long: the model lifts off close to its (NACA) stalling speed',
+  'spitfire|landingRun|': 'landing run too long: the wing still carries most of the weight for the first part of the run',
+  'bf109e4|takeoffRun|': 'ground run too short: the scripted pilot lifts off near the stall; the 109 was held on the ground (S32)',
+  'bf109e4|takeoffScreen|': 'as above',
 };
 
 for (const id of ['spitfire', 'hurricane', 'bf109e4']) {

@@ -74,7 +74,7 @@ export class Hud {
     if (extra.joystick) lines.push('Joystick connected');
     this.strip.textContent = lines.join('\n');
 
-    if (sim.crashed) this.showMessage('Crashed — press R to restart');
+    if (sim.crashed) this.showMessage(`${sim.plane.ground.crash.cause} — press R to restart`);
     else if (sim.paused) this.showMessage('Paused — press P');
     else this.showMessage(null);
 

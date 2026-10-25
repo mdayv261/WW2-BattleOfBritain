@@ -12,6 +12,8 @@ import { enginePower, createCutout, updateCutout } from './engine.js';
 import { propellerLoads, bladeAngleForPower } from './propeller.js';
 import { aeroCoefficients } from './aero.js';
 import { createSurfaces, updateSurfaces, updateSlats } from './controls.js';
+import { createGround, groundLoads, updateGround, flatGrass } from './ground.js';
+import { common } from '../aircraft/common.js';
 import { engineFor } from '../aircraft/index.js';
 import { clamp, lerp } from './interp.js';
 
@@ -22,14 +24,27 @@ const X = new Vector3(1, 0, 0);
 const Y = new Vector3(0, 1, 0);
 const Z = new Vector3(0, 0, 1);
 
-/** Flow conditions seen by the airframe, from the rigid-body state. */
+/**
+ * Flow conditions seen by the airframe, from the rigid-body state. At walking pace on the ground the
+ * free stream no longer sets the flow over the aircraft (the slipstream does), so the angles are worked
+ * out as if moving forward at no less than common.lowSpeed; in flight this changes nothing.
+ */
 export function airflow(body) {
   const vb = worldToBody(body, body.velocity, _vb);
   const airspeed = vb.length();
-  const alpha = Math.atan2(-vb.y, Math.max(vb.x, 1e-6));
-  const beta = airspeed > 1e-6 ? Math.asin(clamp(vb.z / airspeed, -1, 1)) : 0;
+  const alpha = Math.atan2(-vb.y, Math.max(vb.x, common.lowSpeed));
+  const beta = Math.asin(clamp(vb.z / Math.max(airspeed, common.lowSpeed), -1, 1));
   const w = body.angularVelocity;
   return { vb: vb.clone(), airspeed, alpha, beta, p: w.x, q: w.z, r: -w.y };
+}
+
+/**
+ * Ground effect: the factor on induced drag at height h above the ground (McCormick's approximation
+ * with the constant in common.js); 1 well clear of the ground.
+ */
+export function groundEffectFactor(h, span) {
+  const x = (common.groundEffect * Math.max(h, 0.1)) / span;
+  return (x * x) / (1 + x * x);
 }
 
 /** The crankshaft speed the governor aims for. */
@@ -67,7 +82,10 @@ export function computeLoads(plane, input) {
   const S = ac.geometry.wingArea;
   const b = ac.geometry.span;
   const c = ac.geometry.mac;
-  const co = aeroCoefficients(ac, { ...flow, qBar, slipQ }, surfaces);
+  const terrain = plane.terrain ?? flatGrass;
+  const groundHeight = terrain.surfaceAt(body.position.x, body.position.z).height;
+  const groundEffect = groundEffectFactor(altitude - groundHeight, ac.geometry.span);
+  const co = aeroCoefficients(ac, { ...flow, qBar, slipQ, groundEffect }, surfaces);
 
   // Forces in the body frame: lift perpendicular to the airflow (in the plane of symmetry), drag
   // against it, side force along the right wing, thrust along the nose.
@@ -81,16 +99,20 @@ export function computeLoads(plane, input) {
     .addScaledVector(X, prop.thrust);
   const force = bodyToWorld(body, fb, new Vector3());
   force.y -= ac.mass.flying * G;
+  const ground = groundLoads(plane, input, terrain);
+  force.add(ground.force);
+  const groundBody = ground.force.clone().applyQuaternion(body.quaternion.clone().invert());
 
   const roll = co.croll * qBar * S * b - pr.rotation * prop.torque;
   const yawRight = co.cyaw * qBar * S * b - pr.rotation * ac.aero.swirl * Math.max(prop.thrust, 0) * pr.diameter;
   const pitch = co.cpitch * qBar * S * c;
-  const moment = new Vector3(roll, -yawRight, pitch);
+  const moment = new Vector3(roll, -yawRight, pitch).add(ground.moment);
   const momentum = new Vector3(pr.rotation * pr.gyroInertia * omegaProp, 0, 0);
 
-  const loadFactor = fb.y / (ac.mass.flying * G);
+  // What an accelerometer would read: everything but gravity, including the push of the ground.
+  const loadFactor = (fb.y + groundBody.y) / (ac.mass.flying * G);
   return {
-    force, moment, momentum, power, thrust: prop.thrust, torque: prop.torque, loadFactor,
+    force, moment, momentum, power, thrust: prop.thrust, torque: prop.torque, loadFactor, ground,
     diag: {
       altitude, airspeed: flow.airspeed, eas: equivalentAirspeed(flow.airspeed, altitude),
       alpha: flow.alpha, beta: flow.beta, qBar, loadFactor, power, map: eng.map, ratedMap: eng.ratedMap,
@@ -98,6 +120,7 @@ export function computeLoads(plane, input) {
       lift: co.cl * qBar * S, drag: co.cd * qBar * S, cl: co.cl, cd: co.cd,
       alphaLeft: co.alphaLeft, alphaRight: co.alphaRight, stalledLeft: co.stalledLeft, stalledRight: co.stalledRight,
       slatLeft: surfaces.slatLeft, slatRight: surfaces.slatRight, cutout: plane.cutout.factor,
+      groundHeight, groundEffect, onGround: ground.wheels.some(Boolean), wheelLoads: ground.wheels.map((w) => w?.load ?? 0),
     },
   };
 }
@@ -137,6 +160,7 @@ export function stepAircraft(plane, input, dt) {
     inertia: { x: ac.mass.ixx, y: ac.mass.izz, z: ac.mass.iyy },
   }, dt);
   plane.time += dt;
+  updateGround(plane, loads.ground, plane.terrain ?? flatGrass, plane.time);
   plane.last = loads.diag;
   return loads;
 }
@@ -148,10 +172,7 @@ export function stepAircraft(plane, input, dt) {
  * is the elevator-trim setting that holds it hands-off (clamped to the trim range).
  */
 export function createAircraft(ac, { altitude = 3000, speed = 110, heading = 0, throttle = 0.8, rpm = 0.8 } = {}) {
-  const plane = {
-    ac, engine: engineFor(ac), body: createState(), surfaces: createSurfaces(), cutout: createCutout(),
-    omega: 0, beta: ac.propeller.betaMin, time: 0, last: null, lastSlipQ: 0,
-  };
+  const plane = newPlane(ac);
   const input = { throttle, rpm, pitch: 0, roll: 0, yaw: 0, trim: 0 };
   plane.omega = governedSpeed(plane, input);
   const air = atmosphere(altitude);
@@ -168,6 +189,39 @@ export function createAircraft(ac, { altitude = 3000, speed = 110, heading = 0, 
   });
   plane.lastSlipQ = 0;
   refineTrim(plane, { ...input, trim: level.trim }, yaw, speed);
+  return plane;
+}
+
+/** An aircraft at rest at the origin, before a start position is set. */
+function newPlane(ac, terrain = flatGrass) {
+  return {
+    ac, engine: engineFor(ac), body: createState(), surfaces: createSurfaces(), cutout: createCutout(),
+    omega: 0, beta: ac.propeller.betaMin, time: 0, last: null, lastSlipQ: 0, trim: 0,
+    ground: createGround(ac), terrain,
+  };
+}
+
+/**
+ * Creates an aircraft parked on the ground with the engine idling, the undercarriage down and locked,
+ * facing `heading` (rad, clockwise from north) at (x, z). It is let settle on its springs for two
+ * seconds with the brakes on, so it starts at rest in its natural three-point attitude.
+ */
+export function createOnGround(ac, { x = 0, z = 0, heading = 0, terrain = flatGrass, idleRpm = 1000 } = {}) {
+  const plane = newPlane(ac, terrain);
+  const yaw = Math.PI / 2 - heading;
+  plane.body.quaternion.setFromEuler(new Euler(0, yaw, ac.gear.groundAngle, 'YXZ'));
+  const { main } = ac.gear;
+  const wheel = new Vector3(main.x, main.y, main.z).applyQuaternion(plane.body.quaternion);
+  const height = terrain.surfaceAt(x, z).height;
+  plane.body.position.set(x, height + main.radius - ac.gear.mainDeflection - wheel.y, z);
+  plane.surfaces.gear = 1;
+  plane.omega = (idleRpm * 2 * Math.PI) / 60;
+  const input = { throttle: 0, rpm: 1, gear: 1, brake: 1, trim: 0, pitch: 0, roll: 0, yaw: 0 };
+  for (let t = 0; t < 2; t += 1 / 120) stepAircraft(plane, input, 1 / 120);
+  plane.body.velocity.set(0, 0, 0);
+  plane.body.angularVelocity.set(0, 0, 0);
+  plane.ground.touchdown = null;
+  plane.time = 0;
   return plane;
 }
 

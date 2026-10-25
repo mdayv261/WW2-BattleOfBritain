@@ -529,3 +529,68 @@ The product owner flew the Phase 1 test version and signed Phase 1 off. This acc
 
 They are not tuned away. They may be revisited if better sources are found.
 
+## D28. Phase 2 plan and the ground model (25 Oct 2026, Phase 2 checkpoint 1)
+
+**Product owner's choices for Phase 2 (25 Oct 2026):**
+- a generic 1940 grass aerodrome (the real airfields come in Phase 4);
+- a pilot's-eye view with a simple canopy frame and 2D dials (full 3D cockpits stay in Phase 7);
+- one brake control plus rudder for all three aircraft;
+- the mouse only looks around (mouse flying in Phase 8).
+
+**Ground model** (`src/physics/ground.js`):
+- **Wheels:** each wheel is its oleo and tyre together, a spring and damper acting up from the ground. The springs are
+  set from the parked weight, and the wheel positions are measured from the sources' scaled drawings.
+- **Tyres:** rolling resistance, slip-angle side force, and brakes, all capped by the tyre's grip.
+- **Tailwheel:** castors freely (assumed for all three; not confirmed).
+- **Crash points:** wingtips, nose, belly, rear fuselage and the propeller tip. Touching with any of them ends the
+  flight with a named cause. Touching down faster than 3.5 m/s collapses the undercarriage.
+- **Ground effect:** McCormick's approximation for induced drag, with the matching rise in lift slope.
+
+**Brakes (deviation, product owner's choice):** the RAF relay-valve scheme (brake lever plus rudder, S33) is used for
+all three. The Bf 109 really had toe brakes on each pedal (S20, S32); the Logitech stick has none.
+
+**Tailwheel heights:** each is set so the parked aircraft sits at its sourced ground angle:
+- Spitfire 11.2° (S11);
+- Hurricane 10.2° (measured on S12's drawing);
+- Bf 109 15.5° to the thrust line, which is 17° at the wing root (S32).
+
+The centre of gravity's height is not stated anywhere, so it is assumed to lie on the thrust line.
+
+**Low-speed floor:** below 15 m/s the aerodynamic angles and rotation terms are worked out as at 15 m/s.
+- At walking pace the slipstream, not the free stream, sets the flow over the aircraft.
+- Dividing by a near-zero airspeed had produced huge, unphysical forces in a ground loop.
+- 15 m/s is below every Phase 1 test speed, so the signed-off flight results are unchanged.
+
+**New sources:**
+- **S32, the RAE "Morgan" report on the captured Bf 109 E-3:** drawings, centre of gravity, ground attitude and ground
+  handling.
+- **S33, the Spitfire I Pilot's Notes (A.P. 1565A) held by the Museum of Flight:** flaps, brakes, approach speeds,
+  static run-up rpm, and the position-error table.
+
+S32 also gives sourced values for several Phase 1 Bf 109 estimates (mean chord, dihedral, VDM pitch range, wing area).
+They are listed as a gap: using them would mean recalibrating the 109, so it is the product owner's decision.
+
+## D29. Validating take-offs and landings (25 Oct 2026, Phase 2 checkpoint 1)
+
+A scripted test pilot (`src/dev/groundTests.js`) flies the sourced take-offs and landings. One technique is used for all
+three aircraft, so the comparison is fair rather than tuned per type:
+- **take-off:** rotate at 0.9 times the power-off stalling speed and climb out at the stalling speed;
+- **landing:** approach at 1.2 times the flaps-down stalling speed, then a three-point touchdown, then braking as hard
+  as keeps the tail down.
+
+**Approach speeds and the airspeed indicator:** the period approach speeds are pilot's-indicator readings. The
+Spitfire's Pilot's Notes add 10 mph near 100 mph (S33), so 1.2 times the NACA stalling speed is the same approach.
+
+**Results:**
+- **Within ±15%:**
+  - the Hurricane's take-off and landing;
+  - the Bf 109's landing;
+  - the Spitfire's take-off run.
+- **Outside:**
+  - the Spitfire to 50 ft (+22%) and its landing run (+48%);
+  - the Bf 109's ground run (-29%) and its distance to 20 m (-23%).
+
+These are reported as deviations, not tuned away (FLIGHT_VALIDATION.md, items 10 and 11). The static run-up matches
+S33: 2,700 rpm (2,650-2,700). With the brakes on, full throttle tips a Spitfire onto its nose, which agrees with
+S33's two men on the tail.
+

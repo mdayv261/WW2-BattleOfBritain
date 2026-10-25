@@ -42,7 +42,31 @@ export const bf109e4 = {
     yawRig: -0.00146,
     stallBias: -0.02, // left wing drops at the stall
   },
-  controls: { pitchHinge: 0.0755, rollHinge: 0.0272, yawHinge: 0.06, flapTime: 8, gearTime: 8 },
+  controls: {
+    pitchHinge: 0.0755, rollHinge: 0.0272, yawHinge: 0.06, flapTime: 8, gearTime: 8,
+    flapStops: 4, // handwheel; marked 0 to 40 degrees in tens
+    trimTime: 18, // s: tailplane trim wheel from one end to the other
+  },
+  // Undercarriage and ground contact (Phase 2). Positions are from the centre of gravity in body axes
+  // (+x forward, +y up, +z right), wheels with their legs extended, measured from the RAE's scaled drawing.
+  gear: {
+    main: { x: 0.584, y: -1.365, z: 0.95, radius: 0.315 },
+    tail: { x: -5.22, y: 0.047, radius: 0.07, castor: 1 },
+    groundAngle: 15.5 * DEG, // thrust line to the ground (17 degrees at the wing root)
+    mainDeflection: 0.1,
+    tailDeflection: 0.06,
+    dampingRatio: 0.6,
+    brake: 0.3,
+  },
+  contacts: {
+    leftTip: { x: -0.2, y: 0.1, z: -4.95 },
+    rightTip: { x: -0.2, y: 0.1, z: 4.95 },
+    nose: { x: 1.4, y: -0.61, z: 0 },
+    belly: { x: -0.6, y: -0.65, z: 0 },
+    tail: { x: -5.0, y: 0.2, z: 0 },
+  },
+  propHub: { x: 2.41, y: 0 },
+  eye: { x: -0.89, y: 0.556 },
   propeller: {
     type: 'manualPitch',
     diameter: 3.1,

@@ -5,6 +5,9 @@
 // kinds: 'speed' (level speed at an altitude), 'climbTime' (seconds from sea level), 'ceiling',
 // 'stall' (1 g stall, indicated airspeed = equivalent), 'roll' (pb/2V in a time-stepped roll with full stick,
 // rudder fixed: at 230 mph IAS the pilot's 30 lb limits the aileron; at 140 mph full deflection is reached).
+// Phase 2 adds take-offs and landings flown by the scripted pilot (src/dev/groundTests.js) on grass:
+// 'takeoffRun' (ground run, m), 'takeoffScreen' (distance to clear a screen of `screen` m),
+// 'landingRun' (touchdown to stop, braking), 'landingScreen' (from the screen to a stop).
 // `calibration: true` marks the points fitted by `npm run calibrate` (one per fitted value); all others are
 // independent checks.
 
@@ -27,6 +30,14 @@ export const validationCases = {
         { kind: 'speed', altitude: 6096, value: 353.5 * MPH },
         { kind: 'speed', altitude: 7925, value: 341.5 * MPH },
         { kind: 'speed', altitude: 9144, value: 319 * MPH },
+      ],
+    },
+    {
+      source: 'S4', label: 'N3171 take-off and landing (zero wind, standard atmosphere)', mass: 2744,
+      points: [
+        { kind: 'takeoffRun', value: 206 },
+        { kind: 'takeoffScreen', screen: 15.24, value: 338 },
+        { kind: 'landingRun', value: 283.5 },
       ],
     },
     {
@@ -78,6 +89,14 @@ export const validationCases = {
   ],
   hurricane: [
     {
+      source: 'S1', label: 'Data sheet take-off, maximum weight', mass: 3081,
+      points: [{ kind: 'takeoffScreen', screen: 15.24, value: 430 }],
+    },
+    {
+      source: 'S1', label: 'Data sheet landing, light weight', mass: 2640,
+      points: [{ kind: 'landingScreen', screen: 15.24, value: 494 }],
+    },
+    {
       source: 'S1', label: 'Data sheet, mean weight, normal boost', mass: 2921,
       setting: { speed: 3000 * RPM, throttle: 1 },
       points: [{ kind: 'speed', altitude: 5410, value: 316 * MPH, calibration: true }],
@@ -126,6 +145,14 @@ export const validationCases = {
     },
   ],
   bf109e4: [
+    {
+      source: 'S15', label: 'Handbook take-off (20 degrees of flap, S32) and landing', mass: 2608, flaps: 0.5,
+      points: [
+        { kind: 'takeoffRun', value: 260 },
+        { kind: 'takeoffScreen', screen: 20, value: 470 },
+        { kind: 'landingScreen', screen: 20, value: 530 },
+      ],
+    },
     {
       source: 'S16', label: 'Data sheet level speeds (1.30 ata, 2400 rpm)', mass: 2608,
       setting: { speed: 2400 * RPM, throttle: 1 },
