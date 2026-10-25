@@ -23,7 +23,7 @@ export const spitfire = {
     gearCd: 0.02,
     radiatorCd: 0.004,
     dihedral: 6 * DEG,
-    slipstreamWing: 0.243, // fraction of the wing in the slipstream
+    slipstreamWing: 0.218, // fraction of the wing in the slipstream
     staticMargin: 0.02,
     cmZero: 0.01,
     cmq: -12,
@@ -37,8 +37,8 @@ export const spitfire = {
     rudderCn: 0.06,
     cyBeta: -0.6,
     swirl: 0.15,
-    rollRig: 0.003,
-    yawRig: 0.0015,
+    rollRig: 0.0018,
+    yawRig: 0.00093,
     stallBias: 0,
   },
   controls: { pitchHinge: 0.03, rollHinge: 0.035, yawHinge: 0.06, flapTime: 5, gearTime: 6 },
@@ -49,6 +49,7 @@ export const spitfire = {
     rotation: 1, // +1: clockwise seen from the cockpit
     betaMin: (23 + 20 / 60) * DEG,
     betaMax: (58 + 20 / 60) * DEG,
+    solidity: 1.117, // blade width relative to the NACA 640 propeller (fitted to the climb)
     inertia: 50,
     governorGain: 3,
     pitchRate: 0.17,

@@ -1,5 +1,5 @@
-// Phase 0 placeholder scene (DECISIONS.md D11): a hazy summer sky over the Channel, with a strip of
-// chalk cliff for scale. It proves the toolchain end to end; the real world arrives in Phase 4.
+// Placeholder scene (DECISIONS.md D11): a hazy summer sky over the Channel, with a strip of chalk cliff
+// for scale. The real world arrives in Phase 4.
 // Distances are in metres, with +Y up (DECISIONS.md D5).
 import * as THREE from 'three';
 
@@ -36,19 +36,50 @@ function makeSky() {
   });
   const sky = new THREE.Mesh(new THREE.SphereGeometry(90000, 32, 16), material);
   sky.renderOrder = -1;
+  sky.name = 'sky';
   return sky;
 }
 
-/** The sea, plus a line of white cliffs topped with downland 3 km ahead of the camera. */
+const SEA_TILE = 400; // m: one repeat of the sea texture
+
+/**
+ * A mottled sea texture drawn in code. The Phase 1 sea is a flat plane: the pattern lets the eye
+ * judge speed and height. The real Channel and coast arrive in Phase 4.
+ */
+function seaTexture() {
+  const size = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const g = canvas.getContext('2d');
+  g.fillStyle = '#3d5f6e';
+  g.fillRect(0, 0, size, size);
+  let seed = 7;
+  const rand = () => {
+    seed = (seed * 16807) % 2147483647;
+    return seed / 2147483647;
+  };
+  for (let i = 0; i < 900; i += 1) {
+    const shade = 50 + Math.floor(rand() * 40);
+    g.fillStyle = `rgba(${shade}, ${shade + 40}, ${shade + 55}, 0.35)`;
+    g.fillRect(rand() * size, rand() * size, 4 + rand() * 18, 2 + rand() * 6);
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/** The sea (returned separately so the view can keep it under the camera) and a line of white cliffs. */
 function makeCoast() {
   const coast = new THREE.Group();
-
-  const sea = new THREE.Mesh(
-    new THREE.PlaneGeometry(160000, 160000),
-    new THREE.MeshLambertMaterial({ color: SEA }),
-  );
+  const extent = 160000;
+  const tex = seaTexture();
+  tex.repeat.set(extent / SEA_TILE, extent / SEA_TILE);
+  const sea = new THREE.Mesh(new THREE.PlaneGeometry(extent, extent), new THREE.MeshLambertMaterial({ map: tex }));
   sea.rotation.x = -Math.PI / 2;
-  coast.add(sea);
+  sea.userData.tile = SEA_TILE;
 
   const cliffHeight = 100;
   const cliff = new THREE.Mesh(
@@ -65,7 +96,7 @@ function makeCoast() {
   land.position.set(0, cliffHeight + 1, -3000 - 200 - 4000);
   coast.add(land);
 
-  return coast;
+  return { coast, sea };
 }
 
 /** Builds the renderer, camera and scene, and keeps them sized to the window. */
@@ -78,14 +109,16 @@ export function createScene(container) {
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(SKY_HORIZON, HAZE_DENSITY);
   scene.add(makeSky());
-  scene.add(makeCoast());
+  const { coast, sea } = makeCoast();
+  scene.add(coast);
+  scene.add(sea);
 
   const sun = new THREE.DirectionalLight(0xfff4e0, 2.2);
   sun.position.set(-0.4, 0.7, -0.6);
   scene.add(sun);
   scene.add(new THREE.HemisphereLight(SKY_HORIZON, SEA, 1.0));
 
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 200000);
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.5, 200000);
   camera.position.set(0, 300, 0);
   camera.lookAt(0, 250, -3000);
 
@@ -95,5 +128,5 @@ export function createScene(container) {
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  return { renderer, scene, camera };
+  return { renderer, scene, camera, sea };
 }

@@ -4,6 +4,8 @@ import { spitfire } from '../../src/aircraft/spitfire.js';
 import { hurricane } from '../../src/aircraft/hurricane.js';
 import { bf109e4 } from '../../src/aircraft/bf109e4.js';
 import { UNIT } from '../../src/core/constants.js';
+import { Simulation, START } from '../../src/core/simulation.js';
+import { Euler } from 'three';
 
 const DT = 1 / 120;
 const fly = (plane, input, seconds, each) => {
@@ -15,16 +17,14 @@ const fly = (plane, input, seconds, each) => {
 };
 
 describe('flight model', () => {
-  it('flies 30 s hands-off from trimmed level flight without diverging', () => {
+  it('flies 30 s hands-off from the test-flight start without diverging', () => {
     for (const ac of [hurricane, spitfire, bf109e4]) {
-      const plane = createAircraft(ac, { altitude: 3000, speed: 110, throttle: 0.8, rpm: 0.8 });
-      const input = { throttle: 0.8, rpm: 0.8, trim: plane.trim, engineAssist: true };
-      fly(plane, input, 30);
-      const d = plane.last;
-      expect(Number.isFinite(d.altitude)).toBe(true);
-      expect(Math.abs(d.altitude - 3000)).toBeLessThan(800);
-      expect(d.airspeed).toBeGreaterThan(60);
-      expect(d.airspeed).toBeLessThan(200);
+      const sim = new Simulation(ac);
+      for (let t = 0; t < 30; t += DT) sim.step(DT);
+      const bank = new Euler().setFromQuaternion(sim.plane.body.quaternion, 'YZX').x;
+      expect(Math.abs(sim.plane.body.position.y - START.altitude)).toBeLessThan(100);
+      expect(Math.abs(bank) / UNIT.DEG).toBeLessThan(15);
+      expect(Math.abs(sim.plane.last.airspeed - START.speed)).toBeLessThan(10);
     }
   });
 

@@ -166,8 +166,44 @@ export function createAircraft(ac, { altitude = 3000, speed = 110, heading = 0, 
   plane.beta = bladeAngleForPower(ac.propeller, {
     omega: plane.omega * ac.propeller.gearRatio, v: speed * Math.cos(level.alpha), rho: air.density, power: eng.power,
   });
-  plane.trim = level.trim;
+  plane.lastSlipQ = 0;
+  refineTrim(plane, { ...input, trim: level.trim }, yaw, speed);
   return plane;
+}
+
+/**
+ * Refines the starting attitude and trim with the full model (thrust, slipstream on wing and tail),
+ * so the flight starts in balance: vertical force zero by attitude, pitching moment zero by trim.
+ */
+function refineTrim(plane, input, yaw, speed) {
+  const { ac, body } = plane;
+  const setAlpha = (alpha) => {
+    body.quaternion.setFromEuler(new Euler(0, yaw, alpha, 'YXZ'));
+    body.velocity.set(speed, 0, 0).applyAxisAngle(Y, yaw);
+  };
+  let alpha = airflow(body).alpha;
+  let trim = input.trim;
+  for (let pass = 0; pass < 3; pass += 1) {
+    let lo = alpha - 0.1;
+    let hi = alpha + 0.1;
+    plane.surfaces.trim = trim;
+    for (let i = 0; i < 40; i += 1) {
+      const mid = 0.5 * (lo + hi);
+      setAlpha(mid);
+      if (computeLoads(plane, input).force.y < 0) lo = mid;
+      else hi = mid;
+    }
+    alpha = 0.5 * (lo + hi);
+    setAlpha(alpha);
+    // The aerodynamics read the trim from the surfaces, so set it there for each trial.
+    plane.surfaces.trim = 0;
+    const m0 = computeLoads(plane, input).moment.z;
+    plane.surfaces.trim = 1;
+    const m1 = computeLoads(plane, input).moment.z;
+    trim = clamp(-m0 / (m1 - m0), -1, 1);
+  }
+  plane.surfaces.trim = trim;
+  plane.trim = trim;
 }
 
 /** Angle of attack and trim for 1 g level flight at a speed (wings level, no sideslip). */

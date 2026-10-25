@@ -441,3 +441,36 @@ deviations.
      power-off ones (90 and 80 mph).
    - The power-off NACA figures are used for maximum lift. The power-on figure calibrates the slipstream.
 
+## D24. Spitfire propeller blade-width correction (25 Oct 2026, Phase 1 checkpoint 2)
+
+**Decision (product owner):** fit a blade-width correction to the Spitfire's propeller.
+- **What it is.** The NACA 640 thrust and power coefficients are both multiplied by `propeller.solidity` = 1.117:
+  blades about 12% wider than the NACA test propeller's.
+- **What it is fitted to:** N3171's time to 20,000 ft (S4), with the drag refitted alongside it.
+- **Effect:** the Spitfire's climb now matches N3171 within 3% at every height, and its level speeds are unchanged.
+  The ceiling stays 7% low and is reported.
+- **Other aircraft:** the Hurricane and Bf 109 keep the NACA width (1.0). Their climbs are already within tolerance
+  against the sources used.
+
+**Why:** the product owner chose this over leaving the climb deviation. It is recorded as a tuning factor (estimate)
+standing in for the Rotol's wider blades, whose real width was not found.
+
+## D25. The Phase 1 test flight (25 Oct 2026, Phase 1 checkpoint 2)
+
+**Decision:**
+- **Starting conditions.** Each flight starts at 1,500 m and 110 m/s, heading north toward the cliffs. It starts at
+  the throttle that holds that speed level, with the attitude and elevator trim solved with the full model (thrust
+  and slipstream included), so it begins in balance.
+- **Rigging.** The torque and swirl rigging of each aircraft is set to cancel exactly at that condition, as a rigger
+  would set a real aircraft for its cruise. Away from it the pilot corrects.
+- **Bf 109 pitch.** The 109 starts in manual pitch, as decided in D18. A switches the engine-management assist on.
+- **Controls.** Keyboard and basic joystick only. The joystick panel (J) shows the raw axes and lets the axis
+  mapping be changed, saved in the browser.
+- **View.** A stand-in shape at the real span and length, a chase camera, and a mottled sea that follows the camera
+  so speed and height can be judged.
+
+**Why:**
+- A start that is out of balance made every aircraft roll off within seconds. That would hide the real handling the
+  product owner is asked to judge.
+- Hands-off, the three aircraft now drift by under 8° of bank in 30 s.
+

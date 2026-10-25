@@ -92,7 +92,12 @@ export function propellerLoads(prop, { omega, beta, v, rho }) {
   const n = Math.max(omega, 1e-3) / (2 * Math.PI);
   const d = prop.diameter;
   const j = v / (n * d);
-  const { ct, cp } = propellerCoefficients(j, beta);
+  const c = propellerCoefficients(j, beta);
+  // Wider blades than the NACA test propeller absorb more power and give more thrust at the same
+  // blade angle and advance ratio; to first order both coefficients scale with blade width.
+  const k = prop.solidity ?? 1;
+  const ct = c.ct * k;
+  const cp = c.cp * k;
   const thrust = ct * rho * n * n * d ** 4;
   const power = cp * rho * n ** 3 * d ** 5;
   return { thrust, torque: power / Math.max(omega, 1e-3), power, j, ct, cp };

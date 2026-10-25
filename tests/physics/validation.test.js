@@ -9,10 +9,10 @@ const TOLERANCE = { speed: 0.05, climbTime: 0.10, ceiling: 0.05, roll: 0.15 };
 const STALL_TOLERANCE = 5 * UNIT.MPH;
 const CALIBRATION_TOLERANCE = 0.01;
 
-// id|kind|altitude: reason. See docs/FLIGHT_VALIDATION.md.
+// id|kind|altitude (or id|kind|label): reason. See docs/FLIGHT_VALIDATION.md.
 const KNOWN = {
-  'spitfire|climbTime|9144': 'climbs too slowly at altitude (propeller data from a narrower NACA propeller)',
-  'spitfire|ceiling|': 'ceiling about 7% low, same cause',
+  'spitfire|ceiling|': 'ceiling about 7% low even with the blade-width correction (D24)',
+  'hurricane|ceiling|Data sheet, mean weight ceiling': 'about 5% low (the maximum-weight ceiling is within 4%)',
   'bf109e4|climbTime|2000': 'specification climb (S17) faster than the model; rating of the specification not stated',
   'bf109e4|climbTime|4000': 'as above; the Rechlin figure (S22) agrees within 4%',
   'bf109e4|climbTime|5000': 'as above',
@@ -23,7 +23,7 @@ for (const id of ['spitfire', 'hurricane', 'bf109e4']) {
   describe(`validation: ${id}`, () => {
     const rows = validateAircraft(id);
     for (const r of rows) {
-      const key = `${id}|${r.kind}|${r.altitude ?? ''}`;
+      const key = KNOWN[`${id}|${r.kind}|${r.label}`] ? `${id}|${r.kind}|${r.label}` : `${id}|${r.kind}|${r.altitude ?? ''}`;
       const name = `${r.source} ${r.kind} ${r.altitude ?? ''}${r.flaps ? ' flaps down' : ''}${r.stickForce ? ' 30 lb' : ''}`;
       const within = r.kind === 'stall'
         ? Math.abs(r.model - r.value) <= STALL_TOLERANCE

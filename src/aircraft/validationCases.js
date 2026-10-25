@@ -5,7 +5,8 @@
 // kinds: 'speed' (level speed at an altitude), 'climbTime' (seconds from sea level), 'ceiling',
 // 'stall' (1 g stall, indicated airspeed = equivalent), 'roll' (pb/2V with a 30 lb stick force, or with
 // full aileron deflection, which the NACA reports give as the low-speed value).
-// `calibration: true` marks the one point per aircraft the drag is fitted to; all others are checks.
+// `calibration: true` marks the points fitted by `npm run calibrate` (one per fitted value); all others are
+// independent checks.
 
 import { UNIT } from '../core/constants.js';
 
@@ -47,7 +48,7 @@ export const validationCases = {
       points: [
         { kind: 'climbTime', altitude: 3048, value: 3.5 * 60 },
         { kind: 'climbTime', altitude: 4572, value: 5.3 * 60 },
-        { kind: 'climbTime', altitude: 6096, value: 7.7 * 60 },
+        { kind: 'climbTime', altitude: 6096, value: 7.7 * 60, calibration: true },
         { kind: 'climbTime', altitude: 7620, value: 10.9 * 60 },
         { kind: 'climbTime', altitude: 9144, value: 16.4 * 60 },
         { kind: 'ceiling', value: 34700 * FT },

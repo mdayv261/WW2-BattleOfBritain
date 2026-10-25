@@ -7,7 +7,44 @@ Read this at the start of every session.
 Phase 0 (foundations and research) is done. The product owner reviewed it and answered the Phase 0 questions (D14).
 Phase 0 is signed off. The game is live at https://mdayv261.github.io/WW2-BattleOfBritain/ (repository
 https://github.com/mdayv261/WW2-BattleOfBritain). **Phase 1 checkpoint 1 (physics core and validation) is done
-locally**; checkpoint 2 (a flyable test version) is next. Nothing from Phase 1 has been pushed yet.
+locally**, and **checkpoint 2 (a flyable test version) is done locally**. Checkpoint 3 (handling checks and tuning) is
+next. Nothing from Phase 1 has been pushed yet.
+
+## Phase 1 checkpoint 2: flyable test version (25 Oct 2026)
+
+**Done:**
+- **Spitfire blade-width correction** (product owner's decision, D24): the climb now matches N3171 within 3%. The
+  ceiling is still 7% low.
+- **Flyable test version** (`npm run dev`):
+  - keyboard flying with ramped stick inputs;
+  - basic joystick support, with a check panel (J) showing the raw axes and an editable mapping;
+  - a stand-in shape for each aircraft and a chase camera (V switches to a fixed camera behind);
+  - a flight strip in each side's units, and the F3 debug overlay;
+  - help (H), pause (P), restart (R), and aircraft choice (1-3).
+- **Balanced start (D25):** throttle, attitude and trim are solved with the full model. Hands-off, the aircraft drift
+  less than 8° of bank in 30 s.
+- **Checked in Chrome:** the Spitfire and Bf 109 flown with the keyboard (roll, throttle to +6.2 lb, a 2.5 g pull), the
+  109 in km/h, metres and ata, the joystick panel and the camera switch. No console errors.
+- **Tests:** 321 pass.
+
+**How to try it:**
+1. In the project folder, run `npm run dev`, then open the address it prints in Chrome.
+2. Click the page once, then press any key to close the help.
+3. **Spitfire:** fly with the arrow keys. W/S for throttle; Q for +12 lb boost; E/D for rpm.
+   - Push the nose sharply down: the engine cuts out (ENGINE CUT on the strip).
+4. **Press 3 for the Bf 109.**
+   - Push down: the engine keeps running.
+   - E/D change the pitch by hand (watch the rpm); A switches the automatic pitch on.
+5. **Press F3** for the readings.
+6. **Joystick:** plug in the Logitech Extreme 3D Pro, move the stick, and press J. Tell me which axis numbers move for
+   the stick, the twist and the slider.
+
+**Known issues:**
+- Away from the start speed the aircraft slowly roll and yaw from engine torque, as real ones did. Trim covers pitch
+  only (rudder trim comes in Phase 2).
+- With a joystick connected, the keyboard's stick keys are overridden by the joystick.
+- There is no ground: touching the sea ends the flight (R restarts).
+- The stand-in shapes are boxes; the real models come in Phase 4.
 
 ## Phase 1 checkpoint 1: physics core and validation (24 Oct 2026)
 
@@ -43,9 +80,7 @@ locally**; checkpoint 2 (a flyable test version) is next. Nothing from Phase 1 h
    Checkpoint 3 tests and tunes them, then you fly.
 5. **Nothing is flyable in the browser yet** (checkpoint 2).
 
-**Decision for the product owner:**
-- **Spitfire propeller:** may I fit a blade-width correction to the climb? It would bring the climb and ceiling
-  within tolerance, but it is a tuning factor. The default is to leave it and report it.
+**Decision made:** the product owner chose to fit the Spitfire blade-width correction (D24).
 
 ## Phase 0: Foundations and research
 
