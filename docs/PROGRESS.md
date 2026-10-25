@@ -2,13 +2,14 @@
 
 Read this at the start of every session.
 
-## Current status (24 Oct 2026)
+## Current status (25 Oct 2026)
 
 Phase 0 (foundations and research) is done. The product owner reviewed it and answered the Phase 0 questions (D14).
 Phase 0 is signed off. The game is live at https://mdayv261.github.io/WW2-BattleOfBritain/ (repository
 https://github.com/mdayv261/WW2-BattleOfBritain). **Phase 1 checkpoint 1 (physics core and validation) is done
-locally**, **checkpoint 2 (a flyable test version) is done locally**, and **checkpoint 3 (handling checks and tuning) is
-done locally**. Next: the product owner's flight test for the Phase 1 sign-off. Nothing from Phase 1 has been pushed yet.
+**Phase 1 (single-engine flight model) is signed off** (25 Oct 2026, D27): the product owner flew it and accepted the
+acceptance test and the documented deviations. Next: **Phase 2 (controls, cameras, ground)**, planning first. Nothing
+from Phase 1 has been pushed yet; pushing needs the product owner's permission.
 
 ## Phase 1 checkpoint 3: handling checks and tuning (25 Oct 2026)
 
@@ -299,7 +300,7 @@ Each phase's acceptance test is a proposal, agreed with the product owner when t
 
 - **Phase 0: Foundations and research.** Done and signed off (24 Oct 2026).
   - Acceptance: the documents are reviewed, `npm test` passes, and the site deploys and shows the placeholder.
-- **Phase 1: Single-engine flight model.** Hurricane I, Spitfire I and Bf 109 E-4.
+- **Phase 1: Single-engine flight model.** Hurricane I, Spitfire I and Bf 109 E-4. Done and signed off (25 Oct 2026).
   - Model: six degrees of freedom, standard atmosphere, lift and drag curves with stall and spin, supercharged
     engines with boost and rpm, constant-speed and VDM airscrews, Merlin negative-g cut-out, 109 slats.
   - Tools: `npm run validate`, the F3 debug overlay, a simple test camera.

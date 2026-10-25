@@ -518,3 +518,14 @@ ordering they describe.
 - the Spitfire's full-aileron roll is 15% below NACA once its 30 lb roll is matched;
 - stall wing drops grow large if full back stick is held for several seconds past the stall.
 
+## D27. Phase 1 signed off (25 Oct 2026)
+
+The product owner flew the Phase 1 test version and signed Phase 1 off. This accepts:
+- the acceptance test proposed in PROGRESS.md (speeds within 5%, climbs within 10%, ceilings within 5%, stalls within
+  5 mph, rolls within 15%, the automated behaviour checks, and the product owner's own flight test);
+- the known deviations recorded in FLIGHT_VALIDATION.md as they stand (Spitfire ceiling −7%, Hurricane mean-weight
+  ceiling −5.6%, Bf 109 specification climbs 8-16% slow, Spitfire full-aileron roll −15%, flat spins, large wing drops
+  with full back stick held past the stall).
+
+They are not tuned away. They may be revisited if better sources are found.
+
