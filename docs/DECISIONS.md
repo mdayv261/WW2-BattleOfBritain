@@ -783,3 +783,39 @@ The product owner accepted Phase 2, which covers:
 The known deviations stand as recorded in FLIGHT_VALIDATION.md (items 1-13). They may be revisited if better sources
 are found.
 
+
+## D36. Twin-engine physics and the Bf 110 flight model (25 Oct 2026, Phase 3 checkpoint 1)
+
+**Engines as a list** (`src/physics/powerplant.js`):
+- Each engine has its own position (its airscrew hub), rpm, blade angle and carburettor cut-out state, and can take its
+  own throttle, rpm or pitch, failure and feather inputs (`input.engines[i]`); otherwise it uses the shared levers.
+- Thrust acts at each hub, so a stopped engine gives yaw (and, through the slipstream, roll). Torque, swirl and
+  gyroscopic effects are summed over the engines.
+- Each engine's slipstream washes its own side of the wing; the tail feels the mean of the engines'.
+- A single-engine fighter is a one-engine list on the thrust line. Every Phase 1 and 2 result is unchanged (`npm run
+  validate` gives identical figures).
+- **Reason:** one model for both kinds keeps the fighters exactly as signed off and lets the twins fail one engine.
+
+**Feathering:** past the coarse stop the airscrew's thrust and torque fade to the feathered state (blades edge-on,
+stopped, with only the drag of `featheredDragArea`), instead of stretching the NACA curves beyond 45° (which D30 found
+unphysical). A failed engine has internal friction (`common.deadEngineFriction`, 0.1 of rated torque, an estimate),
+which sets how hard a windmilling airscrew is driven and so its drag.
+
+**Bf 110 data** (`src/aircraft/bf110c4.js`, AIRCRAFT_DATA.md):
+- C-2 data from the Luftwaffe data sheet (S23) stand in for the C-4 (D14; the C-4's armour weight is a gap).
+- **Fitted:** drag to 440 km/h at sea level (S23); flaps-down maximum lift to S23's landing speed taken as the stall
+  (1.97, giving 1.47 clean with the Bf 109's measured flap increment).
+- **Estimated:** no scaled drawing was found, so engine, wheel, eye and centre-of-gravity positions come from the overall
+  dimensions; inertia by the radius-of-gyration method with twin-engine ratios; the slipstream share scaled from the
+  fighters' fit by the discs' share of the span (0.24); the yaw powers chosen so that full rudder holds about 30° of
+  sideslip and the rudder trimmer a third of that. Most other handling values are the Bf 109's.
+- Both airscrews turn the same way (no handed DB 601s were found), so the right engine is the critical one.
+
+**Single-engine checks** (`src/dev/twinTests.js`, `tests/physics/twinEngine.test.js`): a scripted pilot holds speed,
+heading and wings level with rudder and trim after one engine stops. At 250 km/h the model climbs about 600 ft/min
+feathered and 330 ft/min windmilling (S25: climbs and holds height on either engine, much better feathered). The
+minimum control speed is measured wings level, because the model has no side force from the rudder to balance a
+banked aircraft; it comes out below the stall (no source).
+
+**Deviations flagged** (FLIGHT_VALIDATION.md items 14-17): the climb shape against S23; the ground run-up rpm against
+S24; S24's uncontrollable full-flap single-engine approach not reproduced; positions estimated.

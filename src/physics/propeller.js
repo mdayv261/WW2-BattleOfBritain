@@ -89,6 +89,7 @@ export function propellerCoefficients(j, beta) {
  * (rad/s) with blade angle beta, axial airspeed v (m/s) and air density rho.
  */
 export function propellerLoads(prop, { omega, beta, v, rho }) {
+  if (prop.featherAngle && beta > prop.betaMax) return featheringLoads(prop, { omega, beta, v, rho });
   const n = Math.max(omega, 1e-3) / (2 * Math.PI);
   const d = prop.diameter;
   const j = v / (n * d);
@@ -101,6 +102,21 @@ export function propellerLoads(prop, { omega, beta, v, rho }) {
   const thrust = ct * rho * n * n * d ** 4;
   const power = cp * rho * n ** 3 * d ** 5;
   return { thrust, torque: power / Math.max(omega, 1e-3), power, j, ct, cp };
+}
+
+/**
+ * Past the coarse stop on the way to feather (fully feathering VDM airscrews): the measured curves end at
+ * 45 degrees and stretching them further is unphysical (D30), so thrust and torque fade from their values
+ * at the coarse stop to the feathered state, in which the blades turn edge-on: no torque, and only the drag
+ * of the stopped blades (prop.featheredDragArea, m^2).
+ */
+function featheringLoads(prop, { omega, beta, v, rho }) {
+  const f = Math.min(1, (beta - prop.betaMax) / (prop.featherAngle - prop.betaMax));
+  const base = propellerLoads(prop, { omega, beta: prop.betaMax, v, rho });
+  const drag = 0.5 * rho * v * v * prop.featheredDragArea;
+  return {
+    ...base, thrust: (1 - f) * base.thrust - f * drag, torque: (1 - f) * base.torque, power: (1 - f) * base.power,
+  };
 }
 
 /**

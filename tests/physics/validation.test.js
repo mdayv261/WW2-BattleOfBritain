@@ -27,9 +27,14 @@ const KNOWN = {
   'spitfire|landingRun|': 'landing run too long: the wing still carries most of the weight for the first part of the run',
   'bf109e4|takeoffRun|': 'ground run too short: the scripted pilot lifts off near the stall; the 109 was held on the ground (S32)',
   'bf109e4|takeoffScreen|': 'as above',
+  // Phase 3: the Bf 110 against its data sheet (S23), FLIGHT_VALIDATION.md item 14.
+  'bf110c4|climbTime|1000': 'data sheet climb faster low down; its engine rating is not stated (30-minute rating assumed)',
+  'bf110c4|climbTime|2000': 'as above',
+  'bf110c4|climbTime|8000': 'data sheet climb slower high up than the model',
+  'bf110c4|ceiling|': 'model ceiling 11% above the data sheet\'s 9,500 m',
 };
 
-for (const id of ['spitfire', 'hurricane', 'bf109e4']) {
+for (const id of ['spitfire', 'hurricane', 'bf109e4', 'bf110c4']) {
   describe(`validation: ${id}`, () => {
     const rows = validateAircraft(id);
     for (const r of rows) {

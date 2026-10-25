@@ -8,8 +8,9 @@ import { Vector3, Quaternion, Euler } from 'three';
 import { G } from '../core/constants.js';
 import { atmosphere, equivalentAirspeed } from './atmosphere.js';
 import { createState, stepRigidBody, worldToBody, bodyToWorld } from './rigidBody.js';
-import { enginePower, createCutout, updateCutout } from './engine.js';
-import { propellerLoads, bladeAngleForPower } from './propeller.js';
+import { enginePower } from './engine.js';
+import { bladeAngleForPower } from './propeller.js';
+import { createEngines, powerplantLoads, stepEngines, governedSpeed as governed } from './powerplant.js';
 import { aeroCoefficients } from './aero.js';
 import { createSurfaces, updateSurfaces, updateSlats } from './controls.js';
 import { createGround, groundLoads, updateGround, flatGrass } from './ground.js';
@@ -47,11 +48,9 @@ export function groundEffectFactor(h, span) {
   return (x * x) / (1 + x * x);
 }
 
-/** The crankshaft speed the governor aims for. */
+/** The crankshaft speed the governor aims for, for the shared rpm lever. */
 function governedSpeed(plane, input) {
-  const pr = plane.ac.propeller;
-  if (pr.type === 'constantSpeed') return lerp(pr.rpmMin, pr.rpmMax, clamp(input.rpm ?? 0.8, 0, 1));
-  return pr.rpmMax; // engine-management assist on the Bf 109 holds the 5-minute rpm
+  return governed(plane.ac.propeller, input.rpm ?? 0.8);
 }
 
 /**
@@ -59,25 +58,14 @@ function governedSpeed(plane, input) {
  * Returns { force (world, N), moment (body, N m), momentum (body), torque, power, thrust, diag }.
  */
 export function computeLoads(plane, input) {
-  const { ac, body, engine, surfaces } = plane;
-  const pr = ac.propeller;
+  const { ac, body, surfaces } = plane;
   const altitude = body.position.y;
   const air = atmosphere(altitude);
   const flow = airflow(body);
   const qBar = 0.5 * air.density * flow.airspeed * flow.airspeed;
 
-  const eng = enginePower(engine, {
-    altitude,
-    airspeed: flow.airspeed,
-    throttle: input.throttle ?? 0,
-    speed: plane.omega,
-    emergency: !!input.emergency,
-  });
-  const power = eng.power * plane.cutout.factor;
-  const omegaProp = plane.omega * pr.gearRatio;
-  const prop = propellerLoads(pr, { omega: omegaProp, beta: plane.beta, v: Math.max(flow.vb.x, 0), rho: air.density });
-  const disc = (Math.PI * pr.diameter * pr.diameter) / 4;
-  const slipQ = Math.max(prop.thrust, 0) / disc;
+  const power = powerplantLoads(plane, input, flow, air, altitude);
+  const first = power.engines[0];
 
   const S = ac.geometry.wingArea;
   const b = ac.geometry.span;
@@ -85,7 +73,9 @@ export function computeLoads(plane, input) {
   const terrain = plane.terrain ?? flatGrass;
   const groundHeight = terrain.surfaceAt(body.position.x, body.position.z).height;
   const groundEffect = groundEffectFactor(altitude - groundHeight, ac.geometry.span);
-  const co = aeroCoefficients(ac, { ...flow, qBar, slipQ, groundEffect }, surfaces);
+  const co = aeroCoefficients(ac, {
+    ...flow, qBar, slipQ: power.slipTail, slipQLeft: power.slipLeft, slipQRight: power.slipRight, groundEffect,
+  }, surfaces);
 
   // Forces in the body frame: lift perpendicular to the airflow (in the plane of symmetry), drag
   // against it, side force along the right wing, thrust along the nose.
@@ -96,27 +86,29 @@ export function computeLoads(plane, input) {
     .addScaledVector(liftDir, co.cl * qBar * S)
     .addScaledVector(vHat, -co.cd * qBar * S)
     .addScaledVector(Z, co.cy * qBar * S)
-    .addScaledVector(X, prop.thrust);
+    .addScaledVector(X, power.thrust);
   const force = bodyToWorld(body, fb, new Vector3());
   force.y -= ac.mass.flying * G;
   const ground = groundLoads(plane, input, terrain);
   force.add(ground.force);
   const groundBody = ground.force.clone().applyQuaternion(body.quaternion.clone().invert());
 
-  const roll = co.croll * qBar * S * b - pr.rotation * prop.torque;
-  const yawRight = co.cyaw * qBar * S * b - pr.rotation * ac.aero.swirl * Math.max(prop.thrust, 0) * pr.diameter;
-  const pitch = co.cpitch * qBar * S * c;
-  const moment = new Vector3(roll, -yawRight, pitch).add(ground.moment);
-  const momentum = new Vector3(pr.rotation * pr.gyroInertia * omegaProp, 0, 0);
+  // Aerodynamic moments (aero.js yaws positive nose right), the engines' moments, and the ground's.
+  const moment = new Vector3(co.croll * qBar * S * b, -co.cyaw * qBar * S * b, co.cpitch * qBar * S * c)
+    .add(power.moment).add(ground.moment);
+  const momentum = power.momentum;
 
   // What an accelerometer would read: everything but gravity, including the push of the ground.
   const loadFactor = (fb.y + groundBody.y) / (ac.mass.flying * G);
   return {
-    force, moment, momentum, power, thrust: prop.thrust, torque: prop.torque, loadFactor, ground,
+    force, moment, momentum, power: power.power, thrust: power.thrust, loadFactor, ground, powerplant: power,
     diag: {
       altitude, airspeed: flow.airspeed, eas: equivalentAirspeed(flow.airspeed, altitude),
-      alpha: flow.alpha, beta: flow.beta, qBar, loadFactor, power, map: eng.map, ratedMap: eng.ratedMap,
-      rpm: plane.omega, beta_prop: plane.beta, j: prop.j, thrust: prop.thrust,
+      alpha: flow.alpha, beta: flow.beta, qBar, loadFactor, power: power.power, map: first.map, ratedMap: first.ratedMap,
+      rpm: plane.omega, beta_prop: plane.beta, j: first.j, thrust: power.thrust,
+      engines: power.engines.map((e, i) => ({
+        rpm: plane.engines[i].omega, beta: plane.engines[i].beta, map: e.map, thrust: e.thrust, power: e.power,
+      })),
       lift: co.cl * qBar * S, drag: co.cd * qBar * S, cl: co.cl, cd: co.cd,
       alphaLeft: co.alphaLeft, alphaRight: co.alphaRight, stalledLeft: co.stalledLeft, stalledRight: co.stalledRight,
       slatAlphaLeft: co.slatAlphaLeft, slatAlphaRight: co.slatAlphaRight,
@@ -130,32 +122,16 @@ export function computeLoads(plane, input) {
 /** Advances the aircraft by dt seconds. */
 export function stepAircraft(plane, input, dt) {
   const { ac, body, surfaces } = plane;
-  const pr = ac.propeller;
   const air = atmosphere(body.position.y);
   const flow = airflow(body);
   const qBar = 0.5 * air.density * flow.airspeed * flow.airspeed;
-  const tailQ = qBar + (plane.lastSlipQ ?? 0) * 0.5;
+  const slipTail = plane.engines.reduce((a, e) => a + e.slipQ, 0) / plane.engines.length;
+  const tailQ = qBar + slipTail * 0.5;
   updateSurfaces(ac, surfaces, input, { q: qBar, tailQ }, dt);
 
   const loads = computeLoads(plane, input);
-  plane.lastSlipQ = Math.max(loads.thrust, 0) / ((Math.PI * pr.diameter * pr.diameter) / 4);
   updateSlats(ac, surfaces, loads.diag.slatAlphaLeft, loads.diag.slatAlphaRight, dt);
-  updateCutout(plane.engine, plane.cutout, loads.loadFactor, dt);
-
-  // Propeller and engine rotation: engine power drives, propeller torque resists.
-  const omegaProp = Math.max(plane.omega * pr.gearRatio, 1);
-  const accel = (loads.power / omegaProp - loads.torque) / pr.inertia;
-  plane.omega = Math.max(5, (omegaProp + accel * dt) / pr.gearRatio);
-
-  // Blade angle: governor (constant-speed, or the Bf 109 assist) or the pilot's thumb switch.
-  if (pr.type === 'constantSpeed' || input.engineAssist) {
-    const target = governedSpeed(plane, input);
-    const rate = clamp((pr.governorGain * (plane.omega - target)) / target, -pr.pitchRate, pr.pitchRate);
-    plane.beta += rate * dt;
-  } else {
-    plane.beta += clamp(input.pitchSwitch ?? 0, -1, 1) * pr.pitchRate * dt;
-  }
-  plane.beta = clamp(plane.beta, pr.betaMin, pr.betaMax);
+  stepEngines(plane, input, loads.powerplant, loads.loadFactor, dt);
 
   stepRigidBody(body, {
     force: loads.force, moment: loads.moment, momentum: loads.momentum, mass: ac.mass.flying,
@@ -192,7 +168,7 @@ export function createAircraft(ac, {
   plane.beta = bladeAngleForPower(ac.propeller, {
     omega: plane.omega * ac.propeller.gearRatio, v: speed * Math.cos(level.alpha), rho: air.density, power: eng.power,
   });
-  plane.lastSlipQ = 0;
+  for (const e of plane.engines) e.slipQ = 0;
   refineTrim(plane, { ...input, trim: level.trim }, yaw, speed);
   return plane;
 }
@@ -200,9 +176,14 @@ export function createAircraft(ac, {
 /** An aircraft at rest at the origin, before a start position is set. */
 function newPlane(ac, terrain = flatGrass) {
   return {
-    ac, engine: engineFor(ac), body: createState(), surfaces: createSurfaces(), cutout: createCutout(),
-    omega: 0, beta: ac.propeller.betaMin, time: 0, last: null, lastSlipQ: 0, trim: 0,
-    ground: createGround(ac), terrain,
+    ac, engine: engineFor(ac), engines: createEngines(ac), body: createState(), surfaces: createSurfaces(),
+    time: 0, last: null, trim: 0, ground: createGround(ac), terrain,
+    // The first engine's state, for single-engine code and the readouts.
+    get omega() { return this.engines[0].omega; },
+    set omega(v) { for (const e of this.engines) e.omega = v; },
+    get beta() { return this.engines[0].beta; },
+    set beta(v) { for (const e of this.engines) e.beta = v; },
+    get cutout() { return this.engines[0].cutout; },
   };
 }
 

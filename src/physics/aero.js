@@ -150,9 +150,10 @@ export function panelClMax(ac) {
 
 /**
  * Coefficients for the whole aircraft.
- *  flow: { alpha, beta, p, q, r, airspeed, qBar, slipQ, groundEffect } (rad, rad/s, m/s, Pa; slipQ is
- *        the extra dynamic pressure behind the propeller; groundEffect is the factor on induced drag near
- *        the ground, 1 or absent in free air)
+ *  flow: { alpha, beta, p, q, r, airspeed, qBar, slipQ, slipQLeft, slipQRight, groundEffect } (rad, rad/s,
+ *        m/s, Pa; slipQ is the extra dynamic pressure behind the airscrews, felt at the tail; slipQLeft and
+ *        slipQRight, where given, are the slipstreams over each side of the wing; groundEffect is the factor on
+ *        induced drag near the ground, 1 or absent in free air)
  *  surfaces: { elevator, aileron, rudder, trim, flaps, gear, radiator, slatLeft, slatRight } (-1..1, 0..1)
  * Returns force coefficients (on the wing area, at the free-stream dynamic pressure) and moment
  * coefficients, plus diagnostics.
@@ -166,8 +167,10 @@ export function aeroCoefficients(ac, flow, surfaces) {
   const flaps = surfaces.flaps;
   // Flaps raise the panels' maximum lift and shift the zero-lift angle by the same amount of lift.
   const alphaZero = a.alphaZeroLift - (flaps * pc.flaps) / w.clAlpha;
-  // The slipstream covers the wing root: its share of the whole wing is applied to the inner panels.
-  const slipInner = 1 + (a.slipstreamWing / common.panel.innerLift) * (flow.slipQ / Math.max(flow.qBar, 1));
+  // The slipstream covers the wing root: its share of the whole wing is applied to the inner panels. Each
+  // side takes its own engine's slipstream (flow.slipQLeft and slipQRight), or else the shared one.
+  const slipInnerOf = (q) => 1 + (a.slipstreamWing / common.panel.innerLift) * (q / Math.max(flow.qBar, 1));
+  const slipInner = { [-1]: slipInnerOf(flow.slipQLeft ?? flow.slipQ), [1]: slipInnerOf(flow.slipQRight ?? flow.slipQ) };
   // Near the ground the wing behaves as one of larger aspect ratio: less induced drag, and a steeper lift
   // slope, applied by scaling the angle from zero lift (so the peak lift is unchanged but comes earlier).
   const ge = Math.min(1, Math.max(flow.groundEffect ?? 1, 0.2));
@@ -180,7 +183,7 @@ export function aeroCoefficients(ac, flow, surfaces) {
     const sectionMax = (def.outer ? pc.outerClosed + (pc.outerOpen - pc.outerClosed) * slat : pc.inner) + flaps * pc.flaps;
     const lc = liftCurve(alpha, w.clAlpha, stallAngle(w.clAlpha, sectionMax), common.stallWidth);
     const qRatio = speed * speed;
-    const cl = lc.cl * (def.outer ? 1 : slipInner) * qRatio;
+    const cl = lc.cl * (def.outer ? 1 : slipInner[side]) * qRatio;
     const cdi = (ge * lc.cl * lc.cl) / (Math.PI * a.oswald * w.aspectRatio);
     const cdStall = lc.stalled * common.flatPlateCd * Math.sin(alpha) ** 2;
     return { cl, cd: (cdi + cdStall) * qRatio, alpha, stalled: lc.stalled, lift: def.lift, arm: def.arm };

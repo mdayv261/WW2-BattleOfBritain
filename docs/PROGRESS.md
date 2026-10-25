@@ -8,8 +8,32 @@ Read this at the start of every session.
   https://mdayv261.github.io/WW2-BattleOfBritain/ (repository https://github.com/mdayv261/WW2-BattleOfBritain).
 - **Phase 1** (single-engine flight model): signed off (25 Oct 2026, D27).
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
-- **Next: Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H-3), planning first.
-- **Not yet pushed:** nothing from Phases 1 and 2 has been pushed to GitHub; pushing needs the product owner's permission.
+- **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): in progress. Checkpoint 1 (twin-engine physics and the
+  Bf 110 flight model) done; next checkpoint 2 (He 111, flying the twins, twin controls, Bf 110 cockpit).
+- **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
+
+## Phase 3 checkpoint 1: twin-engine physics and the Bf 110 (25 Oct 2026)
+
+**Done** (D36):
+- **Engines as a list** (`src/physics/powerplant.js`): per-engine thrust, torque, slipstream, failure and feathering. The
+  fighters' results are unchanged.
+- **Bf 110 data file** (`src/aircraft/bf110c4.js`) with every value in AIRCRAFT_DATA.md (C-2 data, S23-S25); drag and
+  flaps-down lift fitted to S23; positions estimated (no scaled drawing found).
+- **Validation:** S23 level speeds within 3%; the climb shape and ceiling are outside tolerance (item 14).
+- **Single-engine tests** (`src/dev/twinTests.js`, `tests/physics/twinEngine.test.js`): holds height and climbs on either
+  engine feathered, noticeably worse windmilling (S25); held straight with rudder and trim; the right engine is critical.
+- 672 tests pass.
+
+**Known issues** (FLIGHT_VALIDATION.md items 14-17):
+1. Bf 110 climbs 14-20% slow to 2 km and 15% quick to 8 km; ceiling 11% high.
+2. Ground run-up 2,410 rpm against S24's 2,200 rpm.
+3. S24's uncontrollable swing with full flap on one engine is not reproduced; the model stays controllable.
+4. The 110 cannot be flown in the browser yet (checkpoint 2).
+
+**Left in Phase 3:**
+- **Checkpoint 2:** He 111 data file from S29; keys 4 and 5; twin controls (both engines, one engine, cut, feather);
+  Bf 110 cockpit and panel (needs a photograph from the product owner); ground handling with differential power.
+- **Checkpoint 3:** the product owner's flight test and the acceptance test.
 
 ## Phase 2 checkpoint 3: take-off and landing checks (25 Oct 2026)
 

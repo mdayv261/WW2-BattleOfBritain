@@ -15,6 +15,7 @@ import { Vector3 } from 'three';
 import { common } from '../aircraft/common.js';
 import { G } from '../core/constants.js';
 import { clamp } from './interp.js';
+import { engineMounts } from './powerplant.js';
 
 const UP = new Vector3(0, 1, 0);
 const GRASS = { height: 0, water: false, tyre: common.grass };
@@ -133,13 +134,15 @@ const CAUSES = {
   tail: 'Tail hit the ground',
 };
 
-/** Height of the lowest point of the propeller disc above the ground, at the hub's position. */
+/** Height above the ground of the lowest point of any propeller disc (each at its hub). */
 export function propellerClearance(plane, terrain) {
   const { ac, body } = plane;
-  const hub = new Vector3(ac.propHub.x, ac.propHub.y, 0).applyQuaternion(body.quaternion).add(body.position);
   const axis = new Vector3(1, 0, 0).applyQuaternion(body.quaternion);
   const reach = (ac.propeller.diameter / 2) * Math.sqrt(Math.max(0, 1 - axis.y * axis.y));
-  return hub.y - reach - terrain.surfaceAt(hub.x, hub.z).height;
+  return Math.min(...engineMounts(ac).map((m) => {
+    const hub = new Vector3(m.x, m.y, m.z).applyQuaternion(body.quaternion).add(body.position);
+    return hub.y - reach - terrain.surfaceAt(hub.x, hub.z).height;
+  }));
 }
 
 /**

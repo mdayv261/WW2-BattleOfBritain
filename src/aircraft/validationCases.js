@@ -208,4 +208,34 @@ export const validationCases = {
       points: [{ kind: 'stall', altitude: 1500, value: 150 * KMH }],
     },
   ],
+  bf110c4: [
+    {
+      source: 'S23', label: 'Data sheet level speeds, C-2 (1.30 ata, 2400 rpm)', mass: 6530,
+      setting: { speed: 2400 * RPM, throttle: 1 },
+      points: [
+        { kind: 'speed', altitude: 0, value: 440 * KMH, calibration: true },
+        { kind: 'speed', altitude: 2000, value: 477 * KMH },
+        { kind: 'speed', altitude: 4000, value: 514 * KMH },
+        { kind: 'speed', altitude: 4500, value: 523 * KMH },
+        { kind: 'speed', altitude: 6000, value: 513 * KMH },
+      ],
+    },
+    {
+      source: 'S23', label: 'Data sheet climb, C-2 (30-minute rating assumed)', mass: 6530,
+      setting: { speed: 2300 * RPM, map: 1.2 * UNIT.ATA },
+      points: [
+        { kind: 'climbTime', altitude: 1000, value: 1.3 * 60 },
+        { kind: 'climbTime', altitude: 2000, value: 2.7 * 60 },
+        { kind: 'climbTime', altitude: 4000, value: 6.0 * 60 },
+        { kind: 'climbTime', altitude: 6000, value: 10.5 * 60 },
+        { kind: 'climbTime', altitude: 8000, value: 18.5 * 60 },
+        { kind: 'ceiling', value: 9500 },
+      ],
+    },
+    {
+      source: 'S23', label: 'Data sheet landing speed taken as the stall, flaps and undercarriage down', mass: 6530,
+      setting: { speed: 2400 * RPM, throttle: 0 },
+      points: [{ kind: 'stall', altitude: 0, value: 132 * KMH, flaps: 1, gear: 1, calibration: true }],
+    },
+  ],
 };

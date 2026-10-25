@@ -684,9 +684,9 @@ flagged as a deviation. S24 and S25 come from RAF flying of an aircraft captured
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
-| Wingspan | 16.2 | m | 16,2 m | S23 | medium | |
-| Wing area | 38.4 | m² | 38,4 m² | S23 | medium | |
-| Length | 12.0 | m | 12,0 m | S23 | medium | |
+| Wingspan (`geometry.span`) | 16.2 | m | 16,2 m | S23 | medium | |
+| Wing area (`geometry.wingArea`) | 38.4 | m² | 38,4 m² | S23 | medium | |
+| Length (`geometry.length`) | 12.0 | m | 12,0 m | S23 | medium | |
 | Height | 3.3 | m | 3,3 m | S23 | medium | |
 | Aerofoil, root | NACA 2R1 18.5 | — | NACA 2R1 18.5 | S14 | medium | |
 | Aerofoil, tip | NACA 2R1 11 | — | NACA 2R1 11 | S14 | medium | |
@@ -695,7 +695,7 @@ flagged as a deviation. S24 and S25 come from RAF flying of an aircraft captured
 | Ammunition (C-2) | 281 | kg | Munition 281 kg | S23 | medium | |
 | Fuel (C-2) | 965 | kg | Kraftstoff (γ = 0,76 kg/ltr) 965 kg | S23 | medium | |
 | Oil | 64 | kg | Schmierstoff (γ = 0,91 kg/ltr) 64 kg | S23 | medium | |
-| Flying weight (C-2) | 6530 | kg | Fluggewicht 6530 kg | S23 | medium | C-1: 6,040 kg. |
+| Flying weight (C-2) (`mass.flying`) | 6530 | kg | Fluggewicht 6530 kg | S23 | medium | C-1: 6,040 kg. |
 | Wing loading (C-2) | 166 | kg/m² | 166 kg/m² | S23 | medium | |
 | Fuel tank capacity | 1270 | L | each wing: main 375 l (82.5 gal) and reserve 260 l (58 gal) | S24, S25 | high | S25: 82 + 57 gallons each side, 278 gallons in all. Engines feed from the main tanks only; reserve fuel is pumped across. |
 | Fuel and oil tanks self-sealing | yes | — | all fuel and oil tanks are self-sealing | S24, S25 | high | |
@@ -728,6 +728,113 @@ flagged as a deviation. S24 and S25 come from RAF flying of an aircraft captured
 | Rear armament | 1 × MG 15, 75-round drums | — | MG 15 … magazine holding 75 rounds; stowage for 10 spare | S25, S27 | high | S23 (C-2): 750 rounds. An experienced gunner changes a drum in about 10 s (S25). |
 | Rear gun field of fire | ±30° either side of the centre line, 0° to 60° elevation | — | about 30° on either side … maximum elevation 60°; not possible to fire below the horizontal | S25 | medium | With the canopy closed, the field of fire is very limited. |
 | Rear gunner accuracy under g | Very poor | — | impossible to shoot with any degree of accuracy under 'G' | S25 | medium | |
+
+### Flight-model values (Phase 3)
+
+Estimated and fitted values the model needs, keyed to `src/aircraft/bf110c4.js`. No scaled drawing of the Bf 110 was
+found, so positions are estimates from the overall dimensions (S23). Where nothing else is known, values are the
+Bf 109's (same designer, engine and airscrew).
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Mean aerodynamic chord, taken as area over span (`geometry.mac`) | 2.37 | m | 38.4 m² / 16.2 m | S23 | medium | Mean geometric chord, as S32 gives for the Bf 109. |
+| Roll moment of inertia (`mass.ixx`) | 49,530 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.34 (roll, of b/2), 0.29 (pitch, of L/2) and 0.44 (yaw, of (b+L)/4), assumed typical of twin-engine propeller aircraft, whose engines sit out on the wings (after Roskam; the ratios are not checked against the book). |
+| Pitch moment of inertia (`mass.iyy`) | 19,770 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.34 (roll, of b/2), 0.29 (pitch, of L/2) and 0.44 (yaw, of (b+L)/4), assumed typical of twin-engine propeller aircraft, whose engines sit out on the wings (after Roskam; the ratios are not checked against the book). |
+| Yaw moment of inertia (`mass.izz`) | 62,830 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method: no measured inertia found. Ratios 0.34 (roll, of b/2), 0.29 (pitch, of L/2) and 0.44 (yaw, of (b+L)/4), assumed typical of twin-engine propeller aircraft, whose engines sit out on the wings (after Roskam; the ratios are not checked against the book). |
+| Zero-lift angle of attack, body axis (`aero.alphaZeroLift`) | -3 | deg | — | S14, ASSUMPTION | estimate | Sections NACA 2R1 (2% camber, S14): zero lift near −2°, plus about 1° of wing setting assumed; no rigging figure found. |
+| Maximum lift coefficient, power off, flaps up, slats open (`aero.clMax`) | 1.47 | — | — | S32, ASSUMPTION | estimate | No measured stall speed found (S24 gives none). The flaps-down value less the 0.5 that the RAE measured for the Bf 109's flaps (S32: 1.4 to 1.9). Power-off stall about 150 km/h IAS. |
+| Maximum lift coefficient, flaps and undercarriage down (`aero.clMaxFlaps`) | 1.97 | — | 132 km/h landing speed at 6,530 kg | S23, ASSUMPTION | estimate | Fitted (`npm run calibrate`) so the model's power-off stall, flaps and undercarriage down, is S23's landing speed. A landing speed is usually a little above the stall, so this may be slightly low. |
+| Zero-lift drag coefficient (`aero.cd0`) | 0.0267 | — | — | S23, ASSUMPTION | estimate | Fitted (`npm run calibrate`) to 440 km/h at sea level, 1.30 ata and 2400 rpm at 6,530 kg (S23). |
+| Oswald span efficiency (`aero.oswald`) | 0.8 | — | — | ASSUMPTION | estimate | No measured value found. As the single-engine aircraft. A lower value (0.7) would bring the climb above 6 km and the ceiling nearer S23 (FLIGHT_VALIDATION.md). |
+| Drag of fully lowered flaps (`aero.flapCd`) | 0.08 | — | — | ASSUMPTION | estimate | Large flaps lowered 50° (S24); a little more than the Bf 109's 0.07. |
+| Drag of the lowered undercarriage (`aero.gearCd`) | 0.015 | — | — | ASSUMPTION | estimate | Two large main wheels and open bays: about 0.6 m² of drag area, twice the Bf 109's. |
+| Extra drag with the radiator flaps fully open (`aero.radiatorCd`) | 0.0035 | — | — | ASSUMPTION | estimate | Two radiators: about twice the Bf 109's drag area. |
+| Washout: outer wing set lower than the root (`aero.washout`) | 0 | deg | — | S32, ASSUMPTION | estimate | Not found for the 110. Taken as the Bf 109's (S32: no twist), from the same designer with slats doing the same job. |
+| Wing dihedral (`aero.dihedral`) | 5 | deg | — | ASSUMPTION | estimate | No source found. Similar to the Bf 109's 5.75° (S32). |
+| Fraction of each wing half in its engine's slipstream (`aero.slipstreamWing`) | 0.24 | — | — | S31, ASSUMPTION | estimate | Each 3.1 m airscrew spans 0.38 of a wing half. The single-engine fits (S31) came out at 0.63 of the disc-over-span ratio, so the same factor is used: 0.38 × 0.63 = 0.24. |
+| Static margin (`aero.staticMargin`) | 0.05 | fraction | — | ASSUMPTION | estimate | No source; a typical stable aircraft. S25: it trims hands-off. |
+| Pitching moment coefficient at zero lift (`aero.cmZero`) | 0.02 | — | — | ASSUMPTION | estimate | As the Bf 109. Tuned by flying (checkpoint 3). |
+| Pitch damping Cmq (`aero.cmq`) | -15 | per unit q c/2V | — | ASSUMPTION | estimate | A longer tail arm than a single-engine fighter's; no measured value found. |
+| Pitching moment coefficient at full up elevator (`aero.elevatorCm`) | 0.2 | — | — | ASSUMPTION | estimate | No source; tuned by flying. |
+| Pitching moment range of the elevator trimmer (`aero.trimCm`) | 0.03 | — | — | ASSUMPTION | estimate | Enough to trim from the approach to top speed. Trim wheel on the pilot's left (S24). |
+| Pitching moment from fully lowered flaps (`aero.flapCm`) | -0.02 | — | — | S24, ASSUMPTION | estimate | S24: the nose first rears up, then sinks, and the eventual change of trim is very small. Only the small final change is modelled. |
+| Roll moment coefficient at full aileron (`aero.aileronCl`) | 0.04 | — | — | ASSUMPTION | estimate | No roll data found. Smaller than the fighters'; tuned by flying. |
+| Adverse yaw at full aileron (`aero.adverseYaw`) | -0.008 | — | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
+| Weathercock stability Cnβ (`aero.cnBeta`) | 0.1 | per rad | — | ASSUMPTION | estimate | Twin fins and rudders on a long tail arm; more than the Bf 109's 0.07. No measured value found. With the rudder below, full rudder holds about 30° of sideslip. |
+| Yaw damping Cnr (`aero.cnr`) | -0.15 | per unit r b/2V | — | ASSUMPTION | estimate | Engines and fins far from the centre of gravity damp yaw more. No measured value found. |
+| Yaw moment coefficient at full rudder (`aero.rudderCn`) | 0.05 | — | — | ASSUMPTION | estimate | No source. Half of Cnβ, so full rudder holds about 30° of sideslip. On one engine at full power the heading can be held down to the stall (twinEngine.test.js); S25: it flies well on either engine. |
+| Side force from sideslip Cyβ (`aero.cyBeta`) | -0.7 | per rad | — | ASSUMPTION | estimate | Typical of a fuselage, nacelles and twin fins. No measured value found. |
+| Slipstream swirl acting on the fins (`aero.swirl`) | 0.1 | fraction | — | ASSUMPTION | estimate | Less than the Bf 109's 0.15: the fins are out of line with the airscrews. |
+| Rigging against engine torque (`aero.rollRig`) | -0.00152 | — | — | ASSUMPTION | estimate | Equal to both engines' torque reaction in level flight at 110 m/s and 1,500 m (both airscrews turn the same way). |
+| Fixed fin offset or rudder tab (`aero.yawRig`) | -0.00058 | — | — | ASSUMPTION | estimate | Cancels the slipstream swirl in level flight at 110 m/s and 1,500 m. |
+| Roll bias when stalled (wing drop) (`aero.stallBias`) | -0.01 | — | — | S24, ASSUMPTION | estimate | S24: landing too high gives a tendency for a wing to drop (side not stated). Smaller than the Bf 109's. |
+| Yaw moment of the rudder trimmers at full travel (`aero.rudderTrimCn`) | 0.015 | — | — | S24, ASSUMPTION | estimate | S24: a rudder trimmer lever on a notched quadrant. Its power was not found: about a third of the rudder's, as for the Spitfire. Enough to trim out one engine at 250 km/h, not at approach speed. |
+| Elevator stick force at full deflection per unit dynamic pressure (`controls.pitchHinge`) | 0.07 | N/Pa | — | S24, ASSUMPTION | estimate | S24: light and very effective up to 250 mph, then heavy (S25 disagrees: still manoeuvrable at 340 mph). Tuned in checkpoint 3. |
+| Aileron stick force at full deflection per unit dynamic pressure (`controls.rollHinge`) | 0.035 | N/Pa | — | S24, ASSUMPTION | estimate | As the Bf 109 (S32); S24 as above. |
+| Rudder pedal force at full deflection per unit dynamic pressure (`controls.yawHinge`) | 0.06 | N/Pa | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
+| Flap travel time (`controls.flapTime`) | 8 | s | — | ASSUMPTION | estimate | Hydraulic flaps (S24); no time found. |
+| Undercarriage travel time (`controls.gearTime`) | 8 | s | — | ASSUMPTION | estimate | Hydraulic (S24); no time found. |
+| Flap positions besides up (keyboard steps) (`controls.flapStops`) | 5 | — | indicator 0° to 50°; any intermediate position | S24 | medium | S24: the flaps can be stopped anywhere, read on an indicator graduated 0° to 50°. The keys step 10° at a time. |
+| Flap travel, fully down (`controls.flapTravel`) | 50 | deg | 0° to 50° | S24 | medium |  |
+| Flap setting for take-off, fraction of travel (`controls.flapTakeoff`) | 0 | fraction | It is not necessary to use flaps for take-off | S24 | medium |  |
+| Flap setting for landing, fraction of travel (`controls.flapLanding`) | 1 | fraction | full flap | S24, ASSUMPTION | estimate | S24 implies full flap for a normal landing (25° only on one engine). |
+| Elevator travel, full up (`controls.elevatorUp`) | 30 | deg | — | ASSUMPTION | estimate | No source found; used for display only. |
+| Elevator trim wheel, time from one end to the other (`controls.trimTime`) | 10 | s | — | ASSUMPTION | estimate | No source found; typical of the period. |
+| Airscrew diameter (`propeller.diameter`) | 3.1 | m | 3,1 Ø | S23 | medium |  |
+| Reduction gear ratio (airscrew turns per engine turn) (`propeller.gearRatio`) | 0.6452 | — | 1 : 1,55 | S23 | medium |  |
+| Rotation (+1 clockwise seen from the cockpit) (`propeller.rotation`) | -1 | — | — | ASSUMPTION | estimate | As the Bf 109's DB 601A. No handed (opposite-turning) engines were found for the 110, so both turn the same way. |
+| Fine pitch stop (`propeller.betaMin`) | 22.5 | deg | 22.5° | S32, ASSUMPTION | estimate | The Bf 109's VDM airscrew (S32); taken as the same for the 110. S24: 12 o'clock on the indicator is fine pitch. |
+| Coarse pitch stop in normal use (`propeller.betaMax`) | 55 | deg | — | ASSUMPTION | estimate | As the Bf 109 (the NACA data stop at 45°, D30). Beyond it only feathering. |
+| Feathered blade angle (`propeller.featherAngle`) | 90 | deg | 22.5° to 90° (fully feathering) | S24, S25, S32 | medium | S24: the levers are moved right down to feather; S32 gives 90° for the VDM airscrew. |
+| Drag area of a stopped, feathered airscrew (`propeller.featheredDragArea`) | 0.06 | m² | — | ASSUMPTION | estimate | Three blades of about 0.35 m² each, edge-on, plus the spinner: a small drag. No measured value. |
+| Rotating inertia at airscrew speed (`propeller.inertia`) | 35 | kg m² | — | ASSUMPTION | estimate | As the Bf 109 (same engine and airscrew). |
+| Net gyroscopic inertia at airscrew speed (`propeller.gyroInertia`) | 25 | kg m² | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
+| Governor gain (engine-management assist) (`propeller.governorGain`) | 3 | rad/s | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
+| Maximum blade-angle rate (`propeller.pitchRate`) | 0.07 | rad/s | — | ASSUMPTION | estimate | As the Bf 109 (electric pitch change); also the feathering rate. |
+| Lowest engine speed the assist will hold (`propeller.rpmMin`) | 1500 | rpm | — | ASSUMPTION | estimate | Only used by the engine-management assist. |
+| Engine speed held by the engine-management assist (`propeller.rpmMax`) | 2400 | rpm | 2400 rpm | S24 | medium | 5-minute rating. |
+| Left airscrew hub, ahead of the centre of gravity (`engines.left.x`) | 2.3 | m | — | ASSUMPTION | estimate | No scaled drawing found. From the overall length (S23) and the airscrews' position ahead of the wing leading edge. |
+| Left airscrew hub, height (`engines.left.y`) | 0 | m | — | ASSUMPTION | estimate | On a thrust line through the centre of gravity. |
+| Left airscrew hub, sideways (`engines.left.z`) | -2.45 | m | — | ASSUMPTION | estimate | The 3.1 m discs must clear the fuselage (about 1.3 m wide) with some margin: 1.55 + 0.65 + 0.25 m. |
+| Right airscrew hub, ahead of the centre of gravity (`engines.right.x`) | 2.3 | m | — | ASSUMPTION | estimate | As the left engine's. |
+| Right airscrew hub, height (`engines.right.y`) | 0 | m | — | ASSUMPTION | estimate | As the left engine's. |
+| Right airscrew hub, sideways (`engines.right.z`) | 2.45 | m | — | ASSUMPTION | estimate | As the left engine's. |
+| Slat opening starts (local angle from zero lift) (`slats.openAlpha`) | 12.4 | deg | — | S32, ASSUMPTION | estimate | Automatic slots (S24). Taken as the Bf 109's fitted value (S32). |
+| Slat fully open (`slats.fullAlpha`) | 14.4 | deg | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
+| Maximum lift coefficient with the slats closed (`slats.clMaxClosed`) | 1.22 | — | — | ASSUMPTION | estimate | As the Bf 109, slats assumed to add 0.25. |
+| Slats' increase in the outer wing's section maximum lift (`slats.sectionGain`) | 0.3 | — | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
+| Slat travel rate (`slats.rate`) | 4 | 1/s | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
+| Main wheel centre, ahead of the centre of gravity (`gear.main.x`) | 0.45 | m | — | ASSUMPTION | estimate | No scaled drawing found. S24: the tail is fairly heavy and slow to rise, so the wheels are not far ahead of the centre of gravity. |
+| Main wheel centre, height (`gear.main.y`) | -1.6 | m | — | ASSUMPTION | estimate | From the height (3.3 m, S23) and the wheel size. |
+| Half the main wheel track (`gear.main.z`) | 2.3 | m | — | ASSUMPTION | estimate | The wheels retract into the engine nacelles (S24), so they sit under the engines. |
+| Main wheel radius (`gear.main.radius`) | 0.42 | m | — | ASSUMPTION | estimate | No source; sized for a 6.5 t aircraft. |
+| Tailwheel centre, x (`gear.tail.x`) | -7.4 | m | — | ASSUMPTION | estimate | Near the tail end of the 12.0 m fuselage (S23). |
+| Tailwheel centre, height (`gear.tail.y`) | -0.27 | m | — | ASSUMPTION | estimate | Set so the parked aircraft sits at the assumed ground angle. |
+| Tailwheel radius (`gear.tail.radius`) | 0.15 | m | — | ASSUMPTION | estimate | No source found; typical of the period. |
+| Tailwheel castors freely (1 = yes) (`gear.tail.castor`) | 1 | — | — | ASSUMPTION | estimate | Steering by rudder, brakes and engines assumed. |
+| Ground angle: thrust line to the ground on all three wheels (`gear.groundAngle`) | 11 | deg | — | ASSUMPTION | estimate | No source or drawing found. Must stay below the stalling angle. |
+| Main leg and tyre squash under the parked weight (`gear.mainDeflection`) | 0.12 | m | — | ASSUMPTION | estimate | No source found; typical of the period. |
+| Tailwheel squash under the parked weight (`gear.tailDeflection`) | 0.06 | m | — | ASSUMPTION | estimate | No source found; typical of the period. |
+| Oleo damping, fraction of critical (`gear.dampingRatio`) | 0.6 | fraction | — | ASSUMPTION | estimate | As the fighters. |
+| Most braking force as a fraction of the wheel's load (`gear.brake`) | 0.3 | fraction | — | ASSUMPTION | estimate | Toe brakes (S24); as the fighters. |
+| Left wingtip, x (`contacts.leftTip.x`) | -0.4 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Left wingtip, y (`contacts.leftTip.y`) | 0.3 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Left wingtip, z (`contacts.leftTip.z`) | -8.1 | m | — | S23 | medium | Half the 16.2 m span. |
+| Right wingtip, x (`contacts.rightTip.x`) | -0.4 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Right wingtip, y (`contacts.rightTip.y`) | 0.3 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Right wingtip, z (`contacts.rightTip.z`) | 8.1 | m | — | S23 | medium | Half the 16.2 m span. |
+| Lowest point of the nose, x (`contacts.nose.x`) | 4.2 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Lowest point of the nose, y (`contacts.nose.y`) | -0.55 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Lowest point of the nose, z (`contacts.nose.z`) | 0 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Lowest point of the belly, x (`contacts.belly.x`) | 0 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Lowest point of the belly, y (`contacts.belly.y`) | -0.95 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Lowest point of the belly, z (`contacts.belly.z`) | 0 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, x (`contacts.tail.x`) | -7.1 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, y (`contacts.tail.y`) | -0.1 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Underside of the rear fuselage, z (`contacts.tail.z`) | 0 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S23); no scaled drawing found. Touching the ground with it ends the flight. |
+| Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Revi sight (S25: thinner lines than the GM 2); the ring size is an open gap, as for the Bf 109. |
+| Pilot's eye, ahead of the centre of gravity (`eye.x`) | 1.0 | m | — | ASSUMPTION | estimate | The pilot sits ahead of the wing; S24 praises the view ahead. |
+| Pilot's eye, height (`eye.y`) | 0.9 | m | — | ASSUMPTION | estimate | No source found; typical of the period. |
 
 ## Heinkel He 111 H-3 (AI only)
 
@@ -789,7 +896,7 @@ Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or es
 | Ground-effect constant (`groundEffect`) | 16 | — | — | ASSUMPTION | estimate | Induced drag near the ground is multiplied by (16h/b)² / (1 + (16h/b)²), with h the height and b the span: the approximation usually attributed to McCormick (1979; the book was not consulted). The lift slope rises to match the larger effective aspect ratio. |
 | Lowest airspeed for the aerodynamic angles (`lowSpeed`) | 15 | m/s | — | ASSUMPTION | estimate | Below this (taxiing) the angles of attack and sideslip and the rotation terms are worked out as at this speed: the slipstream, not the free stream, sets the flow over the aircraft, and the terms would otherwise grow without limit. Below every Phase 1 test speed. |
 | Wheel descent rate that collapses the undercarriage (`sinkLimit`) | 3.5 | m/s | — | ASSUMPTION | estimate | About 11.5 ft/s. The period design figure was not found (see gaps). |
-
+| Friction of a stopped engine (`deadEngineFriction`) | 0.1 | fraction | — | ASSUMPTION | estimate | Torque of a dead engine's internal friction and pumping, as a fraction of its rated torque. No source found; a piston engine's friction is commonly about a tenth of its output. It sets how much a windmilling airscrew is driven, and so its drag: with 0.1 the Bf 110 climbs about half as well on one engine windmilling as feathered (S25: much better feathered). |
 ## Propeller data: NACA Report 640
 
 All three fighters use the full-scale coefficients of NACA Report 640's 3-blade Clark Y propeller 5868-9 (`src/aircraft/naca640.js`), scaled to each propeller's diameter. The Rotol and VDM blades were of different shape and width, so this is an approximation: it is the best measured full-scale data found for 3-blade propellers of the period. Blade angles beyond the measured 15-45° reuse the nearest curve, stretched in J so that its zero-thrust point moves on at the measured rate. The power coefficient is computed as CT J / efficiency, so thrust, power and efficiency stay consistent.

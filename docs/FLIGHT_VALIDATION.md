@@ -1,7 +1,7 @@
 # Flight Validation
 
 The flight model compared with sourced performance figures. Generated from `npm run validate`
-(updated 25 Oct 2026, Phase 2: Bf 109 recalibrated from the RAE report, D30); the same comparison runs in `npm test`
+(updated 25 Oct 2026, Phase 3: the Bf 110 added, D36); the same comparison runs in `npm test`
 (`tests/physics/validation.test.js`). Sources are the S-numbers in `docs/AIRCRAFT_DATA.md`.
 
 ## Method
@@ -19,7 +19,8 @@ The flight model compared with sourced performance figures. Generated from `npm 
   - the Spitfire's propeller blade width, to N3171's time to 20,000 ft (product owner's decision, D24);
   - the RAF fighters' elevator force factor, to NACA's stick force per g (5.0 and 8.1 lb/g; not a table row);
   - the Bf 109's slat opening (lift coefficient 0.865), aileron heaviness (one-fifth aileron at 400 mph) and aileron
-    power (45° of bank at 400 mph as quickly as the Spitfire), all from the RAE report S32 (D30; not table rows).
+    power (45° of bank at 400 mph as quickly as the Spitfire), all from the RAE report S32 (D30; not table rows);
+  - the Bf 110's flaps-down maximum lift, to its data sheet's landing speed (S23).
 - **Handling checks** in the time-stepped simulation are in `tests/physics/handling.test.js` (`npm run handling` prints
   them): stalls, spins, rolls, sideslip in a roll, control heaviness, slats and torque swing.
 - **Tolerances** (the proposed Phase 1 acceptance test):
@@ -105,6 +106,35 @@ The flight model compared with sourced performance figures. Generated from `npm 
 | S22 | Time to height | 4,000 m | Rechlin comparison flights, time to 4 km | 4.4 min | 4.6 min | +4.2% |
 | S20 | Stall (IAS) | 1,500 m | A&AEE stall, flaps and undercarriage up (weight not stated) | 150 km/h | 152 km/h | +1.4% |
 
+### Bf 110 C-4 (Phase 3; C-2 data, D14)
+
+| Source | Check | Height | Conditions | Source value | Model | Error |
+|---|---|---|---|---|---|---|
+| S23 | Level speed | 0 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) **(calibration point)** | 440 km/h | 440 km/h | -0.0% |
+| S23 | Level speed | 2,000 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) | 477 km/h | 476 km/h | -0.3% |
+| S23 | Level speed | 4,000 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) | 514 km/h | 501 km/h | -2.5% |
+| S23 | Level speed | 4,500 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) | 523 km/h | 507 km/h | -3.0% |
+| S23 | Level speed | 6,000 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) | 513 km/h | 508 km/h | -0.9% |
+| S23 | Time to height | 1,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 1.3 min | 1.6 min | +20.3% |
+| S23 | Time to height | 2,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 2.7 min | 3.1 min | +13.7% |
+| S23 | Time to height | 4,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 6.0 min | 6.3 min | +5.2% |
+| S23 | Time to height | 6,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 10.5 min | 10.1 min | -3.9% |
+| S23 | Time to height | 8,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 18.5 min | 15.8 min | -14.5% |
+| S23 | Service ceiling | — | Data sheet climb, C-2 (30-minute rating assumed) | 9500 m | 10548 m | +11.0% |
+| S23 | Stall (IAS) | 0 m | Landing speed taken as the stall, flaps and undercarriage down **(calibration point)** | 132 km/h | 132 km/h | -0.0% |
+
+**Single-engine flight** (time-stepped, `tests/physics/twinEngine.test.js`; 1,000 m, the live engine at full
+throttle and 2,400 rpm, the scripted pilot holding speed, heading and wings level with rudder and rudder trim):
+
+| Condition | Model | Source |
+|---|---|---|
+| Climb at 250 km/h, dead airscrew feathered | about 3.1 m/s (600 ft/min), either engine | S25: climbs and holds height on either engine |
+| Climb at 250 km/h, dead airscrew windmilling | about 1.7 m/s (330 ft/min) | S25: holds height even unfeathered; much better feathered |
+| Rudder trim to fly hands-off at 250 km/h, feathered | 0.63 of full (left engine dead), 0.74 (right engine dead) | S24: rudder trimmer fitted. The right engine is the critical one (both airscrews turn the same way). |
+| Minimum control speed, windmilling, wings level | below the stall (about 150 km/h IAS) | No source. |
+| Approach speed 160 km/h, feathered, 25° flap | held straight; about 0.35 rudder with full trim, 0.6 aileron | S24: use only 25° flap on one engine |
+| Approach speed 160 km/h, feathered, full flap, full power | held straight; about the same control as with 25° flap | S24: full flap with more than 1,600 rpm gives an uncontrollable swing and bank (item 16) |
+
 ## Take-offs and landings (Phase 2)
 
 A scripted test pilot (`src/dev/groundTests.js`) flies each case on level grass with no wind, as the sources were
@@ -154,8 +184,8 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
 
 ## Summary
 
-- **Within tolerance:** 47 of 56 performance rows, including all the calibration points. The two outside that are new
-  are the RAE's 400 mph bank times (item 12).
+- **Within tolerance:** 55 of 68 performance rows, including all the calibration points. The Bf 110 adds 12 rows, of
+  which its climbs to 1, 2 and 8 km and its ceiling are outside (item 14).
 - **Level speeds:** all within 5%; the Spitfire's N3171 speeds within 0.5%.
 - **Spitfire climb:** within 4% at every height.
 - **Stalls:** within 3%, power off and on, flaps up and down (the Bf 109 now against the RAE's calibrated figures).
@@ -206,4 +236,18 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
       (S19), whose viewing direction has not been checked, and the model's anticlockwise-from-the-cockpit choice was
       made to match the ground swing.
     - It is an open research gap.
-
+14. **Bf 110 climb shape against the data sheet (S23):** 14-20% slow to 1-2 km, 15% quick to 8 km, ceiling 11% high (10,550 m against 9,500 m).
+    - The data sheet does not state its engine rating (the 30-minute rating is assumed, as for the Bf 109's S17).
+      At the 5-minute rating the low climbs are within 5% but the high ones are 16-25% quick.
+    - The source's climb rate falls away with height faster than the model's. A lower span efficiency (0.7) would bring
+      the high climbs and ceiling nearer, but there is no source for it, so 0.8 is kept.
+15. **Bf 110 ground run-up:** 2,410 rpm at full throttle with the airscrews in fine pitch, against S24's "2,200 r.p.m.
+    approximately at 1.3 atmospheres". The Bf 109 (same engine and airscrew) gives the same. Wider blades (11%) would give
+    2,200 rpm but the boost would then fall to 1.2 ata, so nothing is fitted. The fine-pitch angle (22.5°, S32) may be
+    measured at a different blade station from the one assumed.
+16. **Bf 110 full flap on one engine:** S24 warns that full flap with more than 1,600 rpm on the good engine gives an
+    uncontrollable swing and bank. The model's 110 needs a lot of aileron (about 0.6) and rudder at full power, but
+    no more with full flap than with 25°, and stays controllable. The flaps' effect on the asymmetric slipstream is
+    not modelled beyond the extra lift on the live side. To be judged in the product owner's flight test.
+17. **Bf 110 dimensions and positions are estimates:** no scaled drawing was found, so the engine, wheel, eye and
+    centre-of-gravity positions come from the overall dimensions (S23). Most handling values are the Bf 109's.

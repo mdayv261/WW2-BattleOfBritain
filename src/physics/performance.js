@@ -9,6 +9,7 @@
 import { G } from '../core/constants.js';
 import { atmosphere, trueAirspeed } from './atmosphere.js';
 import { enginePower } from './engine.js';
+import { engineMounts } from './powerplant.js';
 import { propellerLoads, bladeAngleForPower } from './propeller.js';
 import { aeroCoefficients, stallAlpha } from './aero.js';
 import { common } from '../aircraft/common.js';
@@ -74,12 +75,15 @@ export function steadyFlight(ac, setting, altitude, speed, { flaps = 0, gear = 0
   const weight = mass * G;
   const surfaces = surfacesFor(flaps, gear);
   const disc = (Math.PI * ac.propeller.diameter ** 2) / 4;
+  const engines = engineMounts(ac).length;
   const forcesAt = (alpha) => {
     const prop = propulsion(ac, setting, altitude, speed, speed * Math.cos(alpha));
+    // Each engine's slipstream washes its own side of the wing, so the per-side slipstream is one engine's.
     const slipQ = Math.max(prop.thrust, 0) / disc;
     const co = aeroCoefficients(ac, { alpha, beta: 0, p: 0, q: 0, r: 0, airspeed: speed, qBar, slipQ }, surfaces);
-    const up = co.cl * qBar * S + prop.thrust * Math.sin(alpha);
-    const along = prop.thrust * Math.cos(alpha) - co.cd * qBar * S;
+    const thrust = prop.thrust * engines;
+    const up = co.cl * qBar * S + thrust * Math.sin(alpha);
+    const along = thrust * Math.cos(alpha) - co.cd * qBar * S;
     return { up, along, prop, co };
   };
   // Search from below zero lift up to the peak of the lift curve (the stall).

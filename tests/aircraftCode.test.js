@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { spitfire } from '../src/aircraft/spitfire.js';
 import { hurricane } from '../src/aircraft/hurricane.js';
 import { bf109e4 } from '../src/aircraft/bf109e4.js';
+import { bf110c4 } from '../src/aircraft/bf110c4.js';
 import { merlin3 } from '../src/aircraft/merlin3.js';
 import { db601a } from '../src/aircraft/db601a.js';
 import { common } from '../src/aircraft/common.js';
@@ -16,6 +17,7 @@ const DATA_FILES = [
   { name: 'spitfire.js', data: spitfire, section: 'Supermarine Spitfire Mk I' },
   { name: 'hurricane.js', data: hurricane, section: 'Hawker Hurricane Mk I' },
   { name: 'bf109e4.js', data: bf109e4, section: 'Messerschmitt Bf 109 E-4' },
+  { name: 'bf110c4.js', data: bf110c4, section: 'Messerschmitt Bf 110 C-4' },
   { name: 'merlin3.js', data: merlin3, section: 'Rolls-Royce Merlin III' },
   { name: 'db601a.js', data: db601a, section: 'Daimler-Benz DB 601A' },
   { name: 'common.js', data: common, section: 'Common flight-model parameters' },

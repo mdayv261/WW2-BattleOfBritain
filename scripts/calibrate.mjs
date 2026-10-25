@@ -3,7 +3,9 @@
 // docs/AIRCRAFT_DATA.md by hand, so every change is visible and recorded.
 //   aero.cd0            - to the calibration level speed (validationCases, calibration: true)
 //   aero.aileronCl      - to NACA's roll with 30 lb at 230 mph IAS, 10,000 ft, rudder fixed (RAF fighters)
-//   aero.slipstreamWing - to the NACA power-on stall of the Spitfire (applied to all three)
+//   aero.slipstreamWing - to the NACA power-on stall of the Spitfire (applied to the three fighters; the twins
+//                         scale it by their discs' share of the wing, see AIRCRAFT_DATA.md)
+//   aero.clMaxFlaps     - Bf 110: to the data sheet's landing speed (S23), with aero.clMax 0.5 below it
 //   propeller.solidity  - Spitfire only: blade width relative to the NACA propeller, to N3171's climb
 //   controls.pitchHinge - RAF fighters: to NACA's stick-force gradient at 230 mph IAS, 10,000 ft (S11, S12)
 //   Bf 109, from the RAE report (S32):
@@ -48,7 +50,7 @@ const slip = fit(0, 1.5, (k) => stall.p.value - modelValue(withAero(spit, { slip
 console.log(`slipstreamWing (all aircraft): ${slip.toFixed(3)}`);
 
 for (const ac0 of aircraftList) {
-  const ac = withAero(ac0, { slipstreamWing: slip });
+  const ac = ac0.engines ? ac0 : withAero(ac0, { slipstreamWing: slip });
   const out = {};
   let ac1 = ac;
   if (ac.id === 'bf109e4') {
@@ -63,6 +65,11 @@ for (const ac0 of aircraftList) {
     ac1 = { ...ac, controls: { ...ac.controls, rollHinge: out.rollHinge } };
     const spitfireTime = bankTime(spit, 400 * UNIT.MPH, 3048).time;
     out.aileronCl = fit(0.01, 0.2, (k) => bankTime(withAero(ac1, { aileronCl: k }), 400 * UNIT.MPH, 3048).time - spitfireTime, false);
+  }
+  const landing = ac.id !== 'spitfire' && calibrationPoint(ac.id, 'stall');
+  if (landing) {
+    const withLift = (k) => withAero(ac, { clMaxFlaps: k, clMax: k - 0.5 });
+    out.clMaxFlaps = fit(1.2, 3, (k) => landing.p.value - modelValue(withLift(k), landing.c, landing.p), true);
   }
   const roll = calibrationPoint(ac.id, 'roll');
   if (roll) out.aileronCl = fit(0.005, 0.2, (k) => modelValue(withAero(ac, { aileronCl: k }), roll.c, roll.p) - roll.p.value, true);
