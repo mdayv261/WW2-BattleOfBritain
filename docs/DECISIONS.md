@@ -673,6 +673,15 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
 - **RAF:** the six blind-flying instruments, boost, rpm, undercarriage lamps and flaps.
 - **Bf 109:** airspeed, altimeter, turn and bank (its only blind-flying instrument, S20), compass, ata, rpm, the
   propeller pitch clock, undercarriage and flaps.
+- **RAF panel layout (product owner, from a photograph of a Spitfire I panel):**
+  - the blind-flying panel as a plate in the middle, two rows of three: airspeed, artificial horizon and rate of climb
+    above; altimeter, direction indicator and turn and slip below;
+  - the engine instruments to the right: rpm above, boost below;
+  - the undercarriage indicator and flap position to the left;
+  - no captions, as on the real panel.
+
+  Only instruments the model drives are shown. Oil, coolant and fuel gauges come with the engine-cooling and damage
+  work. The Bf 109 keeps its strip of dials until its panel layout is set.
 - **Period look (product owner, 25 Oct 2026):** black faces with white markings throughout. The artificial horizon is
   all black with a white bar, not coloured. The direction indicator shows a heading drum through a window, as the 1940
   directional gyro did, not a modern rotating card; the 109's compass is drawn the same way. The turn indicator has 0

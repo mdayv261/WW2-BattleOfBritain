@@ -54,19 +54,43 @@ function gauge(g, x, y, r, value, opts, title) {
 
 const ARC = { start: -Math.PI * 0.75, end: Math.PI * 0.75 };
 
-function rafPanel(g, at, r, v) {
-  gauge(g, ...at(0), r, v.airspeed, { min: 0, max: 450, ...ARC, major: 50, minor: 10, label: (s) => (s % 100 ? '' : String(s / 10)) }, 'AIRSPEED');
-  horizon(g, ...at(1), r, v.bank, v.pitch, 'HORIZON');
-  gauge(g, ...at(2), r, v.climb / 1000, { min: -4, max: 4, start: -Math.PI * 1.35, end: Math.PI * 0.35, major: 1, minor: 0.5, label: (s) => String(Math.abs(s)) }, 'CLIMB ×1000');
-  rafAltimeter(g, ...at(3), r, v.altitude, 1013, 'ALTIMETER');
-  headingDrum(g, ...at(4), r, v.heading, 'DIRECTION');
-  turnAndSlip(g, ...at(5), r, v.turnRate, v.sideG, 'TURN & SLIP');
-  gauge(g, ...at(6), r, v.manifold, { min: -6, max: 14, ...ARC, major: 2, minor: 1, label: (s) => (s > 0 ? `+${s}` : String(s)) }, 'BOOST');
-  gauge(g, ...at(7), r, v.rpm / 1000, { min: 0, max: 4, ...ARC, major: 0.5, minor: 0.1, label: (s) => (s % 1 ? '' : String(s)) }, 'RPM ×1000');
-  const [lx, ly] = at(8);
-  lamp(g, lx - r * 0.3, ly - r * 0.45, r * 0.15, '#3fbf4a', v.gearDown, 'DOWN');
-  lamp(g, lx + r * 0.3, ly - r * 0.45, r * 0.15, '#d8402e', v.gearUp, 'UP');
-  label(g, lx, ly + r * 0.35, r * 1.2, `FLAPS ${v.flaps > 0.5 ? 'DOWN' : 'UP'}`);
+// RAF panel layout, after a Spitfire I panel (D32): the blind-flying panel in the middle, two rows of three
+// (airspeed, artificial horizon, rate of climb above; altimeter, direction indicator, turn and slip below),
+// the engine instruments to its right (rpm above, boost below) and the undercarriage indicator to its left.
+// Positions are in dial radii from the top centre of the panel. No captions: the real panel has none.
+const RAF_LAYOUT = {
+  width: 13.4, height: 4.9,
+  airspeed: [-2.3, 1.3], horizon: [0, 1.3], climb: [2.3, 1.3],
+  altimeter: [-2.3, 3.6], direction: [0, 3.6], turn: [2.3, 3.6],
+  rpm: [5.2, 1.3], boost: [5.2, 3.6], gear: [-5.0, 1.6], flaps: [-5.0, 3.5],
+  blindFlying: { left: -3.55, right: 3.55, top: 0.1, bottom: 4.8 },
+};
+
+function rafPanel(g, x0, y0, r, v) {
+  const L = RAF_LAYOUT;
+  const at = ([dx, dy]) => [x0 + dx * r, y0 + dy * r];
+  // The blind-flying panel is a separate plate on the main panel.
+  const bf = L.blindFlying;
+  g.fillStyle = '#101010';
+  g.fillRect(x0 + bf.left * r, y0 + bf.top * r, (bf.right - bf.left) * r, (bf.bottom - bf.top) * r);
+  g.strokeStyle = '#3a3a36';
+  g.lineWidth = 2;
+  g.strokeRect(x0 + bf.left * r, y0 + bf.top * r, (bf.right - bf.left) * r, (bf.bottom - bf.top) * r);
+  gauge(g, ...at(L.airspeed), r, v.airspeed, { min: 0, max: 450, ...ARC, major: 50, minor: 10, label: (s) => (s % 100 ? '' : String(s / 10)) });
+  horizon(g, ...at(L.horizon), r, v.bank, v.pitch);
+  gauge(g, ...at(L.climb), r, v.climb / 1000, { min: -4, max: 4, start: -Math.PI * 1.35, end: Math.PI * 0.35, major: 1, minor: 0.5, label: (s) => String(Math.abs(s)) });
+  rafAltimeter(g, ...at(L.altimeter), r, v.altitude, 1013);
+  headingDrum(g, ...at(L.direction), r, v.heading);
+  turnAndSlip(g, ...at(L.turn), r, v.turnRate, v.sideG);
+  gauge(g, ...at(L.rpm), r, v.rpm / 1000, { min: 0, max: 4, ...ARC, major: 0.5, minor: 0.1, label: (s) => (s % 1 ? '' : String(s)) });
+  label(g, at(L.rpm)[0], at(L.rpm)[1] + r * 0.66, r * 0.65, 'R.P.M. ×1000');
+  gauge(g, ...at(L.boost), r, v.manifold, { min: -6, max: 14, ...ARC, major: 2, minor: 1, label: (s) => (s > 0 ? `+${s}` : String(s)) });
+  label(g, at(L.boost)[0], at(L.boost)[1] + r * 0.66, r * 0.65, 'BOOST');
+  const [gx, gy] = at(L.gear);
+  lamp(g, gx - r * 0.35, gy, r * 0.17, '#3fbf4a', v.gearDown, 'DOWN');
+  lamp(g, gx + r * 0.35, gy, r * 0.17, '#d8402e', v.gearUp, 'UP');
+  label(g, gx, gy - r * 0.45, r * 1.3, 'UNDERCARRIAGE');
+  label(g, ...at(L.flaps), r * 1.3, `FLAPS ${v.flaps > 0.5 ? 'DOWN' : 'UP'}`);
 }
 
 function luftwaffePanel(g, at, r, v) {
@@ -101,15 +125,9 @@ export class InstrumentPanel {
     this.canvas.style.display = this.visible ? 'block' : 'none';
   }
 
-  /** Redraws the strip for the current state. */
-  update(sim) {
-    if (!this.visible) return;
-    const v = instrumentReadings(sim);
-    const count = v.raf ? 9 : 8;
+  /** Sizes the canvas to `height` CSS pixels and returns its 2D context, cleared. */
+  context(width, height) {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const width = window.innerWidth;
-    const r = Math.min(62, (width / count) * 0.42);
-    const height = r * 2 + 34;
     if (this.canvas.width !== Math.round(width * dpr) || this.canvas.height !== Math.round(height * dpr)) {
       this.canvas.width = Math.round(width * dpr);
       this.canvas.height = Math.round(height * dpr);
@@ -118,12 +136,32 @@ export class InstrumentPanel {
     const g = this.canvas.getContext('2d');
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.clearRect(0, 0, width, height);
+    return g;
+  }
+
+  /** Redraws the panel for the current state: the RAF layout, or the Luftwaffe strip of dials. */
+  update(sim) {
+    if (!this.visible) return;
+    const v = instrumentReadings(sim);
+    const width = window.innerWidth;
+    if (v.raf) {
+      const L = RAF_LAYOUT;
+      const r = Math.min(66, (width * 0.92) / L.width, (window.innerHeight * 0.4) / L.height);
+      const height = L.height * r + 6;
+      const g = this.context(width, height);
+      g.fillStyle = 'rgba(18, 18, 16, 0.94)';
+      g.fillRect((width - L.width * r) / 2, 0, L.width * r, height);
+      rafPanel(g, width / 2, 0, r, v);
+      return;
+    }
+    const count = 8;
+    const r = Math.min(62, (width / count) * 0.42);
+    const height = r * 2 + 34;
+    const g = this.context(width, height);
     g.fillStyle = 'rgba(28, 30, 26, 0.88)';
     const span = count * r * 2.3;
     const left = (width - span) / 2;
     g.fillRect(left - 8, 0, span + 16, height);
-    const at = (i) => [left + r * 1.15 + i * r * 2.3, r + 8];
-    if (v.raf) rafPanel(g, at, r, v);
-    else luftwaffePanel(g, at, r, v);
+    luftwaffePanel(g, (i) => [left + r * 1.15 + i * r * 2.3, r + 8], r, v);
   }
 }
