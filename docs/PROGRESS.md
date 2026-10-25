@@ -162,7 +162,8 @@ Spitfire and the 109. It is probably stick-movement time and wing twist, neither
 6. **Joystick:** the default mapping is the product owner's Extreme 3D Pro on the Mac (25 Oct 2026): stick axes 0
    and 1, twist axis 5, throttle slider axis 6 (−1 idle, +1 full). The product owner confirmed that pulling back
    raises the nose and twisting right yaws right, with no axis reversed. J shows the axes; "Reset to default" applies
-   this mapping if an older one was saved.
+   this mapping if an older one was saved. (Phase 2 update: the product owner later set the throttle slider to
+   reversed in the J panel, and that is now the default, D32.)
 
 **Known issues:**
 - Away from the start speed the aircraft slowly roll and yaw from engine torque, as real ones did. Trim covers pitch
