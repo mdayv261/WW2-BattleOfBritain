@@ -252,6 +252,7 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Propeller hub height (`propHub.y`) | 0 | m | — | ASSUMPTION | estimate | On the thrust line, which is assumed to pass through the centre of gravity. |
 | Pilot's eye, x (`eye.x`) | -0.89 | m | — | S12, ASSUMPTION | estimate | Read from S12 Fig. 4 (cockpit position); the eye position itself is estimated. |
 | Pilot's eye, height (`eye.y`) | 0.65 | m | — | S12, ASSUMPTION | estimate | A little below the canopy top in S12 Fig. 4. |
+| Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Barr & Stroud GM 2 reflector sight assumed (standard in RAF fighters by 1940; not yet confirmed from an allowed source). The ring's size was not found in an allowed source (forum and dealer figures disagree); a display placeholder until the gunsights are researched for Phase 5 (see gaps). |
 | Flap positions besides up (`controls.flapStops`) | 4 | — | — | ASSUMPTION | estimate | Hydraulic flaps that could be stopped part-way assumed; the Mk I Pilot's Notes were not found (see gaps). |
 | Elevator trim, time from one end to the other (`controls.trimTime`) | 8 | s | — | ASSUMPTION | estimate | No source; a handwheel. S12: no rudder trim tab was fitted, so none is modelled. |
 
@@ -410,6 +411,7 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Propeller hub height (`propHub.y`) | 0 | m | — | ASSUMPTION | estimate | On the thrust line, which is assumed to pass through the centre of gravity. |
 | Pilot's eye, x (`eye.x`) | -1.39 | m | — | S11, ASSUMPTION | estimate | Read from S11 Fig. 4 (cockpit position); the eye position itself is estimated. |
 | Pilot's eye, height (`eye.y`) | 0.48 | m | — | S11, ASSUMPTION | estimate | About 2 in below the canopy top in S11 Fig. 4. |
+| Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Barr & Stroud GM 2 reflector sight assumed (standard in RAF fighters by 1940; not yet confirmed from an allowed source). The ring's size was not found in an allowed source (forum and dealer figures disagree); a display placeholder until the gunsights are researched for Phase 5 (see gaps). |
 | Flap positions besides up (1 = up or fully down only) (`controls.flapStops`) | 1 | — | two positions only, up and fully down | S33 | medium | Pneumatic split flaps; they 'cannot therefore be used to assist take-off' (S33). |
 | Elevator trim, time from one end to the other (`controls.trimTime`) | 8 | s | — | ASSUMPTION | estimate | No source; a handwheel. |
 | Yaw moment of the rudder trim tab at full travel (`aero.rudderTrimCn`) | 0.02 | — | — | S11, S33, ASSUMPTION | estimate | S11 lists a rudder trim tab and S33 sets it 'fully to starboard' for take-off. Its power was not found: a third of the rudder's assumed. |
@@ -622,6 +624,7 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Propeller hub height (`propHub.y`) | 0 | m | — | ASSUMPTION | estimate | On the thrust line, which is assumed to pass through the centre of gravity. |
 | Pilot's eye, x (`eye.x`) | -0.89 | m | — | S32, ASSUMPTION | estimate | Read from S32 Fig. 5 (cockpit position); the eye position itself is estimated. |
 | Pilot's eye, height (`eye.y`) | 0.556 | m | — | S32, ASSUMPTION | estimate | A little below the canopy top in S32 Fig. 5. S20: the hood touches the head of a normal pilot. |
+| Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Revi C/12C reflector sight assumed (the usual sight of the Bf 109 E; not yet confirmed from an allowed source). The ring's size was not found in an allowed source (figures of 6 and 100 mils appear in unverified descriptions); a display placeholder until Phase 5 (see gaps). |
 | Flap positions besides up (`controls.flapStops`) | 4 | — | marked from zero to 40 degrees (fully down) in tens of degrees | S20 | medium | Handwheel; any position could be set (S32), the markings are every 10°. S32 takes off with 20°. |
 | Tailplane trim, time from one end to the other (`controls.trimTime`) | 18 | s | can be moved over the whole range in about 18 seconds | S20 | medium | Trim by a movable tailplane (S20, S32). Neither rudder nor aileron trim was fitted (S20). |
 
@@ -846,4 +849,5 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 | Height of the centre of gravity (all three) | Ground handling (wheel and tailwheel heights) | Weight and balance schedules; Luftwaffe Ladepläne |
 | Hurricane I Pilot's Notes (A.P. 1564A): flap selector, take-off and landing speeds | Controls and validation | Museum archives; the Mk II notes (A.P. 1564B) are a close variant |
 | Bf 109 E wheel track (dimensioned) | Ground handling | Flugzeug-Handbuch Teil 0; the S32 front view gives about 1.9 m |
+| Reflector gunsights: types fitted in August 1940 (GM 2, Revi C/12C) and reticle dimensions (ring diameter, range bars, centre dot) | Gunsight display now; aiming and ranging (Phase 5) | RAF gunnery manuals (e.g. A.P. 1641 series, "Bag the Hun"), Barr & Stroud drawings; Luftwaffe Schießfibel and Revi handbooks |
 | Coolant system data (radiator area, temperature limits) for the Merlin III and DB 601A | Cooling model | Pilot's Notes; DB 601 manual (temperatures partly in S24 for the Bf 110) |

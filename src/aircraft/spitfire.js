@@ -68,6 +68,8 @@ export const spitfire = {
     tail: { x: -5.7, y: -0.36, z: 0 },
   },
   propHub: { x: 2.18, y: 0 },
+  // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
+  sight: { type: 'Barr & Stroud GM 2', ringMils: 100 },
   eye: { x: -1.39, y: 0.48 },
   propeller: {
     type: 'constantSpeed',

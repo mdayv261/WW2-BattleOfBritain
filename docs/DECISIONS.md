@@ -724,3 +724,20 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
 rudder, a castoring-tailwheel aircraft ground-loops and can tip onto a wingtip at walking pace. The swing directions
 match S12 and S20; the amount of rudder is for the product owner's flight test to judge.
 
+## D33. Reflector gunsights (25 Oct 2026, Phase 2)
+
+The product owner asked for the optical reflector gunsight in all aircraft. Each cockpit now has the sight body on the
+coaming, with its glass, and a glowing reticle collimated along the aircraft's line of sight. It is drawn at a
+distance so it stays fixed against the sky as the head turns.
+- **Spitfire and Hurricane:** a Barr & Stroud GM 2 pattern: a ring, range bars either side of a central gap, a short
+  post below and a centre dot.
+- **Bf 109:** a Revi C/12C pattern: a ring crossed by horizontal and vertical lines, and a centre dot.
+
+**Estimates:** no allowed source for the reticle sizes was found. Forum and dealer descriptions disagree (6 mils,
+100 mils, "a Spitfire fills the ring at 300 m"). The ring is therefore drawn at 100 mils as a stated estimate, and the
+sights' types and dimensions are an open research gap for Phase 5, when aiming depends on them. The line of sight is
+taken as parallel to the thrust line through the pilot's eye.
+
+**Bf 109 panel:** at the product owner's request the compass and the turn and bank indicator swapped places. The
+compass is now above, in the middle row; the turn and bank below.
+

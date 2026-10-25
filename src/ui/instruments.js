@@ -95,12 +95,13 @@ function rafPanel(g, x0, y0, r, v) {
 }
 
 // Bf 109 E panel layout, after a photograph of a preserved E (D32): the propeller pitch clock at the top
-// centre; altimeter above airspeed on the left; turn and bank above the compass in the middle; a gap for the
+// centre; altimeter above airspeed on the left; the compass above the turn and bank in the middle (as the
+// product owner placed them); a gap for the
 // gunsight placard, then the rpm gauge with the smaller manifold-pressure gauge beside it on the right; the
 // undercarriage indicator and flap position on the left. Positions in dial radii from the top centre.
 const LW_LAYOUT = {
   width: 12.8, height: 5.9,
-  pitchClock: [0, 0.66], altimeter: [-2.4, 2.3], airspeed: [-2.4, 4.6], turn: [0, 2.3], compass: [0, 4.6],
+  pitchClock: [0, 0.66], altimeter: [-2.4, 2.3], airspeed: [-2.4, 4.6], compass: [0, 2.3], turn: [0, 4.6],
   rpm: [3.5, 2.6], ata: [5.4, 2.6], gear: [-4.9, 2.5], flaps: [-4.9, 4.4],
   sizes: { pitchClock: 0.56, ata: 0.72 },
 };

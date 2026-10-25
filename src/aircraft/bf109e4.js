@@ -66,6 +66,8 @@ export const bf109e4 = {
     tail: { x: -5.0, y: 0.2, z: 0 },
   },
   propHub: { x: 2.41, y: 0 },
+  // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
+  sight: { type: 'Revi C/12C', ringMils: 100 },
   eye: { x: -0.89, y: 0.556 },
   propeller: {
     type: 'manualPitch',

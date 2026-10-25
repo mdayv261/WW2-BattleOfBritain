@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { CameraRig } from './cameras.js';
 import { buildCockpitFrame } from './cockpitFrame.js';
+import { buildReticle, buildSightBody } from './gunsight.js';
 
 const COLOURS = { RAF: 0x5e6b3a, Luftwaffe: 0x6f7a6a };
 const UNDERSIDE = { RAF: 0xc9c5b0, Luftwaffe: 0x9db4c4 };
@@ -80,6 +81,7 @@ export class TestView {
     if (this.model) this.scene.remove(this.model);
     this.model = buildStandIn(ac);
     this.cockpit = buildCockpitFrame(ac);
+    this.cockpit.add(buildSightBody(ac), buildReticle(ac));
     this.model.add(this.cockpit);
     this.scene.add(this.model);
     this.rig.first = true;

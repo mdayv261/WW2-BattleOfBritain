@@ -66,6 +66,8 @@ export const hurricane = {
     tail: { x: -5.4, y: -0.78, z: 0 },
   },
   propHub: { x: 2.22, y: 0 },
+  // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
+  sight: { type: 'Barr & Stroud GM 2', ringMils: 100 },
   eye: { x: -0.89, y: 0.65 },
   propeller: {
     type: 'constantSpeed',
