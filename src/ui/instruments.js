@@ -10,7 +10,7 @@ import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
 import { face, needle, scale, horizon, headingDrum, turnAndSlip, lamp, label } from './dials.js';
-import { periodAltimeter, luftwaffeAltimeter } from './altimeters.js';
+import { rafAltimeter, luftwaffeAltimeter } from './altimeters.js';
 
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
@@ -58,9 +58,7 @@ function rafPanel(g, at, r, v) {
   gauge(g, ...at(0), r, v.airspeed, { min: 0, max: 450, ...ARC, major: 50, minor: 10, label: (s) => (s % 100 ? '' : String(s / 10)) }, 'AIRSPEED');
   horizon(g, ...at(1), r, v.bank, v.pitch, 'HORIZON');
   gauge(g, ...at(2), r, v.climb / 1000, { min: -4, max: 4, start: -Math.PI * 1.35, end: Math.PI * 0.35, major: 1, minor: 0.5, label: (s) => String(Math.abs(s)) }, 'CLIMB ×1000');
-  periodAltimeter(g, ...at(3), r, v.altitude, 1000, {
-    labels: { hundreds: '100 FEET', thousands: '1000 FEET', name: 'ALTITUDE' }, window: '1013 MB',
-  }, 'ALTIMETER');
+  rafAltimeter(g, ...at(3), r, v.altitude, 1013, 'ALTIMETER');
   headingDrum(g, ...at(4), r, v.heading, 'DIRECTION');
   turnAndSlip(g, ...at(5), r, v.turnRate, v.sideG, 'TURN & SLIP');
   gauge(g, ...at(6), r, v.manifold, { min: -6, max: 14, ...ARC, major: 2, minor: 1, label: (s) => (s > 0 ? `+${s}` : String(s)) }, 'BOOST');

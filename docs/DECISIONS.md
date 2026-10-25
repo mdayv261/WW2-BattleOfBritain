@@ -678,10 +678,13 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
   directional gyro did, not a modern rotating card; the 109's compass is drawn the same way. The turn indicator has 0
   at twelve o'clock and marks for rate 1, 2 and 3 turns each side (3, 6 and 9 degrees a second).
 - **Altimeters, drawn after photographs supplied by the product owner (spitfirespares.co.uk):**
-  - **RAF:** a three-pointer style with large numerals 0-9 and a pressure-setting window. The photographed instrument
-    is an American Pioneer (US Navy, inches of mercury); the window here shows millibars ("1013 MB"), as the RAF's own
-    1940 altimeter is understood to have used. That is to be confirmed when the period cockpits are researched
-    (Phase 7).
+  - **RAF:** the altimeter Mk XIV, from the product owner's photograph of one:
+    - cream numerals 0-9;
+    - the lettering "100 FEET", "1000 FEET", "10000 FEET", "45,000 FT" and "ALT";
+    - a curved millibar window at the bottom, set to 1013;
+    - three hands: hundreds, thousands, and a thin dark hand for tens of thousands.
+
+    The photograph confirms the millibar setting scale. An earlier version followed an American Pioneer altimeter.
   - **Bf 109:** the Fl 22316 "Höhe km": a single hand making one turn per 6 km, 0 at the bottom and 3 at the top, with
     the white millibar window under the 3. The model does not show more than one turn, so above 6 km the hand reads
     round again, as on the instrument.
