@@ -4,7 +4,8 @@
 // period faces and panel layouts come with the 3D cockpits in Phase 7.
 
 const FACE = '#141414';
-const RIM = '#3a3a36';
+export const RIM = '#3a3a36';
+export const LUMINOUS = '#efe4c2'; // the cream of luminous paint
 const INK = '#ece8dc';
 const NEEDLE = '#f4f0e2';
 

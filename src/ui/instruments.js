@@ -10,6 +10,7 @@ import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
 import { face, needle, scale, horizon, headingDrum, turnAndSlip, lamp, label } from './dials.js';
+import { periodAltimeter, luftwaffeAltimeter } from './altimeters.js';
 
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
@@ -44,14 +45,6 @@ export function instrumentReadings(sim) {
   };
 }
 
-/** Altimeter with a long hand for hundreds (one turn per `perTurn`) and a short one for ten times that. */
-function altimeter(g, x, y, r, value, perTurn, title) {
-  face(g, x, y, r, title);
-  scale(g, x, y, r, { min: 0, max: 10, start: 0, end: Math.PI * 2 * 0.9, major: 1, minor: 0.5, label: (v) => (v < 10 ? String(v) : '') });
-  needle(g, x, y, r * 0.5, (value / (perTurn * 10)) * Math.PI * 2, 5);
-  needle(g, x, y, r * 0.85, (value / perTurn) * Math.PI * 2, 2.5);
-}
-
 /** A dial with one needle over a scale. */
 function gauge(g, x, y, r, value, opts, title) {
   face(g, x, y, r, title);
@@ -65,7 +58,9 @@ function rafPanel(g, at, r, v) {
   gauge(g, ...at(0), r, v.airspeed, { min: 0, max: 450, ...ARC, major: 50, minor: 10, label: (s) => (s % 100 ? '' : String(s / 10)) }, 'AIRSPEED');
   horizon(g, ...at(1), r, v.bank, v.pitch, 'HORIZON');
   gauge(g, ...at(2), r, v.climb / 1000, { min: -4, max: 4, start: -Math.PI * 1.35, end: Math.PI * 0.35, major: 1, minor: 0.5, label: (s) => String(Math.abs(s)) }, 'CLIMB ×1000');
-  altimeter(g, ...at(3), r, v.altitude, 1000, 'ALTIMETER');
+  periodAltimeter(g, ...at(3), r, v.altitude, 1000, {
+    labels: { hundreds: '100 FEET', thousands: '1000 FEET', name: 'ALTITUDE' }, window: '1013 MB',
+  }, 'ALTIMETER');
   headingDrum(g, ...at(4), r, v.heading, 'DIRECTION');
   turnAndSlip(g, ...at(5), r, v.turnRate, v.sideG, 'TURN & SLIP');
   gauge(g, ...at(6), r, v.manifold, { min: -6, max: 14, ...ARC, major: 2, minor: 1, label: (s) => (s > 0 ? `+${s}` : String(s)) }, 'BOOST');
@@ -78,7 +73,7 @@ function rafPanel(g, at, r, v) {
 
 function luftwaffePanel(g, at, r, v) {
   gauge(g, ...at(0), r, v.airspeed, { min: 0, max: 750, ...ARC, major: 100, minor: 50, label: (s) => String(s / 100) }, 'km/h ×100');
-  altimeter(g, ...at(1), r, v.altitude, 1000, 'HÖHE km');
+  luftwaffeAltimeter(g, ...at(1), r, v.altitude, 1013, 'HÖHENMESSER');
   turnAndSlip(g, ...at(2), r, v.turnRate, v.sideG, 'WENDEZEIGER');
   headingDrum(g, ...at(3), r, v.heading, 'KOMPASS');
   gauge(g, ...at(4), r, v.manifold, { min: 0.6, max: 1.8, ...ARC, major: 0.2, minor: 0.1, label: (s) => s.toFixed(1) }, 'LADEDRUCK ata');

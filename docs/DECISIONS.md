@@ -677,6 +677,14 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
   all black with a white bar, not coloured. The direction indicator shows a heading drum through a window, as the 1940
   directional gyro did, not a modern rotating card; the 109's compass is drawn the same way. The turn indicator has 0
   at twelve o'clock and marks for rate 1, 2 and 3 turns each side (3, 6 and 9 degrees a second).
+- **Altimeters, drawn after photographs supplied by the product owner (spitfirespares.co.uk):**
+  - **RAF:** a three-pointer style with large numerals 0-9 and a pressure-setting window. The photographed instrument
+    is an American Pioneer (US Navy, inches of mercury); the window here shows millibars ("1013 MB"), as the RAF's own
+    1940 altimeter is understood to have used. That is to be confirmed when the period cockpits are researched
+    (Phase 7).
+  - **Bf 109:** the Fl 22316 "Höhe km": a single hand making one turn per 6 km, 0 at the bottom and 3 at the top, with
+    the white millibar window under the 3. The model does not show more than one turn, so above 6 km the hand reads
+    round again, as on the instrument.
 - **Pitch clock:** 10 minutes per degree is from S32. Twelve o'clock at the fine stop is an assumption, since the zero
   is not stated.
 
