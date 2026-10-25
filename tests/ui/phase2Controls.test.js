@@ -5,6 +5,7 @@ import { Keyboard, stepFlaps } from '../../src/input/keyboard.js';
 import { Joystick, hatDirection, DEFAULT_MAPPING } from '../../src/input/joystick.js';
 import { cockpitQuaternion, eyePosition, CameraRig, HAT_LOOKS } from '../../src/render/cameras.js';
 import { instrumentReadings } from '../../src/ui/instruments.js';
+import { rafAirspeedAngle } from '../../src/ui/airspeed.js';
 import { airfieldTerrain, onAirfield, AIRFIELD, STARTS } from '../../src/world/airfield.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
@@ -207,6 +208,14 @@ describe('instruments', () => {
     expect(l.airspeed).toBeCloseTo(lw.plane.last.eas / UNIT.KMH, 6);
     expect(l.altitude).toBeCloseTo(1500, 0);
     expect(r.pitchClock).toBeNull();
+  });
+
+  it('turns the RAF airspeed needle twice: 160 and 360 mph at the top, 400 mph at about three o\'clock', () => {
+    const turn = (mph) => rafAirspeedAngle(mph) / (2 * Math.PI);
+    expect(turn(160)).toBeCloseTo(0, 6);
+    expect(turn(360)).toBeCloseTo(1, 6);
+    expect(turn(400) - 1).toBeCloseTo(0.2, 2);
+    expect(rafAirspeedAngle(20)).toBe(rafAirspeedAngle(50)); // resting on its stop
   });
 
   it('shows the propeller pitch clock at twelve on the fine stop, ten minutes per degree (S32)', () => {

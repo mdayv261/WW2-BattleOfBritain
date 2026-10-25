@@ -12,6 +12,7 @@ import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
 import { face, needle, scale, horizon, headingDrum, turnAndSlip, lamp, label, flapIndicator } from './dials.js';
 import { rafAltimeter, luftwaffeAltimeter } from './altimeters.js';
+import { rafAirspeed } from './airspeed.js';
 
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
@@ -80,7 +81,7 @@ function rafPanel(g, x0, y0, r, v) {
   g.strokeStyle = '#3a3a36';
   g.lineWidth = 2;
   g.strokeRect(x0 + bf.left * r, y0 + bf.top * r, (bf.right - bf.left) * r, (bf.bottom - bf.top) * r);
-  gauge(g, ...at(L.airspeed), r, v.airspeed, { min: 0, max: 450, ...ARC, major: 50, minor: 10, label: (s) => (s % 100 ? '' : String(s / 10)) });
+  rafAirspeed(g, ...at(L.airspeed), r, v.airspeed);
   horizon(g, ...at(L.horizon), r, v.bank, v.pitch);
   gauge(g, ...at(L.climb), r, v.climb / 1000, { min: -4, max: 4, start: -Math.PI * 1.35, end: Math.PI * 0.35, major: 1, minor: 0.5, label: (s) => String(Math.abs(s)) });
   rafAltimeter(g, ...at(L.altimeter), r, v.altitude, 1013);
