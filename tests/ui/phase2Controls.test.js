@@ -6,6 +6,7 @@ import { Joystick, hatDirection, DEFAULT_MAPPING } from '../../src/input/joystic
 import { cockpitQuaternion, eyePosition, CameraRig, HAT_LOOKS } from '../../src/render/cameras.js';
 import { instrumentReadings } from '../../src/ui/instruments.js';
 import { rafAirspeedAngle } from '../../src/ui/airspeed.js';
+import { rafRpmAngle } from '../../src/ui/engineGauges.js';
 import { airfieldTerrain, onAirfield, AIRFIELD, STARTS } from '../../src/world/airfield.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
@@ -216,6 +217,13 @@ describe('instruments', () => {
     expect(turn(360)).toBeCloseTo(1, 6);
     expect(turn(400) - 1).toBeCloseTo(0.2, 2);
     expect(rafAirspeedAngle(20)).toBe(rafAirspeedAngle(50)); // resting on its stop
+  });
+
+  it('reads the RAF rev counter from 1,000 to 4,000 rpm with 3,000 at the top', () => {
+    expect(rafRpmAngle(3000)).toBeCloseTo(0, 9);
+    expect(rafRpmAngle(2000)).toBeLessThan(0);
+    expect(rafRpmAngle(4000)).toBeGreaterThan(0);
+    expect(rafRpmAngle(5000)).toBe(rafRpmAngle(4000)); // held at the top of the scale
   });
 
   it('shows the propeller pitch clock at twelve on the fine stop, ten minutes per degree (S32)', () => {

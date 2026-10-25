@@ -13,6 +13,7 @@ import { headingOf } from './units.js';
 import { face, needle, scale, horizon, headingDrum, turnAndSlip, lamp, label, flapIndicator } from './dials.js';
 import { rafAltimeter, luftwaffeAltimeter } from './altimeters.js';
 import { rafAirspeed } from './airspeed.js';
+import { rafTachometer } from './engineGauges.js';
 
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
@@ -95,8 +96,7 @@ function rafPanel(g, x0, y0, r, v) {
   rafAltimeter(g, ...at(L.altimeter), r, v.altitude, 1013);
   headingDrum(g, ...at(L.direction), r, v.heading);
   turnAndSlip(g, ...at(L.turn), r, v.turnRate, v.sideG);
-  gauge(g, ...at(L.rpm), r, v.rpm / 1000, { min: 0, max: 4, ...ARC, major: 0.5, minor: 0.1, label: (s) => (s % 1 ? '' : String(s)) });
-  label(g, at(L.rpm)[0], at(L.rpm)[1] + r * 0.66, r * 0.65, 'R.P.M. ×1000');
+  rafTachometer(g, ...at(L.rpm), r, v.rpm);
   gauge(g, ...at(L.boost), r, v.manifold, { min: -6, max: 14, ...ARC, major: 2, minor: 1, label: (s) => (s > 0 ? `+${s}` : String(s)) });
   label(g, at(L.boost)[0], at(L.boost)[1] + r * 0.66, r * 0.65, 'BOOST');
   const [gx, gy] = at(L.gear);
