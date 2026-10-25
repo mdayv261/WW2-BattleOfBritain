@@ -673,6 +673,10 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
 - **RAF:** the six blind-flying instruments, boost, rpm, undercarriage lamps and flaps.
 - **Bf 109:** airspeed, altimeter, turn and bank (its only blind-flying instrument, S20), compass, ata, rpm, the
   propeller pitch clock, undercarriage and flaps.
+- **Period look (product owner, 25 Oct 2026):** black faces with white markings throughout. The artificial horizon is
+  all black with a white bar, not coloured. The direction indicator shows a heading drum through a window, as the 1940
+  directional gyro did, not a modern rotating card; the 109's compass is drawn the same way. The turn indicator has 0
+  at twelve o'clock and marks for rate 1, 2 and 3 turns each side (3, 6 and 9 degrees a second).
 - **Pitch clock:** 10 minutes per degree is from S32. Twelve o'clock at the fine stop is an assumption, since the zero
   is not stated.
 

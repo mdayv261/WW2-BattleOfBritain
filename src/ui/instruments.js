@@ -1,17 +1,17 @@
 // Basic instruments for Phase 2 (D28): a strip of 2D dials along the bottom of the screen, in each side's
 // units. Period faces and layouts come with the 3D cockpits in Phase 7.
 //   RAF: the blind-flying panel (airspeed, artificial horizon, rate of climb, altimeter, direction indicator,
-//        turn and slip), boost, rpm, undercarriage lamps and flap position.
+//        turn and slip), boost, rpm, undercarriage lamps and flap position. 1940 styles: an all-black horizon,
+//        a heading drum in the direction indicator, and rate 1-3 marks on the turn indicator.
 //   Bf 109: airspeed (km/h), altimeter (m), turn and bank (its only blind-flying instrument, S20), compass,
 //        manifold pressure (ata), rpm, the propeller pitch clock (S32) and the undercarriage and flaps.
 
 import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
-import { face, needle, scale, horizon, compassCard, turnAndSlip, lamp, label } from './dials.js';
+import { face, needle, scale, horizon, headingDrum, turnAndSlip, lamp, label } from './dials.js';
 
 const DEG = 180 / Math.PI;
-const RATE_ONE = 3; // deg/s: a rate-one turn, the turn indicator's reference
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
 const FLAP_TRAVEL_109 = 40; // deg: the 109's flap markings run 0 to 40 (S20)
 
@@ -66,8 +66,8 @@ function rafPanel(g, at, r, v) {
   horizon(g, ...at(1), r, v.bank, v.pitch, 'HORIZON');
   gauge(g, ...at(2), r, v.climb / 1000, { min: -4, max: 4, start: -Math.PI * 1.35, end: Math.PI * 0.35, major: 1, minor: 0.5, label: (s) => String(Math.abs(s)) }, 'CLIMB ×1000');
   altimeter(g, ...at(3), r, v.altitude, 1000, 'ALTIMETER');
-  compassCard(g, ...at(4), r, v.heading, 'DIRECTION');
-  turnAndSlip(g, ...at(5), r, v.turnRate, 2 * RATE_ONE, v.sideG, 'TURN');
+  headingDrum(g, ...at(4), r, v.heading, 'DIRECTION');
+  turnAndSlip(g, ...at(5), r, v.turnRate, v.sideG, 'TURN & SLIP');
   gauge(g, ...at(6), r, v.manifold, { min: -6, max: 14, ...ARC, major: 2, minor: 1, label: (s) => (s > 0 ? `+${s}` : String(s)) }, 'BOOST');
   gauge(g, ...at(7), r, v.rpm / 1000, { min: 0, max: 4, ...ARC, major: 0.5, minor: 0.1, label: (s) => (s % 1 ? '' : String(s)) }, 'RPM ×1000');
   const [lx, ly] = at(8);
@@ -79,8 +79,8 @@ function rafPanel(g, at, r, v) {
 function luftwaffePanel(g, at, r, v) {
   gauge(g, ...at(0), r, v.airspeed, { min: 0, max: 750, ...ARC, major: 100, minor: 50, label: (s) => String(s / 100) }, 'km/h ×100');
   altimeter(g, ...at(1), r, v.altitude, 1000, 'HÖHE km');
-  turnAndSlip(g, ...at(2), r, v.turnRate, 2 * RATE_ONE, v.sideG, 'WENDEZEIGER');
-  compassCard(g, ...at(3), r, v.heading, 'KURS');
+  turnAndSlip(g, ...at(2), r, v.turnRate, v.sideG, 'WENDEZEIGER');
+  headingDrum(g, ...at(3), r, v.heading, 'KOMPASS');
   gauge(g, ...at(4), r, v.manifold, { min: 0.6, max: 1.8, ...ARC, major: 0.2, minor: 0.1, label: (s) => s.toFixed(1) }, 'LADEDRUCK ata');
   gauge(g, ...at(5), r, v.rpm / 100, { min: 0, max: 36, ...ARC, major: 4, minor: 2, label: (s) => String(s) }, 'U/min ×100');
   // Propeller pitch clock: hour and minute hands (S32).
