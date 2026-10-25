@@ -772,3 +772,14 @@ The settings are aircraft data (AIRCRAFT_DATA.md):
 
 The flap travel in degrees (85°, 80°, 40°) moved into the aircraft data from the instrument code.
 
+## D35. Phase 2 signed off (25 Oct 2026)
+
+The product owner accepted Phase 2, which covers:
+- taking off, flying a circuit and landing each fighter from the cockpit with the period instruments;
+- take-off and landing distances within ±15% or accepted deviations (D31);
+- the automated ground-handling checks;
+- the controls (keyboard, joystick buttons and hat, mouse look), with no errors.
+
+The known deviations stand as recorded in FLIGHT_VALIDATION.md (items 1-13). They may be revisited if better sources
+are found.
+

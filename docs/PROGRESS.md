@@ -8,11 +8,9 @@ Phase 0 (foundations and research) is done. The product owner reviewed it and an
 Phase 0 is signed off. The game is live at https://mdayv261.github.io/WW2-BattleOfBritain/ (repository
 https://github.com/mdayv261/WW2-BattleOfBritain). **Phase 1 checkpoint 1 (physics core and validation) is done
 **Phase 1 (single-engine flight model) is signed off** (25 Oct 2026, D27): the product owner flew it and accepted the
-acceptance test and the documented deviations. **Phase 2 (controls, cameras, ground)** is under way: the plan was approved (D28) and **checkpoint 1 (ground physics and
-take-off and landing validation) is done locally**. The product owner then decided to replace the Bf 109 estimates with the RAE report (S32) and recalibrate (D30):
-done. **Checkpoint 2 (aerodrome, views, instruments and controls) is done locally** (D32). **Checkpoint 3 is under way**:
-the automated take-off and landing checks are done. Next: the product owner's flight test, tuning from it, and the
-Phase 2 acceptance. Nothing from Phase 1 or 2 has been pushed yet; pushing needs the product owner's permission.
+acceptance test and the documented deviations. **Phase 2 (controls, cameras, ground) is signed off** (25 Oct 2026, D35). Next: **Phase 3 (twin-engine aircraft: Bf 110 C-4
+and He 111 H-3)**, planning first. Nothing from Phases 1-2 has been pushed yet; pushing needs the product owner's
+permission.
 
 ## Phase 2 checkpoint 3: take-off and landing checks (25 Oct 2026, under way)
 
@@ -400,7 +398,7 @@ Each phase's acceptance test is a proposal, agreed with the product owner when t
   - Tools: `npm run validate`, the F3 debug overlay, a simple test camera.
   - Acceptance: validation against the sourced speeds, climbs and roll rates within agreed tolerances, every deviation
     documented.
-- **Phase 2: Controls, cameras, ground.**
+- **Phase 2: Controls, cameras, ground.** Done and signed off (25 Oct 2026).
   - Keyboard and mouse (joystick if chosen), cockpit, chase and free-look cameras, taxiing, take-off, landing,
     basic instruments.
   - Acceptance: take off, fly a circuit and land each fighter without the debug panel.
