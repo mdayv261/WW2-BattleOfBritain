@@ -13,22 +13,20 @@ import { stepFlaps } from './keyboard.js';
 const STORAGE_KEY = 'bob1940.joystick';
 const DEADZONE = 0.05;
 
-// Mapping of the product owner's Extreme 3D Pro in Chrome on macOS, as read in the joystick panel
-// (25 Oct 2026): stick X axis 0, stick Y axis 1, twist axis 5, throttle slider axis 6 (-1 idle, +1 full).
-// Buttons are numbered from 0 here, one less than the number printed on the stick (the J panel shows the
-// printed numbers). The product owner's layout (25 Oct 2026), by printed number: trim nose up 2 (thumb),
-// trim nose down 4, flaps up 3, flaps down 5, undercarriage 11, cockpit view 10; brakes on 6 (chosen by
-// Claude, the thumb button having gone to trim). The hat usually reports as one axis that steps through
-// eight directions (checked in the J panel).
+// Mapping of the product owner's Extreme 3D Pro in Chrome on macOS, as set in the joystick panel
+// (25 Oct 2026): stick X axis 0, stick Y axis 1, twist axis 5, throttle slider axis 6 (reversed), hat axis 9.
+// Buttons are numbered from 0 here, one less than the number the J panel shows (the number printed on the
+// stick). By the panel's numbers: trim nose up 5, trim nose down 3, flaps up 4, flaps down 6, brakes 12,
+// undercarriage 11, cockpit view 10.
 export const MAPPING_VERSION = 2;
 export const DEFAULT_MAPPING = {
   version: MAPPING_VERSION,
   roll: { axis: 0, invert: false },
   pitch: { axis: 1, invert: false }, // pulling back gives +1 on this axis
   yaw: { axis: 5, invert: false },
-  throttle: { axis: 6, invert: false },
+  throttle: { axis: 6, invert: true },
   hat: { axis: 9 },
-  buttons: { trimUp: 1, trimDown: 3, flapsUp: 2, flapsDown: 4, brake: 5, gear: 10, view: 9 },
+  buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9 },
 };
 
 /**

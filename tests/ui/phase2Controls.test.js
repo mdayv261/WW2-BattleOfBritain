@@ -118,10 +118,11 @@ describe('joystick buttons and hat', () => {
     expect(hatDirection(undefined)).toBeNull();
   });
 
-  it('uses the product owner\'s button layout (printed numbers: trim 2 and 4, flaps 3 and 5, gear 11, view 10)', () => {
+  it('uses the product owner\'s layout from the J panel (trim 5 and 3, flaps 4 and 6, brakes 12, gear 11, view 10)', () => {
     const printed = (name) => DEFAULT_MAPPING.buttons[name] + 1;
-    expect([printed('trimUp'), printed('trimDown'), printed('flapsUp'), printed('flapsDown')]).toEqual([2, 4, 3, 5]);
-    expect([printed('gear'), printed('view'), printed('brake')]).toEqual([11, 10, 6]);
+    expect([printed('trimUp'), printed('trimDown'), printed('flapsUp'), printed('flapsDown')]).toEqual([5, 3, 4, 6]);
+    expect([printed('brake'), printed('gear'), printed('view')]).toEqual([12, 11, 10]);
+    expect(DEFAULT_MAPPING.throttle.invert).toBe(true);
   });
 
   it('trims the elevator while the trim buttons are held, at the aircraft\'s own rate', () => {

@@ -23,7 +23,7 @@ const HELP = `
 <tr><td>C &nbsp; V</td><td>cockpit view; outside views (chase, fixed, orbit)</td></tr>
 <tr><td>Mouse</td><td>drag to look around; wheel to zoom; double-click to look ahead</td></tr>
 <tr><td>I &nbsp; F2 &nbsp; F3</td><td>instruments, text readout, debug overlay</td></tr>
-<tr><td>Joystick</td><td>hat: look around; 2 / 4 trim nose up / down; 3 / 5 flaps up / down; 6 brakes; 10 cockpit view; 11 undercarriage</td></tr>
+<tr><td>Joystick</td><td>hat: look around; 5 / 3 trim nose up / down; 4 / 6 flaps up / down; 12 brakes; 10 cockpit view; 11 undercarriage</td></tr>
 <tr><td>J &nbsp; H</td><td>joystick panel (change the buttons there), this help</td></tr>
 </table>
 Click the page once before using the keyboard.`;

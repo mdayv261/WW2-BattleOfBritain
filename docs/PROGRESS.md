@@ -30,8 +30,7 @@ checks, tuning and the product owner's flight test for the Phase 2 acceptance). 
 **Known issues:**
 1. **Swing at full power:** taking off needs firm rudder (about 70% from a standstill at full power), and with no rudder
    the aircraft ground-loops. To be judged in the flight test.
-2. **Joystick buttons:** set to the product owner's layout (D32). Brakes are on button 6 and the hat is on axis 9,
-   both to be confirmed on the stick.
+2. **Joystick:** the defaults are the product owner's own settings from the J panel (D32).
 3. **Stand-in shapes:** the aircraft are still boxes; the cockpit is a simple frame.
 
 ## Phase 2 checkpoint 1: ground physics and take-off and landing validation (25 Oct 2026)

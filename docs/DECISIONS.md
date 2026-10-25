@@ -711,12 +711,13 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
   - B brakes (with rudder for one side);
   - , and . rudder trim (Spitfire);
   - F and Shift+F flaps down and up one stop.
-- **Joystick buttons, by the number printed on the stick:** the product owner's layout (25 Oct 2026):
-  - 2 (thumb) and 4: elevator trim nose up and nose down, while held, at each aircraft's own trim speed;
-  - 3 and 5: flaps up and down a stop;
+- **Joystick defaults, as the product owner set them in the J panel (25 Oct 2026), by the panel's numbers:**
+  - 5 and 3: elevator trim nose up and nose down, while held, at each aircraft's own trim speed;
+  - 4 and 6: flaps up and down a stop;
+  - 12: brakes (while held);
   - 11: undercarriage;
   - 10: cockpit or outside view;
-  - 6: brakes (Claude's choice, since the thumb button went to trim).
+  - throttle slider: axis 6, reversed.
 - **Hat:** looked for on axis 9. Every button and the hat axis can be changed in the J panel, which now lists buttons by
   their printed numbers. Mappings saved before this layout keep their axes but take the new buttons.
 
