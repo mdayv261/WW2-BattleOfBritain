@@ -692,12 +692,20 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
   all black with a white bar, not coloured. The direction indicator shows a heading drum through a window, as the 1940
   directional gyro did, not a modern rotating card; the 109's compass is drawn the same way. The turn indicator has 0
   at twelve o'clock and marks for rate 1, 2 and 3 turns each side (3, 6 and 9 degrees a second).
+- **RAF boost gauge:** an orange band from +12 to +14 lb/sq in marks the emergency boost (product owner's request).
 - **RAF rev counter, after the product owner's photograph:** large numerals 10-40 (hundreds of rpm), smaller 15, 25
   and 35, a mark every 100 rpm, and "HUNDREDS OF R.P.M.". The photographed instrument runs to 50 over about 300°; the
   product owner set 10-40 over the same wide sweep (10 at seven o'clock, 25 at the top, 40 at five o'clock).
-- **RAF rate-of-climb indicator:** zero at nine o'clock, climb clockwise above and descent below, to 4,000 ft/min. Its face
-  carries "RATE OF CLIMB", "1000 FT/MIN", "UP" and "DOWN" (product owner's request; generic period wording, no
-  photograph yet).
+- **RAF blind-flying instruments, after the product owner's photograph of a Spitfire panel built with original
+  instruments:**
+  - **Artificial horizon:** a shaped window (shoulders and a dome over the centre), a white horizon bar, and a bank
+    scale round the bottom marked 6 3 · 3 6, with a pointer turning with the bar.
+  - **Climb indicator:** 0 at nine o'clock, to 4,000 ft/min each way, with white 2 and 4 and green 1 and 3. It is
+    lettered CLIMB and DESCENT, plus "1000 FT/MIN", the units the product owner asked for earlier.
+  - **Turn and slip:** the two-needle kind. The slip needle points up under green SIDE SLIP marks; the turn needle
+    points down over green TURN marks numbered 2 and 4 each side (rates 1-4). The face has a large L and R.
+
+  This replaces the earlier turn scale with 0 at twelve o'clock and rate 1-3 marks. The Bf 109 keeps that one.
 - **RAF airspeed indicator, after the product owner's photograph:** a single needle going round twice. The outer
   ring is 60-240 mph (numbered 6-24, 160 at the top); the inner ring 240-400 mph (26-40, 360 at the top); about
   1.8° per mph, lettered "M.P.H.".
