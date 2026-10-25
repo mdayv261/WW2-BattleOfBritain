@@ -1,21 +1,27 @@
-// Entry point for the Phase 1 test flight: scene, aircraft, keyboard and joystick, readouts.
+// Entry point for the test flight: aerodrome scene, aircraft, keyboard, joystick and mouse, cameras,
+// instruments and readouts.
 import { createScene } from './render/scene.js';
 import { TestView } from './render/testView.js';
+import { HAT_LOOKS } from './render/cameras.js';
 import { Simulation } from './core/simulation.js';
 import { Keyboard } from './input/keyboard.js';
 import { Joystick } from './input/joystick.js';
+import { MouseLook } from './input/mouse.js';
 import { Hud } from './ui/hud.js';
+import { InstrumentPanel } from './ui/instruments.js';
 import { JoystickPanel } from './ui/joystickPanel.js';
 import { aircraftList } from './aircraft/index.js';
 
 const { renderer, scene, camera, sea } = createScene(document.getElementById('app'));
 const view = new TestView(scene, camera, sea);
-const sim = new Simulation(aircraftList[1]); // start in the Spitfire
+const sim = new Simulation(aircraftList[1]); // start in the Spitfire, on the ground
 view.setAircraft(sim.ac);
 
 const keyboard = new Keyboard();
 const joystick = new Joystick();
+new MouseLook(renderer.domElement, view.rig);
 const hud = new Hud();
+const instruments = new InstrumentPanel();
 const joyPanel = new JoystickPanel(joystick);
 
 function select(ac) {
@@ -29,14 +35,21 @@ function gameKeys() {
   if (keyboard.took('Digit2')) select(aircraftList[1]);
   if (keyboard.took('Digit3')) select(aircraftList[2]);
   if (keyboard.took('KeyR')) select(sim.ac);
+  if (keyboard.took('KeyN')) {
+    sim.nextStart();
+    view.setAircraft(sim.ac);
+  }
   if (keyboard.took('KeyP')) sim.paused = !sim.paused;
-  if (keyboard.took('KeyV')) view.toggleMode();
+  if (keyboard.took('KeyC')) view.rig.toggleCockpit();
+  if (keyboard.took('KeyV')) view.rig.nextOutside();
+  if (keyboard.took('KeyI')) instruments.toggle();
+  if (keyboard.took('F2')) hud.toggleStrip();
   if (keyboard.took('F3')) hud.toggleDebug();
   if (keyboard.took('KeyH')) hud.toggleHelp();
   if (keyboard.took('KeyJ')) joyPanel.toggle();
 }
 window.addEventListener('keydown', (e) => {
-  if (e.code === 'F3') e.preventDefault();
+  if (e.code === 'F2' || e.code === 'F3') e.preventDefault();
   if (hud.helpVisible && !['KeyH', 'KeyJ'].includes(e.code)) hud.toggleHelp(false);
 });
 
@@ -46,10 +59,13 @@ renderer.setAnimationLoop((now) => {
   last = now;
   gameKeys();
   keyboard.update(sim.input, sim.ac, dt);
-  const stick = joystick.update(sim.input);
+  const stick = joystick.update(sim.input, sim.ac);
+  if (stick?.view) view.rig.toggleCockpit();
+  view.rig.hatLook = stick && stick.hat !== null ? HAT_LOOKS[stick.hat] : null;
   sim.advance(dt);
   view.update(sim, sim.loop.alpha, dt);
-  hud.update(sim, { joystick: stick });
+  hud.update(sim, { joystick: !!stick, view: view.rig.mode });
+  instruments.update(sim);
   joyPanel.update();
   renderer.render(scene, camera);
 });

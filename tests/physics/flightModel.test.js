@@ -19,7 +19,7 @@ const fly = (plane, input, seconds, each) => {
 describe('flight model', () => {
   it('flies 30 s hands-off from the test-flight start without diverging', () => {
     for (const ac of [hurricane, spitfire, bf109e4]) {
-      const sim = new Simulation(ac);
+      const sim = new Simulation(ac, 'air');
       for (let t = 0; t < 30; t += DT) sim.step(DT);
       const bank = new Euler().setFromQuaternion(sim.plane.body.quaternion, 'YZX').x;
       expect(Math.abs(sim.plane.body.position.y - START.altitude)).toBeLessThan(100);

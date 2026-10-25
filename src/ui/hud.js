@@ -1,26 +1,29 @@
-// On-screen readouts for the Phase 1 test version: a small flight strip, the F3 debug overlay, the
-// help panel and messages (paused, crashed). Real cockpits and instruments come in Phase 7.
+// On-screen readouts for the test version: a small text strip (F2), the F3 debug overlay, the help panel
+// and messages (start, touchdown, landed, crashed, paused). Real cockpits come in Phase 7.
 
 import { Vector3 } from 'three';
 import { speedText, altitudeText, manifoldText, rpmText, degText, headingOf, climbText } from './units.js';
 import { G } from '../core/constants.js';
 
 const HELP = `
-<b>Battle of Britain 1940 — Phase 1 test flight</b>
+<b>Battle of Britain 1940 — Phase 2 test flight</b>
 <table>
 <tr><td>Arrow up / down</td><td>stick forward (nose down) / back (nose up)</td></tr>
 <tr><td>Arrow left / right</td><td>roll</td></tr>
-<tr><td>Z / X</td><td>rudder left / right</td></tr>
+<tr><td>Z / X</td><td>rudder left / right (steer on the ground with rudder and brakes)</td></tr>
+<tr><td>B (hold)</td><td>brakes; with rudder, the brake on that side</td></tr>
 <tr><td>W / S</td><td>throttle up / down</td></tr>
 <tr><td>E / D</td><td>RAF: rpm lever up / down — Bf 109: pitch finer / coarser</td></tr>
-<tr><td>T / G</td><td>trim nose up / nose down</td></tr>
-<tr><td>F &nbsp; U &nbsp; O</td><td>flaps, undercarriage, radiator</td></tr>
-<tr><td>Q</td><td>+12 lb boost cut-out (RAF)</td></tr>
-<tr><td>A</td><td>engine assist: automatic pitch (Bf 109)</td></tr>
-<tr><td>1 &nbsp; 2 &nbsp; 3</td><td>Hurricane, Spitfire, Bf 109 (restarts)</td></tr>
-<tr><td>R &nbsp; P</td><td>restart, pause</td></tr>
-<tr><td>V</td><td>camera: chase / fixed behind</td></tr>
-<tr><td>F3 &nbsp; J &nbsp; H</td><td>debug overlay, joystick panel, this help</td></tr>
+<tr><td>T / G &nbsp; , / .</td><td>elevator trim nose up / down; rudder trim (Spitfire)</td></tr>
+<tr><td>F / Shift+F</td><td>flaps down / up a stop (Spitfire: down or up)</td></tr>
+<tr><td>U &nbsp; O</td><td>undercarriage, radiator</td></tr>
+<tr><td>Q &nbsp; A</td><td>+12 lb boost cut-out (RAF); engine assist (Bf 109)</td></tr>
+<tr><td>1 &nbsp; 2 &nbsp; 3</td><td>Hurricane, Spitfire, Bf 109</td></tr>
+<tr><td>R &nbsp; N &nbsp; P</td><td>restart; next start (ground, approach, air); pause</td></tr>
+<tr><td>C &nbsp; V</td><td>cockpit view; outside views (chase, fixed, orbit)</td></tr>
+<tr><td>Mouse</td><td>drag to look around; wheel to zoom; double-click to look ahead</td></tr>
+<tr><td>I &nbsp; F2 &nbsp; F3</td><td>instruments, text readout, debug overlay</td></tr>
+<tr><td>J &nbsp; H</td><td>joystick panel (hat looks around; buttons in the panel), this help</td></tr>
 </table>
 Click the page once before using the keyboard.`;
 
@@ -44,6 +47,11 @@ export class Hud {
     this.message = panel('message', `${BOX}left:50%;top:24px;transform:translateX(-50%);font-size:16px;display:none;`);
     this.showDebug = false;
     this.helpVisible = true;
+    this.strip.style.display = 'none';
+  }
+
+  toggleStrip() {
+    this.strip.style.display = this.strip.style.display === 'none' ? 'block' : 'none';
   }
 
   toggleDebug() {
@@ -74,11 +82,26 @@ export class Hud {
     if (extra.joystick) lines.push('Joystick connected');
     this.strip.textContent = lines.join('\n');
 
-    if (sim.crashed) this.showMessage(`${sim.plane.ground.crash.cause} — press R to restart`);
-    else if (sim.paused) this.showMessage('Paused — press P');
-    else this.showMessage(null);
+    this.showMessage(this.messageFor(sim));
 
     if (this.showDebug) this.debug.textContent = this.debugText(sim, heading);
+  }
+
+  /** The message line: crash, pause, landing result, or what to do at the start. */
+  messageFor(sim) {
+    const { ac, plane } = sim;
+    const g = plane.ground;
+    if (sim.crashed) return `${g.crash.cause} — press R to restart`;
+    if (sim.paused) return 'Paused — press P';
+    if (g.onGround && g.touchdown) {
+      const sink = climbText(ac, g.touchdown.sink).replace('-', '');
+      const at = `touched down at ${speedText(ac, g.touchdown.speed)}, sinking ${sink}`;
+      return plane.body.velocity.length() < 1 ? `Landed — ${at}` : `On the ground — ${at}`;
+    }
+    if (g.onGround && plane.time < 20 && plane.body.velocity.length() < 1) {
+      return 'On the ground: open the throttle (W), keep straight with rudder, stick forward to raise the tail';
+    }
+    return null;
   }
 
   showMessage(text) {

@@ -646,3 +646,50 @@ The product owner accepted, as documented and not tuned away (FLIGHT_VALIDATION.
 - the Bf 109's take-off (ground run -25%, to 20 m -20%);
 - the RAE's 4 s to bank 45° at 400 mph against the model's 1.2 s.
 
+## D32. Phase 2 checkpoint 2: aerodrome, views, instruments and controls (25 Oct 2026)
+
+**Aerodrome** (`src/world/airfield.js`, `src/render/airfield.js`):
+- a generic grass field 1,000 m square on level farmland, with boundary markers, a landing T, a windsock, three hangars
+  and huts, and trees along the hedges;
+- the coast 4 km to the south, beyond which touching the surface is a ditching;
+- the chalk-cliff block is gone until Phase 4.
+
+There is no wind, so take-offs and landings are made northwards.
+
+**Starts** (N cycles them):
+- on the ground near the southern edge with the engine idling (the default);
+- on the approach at 1,000 ft about 5 km out, wheels and flaps up, at 1.5 times the stalling speed;
+- in the air at 1,500 m (the Phase 1 start).
+
+**Views:**
+- the cockpit view (C) at each aircraft's eye position (AIRCRAFT_DATA.md);
+- chase, fixed-behind and orbit views outside (V);
+- the mouse looks around and the joystick hat looks in eight directions.
+
+The cowling and windscreen frame are simple display shapes kept in the render code. They affect nothing in the physics,
+so they are not aircraft data. They give a nose that hides the view ahead on the ground, as S20 describes for the 109.
+
+**Instruments:** 2D dials in each side's units (I toggles them).
+- **RAF:** the six blind-flying instruments, boost, rpm, undercarriage lamps and flaps.
+- **Bf 109:** airspeed, altimeter, turn and bank (its only blind-flying instrument, S20), compass, ata, rpm, the
+  propeller pitch clock, undercarriage and flaps.
+- **Pitch clock:** 10 minutes per degree is from S32. Twelve o'clock at the fine stop is an assumption, since the zero
+  is not stated.
+
+**Controls:**
+- **Keyboard:**
+  - B brakes (with rudder for one side);
+  - , and . rudder trim (Spitfire);
+  - F and Shift+F flaps down and up one stop.
+- **Joystick buttons by default:**
+  - 1 (the thumb button, printed 2) brakes;
+  - 2 and 3 flaps up and down;
+  - 4 undercarriage;
+  - 5 cockpit or outside view.
+- **Hat:** looked for on axis 9. Every button and the hat axis can be changed in the J panel. The product owner to
+  confirm them on the Extreme 3D Pro.
+
+**Found in testing:** at full power from a standstill the propeller's slipstream swing needs about 70% rudder. With no
+rudder, a castoring-tailwheel aircraft ground-loops and can tip onto a wingtip at walking pace. The swing directions
+match S12 and S20; the amount of rudder is for the product owner's flight test to judge.
+

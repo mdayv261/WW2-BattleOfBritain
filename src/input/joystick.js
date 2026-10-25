@@ -1,5 +1,6 @@
-// Basic joystick support through the Gamepad API (Logitech Extreme 3D Pro). Stick, twist rudder and
-// throttle slider. Phase 2 adds the hat and buttons; Phase 8 the full rebinding screen.
+// Joystick support through the Gamepad API (Logitech Extreme 3D Pro): stick, twist rudder, throttle
+// slider, the hat (to look around) and buttons (brakes, flaps, undercarriage, view). Phase 8 adds the full
+// rebinding screen.
 //
 // Axis numbers differ between browsers and systems, so the mapping is editable in the joystick panel
 // (J) and kept in this browser's storage. The stick and rudder are used as soon as a joystick is
@@ -7,23 +8,38 @@
 // throttle away from the keyboard setting.
 
 import { clamp } from '../physics/interp.js';
+import { stepFlaps } from './keyboard.js';
 
 const STORAGE_KEY = 'bob1940.joystick';
 const DEADZONE = 0.05;
 
 // Mapping of the product owner's Extreme 3D Pro in Chrome on macOS, as read in the joystick panel
 // (25 Oct 2026): stick X axis 0, stick Y axis 1, twist axis 5, throttle slider axis 6 (-1 idle, +1 full).
+// Buttons are numbered from 0, one less than the number printed on the stick: 1 is the thumb button (2).
+// The hat usually reports as one axis that steps through eight directions (checked in the J panel).
 export const DEFAULT_MAPPING = {
   roll: { axis: 0, invert: false },
   pitch: { axis: 1, invert: false }, // pulling back gives +1 on this axis
   yaw: { axis: 5, invert: false },
   throttle: { axis: 6, invert: false },
+  hat: { axis: 9 },
+  buttons: { brake: 1, flapsUp: 2, flapsDown: 3, gear: 4, view: 5 },
 };
+
+/**
+ * Direction of a hat reported as one axis: -1 is up, then each step of 2/7 turns 45 degrees clockwise;
+ * values beyond about 1.1 mean the hat is centred. Returns 0 (up) to 7 (up-left), or null.
+ */
+export function hatDirection(v) {
+  if (v === undefined || Math.abs(v) > 1.1) return null;
+  return ((Math.round((v + 1) * 3.5) % 8) + 8) % 8;
+}
 
 function loadMapping() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (saved && saved.roll && saved.pitch && saved.yaw && saved.throttle) return saved;
+    // Mappings saved before the hat and buttons existed get the new defaults.
+    if (saved && saved.roll && saved.pitch && saved.yaw && saved.throttle) return { ...structuredClone(DEFAULT_MAPPING), ...saved };
   } catch {
     // storage blocked or corrupt: use the defaults
   }
@@ -38,6 +54,7 @@ export class Joystick {
     this.pad = null;
     this.throttleLive = false;
     this.throttleStart = null;
+    this.wasPressed = {};
   }
 
   saveMapping() {
@@ -68,9 +85,25 @@ export class Joystick {
     return m.invert ? -v : v;
   }
 
-  /** Writes stick, rudder and (once moved) throttle into the control input. */
-  update(input) {
-    if (!this.poll()) return false;
+  /** True while a mapped button is held. */
+  held(name) {
+    return !!this.pad?.buttons[this.mapping.buttons[name]]?.pressed;
+  }
+
+  /** True once for each press of a mapped button. */
+  pressed(name) {
+    const now = this.held(name);
+    const was = this.wasPressed[name];
+    this.wasPressed[name] = now;
+    return now && !was;
+  }
+
+  /**
+   * Writes stick, rudder, (once moved) throttle, brakes, flaps and undercarriage into the control input.
+   * Returns null with no joystick, else { hat: direction or null, view: true on a press of the view button }.
+   */
+  update(input, ac) {
+    if (!this.poll()) return null;
     input.roll = clamp(shape(this.read('roll')), -1, 1);
     input.pitch = clamp(shape(this.read('pitch')), -1, 1);
     input.yaw = clamp(shape(this.read('yaw')), -1, 1);
@@ -78,6 +111,10 @@ export class Joystick {
     if (this.throttleStart === null) this.throttleStart = slider;
     if (Math.abs(slider - this.throttleStart) > 0.05) this.throttleLive = true;
     if (this.throttleLive) input.throttle = clamp((slider + 1) / 2, 0, 1);
-    return true;
+    if (this.held('brake')) input.brake = 1;
+    if (this.pressed('flapsDown')) input.flaps = stepFlaps(ac, input.flaps, 1);
+    if (this.pressed('flapsUp')) input.flaps = stepFlaps(ac, input.flaps, -1);
+    if (this.pressed('gear')) input.gear = input.gear ? 0 : 1;
+    return { hat: hatDirection(this.pad.axes[this.mapping.hat.axis]), view: this.pressed('view') };
   }
 }

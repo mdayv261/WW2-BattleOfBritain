@@ -1,8 +1,10 @@
-// Phase 1 test view: a simple stand-in shape for the aircraft (real span, length and wing area, but
-// no detail; proper models come in Phase 4) and a chase camera. Body axes match Three.js object axes
-// (+X nose, +Y up, +Z right wing), so the physics quaternion is used directly.
+// Test view: a simple stand-in shape for the aircraft (real span, length and wing area, but no detail;
+// proper models come in Phase 4), the cockpit frame for the pilot's view, and the camera rig. Body axes
+// match Three.js object axes (+X nose, +Y up, +Z right wing), so the physics quaternion is used directly.
 
 import * as THREE from 'three';
+import { CameraRig } from './cameras.js';
+import { buildCockpitFrame } from './cockpitFrame.js';
 
 const COLOURS = { RAF: 0x5e6b3a, Luftwaffe: 0x6f7a6a };
 const UNDERSIDE = { RAF: 0xc9c5b0, Luftwaffe: 0x9db4c4 };
@@ -17,10 +19,11 @@ export function buildStandIn(ac) {
 
   const fuselage = new THREE.Mesh(new THREE.BoxGeometry(length, 1.0, 0.9), top);
   fuselage.position.x = -0.1 * length;
+  fuselage.name = 'fuselage';
   group.add(fuselage);
 
   const wing = new THREE.Mesh(new THREE.BoxGeometry(chord, 0.18, span), [top, top, top, under, top, top]);
-  wing.position.set(0.1 * length, -0.35, 0);
+  wing.position.set(0.1 * length, -0.6, 0);
   group.add(wing);
 
   const tailplane = new THREE.Mesh(new THREE.BoxGeometry(0.35 * chord, 0.1, 0.33 * span), top);
@@ -34,26 +37,41 @@ export function buildStandIn(ac) {
   // A propeller disc so the nose is obvious, and a yellow marker on the right wingtip.
   const disc = new THREE.Mesh(
     new THREE.CircleGeometry(ac.propeller.diameter / 2, 24),
-    new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.25, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false }),
   );
   disc.rotation.y = Math.PI / 2;
-  disc.position.x = 0.4 * length;
+  disc.position.set(ac.propHub.x, ac.propHub.y, 0);
   group.add(disc);
   const tip = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.4), new THREE.MeshBasicMaterial({ color: 0xd8b02a }));
-  tip.position.set(0.1 * length, -0.35, span / 2);
+  tip.position.set(0.1 * length, -0.6, span / 2);
   group.add(tip);
+
+  // Wheels, shown while the undercarriage is down.
+  const wheels = new THREE.Group();
+  wheels.name = 'wheels';
+  const tyre = new THREE.MeshLambertMaterial({ color: 0x1d1d1d });
+  const { main, tail } = ac.gear;
+  for (const s of [-1, 1]) {
+    const w = new THREE.Mesh(new THREE.CylinderGeometry(main.radius, main.radius, 0.15, 16), tyre);
+    w.rotation.x = Math.PI / 2;
+    w.position.set(main.x, main.y, s * main.z);
+    wheels.add(w);
+  }
+  group.add(wheels);
+  const tw = new THREE.Mesh(new THREE.CylinderGeometry(tail.radius, tail.radius, 0.08, 12), tyre);
+  tw.rotation.x = Math.PI / 2;
+  tw.position.set(tail.x, tail.y, 0);
+  group.add(tw);
   return group;
 }
 
 export class TestView {
   constructor(scene, camera, sea) {
     this.scene = scene;
-    this.camera = camera;
     this.sea = sea;
-    this.mode = 'chase';
+    this.rig = new CameraRig(camera);
     this.model = null;
-    this.camPos = new THREE.Vector3();
-    this.first = true;
+    this.cockpit = null;
     this._pos = new THREE.Vector3();
     this._quat = new THREE.Quaternion();
   }
@@ -61,12 +79,10 @@ export class TestView {
   setAircraft(ac) {
     if (this.model) this.scene.remove(this.model);
     this.model = buildStandIn(ac);
+    this.cockpit = buildCockpitFrame(ac);
+    this.model.add(this.cockpit);
     this.scene.add(this.model);
-    this.first = true;
-  }
-
-  toggleMode() {
-    this.mode = this.mode === 'chase' ? 'fixed' : 'chase';
+    this.rig.first = true;
   }
 
   /** Places the model (blended between the last two physics steps) and moves the camera. */
@@ -76,29 +92,17 @@ export class TestView {
     this._quat.slerpQuaternions(sim.previous.quaternion, body.quaternion, alpha);
     this.model.position.copy(this._pos);
     this.model.quaternion.copy(this._quat);
+    const inside = this.rig.inCockpit;
+    this.model.getObjectByName('fuselage').visible = !inside;
+    this.cockpit.visible = inside;
+    this.model.getObjectByName('wheels').visible = sim.plane.surfaces.gear > 0.5;
 
-    let target;
-    if (this.mode === 'fixed') {
-      // Rigidly behind and above, rolling with the aircraft.
-      target = new THREE.Vector3(-22, 5, 0).applyQuaternion(this._quat).add(this._pos);
-      this.camera.up.set(0, 1, 0).applyQuaternion(this._quat);
-    } else {
-      // Behind along the flight path, level horizon.
-      const dir = body.velocity.lengthSq() > 1 ? body.velocity.clone().normalize() : new THREE.Vector3(1, 0, 0).applyQuaternion(this._quat);
-      target = this._pos.clone().addScaledVector(dir, -24).add(new THREE.Vector3(0, 6, 0));
-      this.camera.up.set(0, 1, 0);
-    }
-    const k = this.first ? 1 : 1 - Math.exp(-dt * 8);
-    this.camPos.lerp(target, k);
-    this.first = false;
-    this.camPos.y = Math.max(this.camPos.y, 2);
-    this.camera.position.copy(this.camPos);
-    this.camera.lookAt(this._pos);
-
-    this.scene.getObjectByName('sky')?.position.copy(this.camPos);
+    this.rig.update(sim.ac, { position: this._pos, quaternion: this._quat }, body.velocity, dt);
+    const cam = this.rig.camera.position;
+    this.scene.getObjectByName('sky')?.position.copy(cam);
     // Keep the sea under the camera, moved in whole texture tiles so its pattern stays put.
     const tile = this.sea.userData.tile;
-    this.sea.position.x = Math.round(this.camPos.x / tile) * tile;
-    this.sea.position.z = Math.round(this.camPos.z / tile) * tile;
+    this.sea.position.x = Math.round(cam.x / tile) * tile;
+    this.sea.position.z = Math.round(cam.z / tile) * tile;
   }
 }

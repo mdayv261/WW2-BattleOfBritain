@@ -10,7 +10,28 @@ https://github.com/mdayv261/WW2-BattleOfBritain). **Phase 1 checkpoint 1 (physic
 **Phase 1 (single-engine flight model) is signed off** (25 Oct 2026, D27): the product owner flew it and accepted the
 acceptance test and the documented deviations. **Phase 2 (controls, cameras, ground)** is under way: the plan was approved (D28) and **checkpoint 1 (ground physics and
 take-off and landing validation) is done locally**. The product owner then decided to replace the Bf 109 estimates with the RAE report (S32) and recalibrate (D30):
-done. Next: checkpoint 2 (airfield, cameras, cockpit view, instruments and controls). Nothing from Phase 1 or 2 has been pushed yet; pushing needs the product owner's permission.
+done. **Checkpoint 2 (aerodrome, views, instruments and controls) is done locally** (D32). Next: checkpoint 3 (handling
+checks, tuning and the product owner's flight test for the Phase 2 acceptance). Nothing from Phase 1 or 2 has been pushed yet; pushing needs the product owner's permission.
+
+## Phase 2 checkpoint 2: aerodrome, views, instruments and controls (25 Oct 2026)
+
+**Done** (D32):
+- **Aerodrome:** a generic grass aerodrome on farmland, with the coast and sea to the south.
+- **Starts:** on the ground (default), on the approach at 1,000 ft, or in the air; N cycles them.
+- **Views:** the cockpit view with a simple cowling and windscreen frame; chase, fixed and orbit views outside; mouse
+  and hat look-around.
+- **Instruments:** 2D dials in each side's units.
+- **Controls:** brakes (B, joystick thumb button), rudder trim, flap stops, joystick buttons for flaps, undercarriage
+  and view, all set in the J panel.
+- **Messages:** touchdown speed and sink rate, "Landed", or the crash cause.
+- **Tests:** `tests/ui/phase2Controls.test.js` covers the aerodrome and starts, keyboard and joystick, cameras and
+  instruments. 515 tests pass; checked in Chrome with no console errors.
+
+**Known issues:**
+1. **Swing at full power:** taking off needs firm rudder (about 70% from a standstill at full power), and with no rudder
+   the aircraft ground-loops. To be judged in the flight test.
+2. **Joystick buttons and hat axis:** the defaults need confirming on the product owner's stick (J panel).
+3. **Stand-in shapes:** the aircraft are still boxes; the cockpit is a simple frame.
 
 ## Phase 2 checkpoint 1: ground physics and take-off and landing validation (25 Oct 2026)
 

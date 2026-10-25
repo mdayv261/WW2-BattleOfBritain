@@ -122,6 +122,7 @@ export function computeLoads(plane, input) {
       slatAlphaLeft: co.slatAlphaLeft, slatAlphaRight: co.slatAlphaRight,
       slatLeft: surfaces.slatLeft, slatRight: surfaces.slatRight, cutout: plane.cutout.factor,
       groundHeight, groundEffect, onGround: ground.wheels.some(Boolean), wheelLoads: ground.wheels.map((w) => w?.load ?? 0),
+      sideG: (fb.z + groundBody.z) / (ac.mass.flying * G), // sideways push felt by the pilot (+ to the right)
     },
   };
 }
@@ -168,12 +169,15 @@ export function stepAircraft(plane, input, dt) {
 
 /**
  * Creates an aircraft in steady level flight.
- *   altitude m, speed m/s (true), heading rad (0 = north), throttle 0..1, rpm 0..1 (lever)
+ *   altitude m, speed m/s (true), heading rad (0 = north), throttle 0..1, rpm 0..1 (lever), x and z (m),
+ *   terrain (what the ground under it is)
  * The pitch attitude, blade angle and engine speed are set for steady flight; the returned `trim`
  * is the elevator-trim setting that holds it hands-off (clamped to the trim range).
  */
-export function createAircraft(ac, { altitude = 3000, speed = 110, heading = 0, throttle = 0.8, rpm = 0.8 } = {}) {
-  const plane = newPlane(ac);
+export function createAircraft(ac, {
+  altitude = 3000, speed = 110, heading = 0, throttle = 0.8, rpm = 0.8, x = 0, z = 0, terrain = flatGrass,
+} = {}) {
+  const plane = newPlane(ac, terrain);
   const input = { throttle, rpm, pitch: 0, roll: 0, yaw: 0, trim: 0 };
   plane.omega = governedSpeed(plane, input);
   const air = atmosphere(altitude);
@@ -181,7 +185,7 @@ export function createAircraft(ac, { altitude = 3000, speed = 110, heading = 0, 
   // Heading is clockwise from north (-Z); a turn of +90 degrees about +Y takes the nose (+X) north.
   const yaw = Math.PI / 2 - heading;
   const q = new Quaternion().setFromEuler(new Euler(0, yaw, level.alpha, 'YXZ'));
-  plane.body.position.set(0, altitude, 0);
+  plane.body.position.set(x, altitude, z);
   plane.body.quaternion.copy(q);
   plane.body.velocity.set(speed, 0, 0).applyAxisAngle(Y, yaw);
   const eng = enginePower(plane.engine, { altitude, airspeed: speed, throttle, speed: plane.omega });
