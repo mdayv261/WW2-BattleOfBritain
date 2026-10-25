@@ -139,7 +139,18 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
   - the Spitfire tips onto its nose, which is why S33 wants "TWO men on the tail" for a run-up;
   - the 109's tail stays down (S20, S32).
 - **Take-off swing:** the take-off script's rudder holds the RAF fighters against a swing to the left (about 4°)
-  and the 109 against one to the right (about 5°), as S12 and S20 describe. An automated check follows in checkpoint 3.
+  and the 109 against one to the right (about 5°), as S12 and S20 describe.
+
+**Take-off and landing behaviour** (`tests/physics/takeoffLanding.test.js`, checkpoint 3):
+- **Swing:** the RAF fighters swing left on take-off (S12), the Bf 109 right (S20); all are held with rudder within 5°.
+- **Landings:** all three land three-point and roll out straight, within 2.5° of heading, with no ground loop (S11, S12,
+  S20).
+- **Tail-first landings:** possible for all three, since each ground angle is below the flaps-down stalling attitude
+  (S12, for the Hurricane).
+- **Spitfire elevator at a three-point touchdown:** about 6.5° up against NACA's average of 8.4°, which varied over 10°
+  from landing to landing (S11).
+- **Bf 109 brakes:** full brakes with the stick back at 15 m/s do not lift the tail (S20, S32).
+
 
 ## Summary
 
@@ -188,3 +199,11 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
     - The RAE figure probably includes the time to move the stick and the loss of aileron power as the wing twists at
       high speed. Neither is modelled.
     - The 109 is fitted to match the model's Spitfire at that speed, as the RAE found the two equal (D30).
+13. **The Bf 109 keeps its take-off swing to the right once airborne** (Phase 2). S20 says the slight swing to the right
+    on take-off changes to a swing to the left as soon as the aircraft is in the air; the model's 109 still needs left
+    rudder after lift-off.
+    - The propeller's direction of rotation is uncertain. The DB 601 data sheet gives it by the German standard DIN 9001
+      (S19), whose viewing direction has not been checked, and the model's anticlockwise-from-the-cockpit choice was
+      made to match the ground swing.
+    - It is an open research gap.
+

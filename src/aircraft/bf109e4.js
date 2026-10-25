@@ -48,6 +48,7 @@ export const bf109e4 = {
     flapTravel: 40 * DEG, // fully down, as marked
     flapTakeoff: 0.5, // 20 degrees for take-off (fraction of travel)
     flapLanding: 1, // fully down for landing
+    elevatorUp: 31.6 * DEG, // elevator travel, full up (display and checks; the moments use aero.elevatorCm)
     trimTime: 18, // s: tailplane trim wheel from one end to the other
   },
   // Undercarriage and ground contact (Phase 2). Positions are from the centre of gravity in body axes

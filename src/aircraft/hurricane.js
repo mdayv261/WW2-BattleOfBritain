@@ -48,6 +48,7 @@ export const hurricane = {
     flapTravel: 80 * DEG, // fully down
     flapTakeoff: 0, // flap setting for take-off (fraction of travel)
     flapLanding: 1, // and for landing
+    elevatorUp: 26 * DEG, // elevator travel, full up (display and checks; the moments use aero.elevatorCm)
     trimTime: 8, // s: elevator trim from one end to the other
   },
   // Undercarriage and ground contact (Phase 2). Positions are from the centre of gravity in body axes

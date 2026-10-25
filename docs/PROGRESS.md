@@ -10,8 +10,27 @@ https://github.com/mdayv261/WW2-BattleOfBritain). **Phase 1 checkpoint 1 (physic
 **Phase 1 (single-engine flight model) is signed off** (25 Oct 2026, D27): the product owner flew it and accepted the
 acceptance test and the documented deviations. **Phase 2 (controls, cameras, ground)** is under way: the plan was approved (D28) and **checkpoint 1 (ground physics and
 take-off and landing validation) is done locally**. The product owner then decided to replace the Bf 109 estimates with the RAE report (S32) and recalibrate (D30):
-done. **Checkpoint 2 (aerodrome, views, instruments and controls) is done locally** (D32). Next: checkpoint 3 (handling
-checks, tuning and the product owner's flight test for the Phase 2 acceptance). Nothing from Phase 1 or 2 has been pushed yet; pushing needs the product owner's permission.
+done. **Checkpoint 2 (aerodrome, views, instruments and controls) is done locally** (D32). **Checkpoint 3 is under way**:
+the automated take-off and landing checks are done. Next: the product owner's flight test, tuning from it, and the
+Phase 2 acceptance. Nothing from Phase 1 or 2 has been pushed yet; pushing needs the product owner's permission.
+
+## Phase 2 checkpoint 3: take-off and landing checks (25 Oct 2026, under way)
+
+**Done:** `tests/physics/takeoffLanding.test.js` checks behaviour against the sources:
+- **Swing:** the RAF fighters swing left on take-off and the Bf 109 right.
+- **Landings:** straight three-point landings with no ground loop.
+- **Tail-first landings:** possible.
+- **Spitfire elevator at touchdown:** within NACA's range.
+- **Bf 109 brakes:** full brakes do not lift the tail.
+- **Elevator travel** added to the data: 29° Spitfire (S11), 26° Hurricane (S12), 31.6° Bf 109 (S32).
+
+**Known issue:** the Bf 109's swing does not change to the left once airborne, as S20 describes (FLIGHT_VALIDATION.md,
+item 13). The propeller's direction of rotation, given under DIN 9001, needs checking.
+
+**Left:**
+- the product owner's flight test (take off, fly a circuit and land each fighter);
+- tuning of the estimates from that flight;
+- agreement of the Phase 2 acceptance test.
 
 ## Phase 2 checkpoint 2: aerodrome, views, instruments and controls (25 Oct 2026)
 
