@@ -254,6 +254,9 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Pilot's eye, height (`eye.y`) | 0.65 | m | — | S12, ASSUMPTION | estimate | A little below the canopy top in S12 Fig. 4. |
 | Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Barr & Stroud GM 2 reflector sight assumed (standard in RAF fighters by 1940; not yet confirmed from an allowed source). The ring's size was not found in an allowed source (forum and dealer figures disagree); a display placeholder until the gunsights are researched for Phase 5 (see gaps). |
 | Flap positions besides up (`controls.flapStops`) | 4 | — | — | ASSUMPTION | estimate | Hydraulic flaps that could be stopped part-way assumed; the Mk I Pilot's Notes were not found (see gaps). |
+| Flap travel, fully down (`controls.flapTravel`) | 80 | deg | 80° down | S12 | medium | Split flaps. |
+| Flap setting for take-off, fraction of travel (`controls.flapTakeoff`) | 0 | fraction | — | ASSUMPTION | estimate | No take-off flap setting found (the Mk I Pilot's Notes were not found); flaps up assumed, as for the Spitfire (S33). |
+| Flap setting for landing, fraction of travel (`controls.flapLanding`) | 1 | fraction | landing condition, flaps down | S12 | medium | NACA's landing condition was flaps fully down. |
 | Elevator trim, time from one end to the other (`controls.trimTime`) | 8 | s | — | ASSUMPTION | estimate | No source; a handwheel. S12: no rudder trim tab was fitted, so none is modelled. |
 
 ## Supermarine Spitfire Mk I (Merlin III)
@@ -413,6 +416,9 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Pilot's eye, height (`eye.y`) | 0.48 | m | — | S11, ASSUMPTION | estimate | About 2 in below the canopy top in S11 Fig. 4. |
 | Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Barr & Stroud GM 2 reflector sight assumed (standard in RAF fighters by 1940; not yet confirmed from an allowed source). The ring's size was not found in an allowed source (forum and dealer figures disagree); a display placeholder until the gunsights are researched for Phase 5 (see gaps). |
 | Flap positions besides up (1 = up or fully down only) (`controls.flapStops`) | 1 | — | two positions only, up and fully down | S33 | medium | Pneumatic split flaps; they 'cannot therefore be used to assist take-off' (S33). |
+| Flap travel, fully down (`controls.flapTravel`) | 85 | deg | 85° | S11 | medium | Split flaps. Close variant (VA). |
+| Flap setting for take-off, fraction of travel (`controls.flapTakeoff`) | 0 | fraction | Flaps - UP | S33 | medium | Take-off drill; the flaps 'cannot therefore be used to assist take-off' (S33). |
+| Flap setting for landing, fraction of travel (`controls.flapLanding`) | 1 | fraction | Flaps - DOWN | S33 | medium | Approach drill (S33). |
 | Elevator trim, time from one end to the other (`controls.trimTime`) | 8 | s | — | ASSUMPTION | estimate | No source; a handwheel. |
 | Yaw moment of the rudder trim tab at full travel (`aero.rudderTrimCn`) | 0.02 | — | — | S11, S33, ASSUMPTION | estimate | S11 lists a rudder trim tab and S33 sets it 'fully to starboard' for take-off. Its power was not found: a third of the rudder's assumed. |
 
@@ -626,6 +632,9 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Pilot's eye, height (`eye.y`) | 0.556 | m | — | S32, ASSUMPTION | estimate | A little below the canopy top in S32 Fig. 5. S20: the hood touches the head of a normal pilot. |
 | Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Revi C/12C reflector sight assumed (the usual sight of the Bf 109 E; not yet confirmed from an allowed source). The ring's size was not found in an allowed source (figures of 6 and 100 mils appear in unverified descriptions); a display placeholder until Phase 5 (see gaps). |
 | Flap positions besides up (`controls.flapStops`) | 4 | — | marked from zero to 40 degrees (fully down) in tens of degrees | S20 | medium | Handwheel; any position could be set (S32), the markings are every 10°. S32 takes off with 20°. |
+| Flap travel, fully down (`controls.flapTravel`) | 40 | deg | marked from zero to 40 degrees (fully down) | S20 | medium | S32 gives 42.5° (Table 4) and 42.6° (Table 1); the cockpit markings (S20) are used for the indicator. |
+| Flap setting for take-off, fraction of travel (`controls.flapTakeoff`) | 0.5 | fraction | 20 deg (the recommended position) | S32 | medium | 'All the take-off tests were done with the slotted flaps set at the recommended position of 20 deg.' |
+| Flap setting for landing, fraction of travel (`controls.flapLanding`) | 1 | fraction | flaps 42.5° (landing condition) | S32 | medium | S32 Table 4's landing condition: flaps fully down. |
 | Tailplane trim, time from one end to the other (`controls.trimTime`) | 18 | s | can be moved over the whole range in about 18 seconds | S20 | medium | Trim by a movable tailplane (S20, S32). Neither rudder nor aileron trim was fitted (S20). |
 
 ### Take-off and landing (validation data, Phase 2)

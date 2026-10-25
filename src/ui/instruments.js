@@ -10,12 +10,11 @@
 import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
-import { face, needle, scale, horizon, headingDrum, turnAndSlip, lamp, label } from './dials.js';
+import { face, needle, scale, horizon, headingDrum, turnAndSlip, lamp, label, flapIndicator } from './dials.js';
 import { rafAltimeter, luftwaffeAltimeter } from './altimeters.js';
 
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
-const FLAP_TRAVEL_109 = 40; // deg: the 109's flap markings run 0 to 40 (S20)
 
 /** What the instruments show, in the aircraft's own units. Pure: used by the panel and the tests. */
 export function instrumentReadings(sim) {
@@ -42,7 +41,11 @@ export function instrumentReadings(sim) {
     pitchClock: raf ? null : { hours: (minutes / 60) % 12, minutes: minutes % 60 },
     gearDown: plane.surfaces.gear > 0.99,
     gearUp: plane.surfaces.gear < 0.01,
-    flaps: raf ? plane.surfaces.flaps : plane.surfaces.flaps * FLAP_TRAVEL_109,
+    flaps: plane.surfaces.flaps, // fraction of travel
+    flapDegrees: plane.surfaces.flaps * ac.controls.flapTravel * DEG,
+    flapTravel: ac.controls.flapTravel * DEG,
+    flapTakeoff: ac.controls.flapTakeoff,
+    flapLanding: ac.controls.flapLanding,
   };
 }
 
@@ -91,7 +94,8 @@ function rafPanel(g, x0, y0, r, v) {
   lamp(g, gx - r * 0.35, gy, r * 0.17, '#3fbf4a', v.gearDown, 'DOWN');
   lamp(g, gx + r * 0.35, gy, r * 0.17, '#d8402e', v.gearUp, 'UP');
   label(g, gx, gy - r * 0.45, r * 1.3, 'UNDERCARRIAGE');
-  label(g, ...at(L.flaps), r * 1.3, `FLAPS ${v.flaps > 0.5 ? 'DOWN' : 'UP'}`);
+  label(g, ...at(L.flaps), r * 1.3, 'FLAPS');
+  flapIndicator(g, at(L.flaps)[0], at(L.flaps)[1] + r * 0.55, r * 1.5, v, { up: 'UP', down: 'DOWN', takeoff: 'T/O', landing: 'LAND' });
 }
 
 // Bf 109 E panel layout, after a photograph of a preserved E (D32): the propeller pitch clock at the top
@@ -130,7 +134,8 @@ function luftwaffePanel(g, x0, y0, r, v) {
   lamp(g, gx - r * 0.35, gy, r * 0.17, '#3fbf4a', v.gearDown, 'AUS');
   lamp(g, gx + r * 0.35, gy, r * 0.17, '#d8402e', v.gearUp, 'EIN');
   label(g, gx, gy - r * 0.45, r * 1.3, 'FAHRWERK');
-  label(g, ...at(L.flaps), r * 1.3, `KLAPPEN ${Math.round(v.flaps)}°`);
+  label(g, ...at(L.flaps), r * 1.3, 'KLAPPEN');
+  flapIndicator(g, at(L.flaps)[0], at(L.flaps)[1] + r * 0.55, r * 1.5, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'START', landing: 'LANDUNG' });
 }
 
 export class InstrumentPanel {

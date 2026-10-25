@@ -45,6 +45,9 @@ export const hurricane = {
   controls: {
     pitchHinge: 0.0609, rollHinge: 0.0297, yawHinge: 0.06, flapTime: 5, gearTime: 6,
     flapStops: 4, // hydraulic flaps that can be stopped part-way
+    flapTravel: 80 * DEG, // fully down
+    flapTakeoff: 0, // flap setting for take-off (fraction of travel)
+    flapLanding: 1, // and for landing
     trimTime: 8, // s: elevator trim from one end to the other
   },
   // Undercarriage and ground contact (Phase 2). Positions are from the centre of gravity in body axes

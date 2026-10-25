@@ -741,3 +741,16 @@ taken as parallel to the thrust line through the pilot's eye.
 **Bf 109 panel:** at the product owner's request the compass and the turn and bank indicator swapped places. The
 compass is now above, in the middle row; the turn and bank below.
 
+## D34. Flap position indicator (25 Oct 2026, Phase 2)
+
+At the product owner's request each panel has a flap position indicator under the FLAPS (KLAPPEN) label. It is not a
+period instrument: a track from up to fully down, the take-off and landing settings marked above it, and a pointer at
+the flaps' position. The label no longer says UP or DOWN.
+
+The settings are aircraft data (AIRCRAFT_DATA.md):
+- **Spitfire:** up for take-off and fully down for landing (S33).
+- **Hurricane:** fully down for landing (S12). Up for take-off is an assumption; no source found.
+- **Bf 109:** 20° for take-off (S32) and fully down, marked 40°, for landing (S20, S32).
+
+The flap travel in degrees (85°, 80°, 40°) moved into the aircraft data from the instrument code.
+

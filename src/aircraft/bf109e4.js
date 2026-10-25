@@ -45,6 +45,9 @@ export const bf109e4 = {
   controls: {
     pitchHinge: 0.0755, rollHinge: 0.034, yawHinge: 0.06, flapTime: 8, gearTime: 8,
     flapStops: 4, // handwheel; marked 0 to 40 degrees in tens
+    flapTravel: 40 * DEG, // fully down, as marked
+    flapTakeoff: 0.5, // 20 degrees for take-off (fraction of travel)
+    flapLanding: 1, // fully down for landing
     trimTime: 18, // s: tailplane trim wheel from one end to the other
   },
   // Undercarriage and ground contact (Phase 2). Positions are from the centre of gravity in body axes
