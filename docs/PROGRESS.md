@@ -4,15 +4,14 @@ Read this at the start of every session.
 
 ## Current status (25 Oct 2026)
 
-Phase 0 (foundations and research) is done. The product owner reviewed it and answered the Phase 0 questions (D14).
-Phase 0 is signed off. The game is live at https://mdayv261.github.io/WW2-BattleOfBritain/ (repository
-https://github.com/mdayv261/WW2-BattleOfBritain). **Phase 1 checkpoint 1 (physics core and validation) is done
-**Phase 1 (single-engine flight model) is signed off** (25 Oct 2026, D27): the product owner flew it and accepted the
-acceptance test and the documented deviations. **Phase 2 (controls, cameras, ground) is signed off** (25 Oct 2026, D35). Next: **Phase 3 (twin-engine aircraft: Bf 110 C-4
-and He 111 H-3)**, planning first. Nothing from Phases 1-2 has been pushed yet; pushing needs the product owner's
-permission.
+- **Phase 0** (foundations and research): signed off (24 Oct 2026, D14). The game is live at
+  https://mdayv261.github.io/WW2-BattleOfBritain/ (repository https://github.com/mdayv261/WW2-BattleOfBritain).
+- **Phase 1** (single-engine flight model): signed off (25 Oct 2026, D27).
+- **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
+- **Next: Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H-3), planning first.
+- **Not yet pushed:** nothing from Phases 1 and 2 has been pushed to GitHub; pushing needs the product owner's permission.
 
-## Phase 2 checkpoint 3: take-off and landing checks (25 Oct 2026, under way)
+## Phase 2 checkpoint 3: take-off and landing checks (25 Oct 2026)
 
 **Done:** `tests/physics/takeoffLanding.test.js` checks behaviour against the sources:
 - **Swing:** the RAF fighters swing left on take-off and the Bf 109 right.
