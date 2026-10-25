@@ -692,6 +692,9 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
   all black with a white bar, not coloured. The direction indicator shows a heading drum through a window, as the 1940
   directional gyro did, not a modern rotating card; the 109's compass is drawn the same way. The turn indicator has 0
   at twelve o'clock and marks for rate 1, 2 and 3 turns each side (3, 6 and 9 degrees a second).
+- **RAF rate-of-climb indicator:** zero at nine o'clock, climb clockwise above and descent below, to 4,000 ft/min. Its face
+  carries "RATE OF CLIMB", "1000 FT/MIN", "UP" and "DOWN" (product owner's request; generic period wording, no
+  photograph yet).
 - **RAF airspeed indicator, after the product owner's photograph:** a single needle going round twice. The outer
   ring is 60-240 mph (numbered 6-24, 160 at the top); the inner ring 240-400 mph (26-40, 360 at the top); about
   1.8° per mph, lettered "M.P.H.".

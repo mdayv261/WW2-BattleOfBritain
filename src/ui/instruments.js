@@ -83,7 +83,15 @@ function rafPanel(g, x0, y0, r, v) {
   g.strokeRect(x0 + bf.left * r, y0 + bf.top * r, (bf.right - bf.left) * r, (bf.bottom - bf.top) * r);
   rafAirspeed(g, ...at(L.airspeed), r, v.airspeed);
   horizon(g, ...at(L.horizon), r, v.bank, v.pitch);
-  gauge(g, ...at(L.climb), r, v.climb / 1000, { min: -4, max: 4, start: -Math.PI * 1.35, end: Math.PI * 0.35, major: 1, minor: 0.5, label: (s) => String(Math.abs(s)) });
+  const [cx, cy] = at(L.climb);
+  face(g, cx, cy, r);
+  // Zero at nine o'clock: climb reads clockwise above it, descent below. Name and units on the face.
+  label(g, cx + r * 0.1, cy - r * 0.3, r * 0.6, 'RATE OF CLIMB');
+  label(g, cx + r * 0.1, cy + r * 0.32, r * 0.6, '1000 FT/MIN');
+  label(g, cx - r * 0.38, cy - r * 0.13, r * 0.6, 'UP');
+  label(g, cx - r * 0.38, cy + r * 0.13, r * 0.6, 'DOWN');
+  const climbAngle = scale(g, cx, cy, r, { min: -4, max: 4, start: -Math.PI * 1.35, end: Math.PI * 0.35, major: 1, minor: 0.5, label: (s) => String(Math.abs(s)) });
+  needle(g, cx, cy, r * 0.8, climbAngle(v.climb / 1000));
   rafAltimeter(g, ...at(L.altimeter), r, v.altitude, 1013);
   headingDrum(g, ...at(L.direction), r, v.heading);
   turnAndSlip(g, ...at(L.turn), r, v.turnRate, v.sideG);
