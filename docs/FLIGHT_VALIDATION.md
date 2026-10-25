@@ -113,14 +113,14 @@ The flight model compared with sourced performance figures. Generated from `npm 
 | S23 | Level speed | 0 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) **(calibration point)** | 440 km/h | 440 km/h | -0.0% |
 | S23 | Level speed | 2,000 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) | 477 km/h | 476 km/h | -0.3% |
 | S23 | Level speed | 4,000 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) | 514 km/h | 501 km/h | -2.5% |
-| S23 | Level speed | 4,500 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) | 523 km/h | 507 km/h | -3.0% |
-| S23 | Level speed | 6,000 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) | 513 km/h | 508 km/h | -0.9% |
-| S23 | Time to height | 1,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 1.3 min | 1.6 min | +20.3% |
-| S23 | Time to height | 2,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 2.7 min | 3.1 min | +13.7% |
-| S23 | Time to height | 4,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 6.0 min | 6.3 min | +5.2% |
-| S23 | Time to height | 6,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 10.5 min | 10.1 min | -3.9% |
-| S23 | Time to height | 8,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 18.5 min | 15.8 min | -14.5% |
-| S23 | Service ceiling | — | Data sheet climb, C-2 (30-minute rating assumed) | 9500 m | 10548 m | +11.0% |
+| S23 | Level speed | 4,500 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) | 523 km/h | 507 km/h | -3.1% |
+| S23 | Level speed | 6,000 m | Data sheet level speeds, C-2 (1.30 ata, 2400 rpm) | 513 km/h | 507 km/h | -1.2% |
+| S23 | Time to height | 1,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 1.3 min | 1.6 min | +23.3% |
+| S23 | Time to height | 2,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 2.7 min | 3.1 min | +16.6% |
+| S23 | Time to height | 4,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 6.0 min | 6.5 min | +8.2% |
+| S23 | Time to height | 6,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 10.5 min | 10.4 min | -0.6% |
+| S23 | Time to height | 8,000 m | Data sheet climb, C-2 (30-minute rating assumed) | 18.5 min | 16.7 min | -9.8% |
+| S23 | Service ceiling | — | Data sheet climb, C-2 (30-minute rating assumed) | 9500 m | 10125 m | +6.6% |
 | S23 | Stall (IAS) | 0 m | Landing speed taken as the stall, flaps and undercarriage down **(calibration point)** | 132 km/h | 132 km/h | -0.0% |
 
 **Single-engine flight** (time-stepped, `tests/physics/twinEngine.test.js`; 1,000 m, the live engine at full
@@ -128,9 +128,9 @@ throttle and 2,400 rpm, the scripted pilot holding speed, heading and wings leve
 
 | Condition | Model | Source |
 |---|---|---|
-| Climb at 250 km/h, dead airscrew feathered | about 3.1 m/s (600 ft/min), either engine | S25: climbs and holds height on either engine |
-| Climb at 250 km/h, dead airscrew windmilling | about 1.7 m/s (330 ft/min) | S25: holds height even unfeathered; much better feathered |
-| Rudder trim to fly hands-off at 250 km/h, feathered | 0.63 of full (left engine dead), 0.74 (right engine dead) | S24: rudder trimmer fitted. The right engine is the critical one (both airscrews turn the same way). |
+| Climb at 250 km/h, dead airscrew feathered | about 2.8 m/s (560 ft/min), either engine | S25: climbs and holds height on either engine |
+| Climb at 250 km/h, dead airscrew windmilling | about 1.4 m/s (280 ft/min) | S25: holds height even unfeathered; much better feathered |
+| Rudder trim to fly hands-off at 250 km/h, feathered | 0.64 of full (left engine dead), 0.75 (right engine dead) | S24: rudder trimmer fitted. The right engine is the critical one (both airscrews turn the same way). |
 | Minimum control speed, windmilling, wings level | below the stall (about 150 km/h IAS) | No source. |
 | Approach speed 160 km/h, feathered, 25° flap | held straight; about 0.35 rudder with full trim, 0.6 aileron | S24: use only 25° flap on one engine |
 | Approach speed 160 km/h, feathered, full flap, full power | held straight; about the same control as with 25° flap | S24: full flap with more than 1,600 rpm gives an uncontrollable swing and bank (item 16) |
@@ -184,8 +184,8 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
 
 ## Summary
 
-- **Within tolerance:** 55 of 68 performance rows, including all the calibration points. The Bf 110 adds 12 rows, of
-  which its climbs to 1, 2 and 8 km and its ceiling are outside (item 14).
+- **Within tolerance:** 56 of 68 performance rows, including all the calibration points. The Bf 110 adds 12 rows, of
+  which its climbs to 1 and 2 km and its ceiling are outside (item 14).
 - **Level speeds:** all within 5%; the Spitfire's N3171 speeds within 0.5%.
 - **Spitfire climb:** within 4% at every height.
 - **Stalls:** within 3%, power off and on, flaps up and down (the Bf 109 now against the RAE's calibrated figures).
@@ -236,11 +236,12 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
       (S19), whose viewing direction has not been checked, and the model's anticlockwise-from-the-cockpit choice was
       made to match the ground swing.
     - It is an open research gap.
-14. **Bf 110 climb shape against the data sheet (S23):** 14-20% slow to 1-2 km, 15% quick to 8 km, ceiling 11% high (10,550 m against 9,500 m).
+14. **Bf 110 climb shape against the data sheet (S23):** 17-23% slow to 1-2 km; ceiling 6.6% high (10,125 m against
+    9,500 m). From 4 to 8 km the climb is within 10%.
     - The data sheet does not state its engine rating (the 30-minute rating is assumed, as for the Bf 109's S17).
-      At the 5-minute rating the low climbs are within 5% but the high ones are 16-25% quick.
-    - The source's climb rate falls away with height faster than the model's. A lower span efficiency (0.7) would bring
-      the high climbs and ceiling nearer, but there is no source for it, so 0.8 is kept.
+    - The source's climb rate falls away with height faster than the model's. The span efficiency was lowered from 0.8
+      to 0.7 at the product owner's decision (D37), which brought the high climbs within tolerance; with 0.8 the ceiling
+      was 11% high and the climb to 8 km 15% quick.
 15. **Bf 110 ground run-up:** 2,410 rpm at full throttle with the airscrews in fine pitch, against S24's "2,200 r.p.m.
     approximately at 1.3 atmospheres". The Bf 109 (same engine and airscrew) gives the same. Wider blades (11%) would give
     2,200 rpm but the boost would then fall to 1.2 ata, so nothing is fitted. The fine-pitch angle (22.5°, S32) may be

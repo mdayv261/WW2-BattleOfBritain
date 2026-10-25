@@ -813,9 +813,17 @@ which sets how hard a windmilling airscrew is driven and so its drag.
 
 **Single-engine checks** (`src/dev/twinTests.js`, `tests/physics/twinEngine.test.js`): a scripted pilot holds speed,
 heading and wings level with rudder and trim after one engine stops. At 250 km/h the model climbs about 600 ft/min
-feathered and 330 ft/min windmilling (S25: climbs and holds height on either engine, much better feathered). The
+feathered and 330 ft/min windmilling with span efficiency 0.8 (560 and 280 with 0.7, D37) (S25: climbs and holds height on either engine, much better feathered). The
 minimum control speed is measured wings level, because the model has no side force from the rudder to balance a
 banked aircraft; it comes out below the stall (no source).
 
 **Deviations flagged** (FLIGHT_VALIDATION.md items 14-17): the climb shape against S23; the ground run-up rpm against
 S24; S24's uncontrollable full-flap single-engine approach not reproduced; positions estimated.
+
+## D37. Bf 110 span efficiency lowered to 0.7 (25 Oct 2026, product owner)
+
+With the fighters' 0.8 the Bf 110 climbed 15% too quickly to 8 km and its ceiling was 11% above the data sheet's 9,500 m
+(S23). The product owner chose 0.7. No source gives the value; the engine nacelles breaking up the wing's lift
+distribution make a lower figure than a single-engine fighter's plausible. The drag was refitted (0.0264) and the
+rigging recomputed. The climb to 4-8 km is now within 10% and the ceiling 6.6% high; the low-level climb is 17-23% slow
+(FLIGHT_VALIDATION.md item 14).

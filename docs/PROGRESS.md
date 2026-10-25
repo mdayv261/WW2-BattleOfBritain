@@ -25,7 +25,7 @@ Read this at the start of every session.
 - 672 tests pass.
 
 **Known issues** (FLIGHT_VALIDATION.md items 14-17):
-1. Bf 110 climbs 14-20% slow to 2 km and 15% quick to 8 km; ceiling 11% high.
+1. Bf 110 climbs 17-23% slow to 2 km; ceiling 6.6% high (span efficiency lowered to 0.7 by the product owner, D37).
 2. Ground run-up 2,410 rpm against S24's 2,200 rpm.
 3. S24's uncontrollable swing with full flap on one engine is not reproduced; the model stays controllable.
 4. The 110 cannot be flown in the browser yet (checkpoint 2).

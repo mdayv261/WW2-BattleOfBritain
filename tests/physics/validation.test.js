@@ -30,8 +30,7 @@ const KNOWN = {
   // Phase 3: the Bf 110 against its data sheet (S23), FLIGHT_VALIDATION.md item 14.
   'bf110c4|climbTime|1000': 'data sheet climb faster low down; its engine rating is not stated (30-minute rating assumed)',
   'bf110c4|climbTime|2000': 'as above',
-  'bf110c4|climbTime|8000': 'data sheet climb slower high up than the model',
-  'bf110c4|ceiling|': 'model ceiling 11% above the data sheet\'s 9,500 m',
+  'bf110c4|ceiling|': 'model ceiling 6.6% above the data sheet\'s 9,500 m, with the span efficiency lowered to 0.7 (D37)',
 };
 
 for (const id of ['spitfire', 'hurricane', 'bf109e4', 'bf110c4']) {

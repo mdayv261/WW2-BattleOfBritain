@@ -17,8 +17,8 @@ export const bf110c4 = {
     alphaZeroLift: -3 * DEG,
     clMax: 1.47, // slats open
     clMaxFlaps: 1.97,
-    cd0: 0.0267,
-    oswald: 0.8,
+    cd0: 0.0264,
+    oswald: 0.7,
     flapCd: 0.08,
     gearCd: 0.015,
     radiatorCd: 0.0035,
@@ -38,8 +38,8 @@ export const bf110c4 = {
     rudderCn: 0.05,
     cyBeta: -0.7,
     swirl: 0.1,
-    rollRig: -0.00152,
-    yawRig: -0.00058,
+    rollRig: -0.00153,
+    yawRig: -0.00059,
     stallBias: -0.01,
     rudderTrimCn: 0.015, // yaw moment of the rudder trim tabs at full travel
   },
