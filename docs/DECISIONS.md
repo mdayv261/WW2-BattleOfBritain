@@ -681,7 +681,13 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
   - no captions, as on the real panel.
 
   Only instruments the model drives are shown. Oil, coolant and fuel gauges come with the engine-cooling and damage
-  work. The Bf 109 keeps its strip of dials until its panel layout is set.
+  work.
+- **Bf 109 E panel layout (product owner, from a photograph of a preserved E; used for appearance only):**
+  - the propeller pitch clock at the top centre;
+  - the altimeter above the airspeed indicator on the left;
+  - the turn and bank indicator above the compass in the middle;
+  - a gap for the gunsight placard, then the rpm gauge with the smaller ata gauge beside it;
+  - the undercarriage and flap indicators on the left.
 - **Period look (product owner, 25 Oct 2026):** black faces with white markings throughout. The artificial horizon is
   all black with a white bar, not coloured. The direction indicator shows a heading drum through a window, as the 1940
   directional gyro did, not a modern rotating card; the 109's compass is drawn the same way. The turn indicator has 0

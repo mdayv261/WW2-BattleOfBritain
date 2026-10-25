@@ -1,10 +1,11 @@
 // Basic instruments for Phase 2 (D28): a strip of 2D dials along the bottom of the screen, in each side's
-// units. Period faces and layouts come with the 3D cockpits in Phase 7.
+// units. The 3D cockpits come in Phase 7.
 //   RAF: the blind-flying panel (airspeed, artificial horizon, rate of climb, altimeter, direction indicator,
 //        turn and slip), boost, rpm, undercarriage lamps and flap position. 1940 styles: an all-black horizon,
 //        a heading drum in the direction indicator, and rate 1-3 marks on the turn indicator.
 //   Bf 109: airspeed (km/h), altimeter (m), turn and bank (its only blind-flying instrument, S20), compass,
 //        manifold pressure (ata), rpm, the propeller pitch clock (S32) and the undercarriage and flaps.
+// Each side's panel is laid out after a photograph of the real one (D32).
 
 import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
@@ -93,23 +94,42 @@ function rafPanel(g, x0, y0, r, v) {
   label(g, ...at(L.flaps), r * 1.3, `FLAPS ${v.flaps > 0.5 ? 'DOWN' : 'UP'}`);
 }
 
-function luftwaffePanel(g, at, r, v) {
-  gauge(g, ...at(0), r, v.airspeed, { min: 0, max: 750, ...ARC, major: 100, minor: 50, label: (s) => String(s / 100) }, 'km/h ×100');
-  luftwaffeAltimeter(g, ...at(1), r, v.altitude, 1013, 'HÖHENMESSER');
-  turnAndSlip(g, ...at(2), r, v.turnRate, v.sideG, 'WENDEZEIGER');
-  headingDrum(g, ...at(3), r, v.heading, 'KOMPASS');
-  gauge(g, ...at(4), r, v.manifold, { min: 0.6, max: 1.8, ...ARC, major: 0.2, minor: 0.1, label: (s) => s.toFixed(1) }, 'LADEDRUCK ata');
-  gauge(g, ...at(5), r, v.rpm / 100, { min: 0, max: 36, ...ARC, major: 4, minor: 2, label: (s) => String(s) }, 'U/min ×100');
+// Bf 109 E panel layout, after a photograph of a preserved E (D32): the propeller pitch clock at the top
+// centre; altimeter above airspeed on the left; turn and bank above the compass in the middle; a gap for the
+// gunsight placard, then the rpm gauge with the smaller manifold-pressure gauge beside it on the right; the
+// undercarriage indicator and flap position on the left. Positions in dial radii from the top centre.
+const LW_LAYOUT = {
+  width: 12.8, height: 5.9,
+  pitchClock: [0, 0.66], altimeter: [-2.4, 2.3], airspeed: [-2.4, 4.6], turn: [0, 2.3], compass: [0, 4.6],
+  rpm: [3.5, 2.6], ata: [5.4, 2.6], gear: [-4.9, 2.5], flaps: [-4.9, 4.4],
+  sizes: { pitchClock: 0.56, ata: 0.72 },
+};
+
+function luftwaffePanel(g, x0, y0, r, v) {
+  const L = LW_LAYOUT;
+  const at = ([dx, dy]) => [x0 + dx * r, y0 + dy * r];
+  luftwaffeAltimeter(g, ...at(L.altimeter), r, v.altitude, 1013);
+  gauge(g, ...at(L.airspeed), r, v.airspeed, { min: 0, max: 750, ...ARC, major: 100, minor: 50, label: (s) => String(s) });
+  label(g, at(L.airspeed)[0], at(L.airspeed)[1] + r * 0.66, r * 0.7, 'km/h');
+  turnAndSlip(g, ...at(L.turn), r, v.turnRate, v.sideG);
+  headingDrum(g, ...at(L.compass), r, v.heading);
+  gauge(g, ...at(L.rpm), r, v.rpm / 100, { min: 0, max: 36, ...ARC, major: 4, minor: 2, label: (s) => String(s) });
+  label(g, at(L.rpm)[0], at(L.rpm)[1] + r * 0.66, r * 0.7, 'U/min ×100');
+  const ra = r * L.sizes.ata;
+  gauge(g, ...at(L.ata), ra, v.manifold, { min: 0.6, max: 1.8, ...ARC, major: 0.2, minor: 0.1, label: (s) => s.toFixed(1) });
+  label(g, at(L.ata)[0], at(L.ata)[1] + ra * 0.66, ra * 0.9, 'ata');
   // Propeller pitch clock: hour and minute hands (S32).
-  const [cx, cy] = at(6);
-  face(g, cx, cy, r, 'LUFTSCHRAUBE');
-  scale(g, cx, cy, r, { min: 0, max: 12, start: 0, end: Math.PI * 2, major: 1, minor: 1, label: (s) => (s === 0 ? '12' : s === 12 ? '' : String(s)) });
-  needle(g, cx, cy, r * 0.5, (v.pitchClock.hours / 12) * Math.PI * 2, 5);
-  needle(g, cx, cy, r * 0.82, (v.pitchClock.minutes / 60) * Math.PI * 2, 2.5);
-  const [lx, ly] = at(7);
-  lamp(g, lx - r * 0.3, ly - r * 0.45, r * 0.15, '#3fbf4a', v.gearDown, 'AUS');
-  lamp(g, lx + r * 0.3, ly - r * 0.45, r * 0.15, '#d8402e', v.gearUp, 'EIN');
-  label(g, lx, ly + r * 0.35, r * 1.2, `KLAPPEN ${Math.round(v.flaps)}°`);
+  const rc = r * L.sizes.pitchClock;
+  const [cx, cy] = at(L.pitchClock);
+  face(g, cx, cy, rc);
+  scale(g, cx, cy, rc, { min: 0, max: 12, start: 0, end: Math.PI * 2, major: 1, minor: 1, label: (s) => (s === 0 ? '12' : s === 12 ? '' : String(s)) });
+  needle(g, cx, cy, rc * 0.5, (v.pitchClock.hours / 12) * Math.PI * 2, 4);
+  needle(g, cx, cy, rc * 0.82, (v.pitchClock.minutes / 60) * Math.PI * 2, 2);
+  const [gx, gy] = at(L.gear);
+  lamp(g, gx - r * 0.35, gy, r * 0.17, '#3fbf4a', v.gearDown, 'AUS');
+  lamp(g, gx + r * 0.35, gy, r * 0.17, '#d8402e', v.gearUp, 'EIN');
+  label(g, gx, gy - r * 0.45, r * 1.3, 'FAHRWERK');
+  label(g, ...at(L.flaps), r * 1.3, `KLAPPEN ${Math.round(v.flaps)}°`);
 }
 
 export class InstrumentPanel {
@@ -139,29 +159,18 @@ export class InstrumentPanel {
     return g;
   }
 
-  /** Redraws the panel for the current state: the RAF layout, or the Luftwaffe strip of dials. */
+  /** Redraws the panel for the current state, in the layout of the aircraft's side. */
   update(sim) {
     if (!this.visible) return;
     const v = instrumentReadings(sim);
     const width = window.innerWidth;
-    if (v.raf) {
-      const L = RAF_LAYOUT;
-      const r = Math.min(66, (width * 0.92) / L.width, (window.innerHeight * 0.4) / L.height);
-      const height = L.height * r + 6;
-      const g = this.context(width, height);
-      g.fillStyle = 'rgba(18, 18, 16, 0.94)';
-      g.fillRect((width - L.width * r) / 2, 0, L.width * r, height);
-      rafPanel(g, width / 2, 0, r, v);
-      return;
-    }
-    const count = 8;
-    const r = Math.min(62, (width / count) * 0.42);
-    const height = r * 2 + 34;
+    const L = v.raf ? RAF_LAYOUT : LW_LAYOUT;
+    const r = Math.min(66, (width * 0.92) / L.width, (window.innerHeight * 0.4) / L.height);
+    const height = L.height * r + 6;
     const g = this.context(width, height);
-    g.fillStyle = 'rgba(28, 30, 26, 0.88)';
-    const span = count * r * 2.3;
-    const left = (width - span) / 2;
-    g.fillRect(left - 8, 0, span + 16, height);
-    luftwaffePanel(g, (i) => [left + r * 1.15 + i * r * 2.3, r + 8], r, v);
+    g.fillStyle = 'rgba(18, 18, 16, 0.94)';
+    g.fillRect((width - L.width * r) / 2, 0, L.width * r, height);
+    if (v.raf) rafPanel(g, width / 2, 0, r, v);
+    else luftwaffePanel(g, width / 2, 0, r, v);
   }
 }
