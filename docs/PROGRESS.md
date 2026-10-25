@@ -7,8 +7,56 @@ Read this at the start of every session.
 Phase 0 (foundations and research) is done. The product owner reviewed it and answered the Phase 0 questions (D14).
 Phase 0 is signed off. The game is live at https://mdayv261.github.io/WW2-BattleOfBritain/ (repository
 https://github.com/mdayv261/WW2-BattleOfBritain). **Phase 1 checkpoint 1 (physics core and validation) is done
-locally**, and **checkpoint 2 (a flyable test version) is done locally**. Checkpoint 3 (handling checks and tuning) is
-next. Nothing from Phase 1 has been pushed yet.
+locally**, **checkpoint 2 (a flyable test version) is done locally**, and **checkpoint 3 (handling checks and tuning) is
+done locally**. Next: the product owner's flight test for the Phase 1 sign-off. Nothing from Phase 1 has been pushed yet.
+
+## Phase 1 checkpoint 3: handling checks and tuning (25 Oct 2026)
+
+**Done:**
+- **Scripted test flights** (`src/dev/flightTests.js`, `npm run handling`) and handling tests
+  (`tests/physics/handling.test.js`) covering:
+  - stall and wing drop;
+  - spin entry and recovery (both directions, all three aircraft);
+  - roll rate (NACA S13);
+  - sideslip in a roll (S11);
+  - stick force per g (S11, S12);
+  - control heaviness (Spitfire at 300 mph; Bf 109 above 250 mph);
+  - Bf 109 slats (S21);
+  - torque swing.
+- **Model changes** (D26): two-panel wing with washout; gentler stall; stalled nose-down moment; steadier spins; Bf 109
+  slats that open near the closed-slat stall; documented wing-drop directions; low-wing dihedral correction; aileron and
+  elevator forces fitted to NACA; rigging re-matched.
+- **Results:**
+  - stalls: Spitfire mildest with a slight right roll; Hurricane and Bf 109 drop the left wing;
+  - spins: entered and recovered within half a turn;
+  - roll at 230 mph within 4% of NACA; sideslip in a roll 17° (NACA 18°); stick force per g as NACA;
+  - 45 of 52 performance checks within tolerance (FLIGHT_VALIDATION.md).
+- **Tests:** 351 pass. Checked in Chrome: no console errors.
+
+**Known issues:**
+1. **Spins settle flat** (60-80° angle of attack). No sourced spin data were found.
+2. **Spitfire full-aileron roll** 15% below NACA once the 30 lb roll is matched.
+3. **Stall wing drops grow large** if full back stick is held for several seconds past the stall.
+4. **Earlier deviations, unchanged:**
+   - Spitfire ceiling −7%;
+   - Hurricane mean-weight ceiling −5.6%;
+   - Bf 109 specification climbs 8-16% slow.
+
+**Proposed Phase 1 acceptance test (for the product owner to agree):**
+1. **Performance:** level speeds within 5% of the sources, climbs within 10%, ceilings within 5%, stalls within 5 mph,
+   and rolls within 15%, with the deviations above accepted as documented.
+2. **Behaviour (automated):**
+   - the Merlins cut out under negative g, the DB 601 does not;
+   - the Bf 109's slats open in hard turns;
+   - its controls are heavy above 250 mph;
+   - stalls drop the wing in the documented direction;
+   - spins can be entered and recovered.
+3. **Your flight test** in Chrome with the keyboard and the Logitech joystick:
+   - fly all three;
+   - stall each one (throttle back, ease the stick back);
+   - feel the controls stiffen in a dive;
+   - push over to cut the Merlin;
+   - pull hard in the 109 to feel the slats.
 
 ## Phase 1 checkpoint 2: flyable test version (25 Oct 2026)
 

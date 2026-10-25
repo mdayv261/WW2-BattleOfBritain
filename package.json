@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "validate": "node scripts/validate.mjs",
-    "calibrate": "node scripts/calibrate.mjs"
+    "calibrate": "node scripts/calibrate.mjs",
+    "handling": "node scripts/handling.mjs"
   },
   "dependencies": {
     "three": "0.186.1"

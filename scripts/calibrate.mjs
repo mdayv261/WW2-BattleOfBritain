@@ -2,12 +2,18 @@
 // prints them. Nothing is written: the results are copied into src/aircraft/*.js and their rows in
 // docs/AIRCRAFT_DATA.md by hand, so every change is visible and recorded.
 //   aero.cd0            - to the calibration level speed (validationCases, calibration: true)
-//   aero.aileronCl      - to the NACA full-aileron roll helix angle (RAF fighters)
+//   aero.aileronCl      - to NACA's roll with 30 lb at 230 mph IAS, 10,000 ft, rudder fixed (RAF fighters)
 //   aero.slipstreamWing - to the NACA power-on stall of the Spitfire (applied to all three)
 //   propeller.solidity  - Spitfire only: blade width relative to the NACA propeller, to N3171's climb
+//   controls.pitchHinge - RAF fighters: to NACA's stick-force gradient at 230 mph IAS, 10,000 ft (S11, S12)
 import { aircraftList } from '../src/aircraft/index.js';
 import { validationCases } from '../src/aircraft/validationCases.js';
 import { modelValue } from '../src/physics/validation.js';
+import { stickForcePerG } from '../src/physics/performance.js';
+import { UNIT } from '../src/core/constants.js';
+
+// NACA stick-force gradients in turns (lb per g): Spitfire VA (S11), Hurricane II (S12).
+const FORCE_PER_G = { spitfire: 5.0, hurricane: 8.1 };
 
 const withAero = (ac, changes) => ({ ...ac, aero: { ...ac.aero, ...changes } });
 
@@ -53,6 +59,11 @@ for (const ac0 of aircraftList) {
     out.solidity = fitted.propeller.solidity;
   }
   out.cd0 = fitCd0(fitted);
+  if (FORCE_PER_G[ac.id]) {
+    const final = withAero(fitted, { cd0: out.cd0 });
+    const now = stickForcePerG(final, { eas: 230 * UNIT.MPH, altitude: 10000 * UNIT.FT });
+    out.pitchHinge = (ac.controls.pitchHinge * FORCE_PER_G[ac.id] * UNIT.LBF) / now;
+  }
   results[ac.id] = out;
   console.log(`${ac.name}: ${Object.entries(out).map(([k, v]) => `${k} ${v.toFixed(4)}`).join(', ')}`);
 }

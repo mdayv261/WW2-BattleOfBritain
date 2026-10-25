@@ -3,8 +3,8 @@
 // source: mass, engine setting and configuration. SI units throughout.
 //
 // kinds: 'speed' (level speed at an altitude), 'climbTime' (seconds from sea level), 'ceiling',
-// 'stall' (1 g stall, indicated airspeed = equivalent), 'roll' (pb/2V with a 30 lb stick force, or with
-// full aileron deflection, which the NACA reports give as the low-speed value).
+// 'stall' (1 g stall, indicated airspeed = equivalent), 'roll' (pb/2V in a time-stepped roll with full stick,
+// rudder fixed: at 230 mph IAS the pilot's 30 lb limits the aileron; at 140 mph full deflection is reached).
 // `calibration: true` marks the points fitted by `npm run calibrate` (one per fitted value); all others are
 // independent checks.
 
@@ -71,8 +71,8 @@ export const validationCases = {
       source: 'S13', label: 'NACA aileron tests', mass: 2744,
       setting: null,
       points: [
-        { kind: 'roll', eas: 62.6, altitude: 3048, fullDeflection: true, value: 0.085, calibration: true },
-        { kind: 'roll', eas: 102.82, altitude: 3048, stickForce: 30 * UNIT.LBF, value: 0.05 },
+        { kind: 'roll', eas: 102.82, altitude: 3048, stickForce: 30 * UNIT.LBF, value: 0.05, calibration: true },
+        { kind: 'roll', eas: 62.6, altitude: 3048, fullDeflection: true, value: 0.085 },
       ],
     },
   ],
@@ -120,8 +120,8 @@ export const validationCases = {
       source: 'S13', label: 'NACA aileron tests', mass: 2921,
       setting: null,
       points: [
-        { kind: 'roll', eas: 62.6, altitude: 3048, fullDeflection: true, value: 0.082, calibration: true },
-        { kind: 'roll', eas: 102.82, altitude: 3048, stickForce: 30 * UNIT.LBF, value: 0.057 },
+        { kind: 'roll', eas: 102.82, altitude: 3048, stickForce: 30 * UNIT.LBF, value: 0.057, calibration: true },
+        { kind: 'roll', eas: 62.6, altitude: 3048, fullDeflection: true, value: 0.082 },
       ],
     },
   ],

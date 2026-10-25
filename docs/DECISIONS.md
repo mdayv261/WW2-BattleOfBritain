@@ -474,3 +474,47 @@ standing in for the Rotol's wider blades, whose real width was not found.
   product owner is asked to judge.
 - Hands-off, the three aircraft now drift by under 8° of bank in 30 s.
 
+## D26. Handling model changes from the checkpoint 3 checks (25 Oct 2026, Phase 1 checkpoint 3)
+
+The first scripted test flights (`npm run handling`) contradicted the sources:
+- violent stalls (the Spitfire rolled 147°), where NACA describes mild ones;
+- the Bf 109 dropping its right wing, where S20 says left;
+- unrecoverable, tumbling spins;
+- too little sideslip in rolls;
+- slats opening far too early.
+
+**Changes, each tested against the evidence it addresses:**
+1. **Two panels per wing half (inner and outer), with washout** (the Spitfire's 2.1° from S11; 1° estimated for the
+   others). The root stalls first and the ailerons keep working, as NACA describes for both RAF fighters. The panel
+   maxima are fitted so the whole wing still reaches the sourced maximum lift (stall speeds unchanged, within 1.5%).
+2. **Gentler stall shape** (lift falls over about 4°, not 1.5°): these wings use 13-19% thick sections, which stall
+   gradually.
+3. **Consistent stalled flat-plate lift and drag** (normal force 1.3 × sin a). The earlier lift corresponded to 2.0.
+4. **Nose-down moment from a stalled root**, as NACA observed: the lift of the stalled root acts near mid-chord.
+5. **Extra roll damping when the outer wing is stalled** (tuning value). It turns a tumbling spin into a steady one.
+6. **Net gyroscopic inertia reduced** (20-25 kg m², separate from the inertia that sets rpm changes). The Merlin's
+   crankshaft turns the other way through its spur reduction gear.
+7. **Bf 109 slats.**
+   - The slats open just before the outer wing would stall without them, and raise its section maximum lift a little
+     above the root's.
+   - The panel maxima are fitted to the 1.47 (slats open) and 1.15 (closed) figures.
+   - Uneven opening in hard turns then gives S21's flick.
+8. **Documented wing-drop directions:** Hurricane left (S12), Bf 109 left (S20), Spitfire a mild right roll (S31,
+   arising without a bias).
+9. **Low-wing dihedral correction (−3°) and more adverse yaw.** Together they let the Spitfire match NACA's 18°
+   sideslip in a full-aileron roll near the stall (S11) and the Hurricane its 64°/s roll at 230 mph (S13).
+10. **Recalibration.**
+    - The aileron power is now fitted in a time-stepped roll with the rudder fixed, as NACA flew it.
+    - The RAF elevator force factors are fitted to NACA's 5.0 and 8.1 lb/g.
+    - Drag, slipstream share and blade width were refitted. Level speeds and climbs are unchanged within 1%.
+11. **Rigging and trim re-matched** to the start condition: hands-off drift under 2° in 30 s.
+
+**Why:** the product owner's rules require handling to follow the sources and every estimate to be stated. Where
+the sources are qualitative (stall direction, slat flick, heavy 109 controls), the tests check the direction or
+ordering they describe.
+
+**Not achieved (known deviations, FLIGHT_VALIDATION.md):**
+- spins settle flat (60-80° angle of attack);
+- the Spitfire's full-aileron roll is 15% below NACA once its 30 lb roll is matched;
+- stall wing drops grow large if full back stick is held for several seconds past the stall.
+

@@ -86,7 +86,7 @@ export function computeLoads(plane, input) {
   const yawRight = co.cyaw * qBar * S * b - pr.rotation * ac.aero.swirl * Math.max(prop.thrust, 0) * pr.diameter;
   const pitch = co.cpitch * qBar * S * c;
   const moment = new Vector3(roll, -yawRight, pitch);
-  const momentum = new Vector3(pr.rotation * pr.inertia * omegaProp, 0, 0);
+  const momentum = new Vector3(pr.rotation * pr.gyroInertia * omegaProp, 0, 0);
 
   const loadFactor = fb.y / (ac.mass.flying * G);
   return {

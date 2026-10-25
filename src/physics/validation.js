@@ -1,7 +1,8 @@
 // Runs the sourced validation cases through the steady-state performance solver.
 import { validationCases } from '../aircraft/validationCases.js';
 import { aircraftById } from '../aircraft/index.js';
-import { topSpeed, timeToClimb, ceiling, stallSpeed, steadyRoll } from './performance.js';
+import { topSpeed, timeToClimb, ceiling, stallSpeed } from './performance.js';
+import { rollTest } from '../dev/flightTests.js';
 import { equivalentAirspeed } from './atmosphere.js';
 
 /** A copy of an aircraft at another mass, with inertia scaled in proportion. */
@@ -25,9 +26,8 @@ export function modelValue(ac, testCase, point) {
     case 'stall':
       return equivalentAirspeed(stallSpeed(a, testCase.setting, point.altitude, opts), point.altitude);
     case 'roll':
-      return steadyRoll(a, {
-        eas: point.eas, altitude: point.altitude, aileron: 1, stickForce: point.stickForce, full: point.fullDeflection,
-      }).pb2v;
+      // Time-stepped roll with full stick and the rudder fixed, as NACA flew it (S11, S13).
+      return rollTest(a, point.eas, point.altitude).pb2v;
     default:
       throw new Error(`unknown validation kind ${point.kind}`);
   }

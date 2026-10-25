@@ -10,8 +10,7 @@ import { G } from '../core/constants.js';
 import { atmosphere, trueAirspeed } from './atmosphere.js';
 import { enginePower } from './engine.js';
 import { propellerLoads, bladeAngleForPower } from './propeller.js';
-import { aeroCoefficients, wingConstants, peakLiftAngle } from './aero.js';
-import { authority } from './controls.js';
+import { aeroCoefficients, stallAlpha } from './aero.js';
 import { common } from '../aircraft/common.js';
 import { engineFor } from '../aircraft/index.js';
 
@@ -83,13 +82,9 @@ export function steadyFlight(ac, setting, altitude, speed, { flaps = 0, gear = 0
     const along = prop.thrust * Math.cos(alpha) - co.cd * qBar * S;
     return { up, along, prop, co };
   };
-  // Search from below zero lift up to the peak of the lift curve (the stall), with flaps shifting
-  // the zero-lift angle as in aero.js.
-  const w = wingConstants(ac);
-  const dCl = flaps * (ac.aero.clMaxFlaps - ac.aero.clMax);
-  const zeroLift = ac.aero.alphaZeroLift - dCl / w.clAlpha;
-  let lo = zeroLift - 0.1;
-  let hi = zeroLift + peakLiftAngle(w.clAlpha, ac.aero.clMax + dCl);
+  // Search from below zero lift up to the peak of the lift curve (the stall).
+  let lo = ac.aero.alphaZeroLift - 0.25;
+  let hi = stallAlpha(ac, flaps);
   if (forcesAt(hi).up < weight) return null;
   for (let i = 0; i < 40; i += 1) {
     const mid = 0.5 * (lo + hi);
@@ -179,29 +174,33 @@ export function stallSpeed(ac, setting, altitude, opts) {
 }
 
 /**
- * Steady roll helix angle pb/2V reached at an equivalent airspeed and altitude with: full aileron
- * (full: true), a stick force in N (stickForce), or a stick fraction limited by the pilot's strength
- * (aileron). Roll damping comes from the half-wing model.
+ * Elevator stick-force gradient (N per g) in a steady pull-up at an equivalent airspeed and height:
+ * the elevator needed at 1 g and 3 g (pitch rate g (n - 1) / V) with level-flight power, times the
+ * elevator force factor and the dynamic pressure at the tail. NACA measured this in turns (S11, S12).
  */
-export function steadyRoll(ac, { eas, altitude, aileron, stickForce, full = false }) {
+export function stickForcePerG(ac, { eas, altitude }) {
   const speed = trueAirspeed(eas, altitude);
   const air = atmosphere(altitude);
   const qBar = 0.5 * air.density * speed * speed;
+  const S = ac.geometry.wingArea;
+  const weight = ac.mass.flying * G;
   const level = steadyFlight(ac, { speed: engineFor(ac).refSpeed, throttle: 0.6 }, altitude, speed);
-  const alpha = level ? level.alpha : 0.05;
-  const fraction = full ? 1 : stickForce !== undefined
-    ? Math.min(1, stickForce / (ac.controls.rollHinge * qBar))
-    : aileron * authority(ac.controls.rollHinge, common.pilotMaxForce.roll, qBar);
-  const surfaces = { ...surfacesFor(), aileron: fraction };
-  const rollCoef = (p) => aeroCoefficients(ac, { alpha, beta: 0, p, q: 0, r: 0, airspeed: speed, qBar, slipQ: 0 }, surfaces).croll
-    - ac.aero.rollRig;
-  let lo = 0;
-  let hi = 6;
-  for (let i = 0; i < 50; i += 1) {
-    const mid = 0.5 * (lo + hi);
-    if (rollCoef(mid) > 0) lo = mid;
-    else hi = mid;
-  }
-  const p = 0.5 * (lo + hi);
-  return { p, pb2v: (p * ac.geometry.span) / (2 * speed), fraction };
+  const slipQ = level ? Math.max(level.prop.thrust, 0) / ((Math.PI * ac.propeller.diameter ** 2) / 4) : 0;
+  const elevatorFor = (n) => {
+    const q = (G * (n - 1)) / speed;
+    let lo = -0.2;
+    let hi = 0.5;
+    const flow = (alpha) => ({ alpha, beta: 0, p: 0, q, r: 0, airspeed: speed, qBar, slipQ });
+    for (let i = 0; i < 50; i += 1) {
+      const mid = 0.5 * (lo + hi);
+      if (aeroCoefficients(ac, flow(mid), surfacesFor()).cl * qBar * S < n * weight) lo = mid;
+      else hi = mid;
+    }
+    const alpha = 0.5 * (lo + hi);
+    const at = (e) => aeroCoefficients(ac, flow(alpha), { ...surfacesFor(), elevator: e }).cpitch;
+    const m0 = at(0);
+    return -m0 / (at(1) - m0);
+  };
+  const tailQ = qBar + common.tailSlipstream * slipQ;
+  return (ac.controls.pitchHinge * tailQ * (elevatorFor(3) - elevatorFor(1))) / 2;
 }

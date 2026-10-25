@@ -17,31 +17,32 @@ export const spitfire = {
     alphaZeroLift: -3.5 * DEG, // body axis
     clMax: 1.18, // power off, flaps up
     clMaxFlaps: 1.51, // power off, flaps and undercarriage down
-    cd0: 0.0187,
+    cd0: 0.0183,
     oswald: 0.8,
     flapCd: 0.07,
     gearCd: 0.02,
     radiatorCd: 0.004,
+    washout: 2.1 * DEG,
     dihedral: 6 * DEG,
-    slipstreamWing: 0.218, // fraction of the wing in the slipstream
+    slipstreamWing: 0.196, // fraction of the wing in the slipstream
     staticMargin: 0.02,
     cmZero: 0.01,
     cmq: -12,
     elevatorCm: 0.17,
     trimCm: 0.03,
     flapCm: -0.02,
-    aileronCl: 0.0315,
-    adverseYaw: -0.00315,
+    aileronCl: 0.0434,
+    adverseYaw: -0.008,
     cnBeta: 0.07,
     cnr: -0.1,
     rudderCn: 0.06,
     cyBeta: -0.6,
     swirl: 0.15,
     rollRig: 0.0018,
-    yawRig: 0.00093,
+    yawRig: 0.00092,
     stallBias: 0,
   },
-  controls: { pitchHinge: 0.03, rollHinge: 0.035, yawHinge: 0.06, flapTime: 5, gearTime: 6 },
+  controls: { pitchHinge: 0.0434, rollHinge: 0.035, yawHinge: 0.06, flapTime: 5, gearTime: 6 },
   propeller: {
     type: 'constantSpeed',
     diameter: 3.277,
@@ -49,8 +50,9 @@ export const spitfire = {
     rotation: 1, // +1: clockwise seen from the cockpit
     betaMin: (23 + 20 / 60) * DEG,
     betaMax: (58 + 20 / 60) * DEG,
-    solidity: 1.117, // blade width relative to the NACA 640 propeller (fitted to the climb)
-    inertia: 50,
+    solidity: 1.119, // blade width relative to the NACA 640 propeller (fitted to the climb)
+    inertia: 35, // rotating inertia at propeller speed (rpm changes)
+    gyroInertia: 20, // net gyroscopic inertia at propeller speed
     governorGain: 3,
     pitchRate: 0.17,
     rpmMin: 1800 * RPM, // crankshaft

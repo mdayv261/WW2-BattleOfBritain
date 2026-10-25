@@ -10,15 +10,15 @@ import { lerp } from '../physics/interp.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 
-/** The throttle that holds the start speed in level flight, so each flight begins in balance. */
-export function levelThrottle(ac) {
+/** The throttle that holds a speed in level flight (rpm lever 0..1 for constant-speed propellers). */
+export function levelThrottle(ac, altitude = START.altitude, speed = START.speed, rpmLever = START.rpm) {
   const pr = ac.propeller;
-  const speed = pr.type === 'constantSpeed' ? lerp(pr.rpmMin, pr.rpmMax, START.rpm) : engineFor(ac).refSpeed;
-  let lo = 0.05;
+  const crank = pr.type === 'constantSpeed' ? lerp(pr.rpmMin, pr.rpmMax, rpmLever) : engineFor(ac).refSpeed;
+  let lo = 0.0;
   let hi = 1;
   for (let i = 0; i < 30; i += 1) {
     const mid = 0.5 * (lo + hi);
-    const s = steadyFlight(ac, { speed, throttle: mid }, START.altitude, START.speed);
+    const s = steadyFlight(ac, { speed: crank, throttle: mid }, altitude, speed);
     if (!s || s.spare < 0) lo = mid;
     else hi = mid;
   }

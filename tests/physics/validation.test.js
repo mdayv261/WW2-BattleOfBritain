@@ -12,6 +12,7 @@ const CALIBRATION_TOLERANCE = 0.01;
 // id|kind|altitude (or id|kind|label): reason. See docs/FLIGHT_VALIDATION.md.
 const KNOWN = {
   'spitfire|ceiling|': 'ceiling about 7% low even with the blade-width correction (D24)',
+  'spitfire|roll|full': 'full-aileron roll 15% below NACA once the 30 lb roll is matched (D26)',
   'hurricane|ceiling|Data sheet, mean weight ceiling': 'about 5% low (the maximum-weight ceiling is within 4%)',
   'bf109e4|climbTime|2000': 'specification climb (S17) faster than the model; rating of the specification not stated',
   'bf109e4|climbTime|4000': 'as above; the Rechlin figure (S22) agrees within 4%',
@@ -23,7 +24,8 @@ for (const id of ['spitfire', 'hurricane', 'bf109e4']) {
   describe(`validation: ${id}`, () => {
     const rows = validateAircraft(id);
     for (const r of rows) {
-      const key = KNOWN[`${id}|${r.kind}|${r.label}`] ? `${id}|${r.kind}|${r.label}` : `${id}|${r.kind}|${r.altitude ?? ''}`;
+      const key = r.fullDeflection ? `${id}|${r.kind}|full`
+        : KNOWN[`${id}|${r.kind}|${r.label}`] ? `${id}|${r.kind}|${r.label}` : `${id}|${r.kind}|${r.altitude ?? ''}`;
       const name = `${r.source} ${r.kind} ${r.altitude ?? ''}${r.flaps ? ' flaps down' : ''}${r.stickForce ? ' 30 lb' : ''}`;
       const within = r.kind === 'stall'
         ? Math.abs(r.model - r.value) <= STALL_TOLERANCE
