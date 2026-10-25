@@ -36,8 +36,9 @@ next. Nothing from Phase 1 has been pushed yet.
    - Push down: the engine keeps running.
    - E/D change the pitch by hand (watch the rpm); A switches the automatic pitch on.
 5. **Press F3** for the readings.
-6. **Joystick:** plug in the Logitech Extreme 3D Pro, move the stick, and press J. Tell me which axis numbers move for
-   the stick, the twist and the slider.
+6. **Joystick:** the default mapping is the product owner's Extreme 3D Pro on the Mac (25 Oct 2026): stick axes 0
+   and 1, twist axis 5, throttle slider axis 6 (−1 idle, +1 full). J shows the axes; "Reset to default" applies this
+   mapping if an older one was saved.
 
 **Known issues:**
 - Away from the start speed the aircraft slowly roll and yaw from engine torque, as real ones did. Trim covers pitch

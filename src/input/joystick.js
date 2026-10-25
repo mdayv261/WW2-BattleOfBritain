@@ -11,12 +11,13 @@ import { clamp } from '../physics/interp.js';
 const STORAGE_KEY = 'bob1940.joystick';
 const DEADZONE = 0.05;
 
-// Usual mapping of the Extreme 3D Pro in Chrome: X roll, Y pitch, twist rudder, slider throttle.
+// Mapping of the product owner's Extreme 3D Pro in Chrome on macOS, as read in the joystick panel
+// (25 Oct 2026): stick X axis 0, stick Y axis 1, twist axis 5, throttle slider axis 6 (-1 idle, +1 full).
 export const DEFAULT_MAPPING = {
   roll: { axis: 0, invert: false },
   pitch: { axis: 1, invert: false }, // pulling back gives +1 on this axis
-  yaw: { axis: 2, invert: false },
-  throttle: { axis: 3, invert: true }, // slider forward gives -1
+  yaw: { axis: 5, invert: false },
+  throttle: { axis: 6, invert: false },
 };
 
 function loadMapping() {
