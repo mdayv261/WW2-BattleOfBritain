@@ -46,7 +46,7 @@ done. Next: checkpoint 2 (airfield, cameras, cockpit view, instruments and contr
 4. **Ground and sea in the test scene:** the test view still shows the sea, but the physics treats everywhere as level
    grass until the airfield arrives in checkpoint 2.
 
-**Decision needed from the product owner:** accept the two take-off and landing deviations above?
+**Deviations accepted** by the product owner (D31).
 
 ## Bf 109 recalibrated from the RAE report (25 Oct 2026, D30)
 

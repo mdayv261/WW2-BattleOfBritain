@@ -639,3 +639,10 @@ recalibrate. This reopens part of the signed-off Phase 1 Bf 109.
 **Test-script correction:** the spin test now applies rudder against the actual rotation. Asked for a right spin, the
 109 drops its left wing (S20) and rolls the other way; the old script then held rudder that fed the real spin.
 
+## D31. Take-off, landing and roll deviations accepted (25 Oct 2026, Phase 2)
+
+The product owner accepted, as documented and not tuned away (FLIGHT_VALIDATION.md, items 10-12):
+- the Spitfire's take-off to 50 ft (+22%) and landing run (+48%);
+- the Bf 109's take-off (ground run -25%, to 20 m -20%);
+- the RAE's 4 s to bank 45° at 400 mph against the model's 1.2 s.
+
