@@ -1,12 +1,12 @@
 // RAF engine instruments for the Phase 2 panel, after photographs of the real ones (D32).
-//   Rev counter: large numerals 10-40 (hundreds of rpm) with 30 at the top, smaller 15, 25 and 35 between,
-//   a mark every 100 rpm, and "HUNDREDS OF R.P.M." on the face. The photographed instrument runs to 50; the
-//   product owner set the range to 10-40.
+//   Rev counter: large numerals 10-40 (hundreds of rpm), smaller 15, 25 and 35 between, a mark every 100 rpm,
+//   and "HUNDREDS OF R.P.M." on the face. The photographed instrument runs to 50 over about 300 degrees; the
+//   product owner set the range to 10-40, spread over the same sweep (10 at seven o'clock, 40 at five).
 
 import { face, caption, LUMINOUS } from './dials.js';
 
-const DEG_PER_HUNDRED = 8.5; // needle travel per 100 rpm
-const TOP = 3000; // rpm at twelve o'clock
+const DEG_PER_HUNDRED = 10; // needle travel per 100 rpm: 3,000 rpm over 300 degrees
+const TOP = 2500; // rpm at twelve o'clock
 const LOW = 1000;
 const HIGH = 4000;
 

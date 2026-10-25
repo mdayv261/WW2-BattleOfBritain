@@ -219,10 +219,10 @@ describe('instruments', () => {
     expect(rafAirspeedAngle(20)).toBe(rafAirspeedAngle(50)); // resting on its stop
   });
 
-  it('reads the RAF rev counter from 1,000 to 4,000 rpm with 3,000 at the top', () => {
-    expect(rafRpmAngle(3000)).toBeCloseTo(0, 9);
-    expect(rafRpmAngle(2000)).toBeLessThan(0);
-    expect(rafRpmAngle(4000)).toBeGreaterThan(0);
+  it('spreads the RAF rev counter\'s 1,000 to 4,000 rpm over 300 degrees, 10 at seven o\'clock and 40 at five', () => {
+    expect(rafRpmAngle(1000) / UNIT.DEG).toBeCloseTo(-150, 6);
+    expect(rafRpmAngle(2500)).toBeCloseTo(0, 9);
+    expect(rafRpmAngle(4000) / UNIT.DEG).toBeCloseTo(150, 6);
     expect(rafRpmAngle(5000)).toBe(rafRpmAngle(4000)); // held at the top of the scale
   });
 

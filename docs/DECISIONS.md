@@ -692,9 +692,9 @@ so they are not aircraft data. They give a nose that hides the view ahead on the
   all black with a white bar, not coloured. The direction indicator shows a heading drum through a window, as the 1940
   directional gyro did, not a modern rotating card; the 109's compass is drawn the same way. The turn indicator has 0
   at twelve o'clock and marks for rate 1, 2 and 3 turns each side (3, 6 and 9 degrees a second).
-- **RAF rev counter, after the product owner's photograph:** large numerals 10-40 (hundreds of rpm) with 30 at the top,
-  smaller 15, 25 and 35, a mark every 100 rpm, and "HUNDREDS OF R.P.M.". The photographed instrument runs to 50; the
-  product owner set 10-40.
+- **RAF rev counter, after the product owner's photograph:** large numerals 10-40 (hundreds of rpm), smaller 15, 25
+  and 35, a mark every 100 rpm, and "HUNDREDS OF R.P.M.". The photographed instrument runs to 50 over about 300°; the
+  product owner set 10-40 over the same wide sweep (10 at seven o'clock, 25 at the top, 40 at five o'clock).
 - **RAF rate-of-climb indicator:** zero at nine o'clock, climb clockwise above and descent below, to 4,000 ft/min. Its face
   carries "RATE OF CLIMB", "1000 FT/MIN", "UP" and "DOWN" (product owner's request; generic period wording, no
   photograph yet).
