@@ -17,6 +17,9 @@ export const HAT_LOOKS = [
   { yaw: Math.PI / 2, pitch: 0.1 }, { yaw: Math.PI / 4, pitch: 0.3 },
 ];
 const LOOK_LIMITS = { yaw: Math.PI * 0.9, pitchUp: 1.4, pitchDown: -0.7 };
+// rad: a head turned further than this to the side, or raised further, is looking away from the instrument panel, which
+// is then hidden (D58). Every hat view is beyond it; looking down at the panel never hides it.
+export const PANEL_LOOK_LIMIT = 20 * (Math.PI / 180);
 const FOV = { cockpit: 70, outside: 60 };
 
 const _q = new THREE.Quaternion();
@@ -51,6 +54,12 @@ export class CameraRig {
 
   get inCockpit() {
     return this.mode === 'cockpit';
+  }
+
+  /** In the cockpit with the head turned to the side, up or behind (hat or mouse): the panel is out of view. */
+  get lookingAway() {
+    const { yaw, pitch } = this.look;
+    return this.inCockpit && (Math.abs(yaw) > PANEL_LOOK_LIMIT || pitch > PANEL_LOOK_LIMIT);
   }
 
   /** C: between the cockpit and the last outside view. */

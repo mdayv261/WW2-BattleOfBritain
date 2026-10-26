@@ -172,11 +172,15 @@ export class InstrumentPanel {
     return g;
   }
 
-  /** Redraws the panel for the current state, in the layout of the aircraft's side. */
-  update(sim) {
+  /**
+   * Redraws the panel for the current state, in the layout of the aircraft's side. `hidden` hides it for now (the pilot
+   * looking to the side, up or behind, D58) without changing the I key's setting.
+   */
+  update(sim, { hidden = false } = {}) {
     // Aircraft without a cockpit (the AI-only He 111) have no panel.
-    this.canvas.style.display = this.visible && sim.ac.cockpit !== false ? 'block' : 'none';
-    if (!this.visible || sim.ac.cockpit === false) return;
+    const shown = this.visible && !hidden && sim.ac.cockpit !== false;
+    this.canvas.style.display = shown ? 'block' : 'none';
+    if (!shown) return;
     const v = instrumentReadings(sim);
     const width = window.innerWidth;
     const twin = sim.ac.id === 'bf110c4';

@@ -9,8 +9,16 @@ Read this at the start of every session.
 - **Phase 1** (single-engine flight model): signed off (25 Oct 2026, D27).
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
-- **Phase 4** (world and visuals): all four checkpoints done; waiting for the product owner's acceptance test (D55).
+- **Phase 4** (world and visuals): signed off (26 Oct 2026, D57).
+- **Next: Phase 5** (weapons and damage): plan to be proposed for approval.
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
+
+## Instrument panel hidden when looking away (26 Oct 2026)
+
+**Done** (D58): in the cockpit the panel hides while the pilot looks to the side, up or behind (joystick hat or mouse)
+and comes back on looking ahead. 910 tests pass; `npm run validate` unchanged.
+
+**Known issue:** looking sideways shows the canopy frame but no cockpit sides until the 3D cockpits (Phase 7).
 
 ## Bf 109 yellow nose, wingtips and rudder (26 Oct 2026)
 
@@ -24,7 +32,7 @@ work per frame and the draw calls and triangles. Measured on the development mac
 everywhere, 1.5-1.9 ms of work per frame, so no detail distances were changed. Tests in `tests/ui/frameRate.test.js`;
 903 tests pass; `npm run validate` unchanged.
 
-**Left:** the product owner's acceptance test on their own machine (D55), then sign-off.
+**Signed off** by the product owner (D57).
 
 **Known issues:** the frame rate can only be checked flying alone until the AI arrives (Phase 6); the work time covers
 the processor only, not the graphics card.

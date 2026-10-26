@@ -1162,3 +1162,18 @@ as quick identification markings; the game uses them on every Bf 109 as part of 
 - **Not adopted from the photograph:** its pale blue-grey sides with little mottling, and its white unit number (D14).
   The Bf 110 and He 111 have no yellow.
 
+## D57. Phase 4 signed off (26 Oct 2026, product owner)
+
+The product owner accepted Phase 4 (world and visuals) against the acceptance test in D55, and asked for the Bf 109's
+colour scheme to stay as it is (D56; the photograph's pale sides not adopted). Phase 5 (weapons and damage) is next and
+starts with a plan for approval.
+
+## D58. Instrument panel hidden when looking away in the cockpit (26 Oct 2026, product owner)
+
+The instrument panel is a flat overlay at the bottom of the screen, so it stayed in view when the pilot looked to the
+side, up or behind. At the product owner's request it now hides while the head is turned more than 20° to either side or
+raised more than 20° (`PANEL_LOOK_LIMIT` in `src/render/cameras.js`), whether by the joystick hat (every hat view is
+beyond this) or the mouse. Looking ahead again (releasing the hat, or a double-click) brings it back; looking down at it
+never hides it. The I key still switches it off altogether, and the outside views are unchanged. The period 3D cockpits
+(Phase 7) will replace the overlay.
+

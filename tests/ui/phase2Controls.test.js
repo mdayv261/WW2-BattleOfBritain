@@ -199,6 +199,30 @@ describe('cameras', () => {
     rig.toggleCockpit();
     expect(rig.mode).toBe('fixed');
   });
+
+  it('is looking away from the panel in every hat view, but not ahead, slightly turned or looking down (D58)', () => {
+    const rig = new CameraRig({ fov: 60, updateProjectionMatrix() {} });
+    expect(rig.lookingAway).toBe(false);
+    for (const look of HAT_LOOKS) {
+      rig.hatLook = look;
+      expect(rig.lookingAway, JSON.stringify(look)).toBe(true);
+    }
+    rig.hatLook = null;
+    rig.turn(0.25, 0.25); // about 14 degrees left and up
+    expect(rig.lookingAway).toBe(false);
+    rig.resetLook();
+    rig.turn(0, -0.6); // down at the panel
+    expect(rig.lookingAway).toBe(false);
+    rig.turn(-0.6, 0.6); // the mouse: well to the right
+    expect(rig.lookingAway).toBe(true);
+  });
+
+  it('is never looking away in an outside view', () => {
+    const rig = new CameraRig({ fov: 60, updateProjectionMatrix() {} });
+    rig.nextOutside();
+    rig.hatLook = HAT_LOOKS[4];
+    expect(rig.lookingAway).toBe(false);
+  });
 });
 
 describe('instruments', () => {

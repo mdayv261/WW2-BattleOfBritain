@@ -80,7 +80,7 @@ renderer.setAnimationLoop((now) => {
   view.update(sim, sim.loop.alpha, dt);
   updateScene(camera);
   hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
-  instruments.update(sim);
+  instruments.update(sim, { hidden: view.rig.lookingAway });
   joyPanel.update();
   renderer.render(scene, camera);
   frameRate.work(performance.now() - now);
