@@ -65,24 +65,26 @@ describe('Bf 110 panel changes (D44)', () => {
     expect(gearLampState({ gearDown: false, gearUp: false })).toBe('off');
   });
 
-  it('shows each engine\'s fuel and oil pressure: running in the green band, nothing when stopped', () => {
-    const sim = new Simulation(aircraftById.bf110c4, 'air');
-    sim.plane.engines[0].omega = 0;
-    const [left, right] = instrumentReadings(sim).engines.map((e) => e.pressures);
-    expect(left.oil.value).toBe(0);
-    expect(left.fuel.value).toBe(0);
-    for (const p of [right.fuel, right.oil]) {
-      expect(p.value).toBeGreaterThanOrEqual(p.normal[0]);
-      expect(p.value).toBeLessThanOrEqual(p.normal[1]);
+  it('lines each engine\'s gauges up in its own column, left engine on the left: rpm, boost, pitch, fuel (D46)', () => {
+    const order = ['rpm', 'ata', 'pitch', 'tank'];
+    const xs = {};
+    for (const side of ['Left', 'Right']) {
+      const cells = order.map((k) => L.dials[`${k}${side}`]);
+      xs[side] = cells[0][0];
+      for (const c of cells) expect(c[0]).toBe(xs[side]);
+      for (let k = 1; k < cells.length; k += 1) expect(cells[k][1]).toBeGreaterThan(cells[k - 1][1]);
     }
+    expect(xs.Left).toBeLessThan(xs.Right);
+    expect(Object.keys(L.dials).some((k) => /^(fuel|oil)(Left|Right)$/.test(k))).toBe(false);
   });
 
-  it('labels the take-off setting TAKEOFF on every flap position indicator', async () => {
+  it('labels the take-off and landing settings TAKEOFF and LANDING on every flap position indicator', async () => {
     const { readFileSync } = await import('node:fs');
     for (const file of ['instruments.js', 'bf109Panel.js', 'bf110Panel.js']) {
       const text = readFileSync(new URL(`../../src/ui/${file}`, import.meta.url), 'utf8');
       expect(text, file).toMatch(/takeoff: 'TAKEOFF'/);
       expect(text, file).not.toMatch(/takeoff: '(START|T\/O)'/);
+      expect(text, file).toMatch(/landing: 'LANDING'/);
     }
   });
 });

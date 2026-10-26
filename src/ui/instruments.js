@@ -65,7 +65,6 @@ export function instrumentReadings(sim) {
       rpm: e.omega / UNIT.RPM,
       manifold: raf ? (d.engines[i].map - ISA.P0) / UNIT.PSI : d.engines[i].map / UNIT.ATA,
       pitchClock: raf ? null : pitchClock(e.beta, ac),
-      pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, e.omega / UNIT.RPM) : null,
     })),
     // Fuel in each wing, litres (fuel use is not modelled yet: full tanks).
     fuelTanks: ac.fuel ? [ac.fuel.wingTank, ac.fuel.wingTank].map((m3) => ({ litres: m3 * 1000, capacity: m3 * 1000 })) : null,
@@ -141,7 +140,7 @@ function rafPanel(g, x0, y0, r, v) {
   lamp(g, gx + r * 0.35, gy, r * 0.17, '#d8402e', v.gearUp, 'UP');
   label(g, gx, gy - r * 0.45, r * 1.3, 'UNDERCARRIAGE');
   label(g, ...at(L.flaps), r * 1.3, 'FLAPS');
-  flapIndicator(g, at(L.flaps)[0], at(L.flaps)[1] + r * 0.55, r * 1.5, v, { up: 'UP', down: 'DOWN', takeoff: 'TAKEOFF', landing: 'LAND' });
+  flapIndicator(g, at(L.flaps)[0], at(L.flaps)[1] + r * 0.55, r * 1.5, v, { up: 'UP', down: 'DOWN', takeoff: 'TAKEOFF', landing: 'LANDING' });
 }
 
 export class InstrumentPanel {

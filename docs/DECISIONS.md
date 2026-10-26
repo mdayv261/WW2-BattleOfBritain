@@ -981,3 +981,11 @@ any. The instruments we have that appear on the sheet now follow it (`src/ui/lwF
 The two blank positions below the airscrew pitch indicators became fuel quantity gauges, left wing above, right wing
 below, in litres (0-700). Each wing held 375 litres in its main tank and 260 in its reserve (S24, S25), 635 in all
 (`fuel.wingTank`). Fuel use is not modelled yet, so they read full.
+
+## D46. Bf 110 engine instruments in two columns; LANDING labels (26 Oct 2026, product owner)
+
+- **Engine instruments:** two columns, the left engine's on the left and the right engine's on the right, each from the
+  top: rev counter, manifold pressure, airscrew pitch indicator, fuel quantity in that wing (litres). The fuel and oil
+  pressure gauges (D44) are removed from the Bf 110. The columns keep the even 6-pixel gap (D44).
+- **Flap indicators:** the landing setting is labelled LANDING on every flap position indicator, matching TAKEOFF.
+- The product owner accepted the removal of the Bf 110's decorative switch box and knobs (D44).

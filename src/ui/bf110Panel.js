@@ -3,10 +3,9 @@
 //   Flying instruments on the left: airspeed, the artificial horizon and the climb indicator above; the altimeter, the
 //   repeater compass and the clock below, the turn and bank under the clock. Their faces follow the product owner's
 //   reference drawings (D43); everything sits on an even grid with the same gap between mountings (D44).
-//   Engine instruments on the right, a column for each engine (left engine on the left): rev counter, manifold
-//   pressure, fuel pressure and oil pressure. The photographed aircraft has automatic airscrews; the C-4's are set by
-//   hand (S24), so its two pitch indicators sit in a third column (S24: "on top at the extreme right of the
-//   dashboard"), with the left and right wing fuel quantity gauges below them (D45).
+//   Engine instruments on the right in two columns, the left engine's on the left and the right engine's on the right
+//   (product owner, D46): rev counter, manifold pressure, airscrew pitch indicator (the C-4's pitch is set by hand,
+//   S24) and the fuel quantity in that wing's tanks (D45).
 //   Bottom left: the undercarriage display and the upright flap position indicator (D34, D44).
 
 import { lamp, label, flapIndicatorVertical } from './dials.js';
@@ -30,14 +29,12 @@ export const BF110_LAYOUT = {
   // Dial centres, face radii and mounting half-widths, in photograph pixels. The instruments sit on an even grid with
   // the same gap (GAP) between every pair of mountings, none touching (product owner, D44): the flying instruments in
   // 80-pixel cells (three columns, the turn and bank below the clock), the engine instruments in 55-pixel cells (a
-  // column per engine, the airscrew pitch indicators to the right).
+  // column per engine).
   dials: {
     airspeed: [70, 382, 30, 37], horizon: [150, 382, 30, 37], climb: [230, 382, 30, 37],
     altimeter: [70, 462, 30, 37], compass: [150, 462, 30, 37], clock: [230, 462, 30, 37], turn: [230, 542, 30, 37],
-    rpmLeft: [333, 370, 19, 24.5], rpmRight: [388, 370, 19, 24.5], ataLeft: [333, 425, 19, 24.5], ataRight: [388, 425, 19, 24.5],
-    fuelLeft: [333, 480, 18.5, 24.5], fuelRight: [388, 480, 18.5, 24.5], oilLeft: [333, 535, 18.5, 24.5], oilRight: [388, 535, 18.5, 24.5],
-    pitchLeft: [443, 370, 19, 24.5], pitchRight: [443, 425, 19, 24.5],
-    tankLeft: [443, 480, 18.5, 24.5], tankRight: [443, 535, 18.5, 24.5],
+    rpmLeft: [360, 370, 19, 24.5], rpmRight: [415, 370, 19, 24.5], ataLeft: [360, 425, 19, 24.5], ataRight: [415, 425, 19, 24.5],
+    pitchLeft: [360, 480, 19, 24.5], pitchRight: [415, 480, 19, 24.5], tankLeft: [360, 535, 18.5, 24.5], tankRight: [415, 535, 18.5, 24.5],
   },
   plates: [],
   gear: { from: [33, 505], to: [107, 579] },
@@ -102,16 +99,6 @@ export function bf110Panel(g, x0, y0, r, v) {
     const [mx, my, mr] = dial(`ata${side}`);
     redRing(g, mx, my, mr);
     lwAta(g, mx, my, mr, e.manifold);
-    // Fuel and oil pressure (atm, kg/cm²), each engine's own, the normal range in green (D44).
-    const p = e.pressures;
-    ringGauge(g, ...dial(`fuel${side}`), {
-      min: 0, max: p.fuel.max, labels: [0, 1, 2, 3], ring: '#8f2a22', bands: [{ from: p.fuel.normal[0], to: p.fuel.normal[1], colour: '#2f9e4a' }],
-      value: p.fuel.value, text: 'FUEL\natm',
-    });
-    ringGauge(g, ...dial(`oil${side}`), {
-      min: 0, max: p.oil.max, labels: [0, 5, 10], ring: '#c9ad2a', bands: [{ from: p.oil.normal[0], to: p.oil.normal[1], colour: '#2f9e4a' }],
-      value: p.oil.value, text: 'OIL\natm',
-    });
     // Fuel quantity in this wing's tanks, litres (D45).
     const tank = v.fuelTanks[i];
     ringGauge(g, ...dial(`tank${side}`), {
@@ -119,7 +106,6 @@ export function bf110Panel(g, x0, y0, r, v) {
     });
     const [px, py, pr] = dial(`pitch${side}`);
     lwPitchIndicator(g, px, py, pr, e.pitchClock);
-    label(g, px - pr * 1.05, py - pr * 0.95, r * 0.6, side === 'Left' ? 'L' : 'R');
   });
 
   // Undercarriage display and flap position.
@@ -129,7 +115,7 @@ export function bf110Panel(g, x0, y0, r, v) {
   const f = box(L.flaps);
   blackPlate(f);
   label(g, f.x, f.y - f.h * 0.4, r * 0.8, 'KLAPPEN');
-  flapIndicatorVertical(g, f.x + f.w * 0.14, f.y + f.h * 0.08, f.h * 0.64, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'TAKEOFF', landing: 'LANDUNG' });
+  flapIndicatorVertical(g, f.x + f.w * 0.14, f.y + f.h * 0.08, f.h * 0.64, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'TAKEOFF', landing: 'LANDING' });
 }
 
 /**

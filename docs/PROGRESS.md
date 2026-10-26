@@ -13,6 +13,11 @@ Read this at the start of every session.
   the acceptance test, agreed in D42).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
 
+## Bf 110 engine columns and LANDING labels (26 Oct 2026)
+
+**Done** (D46): Bf 110 engine instruments in two columns (left engine left, right engine right: rpm, boost, pitch,
+fuel quantity); its fuel and oil pressure gauges removed; LANDING on every flap indicator. Checked in Chrome.
+
 ## Bf 110 panel changes and even spacing (26 Oct 2026)
 
 **Done** (D44): Bf 110 turn and bank below the clock; new undercarriage display (lever, three lamps green down / red
