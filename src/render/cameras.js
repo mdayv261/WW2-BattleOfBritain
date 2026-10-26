@@ -46,6 +46,7 @@ export class CameraRig {
     this.zoom = 1;
     this.camPos = new THREE.Vector3();
     this.first = true;
+    this.cockpitAllowed = true; // false for aircraft with no cockpit (the AI-only He 111)
   }
 
   get inCockpit() {
@@ -54,7 +55,7 @@ export class CameraRig {
 
   /** C: between the cockpit and the last outside view. */
   toggleCockpit() {
-    this.mode = this.inCockpit ? this.outside : 'cockpit';
+    this.mode = this.inCockpit || !this.cockpitAllowed ? this.outside : 'cockpit';
     this.first = true;
   }
 

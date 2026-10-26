@@ -84,10 +84,13 @@ export class TestView {
     if (this.model) this.scene.remove(this.model);
     this.model = buildStandIn(ac);
     this.cockpit = buildCockpitFrame(ac);
-    this.cockpit.add(buildSightBody(ac), buildReticle(ac));
+    if (ac.sight) this.cockpit.add(buildSightBody(ac), buildReticle(ac)); // the AI-only He 111 has no pilot's sight
     this.model.add(this.cockpit);
     this.scene.add(this.model);
     this.rig.first = true;
+    // Aircraft without a cockpit (AI only) are seen from outside.
+    this.rig.cockpitAllowed = ac.cockpit !== false;
+    if (!this.rig.cockpitAllowed && this.rig.inCockpit) this.rig.mode = this.rig.outside;
   }
 
   /** Places the model (blended between the last two physics steps) and moves the camera. */

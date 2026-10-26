@@ -8,9 +8,24 @@ Read this at the start of every session.
   https://mdayv261.github.io/WW2-BattleOfBritain/ (repository https://github.com/mdayv261/WW2-BattleOfBritain).
 - **Phase 1** (single-engine flight model): signed off (25 Oct 2026, D27).
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
-- **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): in progress. Checkpoint 1 (twin-engine physics and the
-  Bf 110 flight model) done; next checkpoint 2 (He 111, flying the twins, twin controls, Bf 110 cockpit).
+- **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): in progress. Checkpoints 1 (twin physics, Bf 110) and 2
+  (He 111, flying the twins, twin controls, Bf 110 panel) done; next checkpoint 3 (the product owner's flight test and
+  the acceptance test).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
+
+## Phase 3 checkpoint 2: He 111 and flying the twins (26 Oct 2026)
+
+**Done** (D40):
+- **He 111 H** from the Soviet test of the H-6/H-11 (S29), with a Jumo 211F engine file; speeds within 2% to 7 km.
+- **Keys 4 and 5** select the Bf 110 and He 111; the He 111 is flown from the outside views (no cockpit, AI only).
+- **Twin controls:** K selects both/left/right engine levers, L cuts or restarts an engine, M feathers it (Bf 110).
+- **Tests:** `tests/ui/twinLevers.test.js`, He 111 checks in `tests/physics/twinEngine.test.js`, validation rows. 819
+  tests pass; checked in Chrome.
+
+**Known issues** (FLIGHT_VALIDATION.md items 18-19):
+1. He 111 ceiling 11% low and 8,000 m speed 10% low; climb to 3-7 km 7-15% quick; turn 20% quicker than S29.
+2. He 111 airscrew diameter, gear ratio and positions are estimates; no feathering (not confirmed).
+3. The He 111 is faster than a 1940 H-3 would be (H-6/H-11 engines).
 
 ## Bf 110 panel and upright Bf 109 flap indicator (26 Oct 2026)
 

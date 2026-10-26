@@ -3,6 +3,7 @@
 //
 // Three starts: on the ground at the aerodrome with the engine idling (the default), on the approach at
 // 1,000 ft about 5 km out with wheels and flaps up, or in the air at 1,500 m (the Phase 1 start).
+// Twins get a lever per engine (src/input/twinLevers.js).
 
 import { Vector3, Quaternion } from 'three';
 import { FixedStepLoop } from './fixedStepLoop.js';
@@ -11,6 +12,8 @@ import { steadyFlight, stallSpeed } from '../physics/performance.js';
 import { airfieldTerrain, STARTS } from '../world/airfield.js';
 import { engineFor } from '../aircraft/index.js';
 import { lerp } from '../physics/interp.js';
+import { engineMounts } from '../physics/powerplant.js';
+import { createTwinLevers, applyTwinLevers, selectNextEngine, toggleCut, toggleFeather } from '../input/twinLevers.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 export const START_MODES = ['ground', 'approach', 'air'];
@@ -68,6 +71,9 @@ export class Simulation {
   reset(ac = this.ac) {
     this.ac = ac;
     ({ plane: this.plane, input: this.input } = startPlane(ac, this.mode));
+    const engines = engineMounts(ac).length;
+    this.twin = engines > 1 ? createTwinLevers(this.input, engines) : null;
+    this.notice = null; // a short message for the pilot: { text, until } (simulation time)
     this.crashed = false;
     this.previous = { position: new Vector3(), quaternion: new Quaternion() };
     this.copyPose(this.previous);
@@ -78,6 +84,23 @@ export class Simulation {
   nextStart() {
     this.mode = START_MODES[(START_MODES.indexOf(this.mode) + 1) % START_MODES.length];
     this.reset();
+  }
+
+  /** Passes the shared levers' movement on to the selected engines (twins); call after the input modules. */
+  applyLevers() {
+    if (this.twin) applyTwinLevers(this.twin, this.input);
+  }
+
+  /** Twin-engine keys: select engines (K), cut one (L), feather one (M). */
+  engineKey(action) {
+    if (!this.twin) return;
+    if (action === 'feather' && !this.ac.propeller.featherAngle) {
+      this.notice = { text: `The ${this.ac.name}'s airscrews do not feather (not confirmed from a source)`, until: this.plane.time + 3 };
+      return;
+    }
+    const text = action === 'select' ? `Levers: ${selectNextEngine(this.twin)}`
+      : action === 'cut' ? toggleCut(this.twin, this.input) : toggleFeather(this.twin, this.input);
+    this.notice = { text, until: this.plane.time + 3 };
   }
 
   copyPose(to) {

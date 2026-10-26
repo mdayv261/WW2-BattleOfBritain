@@ -113,3 +113,21 @@ describe('Bf 110 on one engine (S24, S25)', () => {
     expect(vmc).toBeLessThan(1.2 * vs);
   });
 });
+
+describe('He 111 H (S29 close variant, D40)', () => {
+  const { he111h } = aircraftById;
+
+  it('takes off and lands without crashing, swinging little (both airscrews turn the same way)', async () => {
+    const { takeoffTest, landingTest } = await import('../../src/dev/groundTests.js');
+    const up = takeoffTest(he111h, { flaps: he111h.controls.flapTakeoff, screen: 20 });
+    expect(up.crash).toBeNull();
+    expect(Math.abs(up.maxSwing)).toBeLessThan(10);
+    expect(landingTest(he111h, { screen: 20 }).crash).toBeNull();
+  });
+
+  it('can be held straight on one engine at 220 km/h (no feathering modelled: the dead airscrew windmills)', () => {
+    const r = singleEngine(he111h, { eas: 220 * KMH, dead: 1, feather: false });
+    expect(r.headingDrift).toBeLessThan(1);
+    expect(r.rudderInput).toBeLessThan(1);
+  });
+});

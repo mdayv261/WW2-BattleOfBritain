@@ -1,7 +1,7 @@
 # Flight Validation
 
 The flight model compared with sourced performance figures. Generated from `npm run validate`
-(updated 25 Oct 2026, Phase 3: the Bf 110 added, D36); the same comparison runs in `npm test`
+(updated 26 Oct 2026, Phase 3: the Bf 110 and He 111 added, D36-D40); the same comparison runs in `npm test`
 (`tests/physics/validation.test.js`). Sources are the S-numbers in `docs/AIRCRAFT_DATA.md`.
 
 ## Method
@@ -135,6 +135,38 @@ throttle and 2,400 rpm, the scripted pilot holding speed, heading and wings leve
 | Approach speed 160 km/h, feathered, 25° flap | held straight; about 0.35 rudder with full trim, 0.6 aileron | S24: use only 25° flap on one engine |
 | Approach speed 160 km/h, feathered, full flap, full power | held straight; about the same control as with 25° flap | S24: full flap with more than 1,600 rpm gives an uncontrollable swing and bank (item 16) |
 
+### He 111 H (Phase 3; H-6/H-11 data from the Soviet test, D40)
+
+| Source | Check | Height | Conditions | Source value | Model | Error |
+|---|---|---|---|---|---|---|
+| S29 | Level speed | 0 m | Soviet test, H-11 (11,500 kg, rated power) **(calibration point)** | 330 km/h | 330 km/h | -0.1% |
+| S29 | Level speed | 1,000 m | as above | 347 km/h | 345 km/h | -0.5% |
+| S29 | Level speed | 2,000 m | as above | 366 km/h | 365 km/h | -0.2% |
+| S29 | Level speed | 2,500 m | as above **(calibration point)** | 374 km/h | 374 km/h | -0.1% |
+| S29 | Level speed | 3,000 m | as above | 368 km/h | 373 km/h | +1.5% |
+| S29 | Level speed | 4,000 m | as above **(calibration point)** | 378 km/h | 378 km/h | -0.1% |
+| S29 | Level speed | 5,000 m | as above | 393 km/h | 390 km/h | -0.8% |
+| S29 | Level speed | 5,700 m | as above **(calibration point)** | 400 km/h | 400 km/h | -0.1% |
+| S29 | Level speed | 6,000 m | as above | 396 km/h | 404 km/h | +2.0% |
+| S29 | Level speed | 7,000 m | as above | 378 km/h | 374 km/h | -1.1% |
+| S29 | Level speed | 8,000 m | as above | 359 km/h | 322 km/h | -10.3% |
+| S29 | Time to height | 1,000 m | Soviet test, H-11 climb (times to the whole minute) | 3 min | 3.5 min | +16.8% |
+| S29 | Time to height | 2,000 m | as above | 7 min | 6.9 min | -1.8% |
+| S29 | Time to height | 3,000 m | as above | 11 min | 10.2 min | -7.3% |
+| S29 | Time to height | 4,000 m | as above | 15 min | 14.0 min | -7.0% |
+| S29 | Time to height | 5,000 m | as above | 20 min | 18.3 min | -8.7% |
+| S29 | Time to height | 6,000 m | as above | 25 min | 23.0 min | -8.1% |
+| S29 | Time to height | 7,000 m | as above | 35 min | 29.7 min | -15.3% |
+| S29 | Service ceiling | — | as above | 8750 m | 7822 m | -10.6% |
+| S29 | Full level turn at 281 km/h | 1,000 m (assumed) | Soviet test, H-11 | 48.3 s | 38.9 s | -19.5% |
+
+The Jumo 211F's full-throttle curve is fitted to the speeds at 0, 2,500 and 4,000 m and the drag to 5,700 m, so the
+speeds between are checks of the curve's shape only; the climbs, ceiling and turn are independent checks.
+
+**Ground and one engine** (scripted pilot, 12,270 kg): take-off run 880 m, 1,060 m to 20 m, lift-off at 163 km/h IAS; landing
+490 m from 20 m. On one engine at 220 km/h, the dead airscrew windmilling (no feathering modelled), it can be held
+straight with rudder trim but sinks about 1.2 m/s (240 ft/min). No source gives these.
+
 ## Take-offs and landings (Phase 2)
 
 A scripted test pilot (`src/dev/groundTests.js`) flies each case on level grass with no wind, as the sources were
@@ -184,8 +216,9 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
 
 ## Summary
 
-- **Within tolerance:** 56 of 68 performance rows, including all the calibration points. The Bf 110 adds 12 rows, of
-  which its climbs to 1 and 2 km and its ceiling are outside (item 14).
+- **Within tolerance:** 71 of 88 performance rows, including all the calibration points. The Bf 110 adds 12 rows, of
+  which its climbs to 1 and 2 km and its ceiling are outside (item 14); the He 111 adds 20, of which the 8,000 m speed,
+  the climbs to 1 and 7 km, the ceiling and the turn time are outside (item 18).
 - **Level speeds:** all within 5%; the Spitfire's N3171 speeds within 0.5%.
 - **Spitfire climb:** within 4% at every height.
 - **Stalls:** within 3%, power off and on, flaps up and down (the Bf 109 now against the RAE's calibrated figures).
@@ -252,3 +285,15 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
     not modelled beyond the extra lift on the live side. To be judged in the product owner's flight test.
 17. **Bf 110 dimensions and positions are estimates:** no scaled drawing was found, so the engine, wheel, eye and
     centre-of-gravity positions come from the overall dimensions (S23). Most handling values are the Bf 109's.
+18. **He 111 against the Soviet test of the H-6/H-11 (S29), a close variant for the 1940 H-3 (D40):**
+    - The H-6/H-11's Jumo 211F engines gave more power than the H-3's, so the model's He 111 is faster and climbs
+      better than a 1940 aircraft would. H-3 data are still sought.
+    - No engine curve was found: the power at each height is fitted to S29's speeds (see the table above), anchored on
+      S29's rated 1,020 PS at 5,500 m.
+    - Above 7 km the model loses power faster than S29 shows (8,000 m speed -10%, ceiling 7,820 m against 8,750 m), while
+      the climb to 3-7 km is 7-15% quick. S29's climb times are given only to the whole minute.
+    - The model turns in 38.9 s against S29's 48.3 s at 281 km/h; S29 states neither the height nor whether the speed
+      is indicated or true.
+19. **He 111 estimates:** the airscrew diameter, reduction gear, engine positions, wing section, lift and handling
+    values are estimates (AIRCRAFT_DATA.md); the wing area comes from a wartime British recognition card (S34). Whether
+    the VS 11 airscrews could feather was not found, so the model does not feather them.

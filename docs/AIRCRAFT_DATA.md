@@ -77,6 +77,9 @@ All values are stored in SI units. The original figure and unit from the source 
 | S31 | J. R. Vensel and W. H. Phillips, "Stalling Characteristics of the Supermarine Spitfire VA Airplane", NACA Advance Confidential Report, Sept 1942 | https://ntrs.nasa.gov/citations/19930092581 | Government research report |
 | S32 | M. B. Morgan and R. Smelt, "Aerodynamic Features of German Aircraft: Messerschmitt Me 109 Handling and Manoeuvrability Tests", RAE Report, September 1940 (captured Bf 109 E-3, tested May-June 1940): text, Table 1 and Figs. 1, 3 and 5 | http://www.kurfurst.org/Tactical_trials/109E_UKtrials/Morgan.html | Period test report (transcription with the report's figures, on archive site) |
 | S33 | Air Ministry, Air Publication 1565A Vol. I, "Pilot's Notes: The Spitfire I Aeroplane, Merlin II or III Engine" (loose-leaf, pages dated September 1941 to May 1942), The Museum of Flight Library, Manuals Collection, call number MANACT.S8.S65.3 | https://digitalcollections.museumofflight.org/nodes/view/2854 | Museum record (scan of the Pilot's Notes) |
+| S34 | Valentine & Sons, aircraft recognition card No. 39, "He 111" (wartime; its data reproduced from "The Aeroplane"), IBCC Digital Archive, University of Lincoln | https://ibccdigitalarchive.lincoln.ac.uk/collections/document/39645 | Period recognition card (archive record) |
+| S35 | Smithsonian National Air and Space Museum, "Junkers Jumo 211, Inverted V-12 Engine", object A19710934000 | https://airandspace.si.edu/collection-objects/junkers-jumo-211-inverted-v-12-engine/nasm_A19710934000 | Museum record |
+| S36 | Heimatmuseum Alten (museum-digital Sachsen-Anhalt), "Handbuch für Junkers VS 11 Verstell-Luftschraubenanlage", Junkers Motorenbau, Dessau, July 1941, object 15931 (catalogue description) | https://st.museum-digital.de/object/15931 | Museum record |
 
 **Archive sites used (D8):**
 - wwiiaircraftperformance.org;
@@ -836,21 +839,23 @@ Bf 109's (same designer, engine and airscrew).
 | Pilot's eye, ahead of the centre of gravity (`eye.x`) | 1.0 | m | — | ASSUMPTION | estimate | The pilot sits ahead of the wing; S24 praises the view ahead. |
 | Pilot's eye, height (`eye.y`) | 0.9 | m | — | ASSUMPTION | estimate | No source found; typical of the period. |
 
-## Heinkel He 111 H-3 (AI only)
+## Heinkel He 111 H (AI only)
 
 Two period documents were found on 24 Oct 2026:
 - the Luftwaffe weapons manual of October 1940 (S28), which gives the defensive guns of the He 111 H;
 - a Soviet 1943 description of the later H-6 and H-11 (S29).
 
-The S29 dimensions are used as close-variant data. Its weights and performance belong to aircraft with more powerful
-engines, so they are recorded only as an upper reference. H-3 performance is still a gap.
+The product owner decided (D40) to build the He 111 from S29's H-6/H-11 as a close variant for the 1940 H-3: its
+weights and performance are used, although the H-6/H-11's Jumo 211F engines were more powerful than the H-3's. This is
+flagged as a deviation. H-3 sources are still sought.
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
-| Wingspan | 22.6 | m | 22.6 m (S26); 22,45 m (S29) | S26, S29 | medium | Two close variants (CASA 2.111B; H-6/H-11) disagree by 0.15 m. S26 is used. |
-| Length | 16.4 | m | 16,4 m | S29 | medium | H-6/H-11. |
+| Wingspan (`geometry.span`) | 22.6 | m | 22.6 m (S26); 22,45 m (S29) | S26, S29 | medium | Two close variants (CASA 2.111B; H-6/H-11) disagree by 0.15 m. S26 is used; S34 gives 74 ft 3 in (22.63 m). |
+| Length (`geometry.length`) | 16.4 | m | 16,4 m | S29 | medium | H-6/H-11. |
 | Height at rest | 4.61 | m | 4,61 m при стоянке | S29 | medium | H-6/H-11. |
 | Airscrews | Junkers VS-11, three wooden blades | — | трехлопастные, типа Юнкерс VS-11, с деревянными лопастями | S29 | medium | H-6/H-11. The H-3's airscrew is not confirmed. |
+| Airscrew pitch control | fully automatic (constant speed) | — | vollautomatischen Junkers Verstell-Luftschraubenanlage VS 11 … am Jumo 211 F u. J | S36 | medium | Modelled as a constant-speed airscrew (`propeller.type`). |
 | Crew stations | pilot; bomb-aimer (A-Stand gun); radio operator (B-Stand gun); gunner (C-Stand gun) | — | A-Stand durch den Bombenschützen, B-Stand durch den Funker, C-Stand durch Schützen | S28 | medium | The two waist guns and the rear MG 17 are worked by the radio operator or the C-Stand gunner (S28). S29 gives a crew of 4–5. |
 | A-Stand (nose) gun | 1 × MG 15 in a GD-A 1114 ball mount, 13 double drums | — | 1 MG 15 in Kuppellafette GD-A 1114; 13 Doppeltrommeln Dt 15 | S28 | medium | The MG 15 double (saddle) drum holds 75 rounds (S25, S27), so 975 rounds. |
 | B-Stand (dorsal) gun | 1 × MG 15 on a D 30 ring mount, 14 double drums | — | 1 MG 15 in Drehkranz D 30; 14 Doppeltrommeln Dt 15 | S28 | medium | 1,050 rounds. |
@@ -858,14 +863,135 @@ engines, so they are recorded only as an upper reference. H-3 performance is sti
 | Waist guns | 2 × MG 15, one each side, 10 double drums shared | — | 2 MG 15 … je 1 MG 15 rechts und links; 10 Doppeltrommeln Dt 15 | S28 | medium | |
 | Tail gun | 1 × MG 17, fixed, firing rearwards | — | 1 MG 17 in starrer Lagerung (Heck-Stand) | S28 | medium | Fired electrically by the radio operator or the C-Stand gunner. |
 | Empty weight (H-6/H-11) | 8550 | kg | вес пустого самолета 8550 кг | S29 | medium | Later variant; the H-3 weight is a gap. |
-| Flying weight (H-6/H-11) | 12270 | kg | полетный вес 12270 кг | S29 | medium | Overload up to 14,000–15,000 kg (S29). |
+| Flying weight (H-6/H-11) (`mass.flying`) | 12270 | kg | полетный вес 12270 кг | S29 | medium | Overload up to 14,000–15,000 kg (S29). |
 | Engine power (H-6/H-11, Jumo 211F-1) | 993 | kW | 1350 л. с. take-off | S29 | medium | Rated 1,020 hp at 5,500 m. The H-3's Jumo 211 had less power, so these figures are an upper bound for the H-3. |
-| Maximum speed at sea level (H-11, 11,500 kg) | 91.7 | m/s | 330 km/h | S29 | medium | Later variant with more power: an upper reference only, not an H-3 calibration figure. |
-| Maximum speed (H-11, 11,500 kg) | 111.1 | m/s | 400 km/h at 5,700 m | S29 | medium | As above. |
-| Time to 5,000 m (H-11, 11,500 kg) | 1200 | s | 20 min | S29 | medium | As above. |
-| Service ceiling (H-11, 11,500 kg) | 8750 | m | практический потолок 8750 м | S29 | medium | As above. |
+| Maximum speed at sea level (H-11, 11,500 kg) | 91.7 | m/s | 330 km/h | S29 | medium | The full table of true and indicated speeds, 0-8 km, is in `src/aircraft/validationCases.js` and FLIGHT_VALIDATION.md. |
+| Maximum speed (H-11, 11,500 kg) | 111.1 | m/s | 400 km/h at 5,700 m | S29 | medium | |
+| Time to 5,000 m (H-11, 11,500 kg) | 1200 | s | 20 min | S29 | medium | Times to height are given to the whole minute, 1-7 km. |
+| Service ceiling (H-11, 11,500 kg) | 8750 | m | практический потолок 8750 м | S29 | medium | Reached in 57 min. |
 | Time for a 360° turn (H-11) | 48.3 | s | 48,3 сек при скорости 281 км/час | S29 | medium | At 281 km/h. |
 | Fuel and oil tanks self-sealing | yes | — | similar construction to those used on the Heinkel 111H | S25 | medium | |
+
+### Flight-model values (Phase 3)
+
+Estimated and fitted values the model needs, keyed to `src/aircraft/he111h.js`. No scaled drawing was found, so
+positions are estimates from the overall dimensions.
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Wing area (`geometry.wingArea`) | 87.5 | m² | 942 sq. ft. | S34 | medium | Wartime British recognition data (aspect ratio 5.85 quoted with it). No German figure found. |
+| Mean aerodynamic chord, taken as area over span (`geometry.mac`) | 3.87 | m | 87.5 m² / 22.6 m | S26, S34 | medium |  |
+| Roll moment of inertia (`mass.ixx`) | 181,100 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method with the twin-engine ratios used for the Bf 110 (0.34, 0.29, 0.44; after Roskam, not checked against the book). No measured inertia found. |
+| Pitch moment of inertia (`mass.iyy`) | 69,390 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method with the twin-engine ratios used for the Bf 110 (0.34, 0.29, 0.44; after Roskam, not checked against the book). No measured inertia found. |
+| Yaw moment of inertia (`mass.izz`) | 225,800 | kg m² | — | ASSUMPTION | estimate | Radius-of-gyration method with the twin-engine ratios used for the Bf 110 (0.34, 0.29, 0.44; after Roskam, not checked against the book). No measured inertia found. |
+| Zero-lift angle of attack, body axis (`aero.alphaZeroLift`) | -2.5 | deg | — | ASSUMPTION | estimate | No section or rigging data found; a cambered section with a small wing setting. |
+| Maximum lift coefficient, flaps up (`aero.clMax`) | 1.4 | — | — | ASSUMPTION | estimate | No stall speed found; typical of a large unslatted wing. Power-off stall about 125 km/h at 12,270 kg. |
+| Maximum lift coefficient, flaps and undercarriage down (`aero.clMaxFlaps`) | 1.9 | — | — | ASSUMPTION | estimate | No landing speed found; the clean value plus 0.5, as measured for the Bf 109 (S32). |
+| Zero-lift drag coefficient (`aero.cd0`) | 0.0222 | — | — | S29, ASSUMPTION | estimate | Fitted (`npm run calibrate`) to 400 km/h at 5,700 m (S29, 11,500 kg) with S29's rated power of 1,020 PS at 5,500 m. |
+| Oswald span efficiency (`aero.oswald`) | 0.7 | — | — | ASSUMPTION | estimate | As the Bf 110 (D37). With 0.8 the climb is 14-19% quick. |
+| Drag of fully lowered flaps (`aero.flapCd`) | 0.08 | — | — | ASSUMPTION | estimate | As the Bf 110. |
+| Drag of the lowered undercarriage (`aero.gearCd`) | 0.012 | — | — | ASSUMPTION | estimate | Two large wheels on a large wing area: about 1 m² of drag area. |
+| Extra drag with the radiator flaps fully open (`aero.radiatorCd`) | 0.003 | — | — | ASSUMPTION | estimate | Two radiators, as the Bf 110 in drag area. |
+| Washout (`aero.washout`) | 2 | deg | — | ASSUMPTION | estimate | No slats; a typical twist to keep the tips flying at the stall. |
+| Wing dihedral (`aero.dihedral`) | 6 | deg | — | ASSUMPTION | estimate | No source found. |
+| Fraction of each wing half in its engine's slipstream (`aero.slipstreamWing`) | 0.195 | — | — | S31, ASSUMPTION | estimate | Disc diameter over half the span (0.31) times the fighters' fitted factor 0.63, as for the Bf 110. |
+| Static margin (`aero.staticMargin`) | 0.08 | fraction | — | ASSUMPTION | estimate | A stable bomber; no source. |
+| Pitching moment coefficient at zero lift (`aero.cmZero`) | 0.02 | — | — | ASSUMPTION | estimate | As the other aircraft. |
+| Pitch damping Cmq (`aero.cmq`) | -20 | per unit q c/2V | — | ASSUMPTION | estimate | A long tail arm; no measured value found. |
+| Pitching moment coefficient at full up elevator (`aero.elevatorCm`) | 0.2 | — | — | ASSUMPTION | estimate | No source found; as the fighters. |
+| Pitching moment range of the elevator trimmer (`aero.trimCm`) | 0.03 | — | — | ASSUMPTION | estimate | Enough to trim from approach to top speed. |
+| Pitching moment from fully lowered flaps (`aero.flapCm`) | -0.02 | — | — | ASSUMPTION | estimate | As the other aircraft. |
+| Roll moment coefficient at full aileron (`aero.aileronCl`) | 0.03 | — | — | ASSUMPTION | estimate | No roll data found; a large aircraft rolls slowly. |
+| Adverse yaw at full aileron (`aero.adverseYaw`) | -0.008 | — | — | ASSUMPTION | estimate | As the other aircraft. |
+| Weathercock stability Cnβ (`aero.cnBeta`) | 0.08 | per rad | — | ASSUMPTION | estimate | No measured value found. |
+| Yaw damping Cnr (`aero.cnr`) | -0.15 | per unit r b/2V | — | ASSUMPTION | estimate | As the Bf 110. |
+| Yaw moment coefficient at full rudder (`aero.rudderCn`) | 0.04 | — | — | ASSUMPTION | estimate | Half of Cnβ, as for the Bf 110. |
+| Side force from sideslip Cyβ (`aero.cyBeta`) | -0.6 | per rad | — | ASSUMPTION | estimate | No measured value found. |
+| Slipstream swirl acting on the fin (`aero.swirl`) | 0.08 | fraction | — | ASSUMPTION | estimate | Single fin out of line with the airscrews. |
+| Rigging against engine torque (`aero.rollRig`) | -0.00105 | — | — | ASSUMPTION | estimate | Equal to both engines' torque reaction in level flight at 90 m/s and 1,500 m. |
+| Fixed fin offset or rudder tab (`aero.yawRig`) | -0.00037 | — | — | ASSUMPTION | estimate | Cancels the slipstream swirl at 90 m/s and 1,500 m. |
+| Roll bias when stalled (`aero.stallBias`) | -0.01 | — | — | ASSUMPTION | estimate | A small wing drop; no source. |
+| Yaw moment of the rudder trim tab at full travel (`aero.rudderTrimCn`) | 0.015 | — | — | ASSUMPTION | estimate | No source; about a third of the rudder's. |
+| Elevator stick force at full deflection per unit dynamic pressure (`controls.pitchHinge`) | 0.1 | N/Pa | — | ASSUMPTION | estimate | Heavier than the fighters'; no source. |
+| Aileron stick force at full deflection per unit dynamic pressure (`controls.rollHinge`) | 0.06 | N/Pa | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Rudder pedal force at full deflection per unit dynamic pressure (`controls.yawHinge`) | 0.1 | N/Pa | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Flap travel time (`controls.flapTime`) | 15 | s | — | ASSUMPTION | estimate | No source; large flaps. |
+| Undercarriage travel time (`controls.gearTime`) | 15 | s | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Flap positions besides up (keyboard steps) (`controls.flapStops`) | 5 | — | — | ASSUMPTION | estimate | No source; 10° steps. |
+| Flap travel, fully down (`controls.flapTravel`) | 50 | deg | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Flap setting for take-off, fraction of travel (`controls.flapTakeoff`) | 0 | fraction | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Flap setting for landing, fraction of travel (`controls.flapLanding`) | 1 | fraction | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Elevator travel, full up (`controls.elevatorUp`) | 30 | deg | — | ASSUMPTION | estimate | No source; display only. |
+| Elevator trim, time from one end to the other (`controls.trimTime`) | 15 | s | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Airscrew diameter (`propeller.diameter`) | 3.5 | m | — | ASSUMPTION | estimate | Not found (S29 gives only the type, VS 11). Sized to clear the fuselage and ground with the engine positions below. |
+| Reduction gear ratio (`propeller.gearRatio`) | 0.5405 | — | — | ASSUMPTION | estimate | Not found. 1:1.85 keeps the 3.5 m airscrew's tip speed near 240 m/s at 2,400 rpm. |
+| Rotation (+1 clockwise seen from the cockpit) (`propeller.rotation`) | -1 | — | — | ASSUMPTION | estimate | Not found; as the DB 601A aircraft. Both engines the same way. |
+| Fine pitch stop (`propeller.betaMin`) | 20 | deg | — | ASSUMPTION | estimate | Not found. No measured value; a judgement from similar aircraft. |
+| Coarse pitch stop (`propeller.betaMax`) | 55 | deg | — | ASSUMPTION | estimate | Not found. Whether the VS 11 could feather was not found, so no feathering is modelled. |
+| Rotating inertia at airscrew speed (`propeller.inertia`) | 45 | kg m² | — | ASSUMPTION | estimate | Larger airscrew than the fighters'. |
+| Net gyroscopic inertia at airscrew speed (`propeller.gyroInertia`) | 30 | kg m² | — | ASSUMPTION | estimate | As above. No measured value; a judgement from similar aircraft. |
+| Governor gain (`propeller.governorGain`) | 3 | rad/s | — | ASSUMPTION | estimate | As the other aircraft. |
+| Maximum blade-angle rate (`propeller.pitchRate`) | 0.1 | rad/s | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Lowest governed engine speed (`propeller.rpmMin`) | 1600 | rpm | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Highest governed engine speed (`propeller.rpmMax`) | 2400 | rpm | — | ASSUMPTION | estimate | The speed of the rated (climb and combat) power assumed; take-off is at 2,600 rpm (S35). |
+| Left airscrew hub, ahead of the centre of gravity (`engines.left.x`) | 3.0 | m | — | ASSUMPTION | estimate | No scaled drawing found. |
+| Left airscrew hub, height (`engines.left.y`) | 0 | m | — | ASSUMPTION | estimate | On a thrust line through the centre of gravity. |
+| Left airscrew hub, sideways (`engines.left.z`) | -2.95 | m | — | ASSUMPTION | estimate | The 3.5 m discs clear a fuselage about 1.7 m wide: 1.75 + 0.85 + 0.35 m. |
+| Right airscrew hub, ahead of the centre of gravity (`engines.right.x`) | 3.0 | m | — | ASSUMPTION | estimate | As the left engine's. |
+| Right airscrew hub, height (`engines.right.y`) | 0 | m | — | ASSUMPTION | estimate | As the left engine's. |
+| Right airscrew hub, sideways (`engines.right.z`) | 2.95 | m | — | ASSUMPTION | estimate | As the left engine's. |
+| Main wheel centre, ahead of the centre of gravity (`gear.main.x`) | 0.6 | m | — | ASSUMPTION | estimate | No scaled drawing found. |
+| Main wheel centre, height (`gear.main.y`) | -2.2 | m | — | ASSUMPTION | estimate | From the height at rest (4.61 m, S29). |
+| Half the main wheel track (`gear.main.z`) | 2.6 | m | — | ASSUMPTION | estimate | Wheels under the engine nacelles. |
+| Main wheel radius (`gear.main.radius`) | 0.55 | m | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Tailwheel centre, x (`gear.tail.x`) | -9.8 | m | — | ASSUMPTION | estimate | Near the tail of the 16.4 m fuselage (S29). |
+| Tailwheel centre, height (`gear.tail.y`) | -0.28 | m | — | ASSUMPTION | estimate | Set so the parked aircraft sits at the assumed ground angle. |
+| Tailwheel radius (`gear.tail.radius`) | 0.2 | m | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Tailwheel castors freely (1 = yes) (`gear.tail.castor`) | 1 | — | — | ASSUMPTION | estimate | Assumed, as the other aircraft. |
+| Ground angle (`gear.groundAngle`) | 12 | deg | — | ASSUMPTION | estimate | No source or drawing found. |
+| Main leg and tyre squash under the parked weight (`gear.mainDeflection`) | 0.12 | m | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Tailwheel squash under the parked weight (`gear.tailDeflection`) | 0.06 | m | — | ASSUMPTION | estimate | No source found; a judgement for a large aircraft. |
+| Oleo damping, fraction of critical (`gear.dampingRatio`) | 0.6 | fraction | — | ASSUMPTION | estimate | As the other aircraft. |
+| Most braking force as a fraction of the wheel's load (`gear.brake`) | 0.3 | fraction | — | ASSUMPTION | estimate | As the other aircraft. |
+| Left wingtip, x (`contacts.leftTip.x`) | -0.6 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Left wingtip, y (`contacts.leftTip.y`) | 0.4 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Left wingtip, z (`contacts.leftTip.z`) | -11.3 | m | — | S26 | medium | Half the 22.6 m span. |
+| Right wingtip, x (`contacts.rightTip.x`) | -0.6 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Right wingtip, y (`contacts.rightTip.y`) | 0.4 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Right wingtip, z (`contacts.rightTip.z`) | 11.3 | m | — | S26 | medium | Half the 22.6 m span. |
+| Lowest point of the nose, x (`contacts.nose.x`) | 5.8 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Lowest point of the nose, y (`contacts.nose.y`) | -0.9 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Lowest point of the nose, z (`contacts.nose.z`) | 0 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Lowest point of the belly, x (`contacts.belly.x`) | 0 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Lowest point of the belly, y (`contacts.belly.y`) | -1.3 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Lowest point of the belly, z (`contacts.belly.z`) | 0 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Underside of the rear fuselage, x (`contacts.tail.x`) | -9.5 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Underside of the rear fuselage, y (`contacts.tail.y`) | -0.1 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Underside of the rear fuselage, z (`contacts.tail.z`) | 0 | m | — | ASSUMPTION | estimate | Crash point, estimated from the overall dimensions (S26, S29); no scaled drawing found. |
+| Pilot's eye, ahead of the centre of gravity (`eye.x`) | 4.5 | m | — | ASSUMPTION | estimate | The pilot sits in the glazed nose; used only by the cockpit camera, which the He 111 does not offer. |
+| Pilot's eye, height (`eye.y`) | 0.8 | m | — | ASSUMPTION | estimate | As above. No measured value; a judgement from similar aircraft. |
+
+## Junkers Jumo 211F-1 (He 111 H-6/H-11)
+
+Close variant for the H-3's Jumo 211 (D40). No power curve was found: S29 gives the take-off power and the rated and
+cruising powers at 5,500 m. The full-throttle curve of the two-speed supercharger is fitted to S29's level speeds
+(`npm run calibrate`), so the speeds at 0, 2,500 and 4,000 m are calibration points.
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Take-off power | 993 | kW | 1350 л. с. (S29); 1,007 kW (1,350 hp) at 2,600 rpm (S35) | S29, S35 | high | Two independent sources agree. |
+| Rated power at 5,500 m | 750 | kW | номинальная мощность на высоте 5500 м — 1020 л. с. | S29 | medium | Used as the high-gear full-throttle power (`ratings.normal.ft`, last point). |
+| Cruising power at 5,500 m | 625 | kW | эксплоатационная — 850 л. с. | S29 | medium | Not used yet. |
+| Fuel system | direct injection | — | almost all production versions having direct fuel injection | S35 | medium | So no negative-g cut-out (GAME_SPEC: "to be confirmed from a source"). |
+| Reference crankshaft speed of the curves (`refSpeed`) | 2400 | rpm | — | ASSUMPTION | estimate | The rated power's speed is not stated; 2,400 rpm assumed (take-off 2,600 rpm, S35). |
+| Rated manifold pressure (`ratings.normal.map`) | 1.25 | ata | — | ASSUMPTION | estimate | Not found; used for the gauge and part-throttle power only. |
+| Constant-boost power line (`ratings.normal.cb`) | 0:664.522, 2200:769.486, 5800:750.209 | kW | — | S29, ASSUMPTION | estimate | Low gear to 2,200 m, then the high gear's line to 5,800 m; the points are the full-throttle values below. |
+| Full-throttle power (`ratings.normal.ft`) | 0:664.522, 2200:769.486, 3200:720.574, 5800:750.209 | kW | 1020 л. с. at 5500 м | S29, ASSUMPTION | estimate | Fitted (`npm run calibrate`) to S29's level speeds at 0, 2,500 and 4,000 m; the last point is S29's rated power, placed at 5,800 m (intake height), the height that best matches S29's speeds above 5,700 m. Above it the supercharger's pressure ratio is held. |
+| Manifold pressure of zero net power (`zeroPowerMap`) | 0.3 | ata | — | ASSUMPTION | estimate | As the DB 601A. |
+| Closed-throttle manifold pressure (`idleMap`) | 0.35 | ata | — | ASSUMPTION | estimate | As the DB 601A. |
+| Power against rpm exponent (`rpmPowerExponent`) | 0.5 | — | — | ASSUMPTION | estimate | As the DB 601A. |
+| Supercharger pressure against rpm exponent (`mapSpeedExponent`) | 1 | — | — | ASSUMPTION | estimate | As the DB 601A. |
+| Highest engine speed (`maxSpeed`) | 2600 | rpm | 1,350 hp at 2,600 rpm | S35 | medium | Take-off rating. |
 
 ## Common flight-model parameters
 

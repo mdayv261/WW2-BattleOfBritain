@@ -883,3 +883,28 @@ Bf 110 cockpit supplied by the product owner, positions measured from the pictur
 
 To show the panel the Bf 110 can now be selected with key 4 (the rest of the twin controls come in Phase 3
 checkpoint 2). The cockpit frame gives twins a short nose ahead of the pilot (an estimate for the view).
+
+## D40. He 111 from the Soviet H-6/H-11 test; flying the twins (26 Oct 2026, Phase 3 checkpoint 2)
+
+**He 111 data** (`src/aircraft/he111h.js`, `src/aircraft/jumo211f.js`): as the product owner decided at the start of
+Phase 3, the He 111 is built from the Soviet 1943 test of the H-6/H-11 (S29) as a close variant for the 1940 H-3,
+flagged as a deviation (more engine power than the H-3).
+- **Sourced:** dimensions, weights, the level-speed table 0-8 km, climb, ceiling and turn time (S29); take-off power
+  1,350 hp at 2,600 rpm (S29, S35); rated 1,020 PS and cruising 850 PS at 5,500 m (S29); direct fuel injection (S35),
+  so no negative-g cut-out; fully automatic VS 11 airscrews (S36), modelled as constant-speed; wing area 87.5 m² from a
+  wartime British recognition card (S34), no German figure being found.
+- **Fitted:** no engine curve was found, so the Jumo 211F's two-speed full-throttle curve is fitted to S29's speeds at
+  0, 2,500 and 4,000 m and the drag to 400 km/h at 5,700 m with S29's rated power (`npm run calibrate`).
+- **Estimated:** airscrew diameter (3.5 m) and reduction gear, engine and wheel positions, inertia, lift and handling
+  values; span efficiency 0.7 as the Bf 110 (D37). Whether the VS 11 could feather was not found, so it does not.
+- **Results:** speeds within 2% to 7 km; climbs to 2-6 km within 9%; ceiling 11% low and the turn 20% quick
+  (FLIGHT_VALIDATION.md item 18).
+
+**Flying the twins in the test version:**
+- Keys 4 (Bf 110) and 5 (He 111). The He 111 is AI only in the game, so it has no cockpit view, panel or gunsight; it is
+  flown from the outside views with the F2 readout.
+- **Engine levers** (`src/input/twinLevers.js`): the keyboard and joystick throttle move both engines; K selects both,
+  left or right for the levers (throttle, rpm or pitch); L cuts or restarts the selected engine; M feathers it (Bf 110).
+  Differential throttle steers on the ground. A short message confirms each key; the F2 readout shows each engine.
+- **Turn time** added to the validation kinds (`turnTime` in `src/physics/performance.js`): the steepest sustained
+  level turn at a speed with the power setting.

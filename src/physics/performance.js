@@ -165,6 +165,25 @@ export function ceiling(ac, setting, opts, rate = SERVICE_CEILING_RATE) {
   return 0.5 * (lo + hi);
 }
 
+/**
+ * Seconds for a full level turn at a true airspeed with the power setting: the steepest sustained turn, where the
+ * load factor n is the highest at which thrust still balances drag (lift = n x weight), turning at g sqrt(n^2 - 1) / V.
+ */
+export function turnTime(ac, setting, altitude, speed, opts = {}) {
+  const mass = opts.mass ?? ac.mass.flying;
+  const spareAt = (n) => steadyFlight(ac, setting, altitude, speed, { ...opts, mass: n * mass })?.spare ?? -Infinity;
+  let lo = 1;
+  let hi = 6;
+  if (spareAt(lo) < 0) return Infinity;
+  for (let i = 0; i < 40; i += 1) {
+    const mid = 0.5 * (lo + hi);
+    if (spareAt(mid) >= 0) lo = mid;
+    else hi = mid;
+  }
+  const rate = (G * Math.sqrt(lo * lo - 1)) / speed;
+  return (2 * Math.PI) / rate;
+}
+
 /** 1 g stall speed (m/s, true) with the power setting given (throttle 0 for power off). */
 export function stallSpeed(ac, setting, altitude, opts) {
   let lo = 15;

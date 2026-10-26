@@ -35,6 +35,7 @@ function gameKeys() {
   if (keyboard.took('Digit2')) select(aircraftList[1]);
   if (keyboard.took('Digit3')) select(aircraftList[2]);
   if (keyboard.took('Digit4')) select(aircraftList[3]);
+  if (keyboard.took('Digit5')) select(aircraftList[4]);
   if (keyboard.took('KeyR')) select(sim.ac);
   if (keyboard.took('KeyN')) {
     sim.nextStart();
@@ -48,6 +49,9 @@ function gameKeys() {
   if (keyboard.took('F3')) hud.toggleDebug();
   if (keyboard.took('KeyH')) hud.toggleHelp();
   if (keyboard.took('KeyJ')) joyPanel.toggle();
+  if (keyboard.took('KeyK')) sim.engineKey('select');
+  if (keyboard.took('KeyL')) sim.engineKey('cut');
+  if (keyboard.took('KeyM')) sim.engineKey('feather');
 }
 window.addEventListener('keydown', (e) => {
   if (e.code === 'F2' || e.code === 'F3') e.preventDefault();
@@ -61,6 +65,7 @@ renderer.setAnimationLoop((now) => {
   gameKeys();
   keyboard.update(sim.input, sim.ac, dt);
   const stick = joystick.update(sim.input, sim.ac, dt);
+  sim.applyLevers();
   if (stick?.view) view.rig.toggleCockpit();
   view.rig.hatLook = stick && stick.hat !== null ? HAT_LOOKS[stick.hat] : null;
   sim.advance(dt);

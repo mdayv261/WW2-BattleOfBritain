@@ -6,7 +6,7 @@ import { validateAircraft } from '../../src/physics/validation.js';
 import { UNIT } from '../../src/core/constants.js';
 
 const TOLERANCE = {
-  bankTime: 0.15, speed: 0.05, climbTime: 0.10, ceiling: 0.05, roll: 0.15, takeoffRun: 0.15, takeoffScreen: 0.15, landingRun: 0.15, landingScreen: 0.15,
+  bankTime: 0.15, turnTime: 0.15, speed: 0.05, climbTime: 0.10, ceiling: 0.05, roll: 0.15, takeoffRun: 0.15, takeoffScreen: 0.15, landingRun: 0.15, landingScreen: 0.15,
 };
 const STALL_TOLERANCE = 5 * UNIT.MPH;
 const CALIBRATION_TOLERANCE = 0.01;
@@ -30,10 +30,16 @@ const KNOWN = {
   // Phase 3: the Bf 110 against its data sheet (S23), FLIGHT_VALIDATION.md item 14.
   'bf110c4|climbTime|1000': 'data sheet climb faster low down; its engine rating is not stated (30-minute rating assumed)',
   'bf110c4|climbTime|2000': 'as above',
+  // Phase 3: the He 111 against the Soviet test of the H-6/H-11 (S29), FLIGHT_VALIDATION.md item 18.
+  'he111h|speed|8000': 'above 7 km the model loses power faster than S29 shows',
+  'he111h|climbTime|1000': 'S29 gives whole minutes: 3 min to 1 km is only to the nearest 30 s',
+  'he111h|climbTime|7000': 'model climbs quicker to 7 km than S29',
+  'he111h|ceiling|': 'model ceiling 11% below S29\'s 8,750 m',
+  'he111h|turnTime|1000': 'model turns quicker than S29\'s 48.3 s; the height and the kind of speed are not stated',
   'bf110c4|ceiling|': 'model ceiling 6.6% above the data sheet\'s 9,500 m, with the span efficiency lowered to 0.7 (D37)',
 };
 
-for (const id of ['spitfire', 'hurricane', 'bf109e4', 'bf110c4']) {
+for (const id of ['spitfire', 'hurricane', 'bf109e4', 'bf110c4', 'he111h']) {
   describe(`validation: ${id}`, () => {
     const rows = validateAircraft(id);
     for (const r of rows) {

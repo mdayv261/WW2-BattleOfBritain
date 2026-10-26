@@ -6,7 +6,7 @@ import { speedText, altitudeText, manifoldText, rpmText, degText, headingOf, cli
 import { G } from '../core/constants.js';
 
 const HELP = `
-<b>Battle of Britain 1940 — Phase 2 test flight</b>
+<b>Battle of Britain 1940 — Phase 3 test flight</b>
 <table>
 <tr><td>Arrow up / down</td><td>stick forward (nose down) / back (nose up)</td></tr>
 <tr><td>Arrow left / right</td><td>roll</td></tr>
@@ -18,7 +18,8 @@ const HELP = `
 <tr><td>F / Shift+F</td><td>flaps down / up a stop (Spitfire: down or up)</td></tr>
 <tr><td>U &nbsp; O</td><td>undercarriage, radiator</td></tr>
 <tr><td>Q &nbsp; A</td><td>+12 lb boost cut-out (RAF); engine assist (Bf 109)</td></tr>
-<tr><td>1 &nbsp; 2 &nbsp; 3</td><td>Hurricane, Spitfire, Bf 109</td></tr>
+<tr><td>1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td>Hurricane, Spitfire, Bf 109, Bf 110, He 111 (outside views only; F2 for its readings)</td></tr>
+<tr><td>K &nbsp; L &nbsp; M</td><td>twins: levers move both engines / left / right; cut or restart that engine; feather it</td></tr>
 <tr><td>R &nbsp; N &nbsp; P</td><td>restart; next start (ground, approach, air); pause</td></tr>
 <tr><td>C &nbsp; V</td><td>cockpit view; outside views (chase, fixed, orbit)</td></tr>
 <tr><td>Mouse</td><td>drag to look around; wheel to zoom; double-click to look ahead</td></tr>
@@ -27,6 +28,20 @@ const HELP = `
 <tr><td>J &nbsp; H</td><td>joystick panel (change the buttons there), this help</td></tr>
 </table>
 Click the page once before using the keyboard.`;
+
+/** One line per engine of a twin: its throttle, rpm and state, and which engines the levers move. */
+function twinLines(sim) {
+  const { ac, plane, input, twin } = sim;
+  const names = ['Left ', 'Right'];
+  const lines = plane.engines.map((e, i) => {
+    const own = input.engines[i];
+    const state = own.failed ? (own.feather ? '  CUT, FEATHERED' : '  CUT') : own.feather ? '  FEATHERED' : '';
+    const moved = twin.selected === 'both' || twin.selected === i ? '>' : ' ';
+    return `${moved} ${names[i]} throttle ${String(Math.round(own.throttle * 100)).padStart(3)}%  ${rpmText(e.omega).padStart(8)}  `
+      + `${manifoldText(ac, plane.last.engines[i].map)}  pitch ${degText(e.beta)}${state}`;
+  });
+  return lines;
+}
 
 function panel(id, css) {
   const el = document.createElement('div');
@@ -78,8 +93,10 @@ export class Hud {
       `Climb ${climbText(ac, climb).padStart(11)}  Trim ${(input.trim * 100).toFixed(0)}%${input.flaps ? '  FLAPS' : ''}${input.gear ? '  GEAR' : ''}${input.radiator ? '  RAD OPEN' : ''}`,
     ];
     if (ac.side === 'RAF') lines.push(`rpm lever ${Math.round(input.rpm * 100)}%${input.emergency ? '   +12 LB BOOST' : ''}`);
+    else if (ac.propeller.type === 'constantSpeed') lines.push(`rpm lever ${Math.round(input.rpm * 100)}%   automatic airscrews`);
     else lines.push(`Pitch ${degText(plane.beta)}${input.engineAssist ? '   ASSIST (auto pitch)' : '   manual pitch (E/D)'}`);
     if (d.cutout < 0.5) lines.push('ENGINE CUT (negative g)');
+    if (sim.twin) lines.push(...twinLines(sim));
     if (extra.joystick) lines.push('Joystick connected');
     this.strip.textContent = lines.join('\n');
 
@@ -94,6 +111,7 @@ export class Hud {
     const g = plane.ground;
     if (sim.crashed) return `${g.crash.cause} — press R to restart`;
     if (sim.paused) return 'Paused — press P';
+    if (sim.notice && plane.time < sim.notice.until) return sim.notice.text;
     if (g.onGround && g.touchdown) {
       const sink = climbText(ac, g.touchdown.sink).replace('-', '');
       const at = `touched down at ${speedText(ac, g.touchdown.speed)}, sinking ${sink}`;

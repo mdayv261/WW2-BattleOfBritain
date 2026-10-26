@@ -155,7 +155,9 @@ export class InstrumentPanel {
 
   /** Redraws the panel for the current state, in the layout of the aircraft's side. */
   update(sim) {
-    if (!this.visible) return;
+    // Aircraft without a cockpit (the AI-only He 111) have no panel.
+    this.canvas.style.display = this.visible && sim.ac.cockpit !== false ? 'block' : 'none';
+    if (!this.visible || sim.ac.cockpit === false) return;
     const v = instrumentReadings(sim);
     const width = window.innerWidth;
     const twin = sim.ac.id === 'bf110c4';

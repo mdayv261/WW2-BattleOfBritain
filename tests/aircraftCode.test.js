@@ -7,6 +7,8 @@ import { spitfire } from '../src/aircraft/spitfire.js';
 import { hurricane } from '../src/aircraft/hurricane.js';
 import { bf109e4 } from '../src/aircraft/bf109e4.js';
 import { bf110c4 } from '../src/aircraft/bf110c4.js';
+import { he111h } from '../src/aircraft/he111h.js';
+import { jumo211f } from '../src/aircraft/jumo211f.js';
 import { merlin3 } from '../src/aircraft/merlin3.js';
 import { db601a } from '../src/aircraft/db601a.js';
 import { common } from '../src/aircraft/common.js';
@@ -18,6 +20,8 @@ const DATA_FILES = [
   { name: 'hurricane.js', data: hurricane, section: 'Hawker Hurricane Mk I' },
   { name: 'bf109e4.js', data: bf109e4, section: 'Messerschmitt Bf 109 E-4' },
   { name: 'bf110c4.js', data: bf110c4, section: 'Messerschmitt Bf 110 C-4' },
+  { name: 'he111h.js', data: he111h, section: 'Heinkel He 111 H' },
+  { name: 'jumo211f.js', data: jumo211f, section: 'Junkers Jumo 211F-1' },
   { name: 'merlin3.js', data: merlin3, section: 'Rolls-Royce Merlin III' },
   { name: 'db601a.js', data: db601a, section: 'Daimler-Benz DB 601A' },
   { name: 'common.js', data: common, section: 'Common flight-model parameters' },

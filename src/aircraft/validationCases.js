@@ -5,7 +5,8 @@
 // kinds: 'speed' (level speed at an altitude), 'climbTime' (seconds from sea level), 'ceiling',
 // 'stall' (1 g stall, indicated airspeed = equivalent), 'roll' (pb/2V in a time-stepped roll with full stick,
 // rudder fixed: at 230 mph IAS the pilot's 30 lb limits the aileron; at 140 mph full deflection is reached),
-// 'bankTime' (seconds from level to 45 degrees of bank with full stick, pilot strength limited).
+// 'bankTime' (seconds from level to 45 degrees of bank with full stick, pilot strength limited),
+// 'turnTime' (seconds for a full level turn at `speed`, true, with the power setting).
 // Phase 2 adds take-offs and landings flown by the scripted pilot (src/dev/groundTests.js) on grass:
 // 'takeoffRun' (ground run, m), 'takeoffScreen' (distance to clear a screen of `screen` m),
 // 'landingRun' (touchdown to stop, braking), 'landingScreen' (from the screen to a stop).
@@ -236,6 +237,44 @@ export const validationCases = {
       source: 'S23', label: 'Data sheet landing speed taken as the stall, flaps and undercarriage down', mass: 6530,
       setting: { speed: 2400 * RPM, throttle: 0 },
       points: [{ kind: 'stall', altitude: 0, value: 132 * KMH, flaps: 1, gear: 1, calibration: true }],
+    },
+  ],
+  he111h: [
+    {
+      source: 'S29', label: 'Soviet test, H-11 level speeds (11,500 kg, rated power)', mass: 11500,
+      setting: { speed: 2400 * RPM, throttle: 1 },
+      points: [
+        { kind: 'speed', altitude: 0, value: 330 * KMH, calibration: true },
+        { kind: 'speed', altitude: 1000, value: 347 * KMH },
+        { kind: 'speed', altitude: 2000, value: 366 * KMH },
+        { kind: 'speed', altitude: 2500, value: 374 * KMH, calibration: true },
+        { kind: 'speed', altitude: 3000, value: 368 * KMH },
+        { kind: 'speed', altitude: 4000, value: 378 * KMH, calibration: true },
+        { kind: 'speed', altitude: 5000, value: 393 * KMH },
+        { kind: 'speed', altitude: 5700, value: 400 * KMH, calibration: true },
+        { kind: 'speed', altitude: 6000, value: 396 * KMH },
+        { kind: 'speed', altitude: 7000, value: 378 * KMH },
+        { kind: 'speed', altitude: 8000, value: 359 * KMH },
+      ],
+    },
+    {
+      source: 'S29', label: 'Soviet test, H-11 climb (11,500 kg, rated power; times to the whole minute)', mass: 11500,
+      setting: { speed: 2400 * RPM, throttle: 1 },
+      points: [
+        { kind: 'climbTime', altitude: 1000, value: 3 * 60 },
+        { kind: 'climbTime', altitude: 2000, value: 7 * 60 },
+        { kind: 'climbTime', altitude: 3000, value: 11 * 60 },
+        { kind: 'climbTime', altitude: 4000, value: 15 * 60 },
+        { kind: 'climbTime', altitude: 5000, value: 20 * 60 },
+        { kind: 'climbTime', altitude: 6000, value: 25 * 60 },
+        { kind: 'climbTime', altitude: 7000, value: 35 * 60 },
+        { kind: 'ceiling', value: 8750 },
+      ],
+    },
+    {
+      source: 'S29', label: 'Soviet test, H-11 time for a full level turn at 281 km/h (height not stated: 1,000 m assumed)', mass: 11500,
+      setting: { speed: 2400 * RPM, throttle: 1 },
+      points: [{ kind: 'turnTime', altitude: 1000, speed: 281 * KMH, value: 48.3 }],
     },
   ],
 };

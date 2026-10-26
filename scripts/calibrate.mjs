@@ -6,6 +6,8 @@
 //   aero.slipstreamWing - to the NACA power-on stall of the Spitfire (applied to the three fighters; the twins
 //                         scale it by their discs' share of the wing, see AIRCRAFT_DATA.md)
 //   aero.clMaxFlaps     - Bf 110: to the data sheet's landing speed (S23), with aero.clMax 0.5 below it
+//   He 111 (S29): aero.cd0 to 400 km/h at 5,700 m with the rated 1,020 PS at the high gear's full-throttle height,
+//     and the Jumo 211F's full-throttle curve at 0, 2,200 and 3,200 m to the speeds at 0, 2,500 and 4,000 m
 //   propeller.solidity  - Spitfire only: blade width relative to the NACA propeller, to N3171's climb
 //   controls.pitchHinge - RAF fighters: to NACA's stick-force gradient at 230 mph IAS, 10,000 ft (S11, S12)
 //   Bf 109, from the RAE report (S32):
@@ -13,7 +15,7 @@
 //     controls.rollHinge - one-fifth aileron is all the pilot can reach at 400 mph IAS (Table 5)
 //     aero.aileronCl    - with it, 45 degrees of bank takes as long as in the Spitfire (Table 5: both about 4 s;
 //                         the model's Spitfire takes 1.2 s, so the comparison, not the time, is matched, D30)
-import { aircraftList } from '../src/aircraft/index.js';
+import { aircraftList, engines } from '../src/aircraft/index.js';
 import { validationCases } from '../src/aircraft/validationCases.js';
 import { modelValue } from '../src/physics/validation.js';
 import { stickForcePerG } from '../src/physics/performance.js';
@@ -49,7 +51,47 @@ const stall = calibrationPoint('spitfire', 'stall');
 const slip = fit(0, 1.5, (k) => stall.p.value - modelValue(withAero(spit, { slipstreamWing: k }), stall.c, stall.p), true);
 console.log(`slipstreamWing (all aircraft): ${slip.toFixed(3)}`);
 
+/** He 111: drag and the engine's full-throttle points, fitted in turn until they settle (see the header). */
+function fitHe111(ac) {
+  const rating = engines.jumo211f.ratings.normal;
+  const c = validationCases.he111h.find((k) => k.points.some((p) => p.kind === 'speed'));
+  const at = (h) => c.points.find((p) => p.altitude === h);
+  const ft = rating.ft.map((p) => [...p]);
+  const cb = rating.cb.map((p) => [...p]);
+  let fitted = ac;
+  const apply = () => {
+    rating.ft = ft;
+    rating.cb = cb;
+  };
+  const speedError = (h) => modelValue(fitted, c, at(h)) - at(h).value;
+  const fitPoint = (i, h) => {
+    ft[i][1] = fit(3e5, 1.2e6, (p) => {
+      ft[i][1] = p;
+      if (i < 2) cb[i][1] = p;
+      apply();
+      return speedError(h);
+    }, true);
+    if (i < 2) cb[i][1] = ft[i][1];
+    apply();
+  };
+  for (let round = 0; round < 4; round += 1) {
+    fitted = withAero(fitted, { cd0: fit(0.012, 0.05, (k) => {
+      fitted = withAero(fitted, { cd0: k });
+      return speedError(5700);
+    }, false) });
+    fitPoint(0, 0);
+    fitPoint(1, 2500);
+    fitPoint(2, 4000);
+  }
+  return { cd0: fitted.aero.cd0, ft0: ft[0][1] / 1000, ft2200: ft[1][1] / 1000, ft3200: ft[2][1] / 1000 };
+}
+
 for (const ac0 of aircraftList) {
+  if (ac0.id === 'he111h') {
+    const out = fitHe111(ac0);
+    console.log(`${ac0.name}: ${Object.entries(out).map(([k, v]) => `${k} ${v.toFixed(4)}`).join(', ')} (kW)`);
+    continue;
+  }
   const ac = ac0.engines ? ac0 : withAero(ac0, { slipstreamWing: slip });
   const out = {};
   let ac1 = ac;
