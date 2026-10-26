@@ -5,8 +5,8 @@
 import { DEG, at, font, centred, tick, lwFace, lwHand } from './lwStyle.js';
 
 /**
- * A small engine gauge with a coloured ring round its bezel (coolant red, oil yellow, as photographed):
- *   { min, max, labels: [values], ring, value, text }
+ * A small engine gauge with a coloured ring round its bezel (as photographed), and coloured bands on the scale:
+ *   { min, max, labels: [values], ring, bands: [{ from, to, colour }], value, text }
  */
 export function ringGauge(g, x, y, r, o) {
   const sweep = 270 * DEG;
@@ -16,13 +16,20 @@ export function ringGauge(g, x, y, r, o) {
   g.arc(x, y, r * 1.22, 0, Math.PI * 2);
   g.fill();
   lwFace(g, x, y, r);
+  for (const b of o.bands ?? []) {
+    g.strokeStyle = b.colour;
+    g.lineWidth = r * 0.14;
+    g.beginPath();
+    g.arc(x, y, r * 0.86, angle(b.from) - Math.PI / 2, angle(b.to) - Math.PI / 2);
+    g.stroke();
+  }
   centred(g, '#e8d37a');
   const step = (o.max - o.min) / 10;
   for (let k = 0; k <= 10; k += 1) tick(g, x, y, r, angle(o.min + k * step), 0.95, k % 5 === 0 ? 0.76 : 0.86, k % 5 === 0 ? 1.8 : 1);
   font(g, r * 0.26, true);
   for (const v of o.labels) g.fillText(String(v), ...at(x, y, angle(v), r * 0.56));
-  font(g, r * 0.2);
-  g.fillText(o.text, x, y + r * 0.42);
+  font(g, r * 0.17);
+  o.text.split('\n').forEach((line, i) => g.fillText(line, x, y + r * (0.36 + i * 0.2)));
   lwHand(g, x, y, r, angle(o.value), { length: 0.8, counterweight: false });
 }
 

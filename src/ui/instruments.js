@@ -65,6 +65,7 @@ export function instrumentReadings(sim) {
       rpm: e.omega / UNIT.RPM,
       manifold: raf ? (d.engines[i].map - ISA.P0) / UNIT.PSI : d.engines[i].map / UNIT.ATA,
       pitchClock: raf ? null : pitchClock(e.beta, ac),
+      pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, e.omega / UNIT.RPM) : null,
     })),
     gearSelected: sim.input ? !!sim.input.gear : plane.surfaces.gear > 0.5, // the undercarriage lever: down
     pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, plane.omega / UNIT.RPM) : null,
@@ -138,7 +139,7 @@ function rafPanel(g, x0, y0, r, v) {
   lamp(g, gx + r * 0.35, gy, r * 0.17, '#d8402e', v.gearUp, 'UP');
   label(g, gx, gy - r * 0.45, r * 1.3, 'UNDERCARRIAGE');
   label(g, ...at(L.flaps), r * 1.3, 'FLAPS');
-  flapIndicator(g, at(L.flaps)[0], at(L.flaps)[1] + r * 0.55, r * 1.5, v, { up: 'UP', down: 'DOWN', takeoff: 'T/O', landing: 'LAND' });
+  flapIndicator(g, at(L.flaps)[0], at(L.flaps)[1] + r * 0.55, r * 1.5, v, { up: 'UP', down: 'DOWN', takeoff: 'TAKEOFF', landing: 'LAND' });
 }
 
 export class InstrumentPanel {

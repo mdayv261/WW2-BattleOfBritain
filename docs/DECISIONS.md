@@ -958,3 +958,20 @@ any. The instruments we have that appear on the sheet now follow it (`src/ui/lwF
   other Luftwaffe dials (rev counter, manifold pressure, clock, pitch indicator, pressure and temperature gauges, the
   Bf 109 E's strip compass) take the same look, but their layouts are unchanged since the sheet does not show them.
 - **Not added:** the sheet's directional gyro, direction finder and its control, which our aircraft do not have.
+
+## D44. Bf 110 panel changes, TAKEOFF wording, even instrument spacing (26 Oct 2026, product owner)
+
+- **Bf 110 turn and bank:** the Luftwaffe Wendezeiger (D43) added below the clock.
+- **Bf 110 undercarriage display:** the UP/DOWN lever knob on the left (showing the selected position) and three lamps
+  in a row along the bottom, green with the undercarriage down and locked, red up and locked, dark while it moves.
+- **Flap indicators:** the take-off setting is labelled TAKEOFF on every flap position indicator (RAF and Luftwaffe).
+  The landing labels are unchanged (LAND on the RAF panels, LANDUNG on the Luftwaffe ones).
+- **Bf 110 engine gauges:** the two rows of temperature gauges became FUEL PRESSURE and OIL PRESSURE (atm, that is
+  kg/cm²) for each engine, the normal range in a green band. They read each engine's own running values from the
+  DB 601A gauge data (D41; oil limits from S24, fuel values estimates), and nothing when that engine stops.
+- **Even spacing:** on both Luftwaffe panels every instrument and plate sits on an even grid with the same gap to its
+  neighbours, none touching (Bf 110: 6 photograph pixels, flying instruments in 80-pixel cells, engine instruments in
+  55-pixel cells; Bf 109: 5 pixels, 62-pixel cells, keeping the photograph's order and the product owner's positions
+  for the flap indicator and undercarriage lever). The mountings' tabs and knobs below the dials were dropped where they
+  would close the gaps, and the Bf 110's decorative switch box and knobs were removed to make room for the grid.
+  `tests/ui/panelSpacing.test.js` checks the gaps.

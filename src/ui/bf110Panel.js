@@ -1,7 +1,8 @@
 // Bf 110 instrument panel laid out after the product owner's photograph of a preserved Bf 110 cockpit (D39). Positions
 // and sizes are measured on the photograph (pixels, 30 to a dial radius) from the panel's centre and its top edge.
 //   Flying instruments on the left: airspeed, the artificial horizon and the climb indicator above; the altimeter, the
-//   repeater compass and the clock below. Their faces follow the product owner's reference drawings (D43). Engine instruments on the right, a pair for each engine (left engine on the
+//   repeater compass and the clock below, the turn and bank under the clock. Their faces follow the product owner's
+//   reference drawings (D43); all sit on an even grid with the same gap between their mountings (D44). Engine instruments on the right, a pair for each engine (left engine on the
 //   left): rev counters, then manifold pressure, coolant and oil temperature. Black cover plates and the switch box at
 //   the bottom left. The photographed aircraft has automatic airscrews; the C-4's are set by hand (S24), so the two
 //   pitch indicators sit on the cover plates right of the engine instruments (S24: "on top at the extreme right of the
@@ -11,7 +12,7 @@
 import { lamp, label, flapIndicatorVertical } from './dials.js';
 import { millibarWindow } from './altimeters.js';
 import { mount, lwRpm, lwAta, lwClock, lwPitchIndicator } from './luftwaffeDials.js';
-import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass } from './lwFlightDials.js';
+import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
 import { ringGauge, redRing } from './bf110Dials.js';
 
 const PX = 30; // photograph pixels per dial radius
@@ -21,29 +22,29 @@ const TOP = 334; // its top edge
 const P = (px, py) => [(px - CENTRE) / PX, (py - TOP) / PX];
 const size = (px) => px / PX;
 
-// Coolant and oil temperatures are not modelled yet (the engine heat model comes later): the hands rest at typical
-// running values.
-const RESTING = { coolantTemp: 80, oilTemp: 70 };
 
 export const BF110_LAYOUT = {
   width: 15.7, height: 8.9, screenShare: 0.5, ownBackground: true,
   outline: [[12, 600], [12, 380], [28, 350], [50, 340], [300, 335], [306, 340], [462, 340], [471, 350], [471, 563],
     [305, 566], [300, 600]].map(([x, y]) => P(x, y)),
-  // Dial centres, face radii and mounting half-widths, in photograph pixels.
+  // Dial centres, face radii and mounting half-widths, in photograph pixels. The instruments sit on an even grid with
+  // the same gap (GAP) between every pair of mountings, none touching (product owner, D44): the flying instruments in
+  // 80-pixel cells (three columns, the turn and bank below the clock), the engine instruments in 55-pixel cells (a
+  // column per engine, the airscrew pitch indicators to the right).
   dials: {
-    airspeed: [75, 388, 30, 36], horizon: [170, 385, 38, 47], climb: [252, 378, 30, 35], altimeter: [100, 472, 30, 36],
-    compass: [176, 470, 30, 36], clock: [245, 455, 18, 23],
-    rpmLeft: [345, 385, 26, 33], rpmRight: [410, 380, 26, 33], ataLeft: [357, 440, 19, 24], ataRight: [404, 436, 19, 24],
-    coolantLeft: [357, 489, 18, 23], coolantRight: [404, 485, 18, 23], oilLeft: [358, 531, 17, 22], oilRight: [404, 528, 17, 22],
-    pitchLeft: [447, 425, 15, 0], pitchRight: [447, 471, 15, 0],
+    airspeed: [70, 382, 30, 37], horizon: [150, 382, 30, 37], climb: [230, 382, 30, 37],
+    altimeter: [70, 462, 30, 37], compass: [150, 462, 30, 37], clock: [230, 462, 30, 37], turn: [230, 542, 30, 37],
+    rpmLeft: [333, 370, 19, 24.5], rpmRight: [388, 370, 19, 24.5], ataLeft: [333, 425, 19, 24.5], ataRight: [388, 425, 19, 24.5],
+    fuelLeft: [333, 480, 18.5, 24.5], fuelRight: [388, 480, 18.5, 24.5], oilLeft: [333, 535, 18.5, 24.5], oilRight: [388, 535, 18.5, 24.5],
+    pitchLeft: [443, 370, 19, 24.5], pitchRight: [443, 425, 19, 24.5],
   },
-  plates: [{ from: [428, 406], to: [467, 445] }, { from: [428, 452], to: [467, 491] }, { from: [304, 421], to: [334, 466] },
-    { from: [15, 562], to: [70, 600] }],
-  gear: { from: [12, 511], to: [66, 561] },
-  flaps: { from: [81, 528], to: [148, 598] },
-  switchBox: { from: [152, 505], to: [212, 573] },
-  knobs: [[62, 418], [158, 582], [178, 582], [198, 582], [218, 582]],
+  plates: [{ from: [418.5, 455.5], to: [467.5, 504.5] }, { from: [418.5, 510.5], to: [467.5, 559.5] }],
+  gear: { from: [33, 505], to: [107, 579] },
+  flaps: { from: [113, 505], to: [187, 579] },
 };
+
+/** The gap between neighbouring mountings and plates, photograph pixels (D44). */
+export const GAP = 6;
 
 /** Draws the panel with its top centre at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
 export function bf110Panel(g, x0, y0, r, v) {
@@ -78,12 +79,8 @@ export function bf110Panel(g, x0, y0, r, v) {
   g.fill();
   g.stroke();
   for (const p of L.plates) blackPlate(box(p));
-  for (const k of L.knobs) {
-    g.fillStyle = '#26282b';
-    disc(g, ...xy(k), r * 0.22);
-  }
-  const tabs = { altimeter: 'knob', airspeed: 'screw', climb: 'screw' }; // as on the reference drawings (D43)
-  for (const [name, [px, py, , half]] of Object.entries(L.dials)) if (half) mount(g, ...xy([px, py]), size(half) * r, tabs[name]);
+  // Mountings on the even grid; no tabs or knobs below them, which would close the gaps (D44).
+  for (const [px, py, , half] of Object.values(L.dials)) mount(g, ...xy([px, py]), size(half) * r);
 
   // Flying instruments.
   lwAirspeed(g, ...dial('airspeed'), v.airspeed);
@@ -93,6 +90,7 @@ export function bf110Panel(g, x0, y0, r, v) {
   lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013));
   lwPatinCompass(g, ...dial('compass'), v.heading);
   lwClock(g, ...dial('clock'), new Date());
+  lwTurnBank(g, ...dial('turn'), v.turnRate, v.sideG);
 
   // Engine instruments: left engine on the left.
   ['Left', 'Right'].forEach((side, i) => {
@@ -103,27 +101,62 @@ export function bf110Panel(g, x0, y0, r, v) {
     const [mx, my, mr] = dial(`ata${side}`);
     redRing(g, mx, my, mr);
     lwAta(g, mx, my, mr, e.manifold);
-    ringGauge(g, ...dial(`coolant${side}`), { min: 40, max: 120, labels: [60, 100], ring: '#8f2a22', value: RESTING.coolantTemp, text: '°C' });
-    ringGauge(g, ...dial(`oil${side}`), { min: 0, max: 120, labels: [40, 80], ring: '#c9ad2a', value: RESTING.oilTemp, text: '°C' });
+    // Fuel and oil pressure (atm, kg/cm²), each engine's own, the normal range in green (D44).
+    const p = e.pressures;
+    ringGauge(g, ...dial(`fuel${side}`), {
+      min: 0, max: p.fuel.max, labels: [0, 1, 2, 3], ring: '#8f2a22', bands: [{ from: p.fuel.normal[0], to: p.fuel.normal[1], colour: '#2f9e4a' }],
+      value: p.fuel.value, text: 'FUEL\natm',
+    });
+    ringGauge(g, ...dial(`oil${side}`), {
+      min: 0, max: p.oil.max, labels: [0, 5, 10], ring: '#c9ad2a', bands: [{ from: p.oil.normal[0], to: p.oil.normal[1], colour: '#2f9e4a' }],
+      value: p.oil.value, text: 'OIL\natm',
+    });
     const [px, py, pr] = dial(`pitch${side}`);
     lwPitchIndicator(g, px, py, pr, e.pitchClock);
     label(g, px - pr * 1.05, py - pr * 0.95, r * 0.6, side === 'Left' ? 'L' : 'R');
   });
 
-  // Switch box, undercarriage lamps and flap position.
-  const s = box(L.switchBox);
-  blackPlate(s);
-  g.fillStyle = '#d9d4c4';
-  for (const [k, dx] of [[0, -0.3], [1, 0], [2, 0.3]]) g.fillRect(s.x + dx * s.w - s.w * 0.08, s.y + (k === 1 ? -0.3 : 0.25) * s.h, s.w * 0.16, s.h * 0.08);
+  // Undercarriage display and flap position.
   const gear = box(L.gear);
   blackPlate(gear);
-  label(g, gear.x, gear.y - gear.h * 0.28, r * 0.7, 'FAHRWERK');
-  lamp(g, gear.x - gear.w * 0.22, gear.y + gear.h * 0.02, r * 0.13, '#3fbf4a', v.gearDown, 'AUS');
-  lamp(g, gear.x + gear.w * 0.22, gear.y + gear.h * 0.02, r * 0.13, '#d8402e', v.gearUp, 'EIN');
+  undercarriage(g, gear, r, v);
   const f = box(L.flaps);
   blackPlate(f);
   label(g, f.x, f.y - f.h * 0.4, r * 0.8, 'KLAPPEN');
-  flapIndicatorVertical(g, f.x + f.w * 0.12, f.y + f.h * 0.08, f.h * 0.64, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'START', landing: 'LANDUNG' });
+  flapIndicatorVertical(g, f.x + f.w * 0.14, f.y + f.h * 0.08, f.h * 0.64, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'TAKEOFF', landing: 'LANDUNG' });
+}
+
+/**
+ * The undercarriage display (product owner, D44): the UP/DOWN lever knob on the left, showing the selected position,
+ * and three lamps in a row along the bottom (left, right and tail wheel), green with the undercarriage down and locked,
+ * red with it up and locked, dark in between.
+ */
+function undercarriage(g, { x, y, w, h }, r, v) {
+  label(g, x + w * 0.12, y - h * 0.36, r * 0.7, 'FAHRWERK');
+  // Lever: a slot on the left, the knob at UP or DOWN.
+  const sx = x - w * 0.3;
+  const top = y - h * 0.22;
+  const bottom = y + h * 0.16;
+  g.fillStyle = '#050505';
+  g.fillRect(sx - w * 0.05, top, w * 0.1, bottom - top);
+  g.fillStyle = '#e9e6dc';
+  g.textAlign = 'left';
+  g.textBaseline = 'middle';
+  g.font = `bold ${Math.max(6, Math.round(r * 0.17))}px ui-sans-serif, Helvetica, sans-serif`;
+  g.fillText('UP', sx + w * 0.12, top + h * 0.02);
+  g.fillText('DOWN', sx + w * 0.12, bottom - h * 0.02);
+  g.fillStyle = '#d8382c';
+  disc(g, sx, v.gearSelected ? bottom : top, r * 0.17);
+  // Three lamps along the base.
+  const state = gearLampState(v);
+  const colour = { green: '#3fbf4a', red: '#d8402e', off: '#2a2a28' }[state];
+  for (const k of [-1, 0, 1]) lamp(g, x + k * w * 0.28, y + h * 0.36, r * 0.12, colour, state !== 'off');
+}
+
+/** The undercarriage lamps: 'green' down and locked, 'red' up and locked, 'off' while it moves. */
+export function gearLampState(v) {
+  if (v.gearDown) return 'green';
+  return v.gearUp ? 'red' : 'off';
 }
 
 function disc(g, x, y, radius) {

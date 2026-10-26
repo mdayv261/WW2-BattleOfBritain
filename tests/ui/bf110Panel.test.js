@@ -47,3 +47,42 @@ describe('Bf 110 panel', () => {
     expect(v.engines[0].pitchClock).toBeDefined();
   });
 });
+
+describe('Bf 110 panel changes (D44)', () => {
+  const L = BF110_LAYOUT;
+
+  it('has the turn and bank indicator below the clock, clear of it', () => {
+    const [cx, cy, , cHalf] = L.dials.clock;
+    const [tx, ty, , tHalf] = L.dials.turn;
+    expect(tx).toBe(cx);
+    expect(ty - tHalf).toBeGreaterThan(cy + cHalf);
+  });
+
+  it('lights the undercarriage lamps green when down, red when up, and not at all in between', async () => {
+    const { gearLampState } = await import('../../src/ui/bf110Panel.js');
+    expect(gearLampState({ gearDown: true, gearUp: false })).toBe('green');
+    expect(gearLampState({ gearDown: false, gearUp: true })).toBe('red');
+    expect(gearLampState({ gearDown: false, gearUp: false })).toBe('off');
+  });
+
+  it('shows each engine\'s fuel and oil pressure: running in the green band, nothing when stopped', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    sim.plane.engines[0].omega = 0;
+    const [left, right] = instrumentReadings(sim).engines.map((e) => e.pressures);
+    expect(left.oil.value).toBe(0);
+    expect(left.fuel.value).toBe(0);
+    for (const p of [right.fuel, right.oil]) {
+      expect(p.value).toBeGreaterThanOrEqual(p.normal[0]);
+      expect(p.value).toBeLessThanOrEqual(p.normal[1]);
+    }
+  });
+
+  it('labels the take-off setting TAKEOFF on every flap position indicator', async () => {
+    const { readFileSync } = await import('node:fs');
+    for (const file of ['instruments.js', 'bf109Panel.js', 'bf110Panel.js']) {
+      const text = readFileSync(new URL(`../../src/ui/${file}`, import.meta.url), 'utf8');
+      expect(text, file).toMatch(/takeoff: 'TAKEOFF'/);
+      expect(text, file).not.toMatch(/takeoff: '(START|T\/O)'/);
+    }
+  });
+});

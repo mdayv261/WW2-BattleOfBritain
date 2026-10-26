@@ -15,8 +15,8 @@ import {
   pressureGauge,
 } from './luftwaffeDials.js';
 
-// The tabs below some mountings, as on the reference drawings (D43): the altimeter's setting knob, a screw elsewhere.
-const TABS = { altimeter: 'knob', airspeed: 'screw' };
+/** The gap between neighbouring mountings and plates, photograph pixels (D44). */
+export const GAP = 5;
 
 const PX = 25; // photograph pixels per dial radius
 const CENTRE = 369; // the panel's centre on the photograph
@@ -31,20 +31,22 @@ export const BF109_LAYOUT = {
   outline: [[190, 628], [190, 470], [205, 448], [240, 421], [290, 403], [345, 396], [400, 403], [450, 421], [490, 446],
     [530, 470], [545, 500], [548, 628]].map(([x, y]) => P(x, y)),
   lowerPanel: { from: [196, 590], to: [542, 628] },
-  // Dial centres, face radii and mounting half-widths (0: a round bezel), in photograph pixels.
+  // Dial centres, face radii and mounting half-widths (0: a round bezel, 1.2 times the face), in photograph pixels.
+  // The rows and columns keep the photograph's order with the same gap (GAP) between every pair of mountings and
+  // plates, none touching (product owner, D44).
   dials: {
-    clock: [342, 425, 17, 22], altimeter: [285, 489, 23, 31], compass: [345, 487, 25, 0], ata: [448, 489, 25, 32],
-    airspeed: [288, 555, 25, 32], turn: [347, 555, 23, 30], rpm: [449, 555, 24, 31], pitch: [501, 555, 19, 24],
-    pressure: [394, 607, 16, 0],
+    clock: [347, 433.5, 17.5, 22], altimeter: [285, 489, 23, 28.5], compass: [347, 489, 23.75, 0], ata: [449, 489, 23, 28.5],
+    airspeed: [285, 551, 23, 28.5], turn: [347, 551, 23, 28.5], rpm: [449, 551, 23, 28.5], pitch: [511, 551, 23, 28.5],
+    pressure: [398, 603.7, 16, 0],
   },
-  knobs: [[313, 607, 13], [448, 521, 5]],
+  knobs: [[313, 607, 13]],
   bolts: [[214, 455], [524, 455], [200, 610], [538, 610]],
-  flaps: { from: [378, 456], to: [415, 521] },
-  gearLever: { from: [384, 527], to: [414, 581] },
-  gearLamps: { from: [415, 595], to: [455, 620] },
-  magneto: { from: [225, 476], to: [255, 555] },
-  button: [215, 528],
-  placard: { from: [226, 560], to: [254, 574] },
+  flaps: { from: [380.5, 460.5], to: [415.5, 517.5] },
+  gearLever: { from: [380.5, 522.5], to: [415.5, 579.5] },
+  gearLamps: { from: [422.2, 591], to: [462.2, 616] },
+  magneto: { from: [221.5, 476], to: [251.5, 555] },
+  button: [207, 528],
+  placard: { from: [221.5, 560], to: [251.5, 574] },
 };
 
 /** Draws the panel with its top centre at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
@@ -78,8 +80,8 @@ export function bf109Panel(g, x0, y0, r, v) {
   g.fillRect(low.x - low.w / 2, low.y - low.h / 2, low.w, low.h);
   for (const b of L.bolts) disc(g, ...xy(b), r * 0.14, '#3c3e40');
   for (const [px, py, rad] of L.knobs) disc(g, ...xy([px, py]), size(rad) * r, '#2b2c2e');
-  for (const [name, [px, py, face, half]] of Object.entries(L.dials)) {
-    if (half) mount(g, ...xy([px, py]), size(half) * r, TABS[name]);
+  for (const [px, py, face, half] of Object.values(L.dials)) {
+    if (half) mount(g, ...xy([px, py]), size(half) * r);
     else disc(g, ...xy([px, py]), size(face) * r * 1.2, '#0d0d0d');
   }
 
@@ -100,7 +102,7 @@ export function bf109Panel(g, x0, y0, r, v) {
   g.fillStyle = '#0c0c0c';
   g.fillRect(f.x - f.w / 2, f.y - f.h / 2, f.w, f.h);
   label(g, f.x, f.y - f.h * 0.4, r * 0.75, 'KLAPPEN');
-  flapIndicatorVertical(g, f.x + f.w * 0.14, f.y + f.h * 0.08, f.h * 0.62, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'START', landing: 'LANDUNG' });
+  flapIndicatorVertical(g, f.x + f.w * 0.14, f.y + f.h * 0.08, f.h * 0.62, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'TAKEOFF', landing: 'LANDUNG' });
 
   // Undercarriage lever, and the two lamps to the right of the pressure gauge.
   gearLever(g, box(L.gearLever), r, v.gearSelected);
