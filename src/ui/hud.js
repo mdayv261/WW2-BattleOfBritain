@@ -104,7 +104,7 @@ export class Hud {
 
     this.showMessage(this.messageFor(sim));
 
-    if (this.showDebug) this.debug.textContent = this.debugText(sim, heading);
+    if (this.showDebug) this.debug.textContent = this.debugText(sim, heading, extra.frame);
   }
 
   /** The message line: crash, pause, landing result, or what to do at the start. */
@@ -134,12 +134,13 @@ export class Hud {
     if (text) this.message.textContent = text;
   }
 
-  debugText(sim, heading) {
+  debugText(sim, heading, frame) {
     const { ac, plane, input } = sim;
     const d = plane.last;
     const kN = (n) => `${(n / 1000).toFixed(2)} kN`;
     return [
       'F3 debug',
+      ...(frame ? [frame] : []),
       `TAS        ${speedText(ac, d.airspeed)}   IAS ${speedText(ac, d.eas)}`,
       `Altitude   ${altitudeText(ac, d.altitude)}   heading ${heading.toFixed(0)}°`,
       `Alpha      ${degText(d.alpha)}   (L ${degText(d.alphaLeft)} R ${degText(d.alphaRight)} from zero lift)`,

@@ -1125,3 +1125,26 @@ elevator's down travel is drawn equal to its up travel.
 **Model preview:** `modelpreview.html` (served by the dev server, not part of the built game) draws all five aircraft
 side by side from one direction, with control positions set in the address, for checking the silhouettes.
 
+## D55. Phase 4 acceptance test, and the frame-rate readout (26 Oct 2026, product owner)
+
+**Acceptance test agreed by the product owner:**
+1. A steady 60 fps on the product owner's machine in Chrome, low over Kent and manoeuvring hard near Dover, as the F3
+   readout shows. (There are no other aircraft to dogfight until the AI in Phase 6, so the test is flown alone.)
+2. Each of the five aircraft recognisable from its silhouette in the outside views.
+3. The coast recognisable from Dover to Calais, with the cliffs, the Thames estuary and the towns; airfields where they
+   were.
+4. No regressions: all earlier tests pass, and `npm run validate` is unchanged.
+
+**Frame-rate readout** (`src/ui/frameRate.js`, top line of the F3 overlay): the frame rate averaged over half a second;
+the longest frame of the last second (a stutter shows here even when the average is good); the work each frame takes
+(physics, scene updates and drawing commands, in ms); and the renderer's draw calls and triangles. The frame rate stops
+at the screen's refresh rate, so the work time shows the headroom below the 16.7 ms of a 60 fps frame. It measures the
+processor's work only; the graphics card's share shows as a lower frame rate or longer frames.
+
+**Measured on the development machine** (Chrome, window 2,560 × 1,259, 75 Hz screen): 75 fps in every case, longest
+frame 14-15 ms, work 1.5-1.9 ms, 300-390 draw calls, 310-330 thousand triangles (on the ground at Hawkinge and in the air
+start over the coast, cockpit and outside views, Spitfire and He 111). With this much headroom the detail distances are
+left as they are (terrain levels of detail, houses within 9 km, cloud fading). If the product owner's machine falls
+short, the first steps are a lower pixel ratio, shorter house distance and coarser distant terrain; a graphics-quality
+setting comes with the settings screen (Phase 7).
+

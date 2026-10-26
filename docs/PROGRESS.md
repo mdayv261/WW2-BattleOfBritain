@@ -9,9 +9,20 @@ Read this at the start of every session.
 - **Phase 1** (single-engine flight model): signed off (25 Oct 2026, D27).
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
-- **Phase 4** (world and visuals): in progress (plan approved 26 Oct 2026). Checkpoints 1 (the land), 2 (the sky)
-  and 3 (aircraft models) done; next checkpoint 4 (frame rate and the acceptance test).
+- **Phase 4** (world and visuals): all four checkpoints done; waiting for the product owner's acceptance test (D55).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
+
+## Phase 4 checkpoint 4: frame rate and the acceptance test (26 Oct 2026)
+
+**Done** (D55): acceptance test agreed; the F3 overlay's top line shows the frame rate, the longest recent frame, the
+work per frame and the draw calls and triangles. Measured on the development machine: 75 fps (the screen's limit)
+everywhere, 1.5-1.9 ms of work per frame, so no detail distances were changed. Tests in `tests/ui/frameRate.test.js`;
+903 tests pass; `npm run validate` unchanged.
+
+**Left:** the product owner's acceptance test on their own machine (D55), then sign-off.
+
+**Known issues:** the frame rate can only be checked flying alone until the AI arrives (Phase 6); the work time covers
+the processor only, not the graphics card.
 
 ## Phase 4 checkpoint 3: aircraft models (26 Oct 2026)
 

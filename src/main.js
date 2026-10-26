@@ -8,6 +8,7 @@ import { Keyboard } from './input/keyboard.js';
 import { Joystick } from './input/joystick.js';
 import { MouseLook } from './input/mouse.js';
 import { Hud } from './ui/hud.js';
+import { FrameRate } from './ui/frameRate.js';
 import { InstrumentPanel } from './ui/instruments.js';
 import { JoystickPanel } from './ui/joystickPanel.js';
 import { aircraftList } from './aircraft/index.js';
@@ -26,6 +27,7 @@ const keyboard = new Keyboard();
 const joystick = new Joystick();
 new MouseLook(renderer.domElement, view.rig);
 const hud = new Hud();
+const frameRate = new FrameRate();
 const instruments = new InstrumentPanel();
 const joyPanel = new JoystickPanel(joystick);
 
@@ -65,6 +67,7 @@ window.addEventListener('keydown', (e) => {
 
 let last = performance.now();
 renderer.setAnimationLoop((now) => {
+  frameRate.tick((now - last) / 1000);
   const dt = Math.min((now - last) / 1000, 0.25);
   last = now;
   gameKeys();
@@ -76,8 +79,9 @@ renderer.setAnimationLoop((now) => {
   sim.advance(dt);
   view.update(sim, sim.loop.alpha, dt);
   updateScene(camera);
-  hud.update(sim, { joystick: !!stick, view: view.rig.mode });
+  hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
   instruments.update(sim);
   joyPanel.update();
   renderer.render(scene, camera);
+  frameRate.work(performance.now() - now);
 });
