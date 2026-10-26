@@ -285,6 +285,44 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | g at which the wings fail (`limits.g.fail`) | 13 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no ultimate load found. |
 | Diving speed limit (`limits.diveEas`) | 174.3 | m/s | 390 mph IAS | ASSUMPTION | estimate | Product owner's choice (D61): no Hurricane I diving limit found. Indicated taken as equivalent airspeed. |
 
+### Guns (Phase 5, D67)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Harmonisation range (`harmonisation`) | 228.6 | m | converged on a point 250 yards distant | S38 | medium | The rounds cross the sight line here (D67). |
+| Gun leftInner muzzle x (`guns.leftInner.x`) | 0.78 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftInner muzzle y (`guns.leftInner.y`) | -0.52 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftInner muzzle z (`guns.leftInner.z`) | -2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftInner rounds (`guns.leftInner.rounds`) | 334 | rounds | 334 | S1 | medium | Rds/Gun 334. |
+| Gun leftSecond muzzle x (`guns.leftSecond.x`) | 0.77 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftSecond muzzle y (`guns.leftSecond.y`) | -0.51 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftSecond muzzle z (`guns.leftSecond.z`) | -2.22 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftSecond rounds (`guns.leftSecond.rounds`) | 334 | rounds | 334 | S1 | medium | Rds/Gun 334. |
+| Gun leftThird muzzle x (`guns.leftThird.x`) | 0.76 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftThird muzzle y (`guns.leftThird.y`) | -0.49 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftThird muzzle z (`guns.leftThird.z`) | -2.44 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftThird rounds (`guns.leftThird.rounds`) | 334 | rounds | 334 | S1 | medium | Rds/Gun 334. |
+| Gun leftOuter muzzle x (`guns.leftOuter.x`) | 0.75 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftOuter muzzle y (`guns.leftOuter.y`) | -0.48 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftOuter muzzle z (`guns.leftOuter.z`) | -2.66 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftOuter rounds (`guns.leftOuter.rounds`) | 334 | rounds | 334 | S1 | medium | Rds/Gun 334. |
+| Gun rightInner muzzle x (`guns.rightInner.x`) | 0.78 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightInner muzzle y (`guns.rightInner.y`) | -0.52 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightInner muzzle z (`guns.rightInner.z`) | 2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightInner rounds (`guns.rightInner.rounds`) | 334 | rounds | 334 | S1 | medium | Rds/Gun 334. |
+| Gun rightSecond muzzle x (`guns.rightSecond.x`) | 0.77 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightSecond muzzle y (`guns.rightSecond.y`) | -0.51 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightSecond muzzle z (`guns.rightSecond.z`) | 2.22 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightSecond rounds (`guns.rightSecond.rounds`) | 334 | rounds | 334 | S1 | medium | Rds/Gun 334. |
+| Gun rightThird muzzle x (`guns.rightThird.x`) | 0.76 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightThird muzzle y (`guns.rightThird.y`) | -0.49 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightThird muzzle z (`guns.rightThird.z`) | 2.44 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightThird rounds (`guns.rightThird.rounds`) | 334 | rounds | 334 | S1 | medium | Rds/Gun 334. |
+| Gun rightOuter muzzle x (`guns.rightOuter.x`) | 0.75 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightOuter muzzle y (`guns.rightOuter.y`) | -0.48 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightOuter muzzle z (`guns.rightOuter.z`) | 2.66 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightOuter rounds (`guns.rightOuter.rounds`) | 334 | rounds | 334 | S1 | medium | Rds/Gun 334. |
+
 ## Supermarine Spitfire Mk I (Merlin III)
 
 S4 is the key test: a production Spitfire I with the Merlin III and a Rotol constant-speed airscrew. It was flown at
@@ -474,6 +512,44 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | g at which the airframe starts to be damaged (`limits.g.damage`) | 9 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no limit load found. Past it the skin wrinkles (more drag). |
 | g at which the wings fail (`limits.g.fail`) | 13 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no ultimate load found. |
 | Diving speed limit (`limits.diveEas`) | 201.2 | m/s | 450 mph IAS | S6 | medium | Indicated airspeed taken as equivalent airspeed. Past it the control surfaces flutter. |
+
+### Guns (Phase 5, D67)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Harmonisation range (`harmonisation`) | 228.6 | m | converged on a point 250 yards distant | S38 | medium | The rounds cross the sight line here (D67). |
+| Gun leftInner muzzle x (`guns.leftInner.x`) | 0.75 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftInner muzzle y (`guns.leftInner.y`) | -0.37 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftInner muzzle z (`guns.leftInner.z`) | -1.68 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftInner rounds (`guns.leftInner.rounds`) | 334 | rounds | — | ASSUMPTION | estimate | The Hurricane's 334 (D61): no Spitfire I figure found. |
+| Gun leftSecond muzzle x (`guns.leftSecond.x`) | 0.73 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftSecond muzzle y (`guns.leftSecond.y`) | -0.33 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftSecond muzzle z (`guns.leftSecond.z`) | -2.06 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftSecond rounds (`guns.leftSecond.rounds`) | 334 | rounds | — | ASSUMPTION | estimate | The Hurricane's 334 (D61): no Spitfire I figure found. |
+| Gun leftThird muzzle x (`guns.leftThird.x`) | 0.62 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftThird muzzle y (`guns.leftThird.y`) | -0.26 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftThird muzzle z (`guns.leftThird.z`) | -2.8 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftThird rounds (`guns.leftThird.rounds`) | 334 | rounds | — | ASSUMPTION | estimate | The Hurricane's 334 (D61): no Spitfire I figure found. |
+| Gun leftOuter muzzle x (`guns.leftOuter.x`) | 0.52 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftOuter muzzle y (`guns.leftOuter.y`) | -0.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftOuter muzzle z (`guns.leftOuter.z`) | -3.35 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun leftOuter rounds (`guns.leftOuter.rounds`) | 334 | rounds | — | ASSUMPTION | estimate | The Hurricane's 334 (D61): no Spitfire I figure found. |
+| Gun rightInner muzzle x (`guns.rightInner.x`) | 0.75 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightInner muzzle y (`guns.rightInner.y`) | -0.37 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightInner muzzle z (`guns.rightInner.z`) | 1.68 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightInner rounds (`guns.rightInner.rounds`) | 334 | rounds | — | ASSUMPTION | estimate | The Hurricane's 334 (D61): no Spitfire I figure found. |
+| Gun rightSecond muzzle x (`guns.rightSecond.x`) | 0.73 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightSecond muzzle y (`guns.rightSecond.y`) | -0.33 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightSecond muzzle z (`guns.rightSecond.z`) | 2.06 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightSecond rounds (`guns.rightSecond.rounds`) | 334 | rounds | — | ASSUMPTION | estimate | The Hurricane's 334 (D61): no Spitfire I figure found. |
+| Gun rightThird muzzle x (`guns.rightThird.x`) | 0.62 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightThird muzzle y (`guns.rightThird.y`) | -0.26 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightThird muzzle z (`guns.rightThird.z`) | 2.8 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightThird rounds (`guns.rightThird.rounds`) | 334 | rounds | — | ASSUMPTION | estimate | The Hurricane's 334 (D61): no Spitfire I figure found. |
+| Gun rightOuter muzzle x (`guns.rightOuter.x`) | 0.52 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightOuter muzzle y (`guns.rightOuter.y`) | -0.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightOuter muzzle z (`guns.rightOuter.z`) | 3.35 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun rightOuter rounds (`guns.rightOuter.rounds`) | 334 | rounds | — | ASSUMPTION | estimate | The Hurricane's 334 (D61): no Spitfire I figure found. |
 
 ## Rolls-Royce Merlin III (Hurricane I and Spitfire I)
 
@@ -712,6 +788,28 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | g at which the wings fail (`limits.g.fail`) | 13 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no ultimate load found. |
 | Diving speed limit (`limits.diveEas`) | 208.3 | m/s | 750 km/h | S15 | medium | Indicated or true not stated; taken as indicated (equivalent) airspeed. |
 
+### Guns (Phase 5, D67)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Harmonisation range (`harmonisation`) | 200 | m | — | ASSUMPTION | estimate | Product owner's choice (D61): no Luftwaffe harmonisation found. |
+| Gun mg17Left muzzle x (`guns.mg17Left.x`) | 1.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Left muzzle y (`guns.mg17Left.y`) | 0.42 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Left muzzle z (`guns.mg17Left.z`) | -0.13 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Left rounds (`guns.mg17Left.rounds`) | 1000 | rounds | Munition für R.-MG 17 (2000 Schuß) | S16 | medium | 1,000 per gun (E-3). |
+| Gun mg17Right muzzle x (`guns.mg17Right.x`) | 1.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Right muzzle y (`guns.mg17Right.y`) | 0.42 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Right muzzle z (`guns.mg17Right.z`) | 0.13 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Right rounds (`guns.mg17Right.rounds`) | 1000 | rounds | Munition für R.-MG 17 (2000 Schuß) | S16 | medium | 1,000 per gun (E-3). |
+| Gun cannonLeft muzzle x (`guns.cannonLeft.x`) | 0.85 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonLeft muzzle y (`guns.cannonLeft.y`) | -0.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonLeft muzzle z (`guns.cannonLeft.z`) | -1.95 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonLeft rounds (`guns.cannonLeft.rounds`) | 60 | rounds | Drum—60 rd. capacity | S16, S27 | high | One drum per cannon. |
+| Gun cannonRight muzzle x (`guns.cannonRight.x`) | 0.85 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonRight muzzle y (`guns.cannonRight.y`) | -0.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonRight muzzle z (`guns.cannonRight.z`) | 1.95 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonRight rounds (`guns.cannonRight.rounds`) | 60 | rounds | Drum—60 rd. capacity | S16, S27 | high | One drum per cannon. |
+
 ## Daimler-Benz DB 601A (Bf 109 E-4 and Bf 110 C-4)
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
@@ -947,6 +1045,36 @@ Bf 109's (same designer, engine and airscrew).
 | g at which the airframe starts to be damaged (`limits.g.damage`) | 7 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no limit load found. Past it the skin wrinkles (more drag). |
 | g at which the wings fail (`limits.g.fail`) | 10.5 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no ultimate load found. |
 | Diving speed limit (`limits.diveEas`) | 180.6 | m/s | 650 Km./hr. (A.S.I.) | S24 | medium | Indicated taken as equivalent airspeed. |
+
+### Guns (Phase 5, D67)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Harmonisation range (`harmonisation`) | 200 | m | — | ASSUMPTION | estimate | Product owner's choice (D61): no Luftwaffe harmonisation found. |
+| Gun mg17UpperLeft muzzle x (`guns.mg17UpperLeft.x`) | 4.3 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17UpperLeft muzzle y (`guns.mg17UpperLeft.y`) | 0.18 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17UpperLeft muzzle z (`guns.mg17UpperLeft.z`) | -0.1 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17UpperLeft rounds (`guns.mg17UpperLeft.rounds`) | 1000 | rounds | je 1000 Schuß | S23, S25 | high |  |
+| Gun mg17UpperRight muzzle x (`guns.mg17UpperRight.x`) | 4.3 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17UpperRight muzzle y (`guns.mg17UpperRight.y`) | 0.18 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17UpperRight muzzle z (`guns.mg17UpperRight.z`) | 0.1 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17UpperRight rounds (`guns.mg17UpperRight.rounds`) | 1000 | rounds | je 1000 Schuß | S23, S25 | high |  |
+| Gun mg17LowerLeft muzzle x (`guns.mg17LowerLeft.x`) | 4.25 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17LowerLeft muzzle y (`guns.mg17LowerLeft.y`) | 0.05 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17LowerLeft muzzle z (`guns.mg17LowerLeft.z`) | -0.22 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17LowerLeft rounds (`guns.mg17LowerLeft.rounds`) | 1000 | rounds | je 1000 Schuß | S23, S25 | high |  |
+| Gun mg17LowerRight muzzle x (`guns.mg17LowerRight.x`) | 4.25 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17LowerRight muzzle y (`guns.mg17LowerRight.y`) | 0.05 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17LowerRight muzzle z (`guns.mg17LowerRight.z`) | 0.22 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17LowerRight rounds (`guns.mg17LowerRight.rounds`) | 1000 | rounds | je 1000 Schuß | S23, S25 | high |  |
+| Gun cannonLeft muzzle x (`guns.cannonLeft.x`) | 3.6 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonLeft muzzle y (`guns.cannonLeft.y`) | -0.45 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonLeft muzzle z (`guns.cannonLeft.z`) | -0.15 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonLeft rounds (`guns.cannonLeft.rounds`) | 60 | rounds | Drum—60 rd. capacity | S16, S27 | high | One drum per cannon. |
+| Gun cannonRight muzzle x (`guns.cannonRight.x`) | 3.6 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonRight muzzle y (`guns.cannonRight.y`) | -0.45 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonRight muzzle z (`guns.cannonRight.z`) | 0.15 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun cannonRight rounds (`guns.cannonRight.rounds`) | 60 | rounds | Drum—60 rd. capacity | S16, S27 | high | One drum per cannon. |
 
 ## Heinkel He 111 H (AI only)
 
@@ -1207,6 +1335,35 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 | Efficiency at 45° (J : efficiency) (`eta.b45`) | 0.3:0.14, 0.45:0.214, 0.55:0.266, 0.65:0.316, 0.75:0.364, 0.85:0.413, 0.95:0.459, 1.05:0.506, 1.15:0.55, 1.25:0.593, 1.45:0.69, 1.65:0.76, 1.85:0.8, 2.12:0.83, 2.4:0.8, 2.5:0.6, 2.555:0.4, 2.635:0 | — | Fig. 12 | S30 | medium | Read by eye from Fig. 12, about ±0.02. Peaks agree with the 3-blade envelope of Fig. 39 (0.86 at J 1.2) within 0.01. |
 | Peak efficiency of the 3-blade envelope (`etaMax`) | 0.86 | — | about 0.86 at J 1.2 | S30 | medium | Fig. 39, read by eye. Used as a ceiling so that extrapolated coefficients never beat the measured propeller. |
 | Static power coefficient at J = 0 (blade angle in degrees : CP) (`cpStatic`) | 15:0.06, 20:0.089, 25:0.148, 30:0.21, 35:0.267, 40:0.313, 45:0.397 | — | Fig. 11 | S30 | medium | Read from the dashed starts of the curves, about ±0.005. Only take-off depends on it. |
+
+## Ammunition (Phase 5)
+
+Rounds, gun types and how rounds show in flight (`src/aircraft/ammunition.js`, D67). Belts: MG 17 armour-piercing,
+incendiary and incendiary-observing in turn; MG FF/M HE-incendiary and HE-tracer alternately (D61). RAF guns each carry one
+kind of round (each aircraft's `guns`).
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| .303 Mk VII bullet mass (`ballistics.mk7.mass`) | 0.011275 | kg | 174 grains | S37 | medium | Every .303 round flies like Mk VII ball (D67): S37 says tracer matches ball to 600 yd; AP is the same shape. |
+| .303 calibre (`ballistics.mk7.calibre`) | 0.0079 | m | 0.311 in | S37 | medium | Bullet diameter, for its frontal area. |
+| .303 Mk VII muzzle velocity (`ballistics.mk7.muzzleVelocity`) | 743.712 | m/s | M.V. 2,440 f/s | S37 | medium | The Hythe table's (rifles and Vickers guns); no Browning-specific figure found. |
+| .303 Mk VII drag against Mach (`ballistics.mk7.drag`) | 0.9226:0.2393, 0.9853:0.2988, 1.0659:0.3453, 1.1644:0.3794, 1.2809:0.4024, 1.4152:0.4163, 1.5675:0.4228, 1.7332:0.4036, 1.9079:0.3859, 2.0915:0.3696 | — | remaining velocities every 100 yd, 2,440 to 1,000 f/s | S37 | medium | Fitted to the Hythe range table by scripts/fitBallistics.mjs (Mach : Cd). Reproduces the table's velocities within 0.2% to 600 yd. |
+| 7.92 mm bullet mass (`ballistics.mg17.mass`) | 0.010 | kg | Geschossgewicht 10 g | S41 | medium | The armour-piercing bullet's table; every 7.92 mm round flies like it (D61). |
+| 7.92 mm calibre (`ballistics.mg17.calibre`) | 0.00792 | m | 7,9 mm | S41 | medium | |
+| 7.92 mm muzzle velocity (`ballistics.mg17.muzzleVelocity`) | 810 | m/s | Anfangsgeschwindigkeit 810 m/sec | S41 | medium | S27 gives 2,800 f/s (853 m/s) for the MG 17; Rechlin's measured 810 is used (D61). |
+| 7.92 mm drag against Mach (`ballistics.mg17.drag`) | 0.7655:0.2163, 0.8214:0.249, 0.8889:0.2739, 0.9742:0.33, 1.0932:0.428, 1.2578:0.4963, 1.4664:0.5189, 1.7074:0.4912, 1.9674:0.451, 2.2407:0.4133 | — | remaining velocities every 100 m, 810 to 252 m/s | S41 | medium | Fitted to the Rechlin table by scripts/fitBallistics.mjs; within 0.5% to 600 m. |
+| 20 mm FF/M shell mass (`ballistics.mgffm.mass`) | 0.117 | kg | Geschossgewicht 117 g | S41 | medium | HE, HE-incendiary and incendiary shells; no mine shell (D61). |
+| 20 mm calibre (`ballistics.mgffm.calibre`) | 0.020 | m | 2 cm | S41 | medium | |
+| 20 mm FF/M muzzle velocity (`ballistics.mgffm.muzzleVelocity`) | 585 | m/s | Anfangsgeschwindigkeit 585 m/sec | S41 | medium | |
+| 20 mm FF/M drag against Mach (`ballistics.mgffm.drag`) | 0.8552:0.2089, 0.8889:0.2612, 0.933:0.3255, 0.9918:0.4144, 1.0653:0.4529, 1.1534:0.5113, 1.2563:0.5264, 1.3709:0.5345, 1.4987:0.5486, 1.6427:0.5658 | — | remaining velocities every 100 m, 585 to 286 m/s | S41 | medium | Fitted to the Rechlin table by scripts/fitBallistics.mjs; within 0.2% to 600 m. |
+| Browning .303 Mk II rate of fire (`weapons.browning.rate`) | 18.3333 | rounds/s | 1100 RPM | S39 | high | Museum record (1,100 rounds/min). |
+| MG 17 rate of fire, unsynchronised (`weapons.mg17.rate`) | 18.3333 | rounds/s | 1,100 rds./min. (unsynchronized) | S27 | medium | Bf 110 nose guns. |
+| MG 17 rate of fire, synchronised (`weapons.mg17.syncRate`) | 16.6667 | rounds/s | 1,000 rds./min. (synchronized) | S27 | medium | Bf 109 cowling guns. |
+| MG FF/M rate of fire (`weapons.mgffm.rate`) | 7.9167 | rounds/s | 450 to 500 rds./min.—cyclic | S27, ASSUMPTION | estimate | The middle, 475 rounds/min (D61). |
+| Old-type .303 incendiary: smoke trail lasts (`roundTypes.incendiary303.burn`) | 1.0 | s | a distinct smoke-tracer effect | S38, ASSUMPTION | estimate | S38 describes the trail but not its length; about the tracer's 600-800 yd (S37). Display only. |
+| 20 mm tracer burn time (`roundTypes.heTracer20.burn`) | 1.8 | s | Brilliant white 1.8 | S40 | medium | Display only. |
+
+---
 
 ## Guns (Phase 5)
 

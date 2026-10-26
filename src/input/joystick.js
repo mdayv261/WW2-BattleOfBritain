@@ -17,8 +17,8 @@ const DEADZONE = 0.05;
 // (25 Oct 2026): stick X axis 0, stick Y axis 1, twist axis 5, throttle slider axis 6 (reversed), hat axis 9.
 // Buttons are numbered from 0 here, one less than the number the J panel shows (the number printed on the
 // stick). By the panel's numbers: trim nose up 5, trim nose down 3, flaps up 4, flaps down 6, brakes 12,
-// undercarriage 11, cockpit view 10.
-export const MAPPING_VERSION = 2;
+// undercarriage 11, cockpit view 10; the trigger (1) fires the machine guns and the thumb button (2) the cannon (D67).
+export const MAPPING_VERSION = 3;
 export const DEFAULT_MAPPING = {
   version: MAPPING_VERSION,
   roll: { axis: 0, invert: false },
@@ -26,7 +26,7 @@ export const DEFAULT_MAPPING = {
   yaw: { axis: 5, invert: false },
   throttle: { axis: 6, invert: true },
   hat: { axis: 9 },
-  buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9 },
+  buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1 },
 };
 
 /**
@@ -43,12 +43,16 @@ function loadMapping() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (saved && saved.roll && saved.pitch && saved.yaw && saved.throttle) {
       const mapping = { ...structuredClone(DEFAULT_MAPPING), ...saved };
-      // Mappings saved before this button layout keep their axes but take the new hat and buttons.
-      if ((saved.version ?? 1) < MAPPING_VERSION) {
+      // Mappings saved before the version 2 button layout keep their axes but take the new hat and buttons; version 2
+      // mappings keep their buttons and gain the firing buttons (version 3).
+      const version = saved.version ?? 1;
+      if (version < 2) {
         mapping.hat = structuredClone(DEFAULT_MAPPING.hat);
         mapping.buttons = structuredClone(DEFAULT_MAPPING.buttons);
-        mapping.version = MAPPING_VERSION;
+      } else if (version < MAPPING_VERSION) {
+        mapping.buttons = { ...structuredClone(DEFAULT_MAPPING.buttons), ...saved.buttons };
       }
+      mapping.version = MAPPING_VERSION;
       return mapping;
     }
   } catch {
@@ -129,6 +133,9 @@ export class Joystick {
     if (this.pressed('flapsDown')) input.flaps = stepFlaps(ac, input.flaps, 1);
     if (this.pressed('flapsUp')) input.flaps = stepFlaps(ac, input.flaps, -1);
     if (this.pressed('gear')) input.gear = input.gear ? 0 : 1;
+    // Triggers add to the keyboard's (Space, Enter): either fires.
+    if (this.held('fireMg')) input.fireMg = true;
+    if (this.held('fireCannon')) input.fireCannon = true;
     return { hat: hatDirection(this.pad.axes[this.mapping.hat.axis]), view: this.pressed('view') };
   }
 }

@@ -62,11 +62,20 @@ export const bf109e4 = {
     dampingRatio: 0.6,
     brake: 0.3,
   },
+  // The cockpit's gun ammunition counter columns, left to right (product owner's choice, D64; not from a source).
+  ammoCounter: ['mg17Left', 'cannon', 'mg17Right'],
+  // Guns (Phase 5, D67): type, muzzle position in body axes (m; estimates placed on the airframe: no drawing found) and
+  // rounds. MG 17s synchronised through the airscrew; belts as D61. The counter column each feeds (D64).
+  harmonisation: 200, // m: range at which the guns' rounds cross the sight line
+  guns: {
+    mg17Left: { type: 'mg17', x: 1.2, y: 0.42, z: -0.13, rounds: 1000, synchronised: true, counter: 'mg17Left' },
+    mg17Right: { type: 'mg17', x: 1.2, y: 0.42, z: 0.13, rounds: 1000, synchronised: true, counter: 'mg17Right' },
+    cannonLeft: { type: 'mgffm', x: 0.85, y: -0.2, z: -1.95, rounds: 60, counter: 'cannon' },
+    cannonRight: { type: 'mgffm', x: 0.85, y: -0.2, z: 1.95, rounds: 60, counter: 'cannon' },
+  },
   // Engine cooling (Phase 5, D62). Estimates: the temperatures each engine settles at, used to solve the radiator's
   // conductance. Climb: the normal rating's sea-level power at the model's best-climb speed, radiator open. Cruise: 60%
   // of it at 100 m/s, radiator closed. Time constants of the coolant and oil, s.
-  // The cockpit's gun ammunition counter columns, left to right (product owner's choice, D64; not from a source).
-  ammoCounter: ['mg17Left', 'cannon', 'mg17Right'],
   cooling: {
     climb: { eas: 67.1, power: 1, coolant: 105, oil: 95 },
     cruise: { eas: 100, power: 0.6, coolant: 85 },

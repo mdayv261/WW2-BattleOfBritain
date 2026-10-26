@@ -2,6 +2,7 @@
 // instruments and readouts.
 import { createScene } from './render/scene.js';
 import { TestView } from './render/testView.js';
+import { ProjectileView } from './render/projectiles.js';
 import { HAT_LOOKS } from './render/cameras.js';
 import { Simulation } from './core/simulation.js';
 import { Keyboard } from './input/keyboard.js';
@@ -20,6 +21,7 @@ const terrain = await loadTerrain(import.meta.env.BASE_URL);
 const world = realWorld(terrain);
 const { renderer, scene, camera, sea, update: updateScene } = createScene(document.getElementById('app'), terrain);
 const view = new TestView(scene, camera, sea);
+const shots = new ProjectileView(scene); // tracers and smoke trails (D67)
 const sim = new Simulation(aircraftList[1], 'ground', world); // start in the Spitfire, on the ground at Hawkinge
 view.setAircraft(sim.ac);
 
@@ -78,6 +80,7 @@ renderer.setAnimationLoop((now) => {
   view.rig.hatLook = stick && stick.hat !== null ? HAT_LOOKS[stick.hat] : null;
   sim.advance(dt);
   view.update(sim, sim.loop.alpha, dt);
+  shots.update(sim.projectiles);
   updateScene(camera);
   hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
   instruments.update(sim, { hidden: view.rig.lookingAway });

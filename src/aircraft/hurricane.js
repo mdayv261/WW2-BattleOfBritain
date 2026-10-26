@@ -62,6 +62,20 @@ export const hurricane = {
     dampingRatio: 0.6,
     brake: 0.3,
   },
+  // Guns (Phase 5, D67): type, muzzle position in body axes (m; estimates placed on the airframe: no drawing found) and
+  // rounds. Each RAF gun carries one kind of round, as Dowding's typical arrangement (S38): which gun carries which is an
+  // estimate (D67). 334 rounds per gun (S1).
+  harmonisation: 228.6, // m: range at which the guns' rounds cross the sight line
+  guns: {
+    leftInner: { type: 'browning', x: 0.78, y: -0.52, z: -2.0, rounds: 334, round: 'ball303' },
+    leftSecond: { type: 'browning', x: 0.77, y: -0.51, z: -2.22, rounds: 334, round: 'deWilde303' },
+    leftThird: { type: 'browning', x: 0.76, y: -0.49, z: -2.44, rounds: 334, round: 'ap303' },
+    leftOuter: { type: 'browning', x: 0.75, y: -0.48, z: -2.66, rounds: 334, round: 'incendiary303' },
+    rightInner: { type: 'browning', x: 0.78, y: -0.52, z: 2.0, rounds: 334, round: 'ball303' },
+    rightSecond: { type: 'browning', x: 0.77, y: -0.51, z: 2.22, rounds: 334, round: 'ball303' },
+    rightThird: { type: 'browning', x: 0.76, y: -0.49, z: 2.44, rounds: 334, round: 'ap303' },
+    rightOuter: { type: 'browning', x: 0.75, y: -0.48, z: 2.66, rounds: 334, round: 'incendiary303' },
+  },
   // Engine cooling (Phase 5, D62). Estimates: the temperatures each engine settles at, used to solve the radiator's
   // conductance. Climb: the normal rating's sea-level power at the model's best-climb speed, radiator open. Cruise: 60%
   // of it at 100 m/s, radiator closed. Time constants of the coolant and oil, s.

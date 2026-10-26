@@ -6,6 +6,11 @@ import { instrumentReadings } from '../../src/ui/instruments.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 
+/** Sets some of the Bf 109's guns' rounds left, by gun id. */
+function setRounds(sim, rounds) {
+  for (const gun of sim.armament) if (gun.id in rounds) gun.rounds = rounds[gun.id];
+}
+
 describe('ammunition counter', () => {
   it('shows a full tape and a still window at full load', () => {
     expect(counterState(1000, 1000)).toEqual({ fraction: 1, angle: 0, empty: false });
@@ -33,7 +38,7 @@ describe('ammunition counter', () => {
 
   it('reads each column from the simulation\'s guns, in the order left MG 17, cannon, right MG 17', () => {
     const sim = new Simulation(aircraftById.bf109e4, 'air');
-    sim.guns = { mg17Left: { rounds: 750, capacity: 1000 }, cannon: { rounds: 60, capacity: 60 }, mg17Right: { rounds: 0, capacity: 1000 } };
+    setRounds(sim, { mg17Left: 750, mg17Right: 0 }); // the cannon stay full
     const v = instrumentReadings(sim);
     expect(v.ammoCounters.map((c) => c.fraction)).toEqual([0.75, 1, 0]);
     expect(v.ammoCounters[0].angle).toBeGreaterThan(0);
@@ -51,7 +56,7 @@ describe('ammunition counter', () => {
     expect(counterState(0, 1000).empty).toBe(true);
     expect(counterState(0, 60).empty).toBe(true);
     const sim = new Simulation(aircraftById.bf109e4, 'air');
-    sim.guns = { mg17Left: { rounds: 12, capacity: 1000 }, cannon: { rounds: 0, capacity: 60 }, mg17Right: { rounds: 1000, capacity: 1000 } };
+    setRounds(sim, { mg17Left: 12, cannonLeft: 0, cannonRight: 0 });
     expect(instrumentReadings(sim).ammoCounters.map((c) => c.empty)).toEqual([false, true, false]);
   });
 });

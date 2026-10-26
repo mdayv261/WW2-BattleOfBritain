@@ -38,7 +38,7 @@ export class Keyboard {
       if (e.repeat || e.metaKey || e.ctrlKey) return;
       this.down.add(e.code);
       this.pressed.add(e.code);
-      if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault();
+      if (e.code.startsWith('Arrow') || e.code === 'Space' || e.code === 'Enter') e.preventDefault();
     });
     target.addEventListener('keyup', (e) => this.down.delete(e.code));
     target.addEventListener('blur', () => this.down.clear());
@@ -71,6 +71,9 @@ export class Keyboard {
     input.trim = clamp(input.trim + this.axis('KeyG', 'KeyT') * (2 / ac.controls.trimTime) * dt, -1, 1);
     input.rudderTrim = clamp((input.rudderTrim ?? 0) + this.axis('Comma', 'Period') * RUDDER_TRIM_RATE * dt, -1, 1);
     input.brake = this.down.has('KeyB') ? 1 : 0;
+    // Guns (D67): Space fires the machine guns (all eight on the RAF fighters), Enter the cannon.
+    input.fireMg = this.down.has('Space');
+    input.fireCannon = this.down.has('Enter') || this.down.has('NumpadEnter');
     const rpmKeys = this.axis('KeyD', 'KeyE');
     if (ac.propeller.type === 'constantSpeed') {
       input.rpm = clamp(input.rpm + rpmKeys * LEVER_RATE * dt, 0, 1);

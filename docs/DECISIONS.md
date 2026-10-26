@@ -1393,3 +1393,55 @@ Placed as the product owner asked:
     indicator).
 - **Tests:** `tests/ui/gearLabels.test.js` draws each panel on a recording canvas and checks the words.
 
+## D67. Guns and ballistics (27 Oct 2026, Phase 5 checkpoint 3)
+
+**Ballistics** (`src/weapons/ballistics.js`):
+- **Model:** each round flies with gravity and air drag, with the ISA density and speed of sound at its height.
+- **Drag:** each round's drag against Mach number is fitted to its sourced range table (`npm run fit:ballistics`):
+  - the .303 Mk VII to the Hythe table (S37);
+  - the 7.92 mm and the 20 mm FF/M 117 g shell to Rechlin's firing tables (S41).
+- **Result** (the Phase 5 acceptance figures, `tests/weapons/ballistics.test.js`): at sea level, velocities within
+  0.5% and the German times of flight within 0.003 s out to 600 m (600 yd for the .303); drops within about 8%.
+- **Flagged:** every .303 round flies like Mk VII ball and every 7.92 mm round like the AP table (D61). The Browning's
+  own muzzle velocity was not found; the Mk VII table's 2,440 ft/s (rifles and Vickers guns) is used.
+
+**Guns** (`src/weapons/guns.js`, data in each aircraft's `guns` and `src/aircraft/ammunition.js`):
+- **Rates:**
+  - Browning 1,100 rounds/min (S39);
+  - MG 17 1,000 synchronised (Bf 109) and 1,100 unsynchronised (Bf 110) (S27);
+  - MG FF/M 475 (D61).
+- **Ammunition:**
+  - 334 rounds per Browning (S1; Spitfire D61): about 18 s of fire;
+  - 1,000 per MG 17;
+  - one 60-round drum per cannon: about 7.6 s.
+- **Rounds:** each round leaves the muzzle with the aircraft's velocity (and its rotation's) added.
+- **Recoil:** about 1.2 kN for eight Brownings; it acts only while firing, so `npm run validate` is unchanged. The
+  propellant gases' share is left out.
+- **Harmonisation:**
+  - each gun's bore is aimed so its rounds cross the sight line (the pilot's eye along the body axis) at the
+    harmonisation range in level flight, allowing for their drop;
+  - RAF 250 yd (S38); Luftwaffe 200 m (D61).
+- **Belts:**
+  - RAF guns each carry one kind of round, as Dowding's arrangement (S38): 2 old-type incendiary, 1 de Wilde, 2 AP and
+    3 ball. Which gun carries which is an estimate (the outer pair incendiary);
+  - the MG 17 belts cycle AP, incendiary and observing; the MG FF/M drums alternate HE-incendiary and HE-tracer (D61).
+- **Flagged:**
+  - the gun positions are estimates placed on the model's airframe (no drawings found);
+  - the Bf 110's rear MG 15, the He 111's guns and the Bf 110's in-flight drum changes come with the crews in Phase 6.
+
+**Controls:**
+- **Keyboard:** Space fires the machine guns (all eight on the RAF fighters), Enter the cannon.
+- **Joystick:** the trigger fires the machine guns, the thumb button the cannon. The mapping moves to version 3:
+  saved axes and buttons are kept, and the firing buttons added.
+
+**Display:**
+- **Tracers:** the 20 mm tracer shells draw short bright streaks for their 1.8 s burn (S40).
+- **Smoke:** the RAF's old-type incendiary leaves grey smoke trails (S38's "smoke-tracer effect"; length an
+  estimate).
+- **Other rounds:** unseen by day.
+- **Muzzle flashes:** at the guns while they fire.
+- **Readouts:** rounds left in F2 and F3.
+- **Ammunition counter:** the Bf 109's counter (D64, D65) now follows its guns.
+
+Measured in Chrome while firing: 75 fps (the screen's limit), 3.5 ms of work per frame.
+

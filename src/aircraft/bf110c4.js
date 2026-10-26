@@ -84,6 +84,18 @@ export const bf110c4 = {
     dampingRatio: 0.6,
     brake: 0.3,
   },
+  // Guns (Phase 5, D67): type, muzzle position in body axes (m; estimates placed on the airframe: no drawing found) and
+  // rounds. Four MG 17 and two MG FF/M in the nose, clear of the airscrews; belts as D61. One 60-round drum per cannon
+  // (drum changes by the radio operator come with the crew in Phase 6).
+  harmonisation: 200, // m: range at which the guns' rounds cross the sight line
+  guns: {
+    mg17UpperLeft: { type: 'mg17', x: 4.3, y: 0.18, z: -0.1, rounds: 1000 },
+    mg17UpperRight: { type: 'mg17', x: 4.3, y: 0.18, z: 0.1, rounds: 1000 },
+    mg17LowerLeft: { type: 'mg17', x: 4.25, y: 0.05, z: -0.22, rounds: 1000 },
+    mg17LowerRight: { type: 'mg17', x: 4.25, y: 0.05, z: 0.22, rounds: 1000 },
+    cannonLeft: { type: 'mgffm', x: 3.6, y: -0.45, z: -0.15, rounds: 60 },
+    cannonRight: { type: 'mgffm', x: 3.6, y: -0.45, z: 0.15, rounds: 60 },
+  },
   // Engine cooling (Phase 5, D62). Estimates: the temperatures each engine settles at, used to solve the radiator's
   // conductance. Climb: the normal rating's sea-level power at the model's best-climb speed, radiator open. Cruise: 60%
   // of it at 100 m/s, radiator closed. Time constants of the coolant and oil, s.

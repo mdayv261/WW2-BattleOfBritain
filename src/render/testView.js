@@ -8,6 +8,7 @@ import { buildCockpitFrame } from './cockpitFrame.js';
 import { buildReticle, buildSightBody } from './gunsight.js';
 import { buildAircraftModel } from './models/aircraftModel.js';
 import { DESIGNS } from './models/designs.js';
+import { buildMuzzleFlashes } from './projectiles.js';
 
 export class TestView {
   constructor(scene, camera, sea) {
@@ -46,6 +47,13 @@ export class TestView {
     this.model.getObjectByName('fuselage').visible = !inside;
     this.cockpit.visible = inside;
     this.aircraft.update(sim.plane, dt, { inside });
+    // Muzzle flashes for this flight's guns (rebuilt when the aircraft or its armament changes).
+    if (this.flashesFor !== sim.armament) {
+      this.flashes = buildMuzzleFlashes(sim.armament);
+      this.model.add(this.flashes.group);
+      this.flashesFor = sim.armament;
+    }
+    this.flashes.update(sim.plane.time);
 
     this.rig.update(sim.ac, { position: this._pos, quaternion: this._quat }, body.velocity, dt);
     const cam = this.rig.camera.position;

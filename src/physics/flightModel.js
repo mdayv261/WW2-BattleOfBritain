@@ -90,6 +90,7 @@ export function computeLoads(plane, input) {
     .addScaledVector(vHat, -co.cd * qBar * S)
     .addScaledVector(Z, co.cy * qBar * S)
     .addScaledVector(X, power.thrust);
+  if (plane.recoil) fb.add(plane.recoil.force); // the guns' recoil while firing (src/weapons/guns.js), body axes
   const force = bodyToWorld(body, fb, new Vector3());
   force.y -= ac.mass.flying * G;
   const ground = groundLoads(plane, input, terrain);
@@ -99,6 +100,7 @@ export function computeLoads(plane, input) {
   // Aerodynamic moments (aero.js yaws positive nose right), the engines' moments, and the ground's.
   const moment = new Vector3(co.croll * qBar * S * b, -co.cyaw * qBar * S * b, co.cpitch * qBar * S * c)
     .add(power.moment).add(ground.moment);
+  if (plane.recoil) moment.add(plane.recoil.moment);
   const momentum = power.momentum;
 
   // What an accelerometer would read: everything but gravity, including the push of the ground.

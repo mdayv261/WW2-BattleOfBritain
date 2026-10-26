@@ -63,6 +63,20 @@ export const spitfire = {
     dampingRatio: 0.6,
     brake: 0.3, // most braking force as a fraction of the wheel's load
   },
+  // Guns (Phase 5, D67): type, muzzle position in body axes (m; estimates placed on the airframe: no drawing found) and
+  // rounds. Each RAF gun carries one kind of round, as Dowding's typical arrangement (S38): which gun carries which is an
+  // estimate (D67). 334 rounds per gun (D61).
+  harmonisation: 228.6, // m: range at which the guns' rounds cross the sight line
+  guns: {
+    leftInner: { type: 'browning', x: 0.75, y: -0.37, z: -1.68, rounds: 334, round: 'ball303' },
+    leftSecond: { type: 'browning', x: 0.73, y: -0.33, z: -2.06, rounds: 334, round: 'deWilde303' },
+    leftThird: { type: 'browning', x: 0.62, y: -0.26, z: -2.8, rounds: 334, round: 'ap303' },
+    leftOuter: { type: 'browning', x: 0.52, y: -0.2, z: -3.35, rounds: 334, round: 'incendiary303' },
+    rightInner: { type: 'browning', x: 0.75, y: -0.37, z: 1.68, rounds: 334, round: 'ball303' },
+    rightSecond: { type: 'browning', x: 0.73, y: -0.33, z: 2.06, rounds: 334, round: 'ball303' },
+    rightThird: { type: 'browning', x: 0.62, y: -0.26, z: 2.8, rounds: 334, round: 'ap303' },
+    rightOuter: { type: 'browning', x: 0.52, y: -0.2, z: 3.35, rounds: 334, round: 'incendiary303' },
+  },
   // Points that must not touch the ground (a crash if they do).
   // Engine cooling (Phase 5, D62). Estimates: the temperatures each engine settles at, used to solve the radiator's
   // conductance. Climb: the normal rating's sea-level power at the model's best-climb speed, radiator open. Cruise: 60%

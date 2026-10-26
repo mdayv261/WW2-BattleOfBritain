@@ -13,6 +13,7 @@ import { merlin3 } from '../src/aircraft/merlin3.js';
 import { db601a } from '../src/aircraft/db601a.js';
 import { common } from '../src/aircraft/common.js';
 import { naca640 } from '../src/aircraft/naca640.js';
+import { ballistics, weapons, roundTypes } from '../src/aircraft/ammunition.js';
 import { validationCases } from '../src/aircraft/validationCases.js';
 
 const DATA_FILES = [
@@ -26,6 +27,7 @@ const DATA_FILES = [
   { name: 'db601a.js', data: db601a, section: 'Daimler-Benz DB 601A' },
   { name: 'common.js', data: common, section: 'Common flight-model parameters' },
   { name: 'naca640.js', data: naca640, section: 'Propeller data: NACA Report 640' },
+  { name: 'ammunition.js', data: { ballistics, weapons, roundTypes }, section: 'Ammunition (Phase 5)' },
 ];
 
 // Multiply a value written in the document's unit by this to get the SI value in the code.

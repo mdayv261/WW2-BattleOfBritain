@@ -5,6 +5,15 @@ import { Vector3 } from 'three';
 import { speedText, altitudeText, manifoldText, rpmText, degText, headingOf, climbText } from './units.js';
 import { G } from '../core/constants.js';
 import { coolantLimit } from '../physics/cooling.js';
+import { groupRounds } from '../weapons/guns.js';
+
+/** Rounds left per firing group, e.g. "Rounds MG 2648/2672  cannon 120/120"; null for an unarmed aircraft. */
+export function roundsLine(sim) {
+  const groups = groupRounds(sim.armament);
+  const names = { mg: 'MG', cannon: 'cannon' };
+  const parts = Object.entries(groups).map(([g, c]) => `${names[g]} ${c.rounds}/${c.capacity}`);
+  return parts.length ? `Rounds ${parts.join('  ')}` : null;
+}
 
 /** Coolant and oil temperatures (°C, both sides' gauges read Celsius), one pair per engine. */
 function heatLine(sim) {
@@ -45,7 +54,8 @@ const HELP = `
 <tr><td>C &nbsp; V</td><td>cockpit view; outside views (chase, fixed, orbit)</td></tr>
 <tr><td>Mouse</td><td>drag to look around; wheel to zoom; double-click to look ahead</td></tr>
 <tr><td>I &nbsp; F2 &nbsp; F3</td><td>instruments, text readout, debug overlay</td></tr>
-<tr><td>Joystick</td><td>hat: look around (the panel hides while you look away); 5 / 3 trim nose up / down; 4 / 6 flaps up / down; 12 brakes; 10 cockpit view; 11 undercarriage</td></tr>
+<tr><td>Space &nbsp; Enter</td><td>fire the machine guns (RAF: all eight) / the cannon</td></tr>
+<tr><td>Joystick</td><td>trigger: machine guns; thumb button: cannon; hat: look around (the panel hides while you look away); 5 / 3 trim nose up / down; 4 / 6 flaps up / down; 12 brakes; 10 cockpit view; 11 undercarriage</td></tr>
 <tr><td>J &nbsp; H</td><td>joystick panel (change the buttons there), this help</td></tr>
 </table>
 Click the page once before using the keyboard.`;
@@ -117,6 +127,8 @@ export class Hud {
     else if (ac.propeller.type === 'constantSpeed') lines.push(`rpm lever ${Math.round(input.rpm * 100)}%   automatic airscrews`);
     else lines.push(`Pitch ${degText(plane.beta)}${input.engineAssist ? '   ASSIST (auto pitch)' : '   manual pitch (E/D)'}`);
     lines.push(heatLine(sim));
+    const rounds = roundsLine(sim);
+    if (rounds) lines.push(rounds);
     if (d.cutout < 0.5) lines.push('ENGINE CUT (negative g)');
     if (!sim.twin && input.engines?.[0]?.failed) lines.push('ENGINE STOPPED (L to start)');
     if (sim.twin) lines.push(...twinLines(sim));
@@ -180,6 +192,7 @@ export class Hud {
       `Stick      pitch ${(input.pitch * 100).toFixed(0)}%  roll ${(input.roll * 100).toFixed(0)}%  yaw ${(input.yaw * 100).toFixed(0)}%`,
       `Flaps ${(plane.surfaces.flaps * 100).toFixed(0)}%  gear ${(plane.surfaces.gear * 100).toFixed(0)}%  cut-out ${(d.cutout * 100).toFixed(0)}%`,
       ...plane.engines.map((e, i) => `Heat ${plane.engines.length > 1 ? ['L', 'R'][i] : ''}     coolant ${e.heat.coolant.toFixed(0)} °C (limit ${coolantLimit(plane.engine, d.altitude).toFixed(0)})  oil ${e.heat.oil.toFixed(0)} °C (limit ${plane.engine.heat.oilLimit})  wear ${(e.heat.wear * 100).toFixed(0)}%  coolant left ${(e.heat.coolantLeft * 100).toFixed(0)}%${e.heat.seized ? '  SEIZED' : ''}`),
+      roundsLine(sim) ?? 'Rounds    unarmed',
       `Airframe  overstress ${(plane.damage.airframe * 100).toFixed(0)}%  flutter ${(plane.damage.flutter * 100).toFixed(0)}%  radiator ${sim.input.radiator ? 'open' : 'closed'}`,
     ].join('\n');
   }

@@ -16,6 +16,8 @@ import { lerp } from '../physics/interp.js';
 import { engineMounts } from '../physics/powerplant.js';
 import { createTwinLevers, applyTwinLevers, selectNextEngine, toggleRunning, toggleFeather } from '../input/twinLevers.js';
 import { common } from '../aircraft/common.js';
+import { createArmament, stepGuns, counters } from '../weapons/guns.js';
+import { Projectiles } from '../weapons/projectiles.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 export const START_MODES = ['ground', 'approach', 'air'];
@@ -86,6 +88,9 @@ export class Simulation {
       for (const e of this.input.engines) e.failed = true;
       for (const e of this.plane.engines) e.omega = 0;
     }
+    this.armament = createArmament(ac); // the fixed guns (Phase 5, D67)
+    this.projectiles ??= new Projectiles();
+    this.projectiles.clear();
     this.notice = null; // a short message for the pilot: { text, until } (simulation time)
     this.crashed = false;
     this.crashCause = null;
@@ -128,6 +133,11 @@ export class Simulation {
     this.notice = { text, until: this.plane.time + 3 };
   }
 
+  /** The ammunition counter's columns as { rounds, capacity } (the Bf 109's: D64, D65). */
+  get guns() {
+    return counters(this.armament);
+  }
+
   copyPose(to) {
     to.position.copy(this.plane.body.position);
     to.quaternion.copy(this.plane.body.quaternion);
@@ -136,7 +146,11 @@ export class Simulation {
   step(dt) {
     if (this.paused || this.crashed) return;
     this.copyPose(this.previous);
+    // Guns first: their rounds leave from where the aircraft is now, and their recoil acts in this step.
+    const recoil = stepGuns(this.armament, this.plane, this.input, dt, this.plane.time, (round) => this.projectiles.spawn(round, this));
+    this.plane.recoil = recoil.force.lengthSq() > 0 ? recoil : null;
     stepAircraft(this.plane, this.input, dt);
+    this.projectiles.step(dt, this.world.terrain);
     const { ground, damage } = this.plane;
     if (ground.crash || damage.failed) {
       this.crashed = true;
