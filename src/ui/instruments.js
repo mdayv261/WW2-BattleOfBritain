@@ -3,7 +3,7 @@
 //   RAF: the blind-flying panel (airspeed, artificial horizon, rate of climb, altimeter, direction indicator,
 //        turn and slip), boost, rpm, undercarriage lamps and flap position. 1940 styles: an all-black horizon,
 //        a heading drum in the direction indicator, and rate 1-3 marks on the turn indicator.
-//   Bf 109: its own module, src/ui/bf109Panel.js (D38).
+//   Bf 109 and Bf 110: their own modules, src/ui/bf109Panel.js (D38) and src/ui/bf110Panel.js (D39).
 // Each side's panel is laid out after a photograph of the real one (D32, D38).
 
 import { Euler, Vector3 } from 'three';
@@ -15,9 +15,16 @@ import { rafAirspeed } from './airspeed.js';
 import { rafTachometer } from './engineGauges.js';
 import { rafHorizon, rafClimb, rafTurnSlip } from './rafBlindFlying.js';
 import { BF109_LAYOUT, bf109Panel } from './bf109Panel.js';
+import { BF110_LAYOUT, bf110Panel } from './bf110Panel.js';
 
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
+
+/** Propeller pitch clock: 12 o'clock at the fine stop is assumed (the zero is not stated, D32). */
+function pitchClock(beta, ac) {
+  const minutes = ((beta - ac.propeller.betaMin) * DEG) * PITCH_CLOCK_MINUTES_PER_DEGREE;
+  return { hours: (minutes / 60) % 12, minutes: minutes % 60 };
+}
 
 /** What the instruments show, in the aircraft's own units. Pure: used by the panel and the tests. */
 export function instrumentReadings(sim) {
@@ -27,8 +34,6 @@ export function instrumentReadings(sim) {
   const raf = ac.side === 'RAF';
   const euler = new Euler().setFromQuaternion(body.quaternion, 'YZX');
   const spin = body.angularVelocity.clone().applyQuaternion(body.quaternion);
-  // Propeller pitch clock: 12 o'clock at the fine stop is assumed (the zero is not stated, D32).
-  const minutes = ((plane.beta - ac.propeller.betaMin) * DEG) * PITCH_CLOCK_MINUTES_PER_DEGREE;
   return {
     raf,
     airspeed: d.eas / (raf ? UNIT.MPH : UNIT.KMH),
@@ -41,7 +46,13 @@ export function instrumentReadings(sim) {
     sideG: d.sideG,
     rpm: plane.omega / UNIT.RPM,
     manifold: raf ? (d.map - ISA.P0) / UNIT.PSI : d.map / UNIT.ATA,
-    pitchClock: raf ? null : { hours: (minutes / 60) % 12, minutes: minutes % 60 },
+    pitchClock: raf ? null : pitchClock(plane.beta, ac),
+    // Each engine's own readings (the twins have a set of engine instruments per engine).
+    engines: plane.engines.map((e, i) => ({
+      rpm: e.omega / UNIT.RPM,
+      manifold: raf ? (d.engines[i].map - ISA.P0) / UNIT.PSI : d.engines[i].map / UNIT.ATA,
+      pitchClock: raf ? null : pitchClock(e.beta, ac),
+    })),
     gearDown: plane.surfaces.gear > 0.99,
     gearUp: plane.surfaces.gear < 0.01,
     flaps: plane.surfaces.flaps, // fraction of travel
@@ -147,7 +158,8 @@ export class InstrumentPanel {
     if (!this.visible) return;
     const v = instrumentReadings(sim);
     const width = window.innerWidth;
-    const L = v.raf ? RAF_LAYOUT : BF109_LAYOUT;
+    const twin = sim.ac.id === 'bf110c4';
+    const L = v.raf ? RAF_LAYOUT : twin ? BF110_LAYOUT : BF109_LAYOUT;
     const r = Math.min(66, (width * 0.96) / L.width, (window.innerHeight * (L.screenShare ?? 0.4)) / L.height);
     const height = L.height * r + 6;
     const g = this.context(width, height);
@@ -156,6 +168,7 @@ export class InstrumentPanel {
       g.fillRect((width - L.width * r) / 2, 0, L.width * r, height);
     }
     if (v.raf) rafPanel(g, width / 2, 0, r, v);
+    else if (twin) bf110Panel(g, width / 2, 0, r, v);
     else bf109Panel(g, width / 2, 0, r, v);
   }
 }

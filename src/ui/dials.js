@@ -260,6 +260,46 @@ export function flapIndicator(g, x, y, width, v, text) {
   g.fill();
 }
 
+/**
+ * The flap position indicator standing upright (Bf 109, the product owner's request): up (0°) at the top and fully
+ * down at the bottom, the take-off and landing settings marked to the left of the track and a pointer to its right.
+ *   v: { flaps, flapTakeoff, flapLanding } (fractions of travel); text: { up, down, takeoff, landing }
+ */
+export function flapIndicatorVertical(g, x, y, height, v, text) {
+  const y0 = y - height / 2;
+  const at = (f) => y0 + f * height;
+  const w = height * 0.07;
+  g.strokeStyle = INK;
+  g.fillStyle = INK;
+  g.lineWidth = 1.5;
+  g.strokeRect(x - w / 2, y0, w, height);
+  g.textBaseline = 'middle';
+  g.font = `${Math.max(7, Math.round(height * 0.12))}px ui-sans-serif, Helvetica, sans-serif`;
+  g.textAlign = 'left';
+  g.fillText(text.up, x + w * 2.6, at(0));
+  g.fillText(text.down, x + w * 2.6, at(1));
+  g.textAlign = 'right';
+  const mark = (f, words, colour) => {
+    g.strokeStyle = colour;
+    g.fillStyle = colour;
+    g.lineWidth = 2;
+    g.beginPath();
+    g.moveTo(x - w * 1.8, at(f));
+    g.lineTo(x + w / 2, at(f));
+    g.stroke();
+    g.fillText(words, x - w * 2.3, at(f));
+  };
+  mark(v.flapTakeoff, text.takeoff, '#e8c46a');
+  mark(v.flapLanding, text.landing, '#9fd38a');
+  g.fillStyle = INK;
+  const py = at(Math.max(0, Math.min(1, v.flaps)));
+  g.beginPath();
+  g.moveTo(x + w / 2, py);
+  g.lineTo(x + w * 2, py - w);
+  g.lineTo(x + w * 2, py + w);
+  g.fill();
+}
+
 /** Small caption. */
 export function label(g, x, y, r, text) {
   g.fillStyle = INK;

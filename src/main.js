@@ -34,6 +34,7 @@ function gameKeys() {
   if (keyboard.took('Digit1')) select(aircraftList[0]);
   if (keyboard.took('Digit2')) select(aircraftList[1]);
   if (keyboard.took('Digit3')) select(aircraftList[2]);
+  if (keyboard.took('Digit4')) select(aircraftList[3]);
   if (keyboard.took('KeyR')) select(sim.ac);
   if (keyboard.took('KeyN')) {
     sim.nextStart();

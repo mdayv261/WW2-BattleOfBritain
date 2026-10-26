@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { CameraRig } from './cameras.js';
 import { buildCockpitFrame } from './cockpitFrame.js';
 import { buildReticle, buildSightBody } from './gunsight.js';
+import { engineMounts } from '../physics/powerplant.js';
 
 const COLOURS = { RAF: 0x5e6b3a, Luftwaffe: 0x6f7a6a };
 const UNDERSIDE = { RAF: 0xc9c5b0, Luftwaffe: 0x9db4c4 };
@@ -35,14 +36,16 @@ export function buildStandIn(ac) {
   fin.position.set(-0.55 * length, 0.75, 0);
   group.add(fin);
 
-  // A propeller disc so the nose is obvious, and a yellow marker on the right wingtip.
-  const disc = new THREE.Mesh(
-    new THREE.CircleGeometry(ac.propeller.diameter / 2, 24),
-    new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false }),
-  );
-  disc.rotation.y = Math.PI / 2;
-  disc.position.set(ac.propHub.x, ac.propHub.y, 0);
-  group.add(disc);
+  // A propeller disc at each airscrew so the nose is obvious, and a yellow marker on the right wingtip.
+  for (const hub of engineMounts(ac)) {
+    const disc = new THREE.Mesh(
+      new THREE.CircleGeometry(ac.propeller.diameter / 2, 24),
+      new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false }),
+    );
+    disc.rotation.y = Math.PI / 2;
+    disc.position.set(hub.x, hub.y, hub.z);
+    group.add(disc);
+  }
   const tip = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.4), new THREE.MeshBasicMaterial({ color: 0xd8b02a }));
   tip.position.set(0.1 * length, -0.6, span / 2);
   group.add(tip);

@@ -41,10 +41,14 @@ function bar(from, to, thickness, material) {
   return m;
 }
 
+const TWIN_NOSE = { ahead: 2.2, below: 1.1 }; // m: a twin's nose from the pilot's eye (an estimate for the view)
+
 /** The cowling and windscreen frame of an aircraft, in its body axes (centre of gravity at the origin). */
 export function buildCockpitFrame(ac) {
   const group = new THREE.Group();
-  const { eye, propHub } = ac;
+  const { eye } = ac;
+  // Twins have no airscrew in the nose: the nose ends a little ahead of and below the windscreen.
+  const propHub = ac.propHub ?? { x: eye.x + TWIN_NOSE.ahead, y: eye.y - TWIN_NOSE.below };
   const paint = new THREE.MeshLambertMaterial({ color: ac.side === 'RAF' ? 0x4f5a32 : 0x5d6658, side: THREE.DoubleSide });
   const frame = new THREE.MeshLambertMaterial({ color: 0x2b2b28 });
   const x0 = eye.x + WINDSCREEN_AHEAD;

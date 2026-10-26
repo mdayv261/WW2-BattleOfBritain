@@ -853,3 +853,33 @@ with the photograph's grey outline, black square mountings and positions measure
 
 **Removed with the first version:** the climb indicator, fuel, oil and coolant gauges, ammeter and ball compass, which
 are not on the E panel. The panel takes up to half the screen height (the RAF panel 40%) so the dials stay readable.
+
+## D39. Bf 110 panel after the product owner's photograph; upright flap indicator on the Bf 109 (26 Oct 2026)
+
+**Bf 109 flap indicator:** at the product owner's request it now stands upright, 0° at the top and 40° at the
+bottom, with START and LANDUNG marked beside the track (`flapIndicatorVertical` in `src/ui/dials.js`). The RAF
+panels keep the horizontal one.
+
+**Bf 110 panel** (`src/ui/bf110Panel.js`, dials in `src/ui/bf110Dials.js`), laid out from a photograph of a preserved
+Bf 110 cockpit supplied by the product owner, positions measured from the picture:
+- **Flying instruments, left:** airspeed to 900 km/h, the combined horizon (horizon bar, turn pointer at the top, slip
+  ball at the bottom) and the blue-faced climb indicator to 30 m/s above; the altimeter, repeater compass and clock
+  below.
+- **Engine instruments, right:** a pair for each engine, the left engine's on the left: rev counters, manifold pressure,
+  coolant temperature, oil temperature. Each engine shows its own rpm, manifold pressure and pitch (per-engine
+  readings added to `instrumentReadings`).
+- **Bottom left:** black cover plates and the switch box.
+
+**Deviations from the photograph, flagged to the product owner:**
+- The photographed aircraft has automatic airscrews; the C-4's are set by hand with a pitch indicator per engine
+  (S24: "the two clock-like instruments on top at the extreme right of the dashboard"). The two pitch indicators sit on
+  the cover plates right of the engine instruments.
+- Two dials could not be identified with certainty on the photograph: the lower-left one is drawn as the altimeter
+  (the fine altimeter used on the Bf 109) and the small one beside the compass as the clock.
+- The flap indicator (upright, as on the Bf 109) and undercarriage lamps are added on the cover plates at the bottom
+  left.
+- The coolant and oil temperature gauges are not working yet (no engine heat model): their hands rest at typical
+  running values.
+
+To show the panel the Bf 110 can now be selected with key 4 (the rest of the twin controls come in Phase 3
+checkpoint 2). The cockpit frame gives twins a short nose ahead of the pilot (an estimate for the view).

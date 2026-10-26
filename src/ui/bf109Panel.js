@@ -5,9 +5,9 @@
 //   row; altimeter, turn and bank and rev counter below, with the airscrew pitch indicator to the right; the airscrew
 //   pitch switch between the lower dials; the magneto switch, a push button and the pitot heater switch on the left;
 //   placards. Added to the photograph: the flap position indicator (D34) between the compass and the manifold
-//   pressure gauge, where the product owner placed it, and the undercarriage lamps on the right wing of the panel.
+//   pressure gauge, where the product owner placed it, standing upright with 0° at the top, and the undercarriage lamps on the right wing of the panel.
 
-import { lamp, label, flapIndicator } from './dials.js';
+import { lamp, label, flapIndicatorVertical } from './dials.js';
 import { millibarWindow } from './altimeters.js';
 import {
   mount, lwAirspeed, lwRpm, lwAta, lwStripCompass, lwTurnBank, lwFineAltimeter, lwClock, lwPitchIndicator, placard,
@@ -113,8 +113,8 @@ export function bf109Panel(g, x0, y0, r, v) {
   const f = box(L.flaps);
   g.fillStyle = '#0f1011';
   g.fillRect(f.x - f.w / 2, f.y - f.h / 2, f.w, f.h);
-  label(g, f.x, f.y - f.h * 0.32, r * 0.95, 'KLAPPEN');
-  flapIndicator(g, f.x, f.y + f.h * 0.08, f.w * 0.6, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'START', landing: 'LANDUNG' });
+  label(g, f.x, f.y - f.h * 0.4, r * 0.85, 'KLAPPEN');
+  flapIndicatorVertical(g, f.x + f.w * 0.12, f.y + f.h * 0.08, f.h * 0.66, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'START', landing: 'LANDUNG' });
   const k = box(L.gear);
   g.fillStyle = '#0f1011';
   g.fillRect(k.x - k.w / 2, k.y - k.h / 2, k.w, k.h);

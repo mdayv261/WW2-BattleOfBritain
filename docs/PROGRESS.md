@@ -12,6 +12,16 @@ Read this at the start of every session.
   Bf 110 flight model) done; next checkpoint 2 (He 111, flying the twins, twin controls, Bf 110 cockpit).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
 
+## Bf 110 panel and upright Bf 109 flap indicator (26 Oct 2026)
+
+**Done** (D39): the Bf 109's flap indicator stands upright (0° at the top, 40° at the bottom). The Bf 110 panel is drawn
+after the product owner's photograph, with a set of engine instruments per engine and the C-4's two pitch indicators;
+key 4 selects the Bf 110 so the panel can be seen. `tests/ui/bf110Panel.test.js` checks scales, layout and per-engine
+readings. Checked in Chrome with no console errors.
+
+**Known issues:** two dials on the photograph could not be identified for certain (drawn as altimeter and clock); the
+coolant and oil gauges rest at typical values.
+
 ## Bf 109 panel after the product owner's photograph of an E panel (26 Oct 2026)
 
 **Done** (D38): the Bf 109's instruments redrawn to look like the photograph: grey panel outline, black square
