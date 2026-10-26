@@ -10,7 +10,9 @@
     "test": "vitest run",
     "validate": "node scripts/validate.mjs",
     "calibrate": "node scripts/calibrate.mjs",
-    "handling": "node scripts/handling.mjs"
+    "handling": "node scripts/handling.mjs",
+    "build:terrain": "node scripts/buildTerrain.mjs",
+    "build:features": "node scripts/buildFeatures.mjs"
   },
   "dependencies": {
     "three": "0.186.1"

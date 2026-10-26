@@ -9,8 +9,20 @@ Read this at the start of every session.
 - **Phase 1** (single-engine flight model): signed off (25 Oct 2026, D27).
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
-- **Next: Phase 4** (world and visuals), planning first.
+- **Phase 4** (world and visuals): in progress (plan approved 26 Oct 2026). Checkpoint 1 (the land) done; next
+  checkpoint 2 (the sky), then 3 (aircraft models) and 4 (performance and the acceptance test).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
+
+## Phase 4 checkpoint 1: the land (26 Oct 2026)
+
+**Done** (D51, D52):
+- the real map from London to St-Omer: GMTED2010 heights, land and sea, the cliffs, built-up areas and the Thames;
+- 16 airfields from the NGA gazetteer (cited, D52); RAF aircraft start at Hawkinge, Luftwaffe at Saint-Inglevert;
+- terrain drawn in chunks with levels of detail; houses near the camera;
+- tests in `tests/world/terrain.test.js`; 850 tests pass; `npm run validate` unchanged.
+
+**Known issues:** today's built-up areas (larger than 1940); village-based airfield positions to about 1 km (Hawkinge
+and Lympne sit low); the aircraft are still boxes until checkpoint 3.
 
 ## Engine start/stop and twin lever fix (26 Oct 2026)
 

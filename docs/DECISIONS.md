@@ -1036,3 +1036,47 @@ D42:
 Also delivered during Phase 3 at the product owner's request: the Bf 109 and Bf 110 cockpits and instruments after his
 photographs and reference drawings (D38-D46), the shared undercarriage and flap displays (D47) and engine start/stop
 (D49).
+
+## D51. The map: data, extent and how it is drawn (26 Oct 2026, Phase 4 checkpoint 1)
+
+**Extent (product owner):** London to St-Omer, 50.55°N-51.65°N and 0.5°W-2.5°E (`src/world/mapExtent.js`), about
+210 × 122 km. The world's origin is its centre; `src/world/geo.js` projects latitude and longitude onto the flat world
+(equirectangular, axes as D5).
+
+**Data, all public domain, no credit needed (D17):**
+- **Heights, land and sea:** USGS GMTED2010, 7.5 arc-second mean elevation (about 230 × 150 m cells), tiles 50N030W and
+  50N000E. `npm run build:terrain` fetches only the rows needed (HTTP range requests on the uncompressed GeoTIFFs) and
+  writes `public/data/terrain.bin` (1,440 × 528 heights, 1.5 MB). The source gives the sea as 0 m: cells at or below
+  0 m joined to the map's edge become sea; low land elsewhere stays land.
+- **Towns and rivers:** Natural Earth 1:10m built-up area outlines (30 in the map, modern extents) and the Thames
+  (`npm run build:features` writes `src/world/mapFeatures.js`).
+- **Not used:** ETOPO 2022 (land from Copernicus data, which may need a credit), Mapzen/Tilezen tiles (EU-DEM and UK
+  Environment Agency data need credits), OpenStreetMap (needs a credit).
+
+**Terrain for the physics** (`src/world/terrain.js`): heights interpolated from the grid; sea where the nearest cell is
+sea; each airfield levelled flat within 750 m and blended back by 1,500 m; beyond the map's edge the edge's land
+carries on, sinking to sea level over 10 km. The physics uses it through the same `surfaceAt` as the Phase 2 aerodrome,
+so the flight model is unchanged (`npm run validate` identical). The tests still fly in the Phase 2 world.
+
+**Drawing** (`src/render/terrainMesh.js`, `towns.js`): chunks of 64 cells at four levels of detail by distance; colours
+for built-up areas, beaches, chalk (steep slopes beside the sea: the cliffs), woods and farmland, with a field-pattern
+texture close up; houses within about 9 km of the camera; the Thames as a ribbon. Airfields use the Phase 2 aerodrome
+(grass square, markers, hangars) at each field's level.
+
+**Deviations flagged:** the built-up areas are today's, much larger than in 1940; the 230 m grid softens the cliffs into
+steep slopes (coloured white).
+
+## D52. Airfield positions from the NGA gazetteer (26 Oct 2026, product owner)
+
+The only public source found for the airfield positions is the US NGA GEOnet Names Server, which asks to be cited. The
+product owner decided to use it with the citation here only: positions are "based on the Geographic Names Database"
+(NGA, files for the United Kingdom and France, downloaded 26 Oct 2026). `src/world/airfields.js` lists:
+- **From the gazetteer's own airfield entries:** Manston, Biggin Hill, Kenley, Rochford (listed as Southend),
+  Calais-Marck (Calais Dunkerque), Saint-Inglevert and Saint-Omer (Saint Omer Wizernes, today's field; the 1940 field
+  was nearby at Longuenesse).
+- **From the village the airfield lay beside (to about 1 km, flagged):** Hawkinge, Lympne, Hornchurch, West Malling,
+  Detling (RAF); Wissant, Marquise, Guînes, Caffiers (Luftwaffe). Two land below their real fields: Hawkinge levels at
+  92 m and Lympne at 3 m, where both stood on the downs at well over 100 m.
+- Which Luftwaffe fields were used in the summer of 1940 is not confirmed from an allowed source; they stand as fields
+  round Calais and St-Omer.
+- **Home fields in the test version:** RAF aircraft start at Hawkinge, Luftwaffe aircraft at Saint-Inglevert.

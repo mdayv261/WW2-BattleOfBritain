@@ -1,8 +1,11 @@
-// Test scene (DECISIONS.md D11, D28): a hazy summer sky, the Phase 2 aerodrome on farmland, and the sea to
-// the south. The real world arrives in Phase 4.
+// The scene (DECISIONS.md D11, D28, D51): a hazy summer sky and the sea, with either the real land of south-east
+// England and the Pas-de-Calais (given its terrain) or the Phase 2 aerodrome on level farmland.
 // Distances are in metres, with +Y up (DECISIONS.md D5).
 import * as THREE from 'three';
-import { buildAirfield } from './airfield.js';
+import { buildAirfield, buildAerodrome } from './airfield.js';
+import { buildTerrainMesh } from './terrainMesh.js';
+import { buildTowns } from './towns.js';
+import { AIRFIELDS } from '../world/airfields.js';
 
 const SKY_ZENITH = new THREE.Color(0x4f7fb8);
 const SKY_HORIZON = new THREE.Color(0xd9e3ea);
@@ -83,8 +86,31 @@ function makeSea() {
   return sea;
 }
 
-/** Builds the renderer, camera and scene, and keeps them sized to the window. */
-export function createScene(container) {
+/** The land, towns and airfields of the real map. Returns { group, update(camera) }. */
+function buildWorld(terrain) {
+  const group = new THREE.Group();
+  const land = buildTerrainMesh(terrain);
+  const towns = buildTowns(terrain);
+  group.add(land.group, towns.group);
+  for (const a of AIRFIELDS) {
+    const field = buildAerodrome();
+    field.position.set(a.x, terrain.fieldLevel(a.name), a.z);
+    group.add(field);
+  }
+  return {
+    group,
+    update: (camera) => {
+      land.update(camera);
+      towns.update(camera);
+    },
+  };
+}
+
+/**
+ * Builds the renderer, camera and scene, and keeps them sized to the window. With a terrain (src/world/terrain.js) the
+ * real map is drawn; `update(camera)` then picks the land's detail for the camera each frame.
+ */
+export function createScene(container, terrain = null) {
   // A logarithmic depth buffer keeps the cockpit frame (centimetres away) and distant land both sharp.
   const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -96,7 +122,14 @@ export function createScene(container) {
   scene.add(makeSky());
   const sea = makeSea();
   scene.add(sea);
-  scene.add(buildAirfield());
+  let update = () => {};
+  if (terrain) {
+    const world = buildWorld(terrain);
+    scene.add(world.group);
+    update = world.update;
+  } else {
+    scene.add(buildAirfield());
+  }
 
   const sun = new THREE.DirectionalLight(0xfff4e0, 2.2);
   sun.position.set(-0.4, 0.7, -0.6);
@@ -113,5 +146,5 @@ export function createScene(container) {
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  return { renderer, scene, camera, sea };
+  return { renderer, scene, camera, sea, update };
 }

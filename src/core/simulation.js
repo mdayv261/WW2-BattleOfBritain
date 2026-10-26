@@ -1,4 +1,5 @@
-// The test flight: one aircraft, its control inputs, and the fixed-step loop, at the Phase 2 aerodrome.
+// The test flight: one aircraft, its control inputs, and the fixed-step loop, in a world (src/world/world.js): the real
+// map in the game (D51), the Phase 2 aerodrome by default (the tests).
 // Rendering reads `previous` and `current` poses and blends them with the loop's alpha (D4).
 //
 // Three starts: on the ground at the aerodrome with the engines off (the default; L starts them), on the approach at
@@ -9,7 +10,7 @@ import { Vector3, Quaternion } from 'three';
 import { FixedStepLoop } from './fixedStepLoop.js';
 import { createAircraft, createOnGround, stepAircraft } from '../physics/flightModel.js';
 import { steadyFlight, stallSpeed } from '../physics/performance.js';
-import { airfieldTerrain, STARTS } from '../world/airfield.js';
+import { flatWorld } from '../world/world.js';
 import { engineFor } from '../aircraft/index.js';
 import { lerp } from '../physics/interp.js';
 import { engineMounts } from '../physics/powerplant.js';
@@ -42,26 +43,30 @@ export function createInput(plane, throttle) {
   };
 }
 
-/** Builds the aircraft and its inputs for a start mode. */
-function startPlane(ac, mode) {
+/** Builds the aircraft and its inputs for a start mode, at the aircraft's side's start in the world. */
+function startPlane(ac, mode, world) {
+  const { terrain } = world;
+  const starts = world.starts(ac.side);
   if (mode === 'ground') {
-    const plane = createOnGround(ac, { ...STARTS.ground, terrain: airfieldTerrain });
+    const plane = createOnGround(ac, { ...starts.ground, terrain });
     return { plane, input: { ...createInput(plane, 0), rpm: 1, gear: 1 } };
   }
   if (mode === 'approach') {
-    const { altitude, heading, x, z } = STARTS.approach;
+    const { altitude, heading, x, z } = starts.approach;
     const speed = 1.5 * stallSpeed(ac, { speed: ac.propeller.rpmMax, throttle: 0 }, altitude);
     const throttle = levelThrottle(ac, altitude, speed, 1);
-    const plane = createAircraft(ac, { altitude, speed, heading, throttle, rpm: 1, x, z, terrain: airfieldTerrain });
+    const plane = createAircraft(ac, { altitude, speed, heading, throttle, rpm: 1, x, z, terrain });
     return { plane, input: { ...createInput(plane, throttle), rpm: 1 } };
   }
-  const throttle = levelThrottle(ac);
-  const plane = createAircraft(ac, { ...START, throttle, terrain: airfieldTerrain });
+  const { altitude, heading, x, z } = starts.air;
+  const throttle = levelThrottle(ac, altitude);
+  const plane = createAircraft(ac, { ...START, altitude, heading, x, z, throttle, terrain });
   return { plane, input: createInput(plane, throttle) };
 }
 
 export class Simulation {
-  constructor(ac, mode = 'ground') {
+  constructor(ac, mode = 'ground', world = flatWorld) {
+    this.world = world;
     this.loop = new FixedStepLoop({ step: (dt) => this.step(dt) });
     this.paused = false;
     this.mode = mode;
@@ -71,7 +76,7 @@ export class Simulation {
   /** Starts (or restarts) a flight in the given aircraft, in the current start mode. */
   reset(ac = this.ac) {
     this.ac = ac;
-    ({ plane: this.plane, input: this.input } = startPlane(ac, this.mode));
+    ({ plane: this.plane, input: this.input } = startPlane(ac, this.mode, this.world));
     const engines = engineMounts(ac).length;
     this.twin = engines > 1 ? createTwinLevers(this.input, engines) : null;
     // A single engine's own switch (no levers of its own: it uses the shared throttle and rpm).

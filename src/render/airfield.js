@@ -174,7 +174,17 @@ function trees() {
   return mesh;
 }
 
-/** Everything above, as one group. */
+/** The mown square with its markings and buildings, centred on the origin at ground level (D51: placed at each real
+ * airfield on the map). */
+export function buildAerodrome() {
+  const group = new THREE.Group();
+  const grass = new THREE.MeshLambertMaterial({ map: mownTexture(), polygonOffset: true, polygonOffsetFactor: -2 });
+  grass.map.repeat.set(4, 4);
+  group.add(flat(AIRFIELD.size, AIRFIELD.size, grass, 0, 0, 0.3), markings(), buildings());
+  return group;
+}
+
+/** The Phase 2 test world: level farmland, the beach, the aerodrome and trees, as one group. */
 export function buildAirfield() {
   const group = new THREE.Group();
   group.add(ground(), markings(), buildings(), trees());

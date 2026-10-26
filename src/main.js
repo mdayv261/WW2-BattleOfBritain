@@ -1,4 +1,4 @@
-// Entry point for the test flight: aerodrome scene, aircraft, keyboard, joystick and mouse, cameras,
+// Entry point for the test flight: the map of south-east England (D51), aircraft, keyboard, joystick and mouse, cameras,
 // instruments and readouts.
 import { createScene } from './render/scene.js';
 import { TestView } from './render/testView.js';
@@ -11,10 +11,15 @@ import { Hud } from './ui/hud.js';
 import { InstrumentPanel } from './ui/instruments.js';
 import { JoystickPanel } from './ui/joystickPanel.js';
 import { aircraftList } from './aircraft/index.js';
+import { loadTerrain } from './world/terrain.js';
+import { realWorld } from './world/world.js';
 
-const { renderer, scene, camera, sea } = createScene(document.getElementById('app'));
+// The real map's terrain (D51), loaded before anything else.
+const terrain = await loadTerrain(import.meta.env.BASE_URL);
+const world = realWorld(terrain);
+const { renderer, scene, camera, sea, update: updateScene } = createScene(document.getElementById('app'), terrain);
 const view = new TestView(scene, camera, sea);
-const sim = new Simulation(aircraftList[1]); // start in the Spitfire, on the ground
+const sim = new Simulation(aircraftList[1], 'ground', world); // start in the Spitfire, on the ground at Hawkinge
 view.setAircraft(sim.ac);
 
 const keyboard = new Keyboard();
@@ -70,6 +75,7 @@ renderer.setAnimationLoop((now) => {
   view.rig.hatLook = stick && stick.hat !== null ? HAT_LOOKS[stick.hat] : null;
   sim.advance(dt);
   view.update(sim, sim.loop.alpha, dt);
+  updateScene(camera);
   hud.update(sim, { joystick: !!stick, view: view.rig.mode });
   instruments.update(sim);
   joyPanel.update();
