@@ -1,0 +1,40 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Model Preview</title>
+<style>body{margin:0;background:#b9c9d6}canvas{display:block}</style></head>
+<body><script type="module">
+// Model preview (D54), for checking the aircraft models' silhouettes: all five side by side, from one direction.
+// ?view=side|top|under|front|three, and control positions ?el= &ail= &rud= &flaps= &gear= (0 for up).
+import * as THREE from 'three';
+import { aircraftList } from './src/aircraft/index.js';
+import { buildAircraftModel } from './src/render/models/aircraftModel.js';
+import { DESIGNS } from './src/render/models/designs.js';
+
+const q = new URLSearchParams(location.search);
+const view = q.get('view') ?? 'side';
+const W = innerWidth, H = innerHeight;
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+renderer.setScissorTest(true);
+document.body.appendChild(renderer.domElement);
+const cols = 3, rows = 2;
+aircraftList.forEach((ac, i) => {
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xb9c9d6);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x445544, 1.6), new THREE.DirectionalLight(0xffffff, 1.5));
+  const m = buildAircraftModel(ac, DESIGNS[ac.id]);
+  const s = { elevator: +(q.get('el') ?? 0), aileron: +(q.get('ail') ?? 0), rudder: +(q.get('rud') ?? 0), flaps: +(q.get('flaps') ?? 0), gear: +(q.get('gear') ?? 1) };
+  m.update({ surfaces: s, engines: [{ omega: 0 }, { omega: 0 }] }, 0);
+  scene.add(m.group);
+  const w = W / cols, h = H / rows, x = (i % cols) * w, y = H - (Math.floor(i / cols) + 1) * h;
+  const flat = view === 'top' || view === 'under'; // the length runs up the screen
+  const r = 0.55 * Math.max(ac.geometry.span, ac.geometry.length * (flat ? w / h : 1));
+  const cam = new THREE.OrthographicCamera(-r, r, (r * h) / w, (-r * h) / w, 0.1, 200);
+  const at = { side: [0, 0, 40], top: [0, 40, 0.001], front: [40, 0, 0], three: [25, 14, 25], under: [0, -40, 0.001] }[view];
+  const mid = DESIGNS[ac.id].nose - ac.geometry.length / 2; // centre on the middle of the length
+  cam.position.set(at[0] + mid, at[1], at[2]);
+  if (flat) cam.up.set(1, 0, 0);
+  cam.lookAt(mid, 0, 0);
+  renderer.setViewport(x, y, w, h); renderer.setScissor(x, y, w, h);
+  renderer.render(scene, cam);
+});
+</script></body></html>

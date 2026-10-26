@@ -105,14 +105,15 @@ describe('He 111 in the test version', () => {
 });
 
 describe('views for every aircraft', () => {
-  it('builds the stand-in model with an airscrew disc per engine, and a cockpit frame; only cockpit-less aircraft lack a sight', async () => {
-    const { buildStandIn } = await import('../../src/render/testView.js');
+  it('builds the model with an airscrew at each engine, and a cockpit frame; only cockpit-less aircraft lack a sight', async () => {
+    const { buildAircraftModel } = await import('../../src/render/models/aircraftModel.js');
+    const { DESIGNS } = await import('../../src/render/models/designs.js');
     const { buildCockpitFrame } = await import('../../src/render/cockpitFrame.js');
     const { aircraftList } = await import('../../src/aircraft/index.js');
     const { engineMounts } = await import('../../src/physics/powerplant.js');
     for (const ac of aircraftList) {
-      const discs = buildStandIn(ac).children.filter((c) => c.geometry?.type === 'CircleGeometry');
-      expect(discs, ac.id).toHaveLength(engineMounts(ac).length);
+      const hubs = buildAircraftModel(ac, DESIGNS[ac.id]).screws.map((s) => s.group.position);
+      expect(hubs.map((h) => [h.x, h.y, h.z]), ac.id).toEqual(engineMounts(ac).map((m) => [m.x, m.y, m.z]));
       expect(() => buildCockpitFrame(ac), ac.id).not.toThrow();
       expect(!!ac.sight, ac.id).toBe(ac.cockpit !== false);
     }

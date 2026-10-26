@@ -1092,3 +1092,36 @@ product owner decided to use it with the citation here only: positions are "base
   every time, over the map and 30 km round it. Each is a cluster of 4-10 flattened, flat-shaded blobs (low-polygon, in
   keeping with the style); bases 1,000-1,500 m, tops at most 2,500 m. They fade out within about 700 m of the camera,
   so flying into one is a soft white-out. They are scenery only for now (no effect on the physics).
+
+## D54. Aircraft models (26 Oct 2026, Phase 4 checkpoint 3)
+
+**Built in code** (`src/render/models/`): no model files or textures. Each aircraft is lofted fuselage sections, wing
+and tail surfaces with an aerofoil section, nacelles, radiators and undercarriage, drawn flat-shaded and low-polygon.
+- **Sizes from the aircraft data:** span, length, dihedral, airscrew diameter and hub, engine and wheel positions. The
+  fuselage outlines are also kept consistent with each aircraft's crash contact points (belly, tail, wingtips) and the
+  pilot's eye, so what you see touch the ground is what the physics treats as touching it. Tests check span and length
+  within 5%.
+- **Shapes are display estimates** (`designs.js`): fuselage depth and taper, canopies, planform curves, tail sizes and
+  radiators are drawn to look right, not taken from sourced drawings. They are not aircraft data and do not enter the
+  physics, so they are not in AIRCRAFT_DATA.md.
+- **What makes each recognisable:** the Spitfire's elliptical wing; the Hurricane's deep, hump-backed fuselage, thick
+  wing and ventral radiator; the Bf 109 E's square-cut tips, high-set tailplane and wing radiators; the Bf 110's twin
+  fins, long glasshouse and engine nacelles; the He 111's glazed nose, elliptical wing and ventral gondola.
+
+**Moving parts:** ailerons, elevators, rudders and flaps follow the control surfaces; undercarriage legs fold with the
+gear (Spitfire and Bf 109 outward, Hurricane inward, the twins backward into the nacelles); airscrews show blades below
+700 rpm and a disc above (faint from the cockpit). The flaps use the recorded flap travel and the elevators the recorded
+up travel. **Flagged estimates:** aileron travel is drawn as 20° and rudder travel as 25° (no figures recorded), and the
+elevator's down travel is drawn equal to its up travel.
+
+**Paint and markings** (display approximations, not sourced paint data):
+- RAF: Dark Earth and Dark Green above, Sky below, a Sky band round the rear fuselage; Type B roundels on the upper wings,
+  A1 on the fuselage sides, fin flash.
+- Luftwaffe fighters: RLM 71 and 02 splinter above with mottled sides, RLM 65 below. He 111: RLM 70 and 71 above, RLM 65
+  below. Balkenkreuz on the wings (above and below) and fuselage; the swastika on the fin (D16). No unit codes (D14).
+- The colours are chosen by eye to suggest the period paints; the camouflage patterns are generated, not copied from
+  any particular aircraft.
+
+**Model preview:** `modelpreview.html` (served by the dev server, not part of the built game) draws all five aircraft
+side by side from one direction, with control positions set in the address, for checking the silhouettes.
+

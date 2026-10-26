@@ -9,9 +9,24 @@ Read this at the start of every session.
 - **Phase 1** (single-engine flight model): signed off (25 Oct 2026, D27).
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
-- **Phase 4** (world and visuals): in progress (plan approved 26 Oct 2026). Checkpoints 1 (the land) and 2
-  (the sky) done; next checkpoint 3 (aircraft models), then 4 (performance and the acceptance test).
+- **Phase 4** (world and visuals): in progress (plan approved 26 Oct 2026). Checkpoints 1 (the land), 2 (the sky)
+  and 3 (aircraft models) done; next checkpoint 4 (frame rate and the acceptance test).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
+
+## Phase 4 checkpoint 3: aircraft models (26 Oct 2026)
+
+**Done** (D54):
+- low-polygon models of all five aircraft built in code (`src/render/models/`), replacing the Phase 2 boxes;
+- moving ailerons, elevators, rudders and flaps; undercarriage that folds with the gear; airscrews (blades when
+  stopped, a disc when running, faint from the cockpit);
+- summer-1940 camouflage and generic national markings;
+- `modelpreview.html` (dev server only) shows all five side by side from the side, top, underneath, front or three-quarter,
+  for checking the silhouettes;
+- tests in `tests/render/aircraftModel.test.js`; 900 tests pass; `npm run validate` unchanged.
+
+**Known issues:** the shapes and colours are display estimates (D54); no Bf 109 tailplane struts, aerials, guns or
+exhausts yet; aileron and rudder travel on the models are estimates; the Bf 110 and He 111 have no dorsal or nose guns
+drawn (Phase 5).
 
 ## Phase 4 checkpoint 2: the sky (26 Oct 2026)
 
@@ -27,7 +42,7 @@ Read this at the start of every session.
 - tests in `tests/world/terrain.test.js`; 850 tests pass; `npm run validate` unchanged.
 
 **Known issues:** today's built-up areas (larger than 1940); village-based airfield positions to about 1 km (Hawkinge
-and Lympne sit low); the aircraft are still boxes until checkpoint 3.
+and Lympne sit low).
 
 ## Engine start/stop and twin lever fix (26 Oct 2026)
 
