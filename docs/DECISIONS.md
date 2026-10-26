@@ -1251,3 +1251,74 @@ Recorded in AIRCRAFT_DATA.md (new sections under "Guns (Phase 5)"; sources S37-S
 9. **Armour** (estimate): RAF rear armour taken as the same 8 mm as the Bf 109's. It stops rifle-calibre ball and
    incendiary rounds, but not armour-piercing rounds at short range (S37: 10 mm at 100 yards).
 
+## D61. Phase 5 estimates accepted (26 Oct 2026, product owner)
+
+The product owner accepted all nine proposals of D60. They are estimates, recorded as such in AIRCRAFT_DATA.md as each
+is used:
+1. Bf 109 E-4 cannon: MG FF/M with the 117 g shells at 585 m/s; no mine shell.
+2. Spitfire I: 334 rounds per gun, the Hurricane's sourced figure.
+3. Luftwaffe guns converge at 200 m.
+4. All 7.92 mm rounds fly like the Rechlin armour-piercing table, starting at 810 m/s. The Browning uses the S37 Mk VII
+   figures. The MG FF/M fires 475 rounds/min.
+5. German belts: MG 17 armour-piercing, incendiary and incendiary-observing in turn; MG FF/M drums alternate HE-incendiary
+   and HE-tracer.
+6. DB 601 coolant limit 115 °C at sea level, falling with height.
+7. g limits:
+   - fighters damaged beyond 9 g and broken beyond 13 g;
+   - Bf 110 7 g and 10.5 g;
+   - He 111 4.5 g and 7 g.
+8. Hurricane I diving limit 390 mph IAS.
+9. RAF rear armour taken as 8 mm, like the Bf 109's.
+
+## D62. Engine heat and structural limits (26 Oct 2026, Phase 5 checkpoint 2)
+
+**Engine heat** (`src/physics/cooling.js`):
+- **Model:** each engine has a coolant and an oil temperature, each one lumped mass.
+  - Heat comes in with the engine's power, plus a little at idle.
+  - It goes out through the radiator in proportion to the temperature above the outside air and to the air flowing
+    through. That flow is the free stream plus the airscrew's slipstream (to the 0.8 power), times the radiator flap
+    opening.
+- **How the constants were set:** each aircraft has two calibration conditions in its data file (estimates; no
+  radiator data were found):
+  - a full-power climb at the model's best-climb speed with the radiator open settles just under the limit (Merlin
+    110 °C; DB 601 105 °C);
+  - a 60% cruise at 100 m/s with the radiator closed settles under the Merlin's 95 °C cruising limit.
+  The conductances and the closed flap's share (0.56-0.63) are solved from these, not chosen.
+- **Consequences** (checked by tests):
+  - closing the radiator at climb power, using the Merlin's +12 lb boost at climbing speed, or holding full power on
+    the ground overheats the engine;
+  - full power on the ground seizes it after about five minutes;
+  - an engine that loses its coolant seizes about a minute later (the glycol leak of checkpoint 4).
+- **Wear and seizure:**
+  - running over a coolant or oil limit, or past the diving rpm limit, wears the engine;
+  - wear costs power after 30% and seizes the engine at 100%;
+  - a seized engine gives no power, its airscrew stops, and it cannot be restarted;
+  - coolant 15 °C over its limit boils away.
+- **Starting temperatures:**
+  - air starts begin at the temperatures of their flight;
+  - ground starts at 60 °C coolant and 40 °C oil, as after a run-up.
+- **Radiator control:** O still opens and closes the radiators (all engines). The Bf 110's 9-position switches (S24)
+  are not modelled separately yet.
+- **Readouts:**
+  - coolant and oil temperatures in the text strip (F2) and per engine in F3, with wear and coolant left;
+  - a warning on the message line when an engine runs past a limit, and a notice when one seizes.
+- **Flagged: no panel gauges yet.** The temperature gauges are not on the panels: the Luftwaffe panels are laid out
+  from the product owner's photographs, which are needed to place them. This is a deviation from the checkpoint 2 plan
+  ("gauges on every panel"), for the product owner to decide.
+
+**Structural limits** (`src/physics/structure.js`):
+- **g:** past each aircraft's damage limit the skin wrinkles, giving up to 30% more parasite drag; the worst damage
+  stays. At the failure limit the wings fail and the flight ends. Negative-g limits are half the positive ones
+  (estimate, flagged).
+- **Diving speed:** past the diving limit the control surfaces flutter, lose their effect and tear away in about five
+  seconds at 10% over. The He 111 has no limit found, so no flutter.
+- **Validation:** an undamaged aircraft is untouched: the flight model's numbers are identical and
+  `npm run validate` is unchanged.
+
+**Correction to checkpoint 1 (D60):**
+- **Ratings:** 23 of its AIRCRAFT_DATA rows were rated "high" on a single source that is not a museum record, against
+  the project's rule (high needs two sources or a museum record). They are now "medium"; the Spitfire Pilot's Notes
+  (S33, a museum record) and the Ingenium record (S39) keep "high".
+- **Leftover rows:** an editing slip had left the old guns table's rows behind as duplicates; they are removed.
+- **New rows:** every new data value of checkpoint 2 has its own row in its aircraft's or engine's section.
+

@@ -88,6 +88,8 @@ export class Simulation {
     }
     this.notice = null; // a short message for the pilot: { text, until } (simulation time)
     this.crashed = false;
+    this.crashCause = null;
+    this.seen = { seized: this.plane.engines.map(() => false), airframe: 0, flutter: false }; // damage already reported
     this.previous = { position: new Vector3(), quaternion: new Quaternion() };
     this.copyPose(this.previous);
     stepAircraft(this.plane, this.input, 0); // fills in the readings
@@ -112,7 +114,8 @@ export class Simulation {
     if (action === 'startStop') {
       const { text, started } = toggleRunning(this.twin, this.input);
       for (const i of started) this.plane.engines[i].omega = Math.max(this.plane.engines[i].omega, common.starterSpeed);
-      this.notice = { text, until: this.plane.time + 3 };
+      const seized = started.some((i) => this.plane.engines[i].heat.seized);
+      this.notice = { text: seized ? 'The engine has seized: it will not start' : text, until: this.plane.time + 3 };
       return;
     }
     if (!this.twin) return;
@@ -134,7 +137,28 @@ export class Simulation {
     if (this.paused || this.crashed) return;
     this.copyPose(this.previous);
     stepAircraft(this.plane, this.input, dt);
-    if (this.plane.ground.crash) this.crashed = true;
+    const { ground, damage } = this.plane;
+    if (ground.crash || damage.failed) {
+      this.crashed = true;
+      this.crashCause = (ground.crash ?? damage.failed).cause;
+    }
+    this.reportDamage();
+  }
+
+  /** Tells the pilot once about each new kind of damage from heat or overstress (Phase 5). */
+  reportDamage() {
+    const { plane, seen } = this;
+    const say = (text) => { this.notice = { text, until: plane.time + 4 }; };
+    plane.engines.forEach((e, i) => {
+      if (e.heat.seized && !seen.seized[i]) say(`${this.twin ? ['Left engine', 'Right engine'][i] : 'The engine'} has seized`);
+      seen.seized[i] = e.heat.seized;
+    });
+    if (plane.damage.airframe > seen.airframe + 0.1) {
+      say('Airframe overstressed: the skin has wrinkled');
+      seen.airframe = plane.damage.airframe;
+    }
+    if (plane.damage.flutter > 0 && !seen.flutter) say('Control surfaces fluttering: too fast');
+    seen.flutter = plane.damage.flutter > 0;
   }
 
   /** Runs the physics for `elapsed` seconds of real time. */

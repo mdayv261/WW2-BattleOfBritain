@@ -5,11 +5,14 @@
 // Per-engine inputs (all optional) override the shared ones in the control input:
 //   input.engines = [{ throttle, rpm, pitchSwitch, feather, failed }, ...]
 //   feather: drive the blades to the feathered angle; failed: no power (the engine has stopped firing).
+// An engine that has seized (its heat state, src/physics/cooling.js) gives no power whatever the inputs, and its
+// friction stops the airscrew; a worn one gives less (wearFactor).
 
 import { Vector3 } from 'three';
 import { enginePower, createCutout, updateCutout } from './engine.js';
 import { propellerLoads } from './propeller.js';
 import { common } from '../aircraft/common.js';
+import { createHeat, wearFactor } from './cooling.js';
 import { clamp, lerp } from './interp.js';
 
 /** Airscrew hub positions (body axes, m): the twins list theirs; single-engine aircraft use propHub. */
@@ -20,7 +23,7 @@ export function engineMounts(ac) {
 /** The per-engine state carried by an aircraft. */
 export function createEngines(ac) {
   return engineMounts(ac).map((mount) => ({
-    mount, omega: 0, beta: ac.propeller.betaMin, cutout: createCutout(), slipQ: 0,
+    mount, omega: 0, beta: ac.propeller.betaMin, cutout: createCutout(), slipQ: 0, heat: createHeat(),
   }));
 }
 
@@ -60,7 +63,7 @@ export function powerplantLoads(plane, input, flow, air, altitude) {
     const eng = enginePower(plane.engine, {
       altitude, airspeed: flow.airspeed, throttle: inp.throttle, speed: e.omega, emergency: inp.emergency,
     });
-    const power = inp.failed ? 0 : eng.power * e.cutout.factor;
+    const power = inp.failed || e.heat.seized ? 0 : eng.power * e.cutout.factor * wearFactor(e.heat);
     const omegaProp = e.omega * pr.gearRatio;
     const prop = propellerLoads(pr, { omega: omegaProp, beta: e.beta, v: Math.max(flow.vb.x, 0), rho: air.density });
     return {
@@ -107,9 +110,11 @@ export function stepEngines(plane, input, power, loadFactor, dt) {
     updateCutout(plane.engine, e.cutout, loadFactor, dt);
     // A running engine never falls below 5 rad/s; a stopped one can come to rest.
     const omegaProp = e.omega * pr.gearRatio;
-    const friction = inp.failed ? common.deadEngineFriction * ratedTorque(plane.engine, pr) * Math.min(1, e.omega / 20) : 0;
+    const stopped = inp.failed || e.heat.seized;
+    const share = e.heat.seized ? common.engineWear.seizedFriction : inp.failed ? common.deadEngineFriction : 0;
+    const friction = share * ratedTorque(plane.engine, pr) * Math.min(1, e.omega / 20);
     const accel = (loads.power / Math.max(omegaProp, 1) - loads.torque - friction) / pr.inertia;
-    e.omega = Math.max(inp.failed ? 0 : 5, (omegaProp + accel * dt) / pr.gearRatio);
+    e.omega = Math.max(stopped ? 0 : 5, (omegaProp + accel * dt) / pr.gearRatio);
     e.slipQ = loads.slipQ;
 
     const feathered = pr.featherAngle ?? pr.betaMax;

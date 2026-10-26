@@ -10,8 +10,21 @@ Read this at the start of every session.
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
 - **Phase 4** (world and visuals): signed off (26 Oct 2026, D57).
-- **Phase 5** (weapons and damage): in progress (plan approved 26 Oct 2026, D59). Checkpoint 1 (research) done (D60); waiting for the product owner's decisions on the estimates before checkpoint 2.
+- **Phase 5** (weapons and damage): in progress (plan approved 26 Oct 2026, D59). Checkpoint 1 (research) done (D60); estimates accepted (D61). Checkpoint 2 (engine heat and structural limits) done (D62); next checkpoint 3 (guns and ballistics).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026.
+
+## Phase 5 checkpoint 2: engine heat and structural limits (26 Oct 2026)
+
+**Done** (D62):
+- coolant and oil temperatures for every engine, with the radiator, overheating, over-revving, wear and seizure;
+- g limits (wrinkled airframe, wing failure) and diving limits (control-surface flutter);
+- temperatures and damage in the text strip and F3, with warnings on the message line;
+- tests in `tests/physics/cooling.test.js`, `tests/physics/structure.test.js`, `tests/ui/damageReports.test.js`.
+
+**Left:** temperature gauges on the panels (waiting for the product owner: positions on the Luftwaffe panels).
+
+**Known issues:** all radiator and structural constants are estimates (D61, D62); one radiator control for both of the
+Bf 110's engines.
 
 ## Phase 5 checkpoint 1: research (26 Oct 2026)
 

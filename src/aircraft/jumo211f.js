@@ -26,4 +26,11 @@ export const jumo211f = {
   mapSpeedExponent: 1,
   negativeG: null,
   maxSpeed: 2600 * UNIT.RPM, // take-off rating
+  // Temperature and speed limits (Phase 5). No Jumo 211 limits found: the DB 601A's are used (estimate, D62).
+  heat: {
+    coolantLimit: 115,
+    coolantLapse: 0.003,
+    oilLimit: 105,
+    overRev: 2700 * UNIT.RPM, // estimate: 100 rpm over the take-off rating, as the DB 601A's diving limit over its own
+  },
 };

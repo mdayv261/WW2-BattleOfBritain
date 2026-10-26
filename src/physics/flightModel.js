@@ -17,6 +17,8 @@ import { createGround, groundLoads, updateGround, flatGrass } from './ground.js'
 import { common } from '../aircraft/common.js';
 import { engineFor } from '../aircraft/index.js';
 import { clamp, lerp } from './interp.js';
+import { stepHeat, equilibrium, createHeat } from './cooling.js';
+import { createDamage, stepStructure, damagedSurfaces, damageDrag } from './structure.js';
 
 const _vb = new Vector3();
 const _f = new Vector3();
@@ -75,7 +77,8 @@ export function computeLoads(plane, input) {
   const groundEffect = groundEffectFactor(altitude - groundHeight, ac.geometry.span);
   const co = aeroCoefficients(ac, {
     ...flow, qBar, slipQ: power.slipTail, slipQLeft: power.slipLeft, slipQRight: power.slipRight, groundEffect,
-  }, surfaces);
+  }, damagedSurfaces(surfaces, plane.damage));
+  co.cd += damageDrag(ac, plane.damage); // structural damage (src/physics/structure.js); nothing when undamaged
 
   // Forces in the body frame: lift perpendicular to the airflow (in the plane of symmetry), drag
   // against it, side force along the right wing, thrust along the nose.
@@ -132,6 +135,10 @@ export function stepAircraft(plane, input, dt) {
   const loads = computeLoads(plane, input);
   updateSlats(ac, surfaces, loads.diag.slatAlphaLeft, loads.diag.slatAlphaRight, dt);
   stepEngines(plane, input, loads.powerplant, loads.loadFactor, dt);
+  plane.engines.forEach((e, i) => stepHeat(ac, plane.engine, e, {
+    altitude: body.position.y, q: qBar, radiator: surfaces.radiator, power: loads.powerplant.engines[i].power,
+  }, dt));
+  stepStructure(plane, loads.diag, dt);
 
   stepRigidBody(body, {
     force: loads.force, moment: loads.moment, momentum: loads.momentum, mass: ac.mass.flying,
@@ -170,6 +177,11 @@ export function createAircraft(ac, {
   });
   for (const e of plane.engines) e.slipQ = 0;
   refineTrim(plane, { ...input, trim: level.trim }, yaw, speed);
+  // Engines start at the temperatures they would settle at in this flight, radiators closed (as the input starts).
+  for (const e of plane.engines) {
+    const t = equilibrium(ac, plane.engine, { altitude, q: 0.5 * air.density * speed * speed, power: eng.power, radiator: 0 });
+    e.heat = createHeat(t.coolant, t.oil);
+  }
   return plane;
 }
 
@@ -177,7 +189,7 @@ export function createAircraft(ac, {
 function newPlane(ac, terrain = flatGrass) {
   return {
     ac, engine: engineFor(ac), engines: createEngines(ac), body: createState(), surfaces: createSurfaces(),
-    time: 0, last: null, trim: 0, ground: createGround(ac), terrain,
+    time: 0, last: null, trim: 0, ground: createGround(ac), terrain, damage: createDamage(),
     // The first engine's state, for single-engine code and the readouts.
     get omega() { return this.engines[0].omega; },
     set omega(v) { for (const e of this.engines) e.omega = v; },
@@ -208,6 +220,7 @@ export function createOnGround(ac, { x = 0, z = 0, heading = 0, terrain = flatGr
   plane.body.angularVelocity.set(0, 0, 0);
   plane.ground.touchdown = null;
   plane.time = 0;
+  for (const e of plane.engines) e.heat = createHeat(common.groundStartHeat.coolant, common.groundStartHeat.oil);
   return plane;
 }
 

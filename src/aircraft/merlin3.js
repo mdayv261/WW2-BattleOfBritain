@@ -27,4 +27,10 @@ export const merlin3 = {
   // Negative-g cut-out of the float carburettor.
   negativeG: { threshold: 0, delay: 0.15, cutTime: 0.2, recoverDelay: 1.0, recoverTime: 1.0 },
   maxSpeed: 3000 * UNIT.RPM, // combat limit
+  // Temperature and speed limits (Phase 5, src/physics/cooling.js). °C.
+  heat: {
+    coolantLimit: 120, // climbing (½ hr) and all-out (5 min) limit, Pilot's Notes
+    oilLimit: 95, // all-out (5 min) limit
+    overRev: 3600 * UNIT.RPM, // diving limit (3,000 rpm may be exceeded for 20 s)
+  },
 };

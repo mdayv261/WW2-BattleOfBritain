@@ -62,6 +62,19 @@ export const hurricane = {
     dampingRatio: 0.6,
     brake: 0.3,
   },
+  // Engine cooling (Phase 5, D62). Estimates: the temperatures each engine settles at, used to solve the radiator's
+  // conductance. Climb: the normal rating's sea-level power at the model's best-climb speed, radiator open. Cruise: 60%
+  // of it at 100 m/s, radiator closed. Time constants of the coolant and oil, s.
+  cooling: {
+    climb: { eas: 58.8, power: 1, coolant: 110, oil: 85 },
+    cruise: { eas: 100, power: 0.6, coolant: 90 },
+    timeConstant: { coolant: 120, oil: 240 },
+  },
+  // Structural limits (Phase 5, D61-D62): g past `damage` wrinkles the airframe; at `fail` the wings fail.
+  limits: {
+    g: { damage: 9, fail: 13 },
+    diveEas: 174.3, // m/s: 390 mph IAS (estimate, D61); past it, flutter damages the control surfaces
+  },
   contacts: {
     leftTip: { x: -0.3, y: -0.26, z: -6.1 },
     rightTip: { x: -0.3, y: -0.26, z: 6.1 },

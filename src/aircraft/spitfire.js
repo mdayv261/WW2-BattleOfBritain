@@ -64,6 +64,19 @@ export const spitfire = {
     brake: 0.3, // most braking force as a fraction of the wheel's load
   },
   // Points that must not touch the ground (a crash if they do).
+  // Engine cooling (Phase 5, D62). Estimates: the temperatures each engine settles at, used to solve the radiator's
+  // conductance. Climb: the normal rating's sea-level power at the model's best-climb speed, radiator open. Cruise: 60%
+  // of it at 100 m/s, radiator closed. Time constants of the coolant and oil, s.
+  cooling: {
+    climb: { eas: 60.6, power: 1, coolant: 110, oil: 85 },
+    cruise: { eas: 100, power: 0.6, coolant: 90 },
+    timeConstant: { coolant: 120, oil: 240 },
+  },
+  // Structural limits (Phase 5, D61-D62): g past `damage` wrinkles the airframe; at `fail` the wings fail.
+  limits: {
+    g: { damage: 9, fail: 13 },
+    diveEas: 201.2, // m/s: 450 mph IAS (S6); past it, flutter damages the control surfaces
+  },
   contacts: {
     leftTip: { x: -0.3, y: 0.04, z: -5.62 },
     rightTip: { x: -0.3, y: 0.04, z: 5.62 },

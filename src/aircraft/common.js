@@ -27,4 +27,33 @@ export const common = {
   sinkLimit: 3.5, // m/s: wheel descent rate at touchdown that collapses the undercarriage
   starterSpeed: 600 * ((2 * Math.PI) / 60), // rad/s: crankshaft speed a starting engine is turned to (L key, D49)
   deadEngineFriction: 0.1, // friction of a stopped engine's internals, as a fraction of its rated torque
+  // Engine heat (Phase 5, D62; src/physics/cooling.js). Estimates: no measured values found.
+  cooling: {
+    flowExponent: 0.8, // radiator conductance against air mass flow (turbulent flow through a radiator core)
+    eta: 0.8, // airscrew efficiency assumed when working out the slipstream of the calibration flights
+    idleHeat: 0.05, // heat of a turning engine at idle (friction), as a fraction of its rated sea-level power
+  },
+  engineWear: {
+    overheatSpan: 20, // °C over a limit at which wear builds up at 1 / overheatLife per second
+    overheatLife: 120, // s: an engine 20 °C over a limit seizes in about two minutes
+    overRevSpan: 300, // rpm over the diving limit at which wear builds up at 1 / overRevLife per second
+    overRevLife: 10, // s
+    lossFrom: 0.3, // wear below this costs no power
+    lossAtSeize: 0.6, // power lost by the time the engine seizes
+    boilMargin: 15, // °C over the coolant limit at which the coolant boils off
+    boilRate: 0.01, // fraction of the coolant lost per second while boiling
+    coolantNeeded: 0.4, // with less than this fraction of the coolant left, the radiator carries less heat away
+    seizedFriction: 3, // friction of a seized engine, as a fraction of its rated torque: the airscrew stops
+  },
+  // Structural damage (Phase 5, D62; src/physics/structure.js). Estimates: no measured values found.
+  structure: {
+    negativeShare: 0.5, // negative-g limits as a share of the positive ones
+    airframeDrag: 0.3, // extra parasite drag of a fully wrinkled airframe, as a fraction of cd0
+    flutterSpan: 0.1, // excess over the diving limit (fraction) at which flutter damage builds up at 1 / flutterLife per second
+    flutterLife: 5, // s: 10% over the limit tears the surfaces away in about five seconds
+    flutterLoss: 0.8, // effect lost by fluttering surfaces just before they tear away
+    tornSurfaceDrag: 0.1, // extra parasite drag once the surfaces are torn away, as a fraction of cd0
+  },
+  // Engines at a ground start are warm, as after a run-up (estimate): the Merlin's minimum take-off coolant temperature.
+  groundStartHeat: { coolant: 60, oil: 40 },
 };

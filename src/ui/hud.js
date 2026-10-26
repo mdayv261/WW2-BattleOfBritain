@@ -4,6 +4,26 @@
 import { Vector3 } from 'three';
 import { speedText, altitudeText, manifoldText, rpmText, degText, headingOf, climbText } from './units.js';
 import { G } from '../core/constants.js';
+import { coolantLimit } from '../physics/cooling.js';
+
+/** Coolant and oil temperatures (°C, both sides' gauges read Celsius), one pair per engine. */
+function heatLine(sim) {
+  const pairs = sim.plane.engines.map((e) => `${Math.round(e.heat.coolant)}/${Math.round(e.heat.oil)}`);
+  return `Coolant/oil °C ${pairs.join('  ')}${sim.input.radiator ? '' : '  (radiator closed)'}`;
+}
+
+/** A warning when an engine runs past its coolant or oil limit, or has seized; null when all is well. */
+export function heatWarning(sim) {
+  const { plane } = sim;
+  const name = (i) => (plane.engines.length > 1 ? ['Left engine', 'Right engine'][i] : 'Engine');
+  for (const [i, e] of plane.engines.entries()) {
+    if (e.heat.seized) return `${name(i)} seized`;
+    const limit = coolantLimit(plane.engine, plane.body.position.y);
+    if (e.heat.coolant > limit) return `${name(i)} overheating: coolant ${Math.round(e.heat.coolant)} °C, limit ${Math.round(limit)} °C (O opens the radiator)`;
+    if (e.heat.oil > plane.engine.heat.oilLimit) return `${name(i)} oil ${Math.round(e.heat.oil)} °C, limit ${plane.engine.heat.oilLimit} °C`;
+  }
+  return null;
+}
 
 const HELP = `
 <b>Battle of Britain 1940 — Phase 3 test flight</b>
@@ -96,6 +116,7 @@ export class Hud {
     if (ac.side === 'RAF') lines.push(`rpm lever ${Math.round(input.rpm * 100)}%${input.emergency ? '   +12 LB BOOST' : ''}`);
     else if (ac.propeller.type === 'constantSpeed') lines.push(`rpm lever ${Math.round(input.rpm * 100)}%   automatic airscrews`);
     else lines.push(`Pitch ${degText(plane.beta)}${input.engineAssist ? '   ASSIST (auto pitch)' : '   manual pitch (E/D)'}`);
+    lines.push(heatLine(sim));
     if (d.cutout < 0.5) lines.push('ENGINE CUT (negative g)');
     if (!sim.twin && input.engines?.[0]?.failed) lines.push('ENGINE STOPPED (L to start)');
     if (sim.twin) lines.push(...twinLines(sim));
@@ -111,9 +132,11 @@ export class Hud {
   messageFor(sim) {
     const { ac, plane } = sim;
     const g = plane.ground;
-    if (sim.crashed) return `${g.crash.cause} — press R to restart`;
+    if (sim.crashed) return `${sim.crashCause ?? g.crash.cause} — press R to restart`;
     if (sim.paused) return 'Paused — press P';
     if (sim.notice && plane.time < sim.notice.until) return sim.notice.text;
+    const hot = heatWarning(sim);
+    if (hot) return hot;
     if (g.onGround && g.touchdown) {
       const sink = climbText(ac, g.touchdown.sink).replace('-', '');
       const at = `touched down at ${speedText(ac, g.touchdown.speed)}, sinking ${sink}`;
@@ -156,6 +179,8 @@ export class Hud {
       `Surfaces   elev ${(plane.surfaces.elevator * 100).toFixed(0)}%  ail ${(plane.surfaces.aileron * 100).toFixed(0)}%  rud ${(plane.surfaces.rudder * 100).toFixed(0)}%`,
       `Stick      pitch ${(input.pitch * 100).toFixed(0)}%  roll ${(input.roll * 100).toFixed(0)}%  yaw ${(input.yaw * 100).toFixed(0)}%`,
       `Flaps ${(plane.surfaces.flaps * 100).toFixed(0)}%  gear ${(plane.surfaces.gear * 100).toFixed(0)}%  cut-out ${(d.cutout * 100).toFixed(0)}%`,
+      ...plane.engines.map((e, i) => `Heat ${plane.engines.length > 1 ? ['L', 'R'][i] : ''}     coolant ${e.heat.coolant.toFixed(0)} °C (limit ${coolantLimit(plane.engine, d.altitude).toFixed(0)})  oil ${e.heat.oil.toFixed(0)} °C (limit ${plane.engine.heat.oilLimit})  wear ${(e.heat.wear * 100).toFixed(0)}%  coolant left ${(e.heat.coolantLeft * 100).toFixed(0)}%${e.heat.seized ? '  SEIZED' : ''}`),
+      `Airframe  overstress ${(plane.damage.airframe * 100).toFixed(0)}%  flutter ${(plane.damage.flutter * 100).toFixed(0)}%  radiator ${sim.input.radiator ? 'open' : 'closed'}`,
     ].join('\n');
   }
 }

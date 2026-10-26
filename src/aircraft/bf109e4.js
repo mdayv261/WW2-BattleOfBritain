@@ -62,6 +62,19 @@ export const bf109e4 = {
     dampingRatio: 0.6,
     brake: 0.3,
   },
+  // Engine cooling (Phase 5, D62). Estimates: the temperatures each engine settles at, used to solve the radiator's
+  // conductance. Climb: the normal rating's sea-level power at the model's best-climb speed, radiator open. Cruise: 60%
+  // of it at 100 m/s, radiator closed. Time constants of the coolant and oil, s.
+  cooling: {
+    climb: { eas: 67.1, power: 1, coolant: 105, oil: 95 },
+    cruise: { eas: 100, power: 0.6, coolant: 85 },
+    timeConstant: { coolant: 120, oil: 240 },
+  },
+  // Structural limits (Phase 5, D61-D62): g past `damage` wrinkles the airframe; at `fail` the wings fail.
+  limits: {
+    g: { damage: 9, fail: 13 },
+    diveEas: 208.3, // m/s: 750 km/h (S15); past it, flutter damages the control surfaces
+  },
   contacts: {
     leftTip: { x: -0.2, y: 0.1, z: -4.95 },
     rightTip: { x: -0.2, y: 0.1, z: 4.95 },

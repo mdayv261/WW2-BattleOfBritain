@@ -220,7 +220,6 @@ so it is used for wing geometry, control surfaces, stall and handling only, rate
 | Governor gain (blade-angle rate per fractional rpm error) (`propeller.governorGain`) | 3 | rad/s | — | ASSUMPTION | estimate | Settles the rpm in about a second. |
 | Maximum blade-angle rate (`propeller.pitchRate`) | 0.17 | rad/s | — | ASSUMPTION | estimate | About 10°/s; no source. |
 
-
 ### Undercarriage and ground contact (Phase 2)
 
 Positions are from the centre of gravity in body axes (x forward, y up, z right), wheels with their legs extended.
@@ -268,6 +267,23 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Flap setting for landing, fraction of travel (`controls.flapLanding`) | 1 | fraction | landing condition, flaps down | S12 | medium | NACA's landing condition was flaps fully down. |
 | Elevator travel, full up (`controls.elevatorUp`) | 26 | deg | ±26° | S12 | medium | |
 | Elevator trim, time from one end to the other (`controls.trimTime`) | 8 | s | — | ASSUMPTION | estimate | No source; a handwheel. S12: no rudder trim tab was fitted, so none is modelled. |
+
+### Cooling and structural limits (Phase 5, D62)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Cooling calibration, climb: equivalent airspeed (`cooling.climb.eas`) | 58.8 | m/s | — | ASSUMPTION | estimate | The model's own best-climb speed at sea level, where the engine works hardest for the least cooling air (D62). |
+| Cooling calibration, climb: power, fraction of the normal rating at sea level (`cooling.climb.power`) | 1 | fraction | — | ASSUMPTION | estimate | A full-power climb, radiator open (D62). |
+| Cooling calibration, climb: coolant temperature (`cooling.climb.coolant`) | 110 | °C | — | ASSUMPTION | estimate | Just under the Merlin's 120 °C limit (S33), so a full-power climb can be held and anything harder overheats. |
+| Cooling calibration, climb: oil temperature (`cooling.climb.oil`) | 85 | °C | — | ASSUMPTION | estimate | Under the Merlin's 90 °C climbing oil limit (S33). |
+| Cooling calibration, cruise: equivalent airspeed (`cooling.cruise.eas`) | 100 | m/s | — | ASSUMPTION | estimate | A typical cruising speed, about 225 mph (D62). |
+| Cooling calibration, cruise: power, fraction of the normal rating (`cooling.cruise.power`) | 0.6 | fraction | — | ASSUMPTION | estimate | A typical cruising power; radiator closed (D62). |
+| Cooling calibration, cruise: coolant temperature, radiator closed (`cooling.cruise.coolant`) | 90 | °C | — | ASSUMPTION | estimate | Under the Merlin's 95 °C cruising limit (S33). Sets how much a closed radiator flap still cools. |
+| Coolant time constant (`cooling.timeConstant.coolant`) | 120 | s | — | ASSUMPTION | estimate | Some 100 litres of coolant and the engine's metal warm over minutes, not seconds. |
+| Oil time constant (`cooling.timeConstant.oil`) | 240 | s | — | ASSUMPTION | estimate | The oil and its tank warm more slowly than the coolant. |
+| g at which the airframe starts to be damaged (`limits.g.damage`) | 9 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no limit load found. Past it the skin wrinkles (more drag). |
+| g at which the wings fail (`limits.g.fail`) | 13 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no ultimate load found. |
+| Diving speed limit (`limits.diveEas`) | 174.3 | m/s | 390 mph IAS | ASSUMPTION | estimate | Product owner's choice (D61): no Hurricane I diving limit found. Indicated taken as equivalent airspeed. |
 
 ## Supermarine Spitfire Mk I (Merlin III)
 
@@ -383,7 +399,6 @@ Its airframe and wing are the Mk I's, so it is used for geometry, stall and hand
 | Governor gain (blade-angle rate per fractional rpm error) (`propeller.governorGain`) | 3 | rad/s | — | ASSUMPTION | estimate | Settles the rpm in about a second. |
 | Maximum blade-angle rate (`propeller.pitchRate`) | 0.17 | rad/s | — | ASSUMPTION | estimate | About 10°/s; no source. |
 
-
 ### Undercarriage and ground contact (Phase 2)
 
 Positions are from the centre of gravity in body axes (x forward, y up, z right), wheels with their legs extended.
@@ -443,6 +458,23 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Approach speeds | 38 | m/s | engine assisted about 85 mph IAS; glide 90 mph IAS | S33 | medium | Flaps and undercarriage down. S33's position-error table adds 10 mph at 100-110 mph, so these readings are about 10 mph below the true indicated airspeed. |
 | Maximum speed, flaps down | 62.6 | m/s | 140 mph IAS | S33 | medium | Undercarriage down: 160 mph (S6, S33). |
 
+### Cooling and structural limits (Phase 5, D62)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Cooling calibration, climb: equivalent airspeed (`cooling.climb.eas`) | 60.6 | m/s | — | ASSUMPTION | estimate | The model's own best-climb speed at sea level, where the engine works hardest for the least cooling air (D62). |
+| Cooling calibration, climb: power, fraction of the normal rating at sea level (`cooling.climb.power`) | 1 | fraction | — | ASSUMPTION | estimate | A full-power climb, radiator open (D62). |
+| Cooling calibration, climb: coolant temperature (`cooling.climb.coolant`) | 110 | °C | — | ASSUMPTION | estimate | Just under the Merlin's 120 °C limit (S33), so a full-power climb can be held and anything harder overheats. |
+| Cooling calibration, climb: oil temperature (`cooling.climb.oil`) | 85 | °C | — | ASSUMPTION | estimate | Under the Merlin's 90 °C climbing oil limit (S33). |
+| Cooling calibration, cruise: equivalent airspeed (`cooling.cruise.eas`) | 100 | m/s | — | ASSUMPTION | estimate | A typical cruising speed, about 225 mph (D62). |
+| Cooling calibration, cruise: power, fraction of the normal rating (`cooling.cruise.power`) | 0.6 | fraction | — | ASSUMPTION | estimate | A typical cruising power; radiator closed (D62). |
+| Cooling calibration, cruise: coolant temperature, radiator closed (`cooling.cruise.coolant`) | 90 | °C | — | ASSUMPTION | estimate | Under the Merlin's 95 °C cruising limit (S33). Sets how much a closed radiator flap still cools. |
+| Coolant time constant (`cooling.timeConstant.coolant`) | 120 | s | — | ASSUMPTION | estimate | Some 100 litres of coolant and the engine's metal warm over minutes, not seconds. |
+| Oil time constant (`cooling.timeConstant.oil`) | 240 | s | — | ASSUMPTION | estimate | The oil and its tank warm more slowly than the coolant. |
+| g at which the airframe starts to be damaged (`limits.g.damage`) | 9 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no limit load found. Past it the skin wrinkles (more drag). |
+| g at which the wings fail (`limits.g.fail`) | 13 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no ultimate load found. |
+| Diving speed limit (`limits.diveEas`) | 201.2 | m/s | 450 mph IAS | S6 | medium | Indicated airspeed taken as equivalent airspeed. Past it the control surfaces flutter. |
+
 ## Rolls-Royce Merlin III (Hurricane I and Spitfire I)
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
@@ -476,6 +508,14 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Delay after positive g returns (flooding) (`negativeG.recoverDelay`) | 1 | s | — | ASSUMPTION | estimate | No source; the engine floods briefly before it picks up. |
 | Time for the power to return (`negativeG.recoverTime`) | 1 | s | — | ASSUMPTION | estimate | No source; power returns over about a second. |
 | Combat engine-speed limit (`maxSpeed`) | 3000 | rpm | 3000 rpm | S6 | medium | Not yet used (warnings come in Phase 8). |
+
+### Heat limits (Phase 5, D62)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Coolant limit (`heat.coolantLimit`) | 120 | °C | 120 (climbing ½ hr; all-out 5 mins limit) | S33 | high | Museum record. Past it the engine wears (D62). |
+| Oil limit (`heat.oilLimit`) | 95 | °C | 95 (all-out 5 mins limit) | S33 | high | Museum record. |
+| Over-revving limit (`heat.overRev`) | 3600 | rpm | maximum 3,600 r.p.m. (diving) | S6 | medium | Past it the engine wears out within seconds (D62). |
 
 ## Messerschmitt Bf 109 E-4 (DB 601A)
 
@@ -600,7 +640,6 @@ in armament and armour (details and weights are open gaps). This is flagged as a
 - The Rechlin comparison (S22) says the 109 E was about 20 km/h faster than the Spitfire at sea level. Against S3's
   283 mph (455 km/h) for the Spitfire, that supports a 109 E sea-level speed nearer 475 km/h.
 
-
 ### Undercarriage and ground contact (Phase 2)
 
 Positions are from the centre of gravity in body axes (x forward, y up, z right), wheels with their legs extended.
@@ -656,6 +695,23 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Take-off ground run | 260 | m | 260 m | S15 | medium | Handbook figure; flap setting not stated. S32 used 20° for take-off. |
 | Approach speed | 41.6 | m/s | about 90 mph (S32); best gliding speed 93 mph (S20) | S20, S32 | medium | Flaps and undercarriage down, pilot's indicator. |
 
+### Cooling and structural limits (Phase 5, D62)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Cooling calibration, climb: equivalent airspeed (`cooling.climb.eas`) | 67.1 | m/s | — | ASSUMPTION | estimate | The model's own best-climb speed at sea level, where the engine works hardest for the least cooling air (D62). |
+| Cooling calibration, climb: power, fraction of the normal rating at sea level (`cooling.climb.power`) | 1 | fraction | — | ASSUMPTION | estimate | A full-power climb, radiator open (D62). |
+| Cooling calibration, climb: coolant temperature (`cooling.climb.coolant`) | 105 | °C | — | ASSUMPTION | estimate | Just under the DB 601's 115 °C limit (D61), so a full-power climb can be held and anything harder overheats. |
+| Cooling calibration, climb: oil temperature (`cooling.climb.oil`) | 95 | °C | — | ASSUMPTION | estimate | Within the DB 601's normal 90-100 °C outlet range (S18). |
+| Cooling calibration, cruise: equivalent airspeed (`cooling.cruise.eas`) | 100 | m/s | — | ASSUMPTION | estimate | A typical cruising speed, about 225 mph (D62). |
+| Cooling calibration, cruise: power, fraction of the normal rating (`cooling.cruise.power`) | 0.6 | fraction | — | ASSUMPTION | estimate | A typical cruising power; radiator closed (D62). |
+| Cooling calibration, cruise: coolant temperature, radiator closed (`cooling.cruise.coolant`) | 85 | °C | — | ASSUMPTION | estimate | The DB 601's normal 75 °C inlet (S18) plus a typical 10 °C rise. Sets how much a closed radiator flap still cools. |
+| Coolant time constant (`cooling.timeConstant.coolant`) | 120 | s | — | ASSUMPTION | estimate | Some 100 litres of coolant and the engine's metal warm over minutes, not seconds. |
+| Oil time constant (`cooling.timeConstant.oil`) | 240 | s | — | ASSUMPTION | estimate | The oil and its tank warm more slowly than the coolant. |
+| g at which the airframe starts to be damaged (`limits.g.damage`) | 9 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no limit load found. Past it the skin wrinkles (more drag). |
+| g at which the wings fail (`limits.g.fail`) | 13 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no ultimate load found. |
+| Diving speed limit (`limits.diveEas`) | 208.3 | m/s | 750 km/h | S15 | medium | Indicated or true not stated; taken as indicated (equivalent) airspeed. |
+
 ## Daimler-Benz DB 601A (Bf 109 E-4 and Bf 110 C-4)
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
@@ -701,6 +757,15 @@ turns (scaled down at low rpm), with the normal range green and the low range re
 | Fuel pressure, normal range (`pressures.fuelNormal`) | 1.2:1.8 | kg/cm² | — | ASSUMPTION | estimate | No source found; the green band. S24 notes hand pumping cannot exceed about 1 kg/cm². |
 | Fuel pressure shown while running (`pressures.fuelRunning`) | 1.5 | kg/cm² | — | ASSUMPTION | estimate | Middle of the assumed normal range. |
 | Fuel scale, full deflection (`pressures.fuelFullScale`) | 3 | kg/cm² | — | ASSUMPTION | estimate | No source found; covers the assumed range. |
+
+### Heat limits (Phase 5, D62)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Coolant limit at sea level (`heat.coolantLimit`) | 115 | °C | — | ASSUMPTION | estimate | Product owner's choice (D61): the manual's limit is 6 °C below a boiling curve that was not found (S18). |
+| Fall of the coolant limit with height (`heat.coolantLapse`) | 0.003 | °C/m | — | ASSUMPTION | estimate | As water's boiling point falls with pressure, about 3 °C per km low down. |
+| Oil limit (`heat.oilLimit`) | 105 | °C | 105–110 °C höchst. vorübergehend (outlet) | S18 | medium | The lower end of the brief maximum; S24 gives 105 °C for a short period only. |
+| Over-revving limit (`heat.overRev`) | 2500 | rpm | 2500 U/min 30 Sekunden lang (dive) | S18 | medium | |
 
 ## Messerschmitt Bf 110 C-4 (2 × DB 601A)
 
@@ -862,6 +927,23 @@ Bf 109's (same designer, engine and airscrew).
 | Pilot's eye, ahead of the centre of gravity (`eye.x`) | 1.0 | m | — | ASSUMPTION | estimate | The pilot sits ahead of the wing; S24 praises the view ahead. |
 | Pilot's eye, height (`eye.y`) | 0.9 | m | — | ASSUMPTION | estimate | No source found; typical of the period. |
 
+### Cooling and structural limits (Phase 5, D62)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Cooling calibration, climb: equivalent airspeed (`cooling.climb.eas`) | 62.6 | m/s | — | ASSUMPTION | estimate | The model's own best-climb speed at sea level, where the engine works hardest for the least cooling air (D62). |
+| Cooling calibration, climb: power, fraction of the normal rating at sea level (`cooling.climb.power`) | 1 | fraction | — | ASSUMPTION | estimate | A full-power climb, radiator open (D62). |
+| Cooling calibration, climb: coolant temperature (`cooling.climb.coolant`) | 105 | °C | — | ASSUMPTION | estimate | Just under the DB 601's 115 °C limit (D61), so a full-power climb can be held and anything harder overheats. |
+| Cooling calibration, climb: oil temperature (`cooling.climb.oil`) | 95 | °C | — | ASSUMPTION | estimate | Within the DB 601's normal 90-100 °C outlet range (S18). |
+| Cooling calibration, cruise: equivalent airspeed (`cooling.cruise.eas`) | 100 | m/s | — | ASSUMPTION | estimate | A typical cruising speed, about 225 mph (D62). |
+| Cooling calibration, cruise: power, fraction of the normal rating (`cooling.cruise.power`) | 0.6 | fraction | — | ASSUMPTION | estimate | A typical cruising power; radiator closed (D62). |
+| Cooling calibration, cruise: coolant temperature, radiator closed (`cooling.cruise.coolant`) | 85 | °C | — | ASSUMPTION | estimate | The DB 601's normal 75 °C inlet (S18) plus a typical 10 °C rise. Sets how much a closed radiator flap still cools. |
+| Coolant time constant (`cooling.timeConstant.coolant`) | 120 | s | — | ASSUMPTION | estimate | Some 100 litres of coolant and the engine's metal warm over minutes, not seconds. |
+| Oil time constant (`cooling.timeConstant.oil`) | 240 | s | — | ASSUMPTION | estimate | The oil and its tank warm more slowly than the coolant. |
+| g at which the airframe starts to be damaged (`limits.g.damage`) | 7 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no limit load found. Past it the skin wrinkles (more drag). |
+| g at which the wings fail (`limits.g.fail`) | 10.5 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no ultimate load found. |
+| Diving speed limit (`limits.diveEas`) | 180.6 | m/s | 650 Km./hr. (A.S.I.) | S24 | medium | Indicated taken as equivalent airspeed. |
+
 ## Heinkel He 111 H (AI only)
 
 Two period documents were found on 24 Oct 2026:
@@ -994,6 +1076,22 @@ positions are estimates from the overall dimensions.
 | Pilot's eye, ahead of the centre of gravity (`eye.x`) | 4.5 | m | — | ASSUMPTION | estimate | The pilot sits in the glazed nose; used only by the cockpit camera, which the He 111 does not offer. |
 | Pilot's eye, height (`eye.y`) | 0.8 | m | — | ASSUMPTION | estimate | As above. No measured value; a judgement from similar aircraft. |
 
+### Cooling and structural limits (Phase 5, D62)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Cooling calibration, climb: equivalent airspeed (`cooling.climb.eas`) | 57.2 | m/s | — | ASSUMPTION | estimate | The model's own best-climb speed at sea level, where the engine works hardest for the least cooling air (D62). |
+| Cooling calibration, climb: power, fraction of the normal rating at sea level (`cooling.climb.power`) | 1 | fraction | — | ASSUMPTION | estimate | A full-power climb, radiator open (D62). |
+| Cooling calibration, climb: coolant temperature (`cooling.climb.coolant`) | 105 | °C | — | ASSUMPTION | estimate | Just under the DB 601's 115 °C limit (D61), so a full-power climb can be held and anything harder overheats. |
+| Cooling calibration, climb: oil temperature (`cooling.climb.oil`) | 95 | °C | — | ASSUMPTION | estimate | Within the DB 601's normal 90-100 °C outlet range (S18). |
+| Cooling calibration, cruise: equivalent airspeed (`cooling.cruise.eas`) | 100 | m/s | — | ASSUMPTION | estimate | A typical cruising speed, about 225 mph (D62). |
+| Cooling calibration, cruise: power, fraction of the normal rating (`cooling.cruise.power`) | 0.6 | fraction | — | ASSUMPTION | estimate | A typical cruising power; radiator closed (D62). |
+| Cooling calibration, cruise: coolant temperature, radiator closed (`cooling.cruise.coolant`) | 85 | °C | — | ASSUMPTION | estimate | The DB 601's normal 75 °C inlet (S18) plus a typical 10 °C rise. Sets how much a closed radiator flap still cools. |
+| Coolant time constant (`cooling.timeConstant.coolant`) | 120 | s | — | ASSUMPTION | estimate | Some 100 litres of coolant and the engine's metal warm over minutes, not seconds. |
+| Oil time constant (`cooling.timeConstant.oil`) | 240 | s | — | ASSUMPTION | estimate | The oil and its tank warm more slowly than the coolant. |
+| g at which the airframe starts to be damaged (`limits.g.damage`) | 4.5 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no limit load found. Past it the skin wrinkles (more drag). |
+| g at which the wings fail (`limits.g.fail`) | 7 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no ultimate load found. |
+
 ## Junkers Jumo 211F-1 (He 111 H-6/H-11)
 
 Close variant for the H-3's Jumo 211 (D40). No power curve was found: S29 gives the take-off power and the rated and
@@ -1015,6 +1113,15 @@ cruising powers at 5,500 m. The full-throttle curve of the two-speed supercharge
 | Power against rpm exponent (`rpmPowerExponent`) | 0.5 | — | — | ASSUMPTION | estimate | As the DB 601A. |
 | Supercharger pressure against rpm exponent (`mapSpeedExponent`) | 1 | — | — | ASSUMPTION | estimate | As the DB 601A. |
 | Highest engine speed (`maxSpeed`) | 2600 | rpm | 1,350 hp at 2,600 rpm | S35 | medium | Take-off rating. |
+
+### Heat limits (Phase 5, D62)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Coolant limit at sea level (`heat.coolantLimit`) | 115 | °C | — | ASSUMPTION | estimate | No Jumo 211 limits found: the DB 601A's (D61) are used. |
+| Fall of the coolant limit with height (`heat.coolantLapse`) | 0.003 | °C/m | — | ASSUMPTION | estimate | As the DB 601A. |
+| Oil limit (`heat.oilLimit`) | 105 | °C | — | ASSUMPTION | estimate | As the DB 601A. |
+| Over-revving limit (`heat.overRev`) | 2700 | rpm | — | ASSUMPTION | estimate | 100 rpm over the take-off rating, as the DB 601A's diving limit is over its own. |
 
 ## Common flight-model parameters
 
@@ -1047,6 +1154,33 @@ Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or es
 | Wheel descent rate that collapses the undercarriage (`sinkLimit`) | 3.5 | m/s | — | ASSUMPTION | estimate | About 11.5 ft/s. The period design figure was not found (see gaps). |
 | Crankshaft speed a starting engine is turned to (`starterSpeed`) | 600 | rpm | — | ASSUMPTION | estimate | The simple start/stop key (D49) turns a started engine to this speed, as a starter would, and it runs up from there. No start-up sequence is modelled. |
 | Friction of a stopped engine (`deadEngineFriction`) | 0.1 | fraction | — | ASSUMPTION | estimate | Torque of a dead engine's internal friction and pumping, as a fraction of its rated torque. No source found; a piston engine's friction is commonly about a tenth of its output. It sets how much a windmilling airscrew is driven, and so its drag: with 0.1 the Bf 110 climbs about half as well on one engine windmilling as feathered (S25: much better feathered). |
+
+### Engine heat and structural damage (Phase 5, D62)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Radiator conductance exponent (`cooling.flowExponent`) | 0.8 | — | — | ASSUMPTION | estimate | Heat transfer in turbulent flow through a radiator core goes about as the 0.8 power of the mass flow. |
+| Airscrew efficiency for the calibration slipstream (`cooling.eta`) | 0.8 | fraction | — | ASSUMPTION | estimate | Typical climbing efficiency (S30's peak is 0.86). |
+| Idle heat (`cooling.idleHeat`) | 0.05 | fraction | — | ASSUMPTION | estimate | Friction heat of a turning engine at idle, as a fraction of rated power: an idling engine stays warm without overheating. |
+| Overheat that wears an engine out in overheatLife (`engineWear.overheatSpan`) | 20 | °C | — | ASSUMPTION | estimate | Wear builds in proportion to the excess over a limit. |
+| Life at that overheat (`engineWear.overheatLife`) | 120 | s | — | ASSUMPTION | estimate | An engine 20 °C over a limit seizes in about two minutes. |
+| Over-revving that wears an engine out in overRevLife (`engineWear.overRevSpan`) | 300 | rpm over the limit | — | ASSUMPTION | estimate | Over the diving limit. |
+| Life at that over-revving (`engineWear.overRevLife`) | 10 | s | — | ASSUMPTION | estimate | Over-revving wrecks an engine in seconds. |
+| Wear before any power is lost (`engineWear.lossFrom`) | 0.3 | fraction | — | ASSUMPTION | estimate | A little wear shows no loss of power. |
+| Power lost by seizure (`engineWear.lossAtSeize`) | 0.6 | fraction | — | ASSUMPTION | estimate | A failing engine loses power before it stops. |
+| Coolant overheat at which it boils off (`engineWear.boilMargin`) | 15 | °C | — | ASSUMPTION | estimate | Over the coolant limit; the relief valve vents it. |
+| Coolant lost per second while boiling (`engineWear.boilRate`) | 0.01 | fraction/s | — | ASSUMPTION | estimate | Boiling empties the system over a couple of minutes. |
+| Coolant needed to carry the heat away (`engineWear.coolantNeeded`) | 0.4 | fraction | — | ASSUMPTION | estimate | With less left, the radiator carries less heat away: a glycol leak seizes the engine in about a minute. |
+| Friction of a seized engine (`engineWear.seizedFriction`) | 3 | × rated torque | — | ASSUMPTION | estimate | Enough to stop the airscrew against the windmilling torque. |
+| Negative-g limits as a share of the positive (`structure.negativeShare`) | 0.5 | fraction | — | ASSUMPTION | estimate | Aircraft were usually designed for less negative than positive load. |
+| Drag of a fully wrinkled airframe (`structure.airframeDrag`) | 0.3 | × cd0 | — | ASSUMPTION | estimate | Up to 30% more parasite drag at the point of failure. |
+| Excess over the diving limit for flutter (`structure.flutterSpan`) | 0.1 | fraction | — | ASSUMPTION | estimate | 10% over the limit tears the surfaces away in flutterLife. |
+| Flutter life (`structure.flutterLife`) | 5 | s | — | ASSUMPTION | estimate | Flutter destroys surfaces within seconds. |
+| Effect lost by fluttering surfaces (`structure.flutterLoss`) | 0.8 | fraction | — | ASSUMPTION | estimate | Before they tear away. |
+| Drag of torn-away surfaces (`structure.tornSurfaceDrag`) | 0.1 | × cd0 | — | ASSUMPTION | estimate | Ragged hinges and stubs. |
+| Coolant temperature at a ground start (`groundStartHeat.coolant`) | 60 | °C | 60°C (minimum coolant for take-off) | S33, ASSUMPTION | estimate | Engines at a ground start are as after a run-up. |
+| Oil temperature at a ground start (`groundStartHeat.oil`) | 40 | °C | — | ASSUMPTION | estimate | As after a run-up: above the Merlin's 15 °C minimum (S33) and the DB 601's 30 °C (S24). |
+
 ## Propeller data: NACA Report 640
 
 All three fighters use the full-scale coefficients of NACA Report 640's 3-blade Clark Y propeller 5868-9 (`src/aircraft/naca640.js`), scaled to each propeller's diameter. The Rotol and VDM blades were of different shape and width, so this is an approximation: it is the best measured full-scale data found for 3-blade propellers of the period. Blade angles beyond the measured 15-45° reuse the nearest curve, stretched in J so that its zero-thrust point moves on at the measured rate. The power coefficient is computed as CT J / efficiency, so thrust, power and efficiency stay consistent.
@@ -1075,7 +1209,7 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
 | Browning .303 Mk II rate of fire | 1100 | rounds/min | FASTER RATE OF FIRE (1100 RPM) | S39 | medium | Museum record of a B.S.A. 1938 Mark II. |
-| Hurricane I guns and rounds per gun | 8 × .303, 334 | rounds | .303, 8, Fwd. Wings, Rds/Gun 334 | S1 | high | |
+| Hurricane I guns and rounds per gun | 8 × .303, 334 | rounds | .303, 8, Fwd. Wings, Rds/Gun 334 | S1 | medium |  |
 | Spitfire I guns | 8 × .303 Browning in the wings, fired pneumatically by a push-button on the spade grip | — | The eight machine guns are fired pneumatically by a push-button on the control column spade grip | S33 | high | Rounds per gun not found (see gaps). |
 | MG 17 rate of fire, synchronised | 1000 | rounds/min | 1,000 rds./min. (synchronized) | S27 | medium | Bf 109 cowling guns. |
 | MG 17 rate of fire, unsynchronised | 1100 | rounds/min | 1,100 rds./min. (unsynchronized) | S27 | medium | Bf 110 nose guns. |
@@ -1092,32 +1226,32 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
-| .303 Mk VII ball bullet mass | 11.28 | g | pointed bullet weighing 174 grains | S37 | high | Lead core, cupro-nickel envelope, aluminium tip. |
-| .303 Mk VII muzzle velocity (range table) | 743.7 | m/s | M.V. 2,440 f/s | S37 | high | The Hythe range table's muzzle velocity. Fired from rifles and Vickers guns; no Browning-specific figure found (see gaps). |
-| .303 Mk VII remaining velocity at 100 / 200 / 300 / 400 / 500 / 600 yd | 680 / 619 / 561 / 506 / 457 / 415 | m/s | 2230 / 2030 / 1840 / 1660 / 1500 / 1360 f/s | S37 | high | Appendix I, Hythe firings, at sea level. Used to fit the drag and to test it (acceptance). |
-| .303 Mk VII time of flight to 100 / 200 / 300 / 400 / 500 / 600 yd | 0.2 / 0.3 / 0.4 / 0.6 / 0.8 / 1.0 | s | as tabled | S37 | high | Given to 0.1 s only. |
-| .303 Mk VII elevation needed at 100 / 200 / 300 / 400 / 500 / 600 yd | 3 / 7 / 11 / 15 / 19 / 25 | minutes of arc | as tabled | S37 | high | The drop below the line of departure is the range times the tangent of the elevation: 0.08 / 0.37 / 0.88 / 1.60 / 2.53 / 3.98 m. |
-| .303 armour-piercing (W Mk I) | same shape as Mk VII; muzzle velocity 2,500 f/s (762 m/s); should penetrate 10 mm of good armour plate at 100 yards | — | as quoted | S37 | high | |
-| .303 tracer (G Mk I) | trajectory close to ball up to 600 yd; over 70% trace for 300 yd and over 50% to about 600-800 yd | — | as quoted | S37 | high | |
-| RAF fighter ammunition, typical arrangement in the Battle | old-type incendiary in the 2 outer guns; de Wilde incendiary in 1 gun; armour-piercing in 2; ball in the other 3 | — | Old-type incendiary in the 2 outer guns, de Wilde in one gun while supplies were limited, Armour piercing in 2 guns, and ball in the other 3 | S38 | high | Para. 229. The old incendiary gave "a distinct smoke-tracer effect"; de Wilde had no flame or smoke trace; tracer proper was not used in fixed guns by day (paras. 227-228). |
+| .303 Mk VII ball bullet mass | 11.28 | g | pointed bullet weighing 174 grains | S37 | medium | Lead core, cupro-nickel envelope, aluminium tip. |
+| .303 Mk VII muzzle velocity (range table) | 743.7 | m/s | M.V. 2,440 f/s | S37 | medium | The Hythe range table's muzzle velocity. Fired from rifles and Vickers guns; no Browning-specific figure found (see gaps). |
+| .303 Mk VII remaining velocity at 100 / 200 / 300 / 400 / 500 / 600 yd | 680 / 619 / 561 / 506 / 457 / 415 | m/s | 2230 / 2030 / 1840 / 1660 / 1500 / 1360 f/s | S37 | medium | Appendix I, Hythe firings, at sea level. Used to fit the drag and to test it (acceptance). |
+| .303 Mk VII time of flight to 100 / 200 / 300 / 400 / 500 / 600 yd | 0.2 / 0.3 / 0.4 / 0.6 / 0.8 / 1.0 | s | as tabled | S37 | medium | Given to 0.1 s only. |
+| .303 Mk VII elevation needed at 100 / 200 / 300 / 400 / 500 / 600 yd | 3 / 7 / 11 / 15 / 19 / 25 | minutes of arc | as tabled | S37 | medium | The drop below the line of departure is the range times the tangent of the elevation: 0.08 / 0.37 / 0.88 / 1.60 / 2.53 / 3.98 m. |
+| .303 armour-piercing (W Mk I) | same shape as Mk VII; muzzle velocity 2,500 f/s (762 m/s); should penetrate 10 mm of good armour plate at 100 yards | — | as quoted | S37 | medium |  |
+| .303 tracer (G Mk I) | trajectory close to ball up to 600 yd; over 70% trace for 300 yd and over 50% to about 600-800 yd | — | as quoted | S37 | medium |  |
+| RAF fighter ammunition, typical arrangement in the Battle | old-type incendiary in the 2 outer guns; de Wilde incendiary in 1 gun; armour-piercing in 2; ball in the other 3 | — | Old-type incendiary in the 2 outer guns, de Wilde in one gun while supplies were limited, Armour piercing in 2 guns, and ball in the other 3 | S38 | medium | Para. 229. The old incendiary gave "a distinct smoke-tracer effect"; de Wilde had no flame or smoke trace; tracer proper was not used in fixed guns by day (paras. 227-228). |
 | 7.92 mm armour-piercing bullet (Rechlin table) | 10 g; 810 m/s; remaining velocity 715 / 624 / 538 / 460 / 396 / 348 m/s and time 0.132 / 0.281 / 0.453 / 0.654 / 0.889 / 1.159 s at 100-600 m; drop 0.1 / 0.4 / 0.9 / 1.8 / 3.2 / 5.1 m | — | Geschossgewicht 10 g, Anfangsgeschwindigkeit 810 m/sec; table as printed | S41 | medium | Sea-level air (1.2255 kg/m³). Measured 1943; the 1940 rounds are assumed to fly alike. Medium: retyped compilation. |
-| 7.92 mm types and penetration | ball; armour-piercing (12 mm at 100 yd); incendiary "observing" (phosphorus); armour-piercing incendiary (8 mm, white smoke 400-500 yd); practice tracer (white trace 800 yd) | — | as tabled | S40 | high | Table 4. No belt mix for 1940 found (see gaps). |
+| 7.92 mm types and penetration | ball; armour-piercing (12 mm at 100 yd); incendiary "observing" (phosphorus); armour-piercing incendiary (8 mm, white smoke 400-500 yd); practice tracer (white trace 800 yd) | — | as tabled | S40 | medium | Table 4. No belt mix for 1940 found (see gaps). |
 | MG FF/M 117 g shells (Rechlin table) | 117 g; 585 m/s; remaining velocity 533 / 487 / 446 / 409 / 376 / 349 m/s and time 0.179 / 0.376 / 0.590 / 0.825 / 1.080 / 1.356 s at 100-600 m; drop 0.15 / 0.65 / 1.57 / 2.98 / 4.98 / 7.67 m | — | Geschossgewicht 117 g, Anfangsgeschwindigkeit 585 m/sec | S41 | medium | High-explosive tracer, high-explosive incendiary tracer and incendiary rounds for the FF/M ("FFM"). From the DWM table of 9 Sep 1940. Medium: retyped compilation. |
 | MG FF/M 92 g mine shell (Rechlin table) | 92 g; 695 m/s; remaining velocity 597 / 509 / 432 / 370 / 319 / 281 m/s and time 0.155 / 0.337 / 0.551 / 0.801 / 1.095 / 1.428 s at 100-600 m | — | Geschossgewicht 92 g, Anfangsgeschwindigkeit 695 m/sec | S41 | medium | From the DWM table of 12 Dec 1941; whether mine shells were in use in August 1940 is not confirmed. |
-| 20 mm types and penetration | armour-piercing 17 mm at 100 yd (10 mm at 30°); armour-piercing incendiary and armour-piercing HE 17 mm; tracer burns brilliant white about 1.8 s | — | as tabled | S40 | high | Table 7 (Mauser and Oerlikon ammunition). |
+| 20 mm types and penetration | armour-piercing 17 mm at 100 yd (10 mm at 30°); armour-piercing incendiary and armour-piercing HE 17 mm; tracer burns brilliant white about 1.8 s | — | as tabled | S40 | medium | Table 7 (Mauser and Oerlikon ammunition). |
 
 ### Harmonisation, armour and tanks
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
-| RAF harmonisation in the Battle | all guns converge on one point at 250 yards (229 m) | m | their lines of fire converged on a point 250 yards distant | S38 | high | Para. 224: fire "effective up to about 500 yards". |
-| RAF fighter armour | bullet-proof windscreen; front armour between the top of the engine and the windscreen; rear armour directly behind the pilot | — | as quoted | S38 | high | Para. 89 and Appendix F para. 3. Thicknesses not found (see gaps). |
-| Hurricane fuel tanks | wing tanks covered with Linatex, "fairly good self-sealing"; the fuselage reserve tank uncovered until covered during the Battle, with a metal bulkhead in front of the pilot | — | as quoted | S38 | high | Appendix F paras. 6-7: many Hurricanes were set on fire through the reserve tank. Tank sizes not found (see gaps). |
+| RAF harmonisation in the Battle | all guns converge on one point at 250 yards (229 m) | m | their lines of fire converged on a point 250 yards distant | S38 | medium | Para. 224: fire "effective up to about 500 yards". |
+| RAF fighter armour | bullet-proof windscreen; front armour between the top of the engine and the windscreen; rear armour directly behind the pilot | — | as quoted | S38 | medium | Para. 89 and Appendix F para. 3. Thicknesses not found (see gaps). |
+| Hurricane fuel tanks | wing tanks covered with Linatex, "fairly good self-sealing"; the fuselage reserve tank uncovered until covered during the Battle, with a metal bulkhead in front of the pilot | — | as quoted | S38 | medium | Appendix F paras. 6-7: many Hurricanes were set on fire through the reserve tank. Tank sizes not found (see gaps). |
 | Spitfire I fuel tanks | two tanks one above the other forward of the cockpit: top 48 gallons, bottom 37 gallons | gal | Top tank 48 gallons, Bottom tank 37 gallons | S33 | high | Self-sealing not stated. S4: "armour over the fuel tank". |
 | Spitfire I oil system | 5.8-gallon tank below the engine mounting; two oil coolers in tandem under the port wing | — | as quoted | S33 | high | |
 | Spitfire I services | hydraulic (engine-driven pump): undercarriage; pneumatic (engine-driven compressor, two cylinders): flaps, brakes, guns | — | as quoted | S33 | high | |
 | Bf 109 E pilot armour (autumn 1940) | 8 mm | mm | the 8-mm. armour carried in the M.E. 109 | S38 | medium | Appendix F para. 15. Position not stated; the date it was fitted is not confirmed for August. |
-| German self-sealing tanks | German bombers had good self-sealing tanks | — | as quoted | S38 | high | Appendix F para. 5. |
+| German self-sealing tanks | German bombers had good self-sealing tanks | — | as quoted | S38 | medium | Appendix F para. 5. |
 
 ### Engine temperatures
 
@@ -1127,12 +1261,12 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 | Merlin III coolant, maximum: climbing (½ hr) / cruising / all-out (5 min) | 120 / 95 / 120 | °C | as tabled | S33 | high | Pilot's Notes p. 26 (January 1942 page; the limits table for the Merlin II or III). |
 | Merlin III oil, maximum: climbing / cruising / all-out (5 min) | 90 / 90 / 95 | °C | as tabled | S33 | high | |
 | Merlin III minimum temperatures for take-off | oil 15, coolant 60 | °C | as quoted | S33 | high | |
-| DB 601 oil inlet temperature | 60–75 normal; 80 at most, briefly | °C | 60–75 °C normal, 80 °C höchstens vorübergehend | S18 | high | Page 47. |
-| DB 601 oil outlet temperature | 90–100 normal; 105–110 at most, briefly | °C | 90–100 °C normal, 105–110 °C höchst. vorübergehend | S18 | high | S24 (Bf 110): inlet maximum 75, outlet maximum 95, 105 for a short period only. |
-| DB 601 coolant inlet temperature | at least 60; 75 normal | °C | 60 °C mindestens, 75 °C normal | S18 | high | |
-| DB 601 coolant outlet temperature, maximum | 6 °C below the boiling curve | — | 6 °C unter Siedekurve höchstens | S18 | high | The boiling curve (it falls with height) was not found (see gaps). S24: the Bf 110's gauges mark the maximum for sea level, 5 km and 10 km. S21: over 120 °C in sustained turns (Bf 109). |
-| DB 601 engine speed | never above 2,400 rpm, even briefly; 2,500 rpm for 30 s in a dive | rpm | über 2400 U/min darf die Drehzahl, auch vorübergehend nicht steigen; 2500 U/min 30 Sekunden | S18 | high | Page 47. |
-| Bf 110 radiator and oil-cooler flaps | coolant flaps by two 9-position switches; oil-cooler flaps by levers with five positions | — | as quoted | S24 | high | |
+| DB 601 oil inlet temperature | 60–75 normal; 80 at most, briefly | °C | 60–75 °C normal, 80 °C höchstens vorübergehend | S18 | medium | Page 47. |
+| DB 601 oil outlet temperature | 90–100 normal; 105–110 at most, briefly | °C | 90–100 °C normal, 105–110 °C höchst. vorübergehend | S18 | medium | S24 (Bf 110): inlet maximum 75, outlet maximum 95, 105 for a short period only. |
+| DB 601 coolant inlet temperature | at least 60; 75 normal | °C | 60 °C mindestens, 75 °C normal | S18 | medium |  |
+| DB 601 coolant outlet temperature, maximum | 6 °C below the boiling curve | — | 6 °C unter Siedekurve höchstens | S18 | medium | The boiling curve (it falls with height) was not found (see gaps). S24: the Bf 110's gauges mark the maximum for sea level, 5 km and 10 km. S21: over 120 °C in sustained turns (Bf 109). |
+| DB 601 engine speed | never above 2,400 rpm, even briefly; 2,500 rpm for 30 s in a dive | rpm | über 2400 U/min darf die Drehzahl, auch vorübergehend nicht steigen; 2500 U/min 30 Sekunden | S18 | medium | Page 47. |
+| Bf 110 radiator and oil-cooler flaps | coolant flaps by two 9-position switches; oil-cooler flaps by levers with five positions | — | as quoted | S24 | medium |  |
 
 ### Structural and speed limits
 
@@ -1141,15 +1275,6 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 | Spitfire I maximum diving speed | 201.2 | m/s | 450 mph IAS | S6 | medium | Also in the Spitfire section. |
 | Bf 109 E maximum diving speed | 208.3 | m/s | 750 km/h | S15 | medium | Indicated or true not stated. |
 | Bf 110 maximum permissible speed | 180.6 | m/s | 650 Km./hr. (406 m.p.h.) (A.S.I.) | S24 | medium | |
-
----|---|---|---|---|---|---|
-| MG 17 rate of fire, synchronised | 1000 | rounds/min | 1,000 rds./min. (synchronized) | S27 | medium | |
-| MG 17 rate of fire, unsynchronised | 1100 | rounds/min | 1,100 rds./min. (unsynchronized) | S27 | medium | |
-| MG 17 muzzle velocity | 853 | m/s | 2,800 f/s | S27 | medium | |
-| MG 17 weight | 12.6 | kg | 27 lb 11 oz | S27 | medium | |
-| MG 15 rate of fire (cyclic) | 1000–1100 | rounds/min | 1,000–1,100 rds./min. | S27 | medium | |
-| MG 15 drum capacity | 75 | rounds | saddle-type drum (75-rd. capacity) | S25, S27 | high | |
-| MG FF drum capacity | 60 | rounds | magazine holding 60 rounds | S16, S25 | high | S16 gives 120 rounds for two guns on the E-3. |
 
 ---
 

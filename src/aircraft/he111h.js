@@ -82,6 +82,19 @@ export const he111h = {
     dampingRatio: 0.6,
     brake: 0.3,
   },
+  // Engine cooling (Phase 5, D62). Estimates: the temperatures each engine settles at, used to solve the radiator's
+  // conductance. Climb: the normal rating's sea-level power at the model's best-climb speed, radiator open. Cruise: 60%
+  // of it at 100 m/s, radiator closed. Time constants of the coolant and oil, s.
+  cooling: {
+    climb: { eas: 57.2, power: 1, coolant: 105, oil: 95 },
+    cruise: { eas: 100, power: 0.6, coolant: 85 },
+    timeConstant: { coolant: 120, oil: 240 },
+  },
+  // Structural limits (Phase 5, D61-D62): g past `damage` wrinkles the airframe; at `fail` the wings fail.
+  limits: {
+    g: { damage: 4.5, fail: 7 },
+    diveEas: null, // no diving limit found: no flutter damage
+  },
   contacts: {
     leftTip: { x: -0.6, y: 0.4, z: -11.3 },
     rightTip: { x: -0.6, y: 0.4, z: 11.3 },
