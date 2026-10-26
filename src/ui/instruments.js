@@ -42,8 +42,6 @@ export function instrumentReadings(sim) {
     rpm: plane.omega / UNIT.RPM,
     manifold: raf ? (d.map - ISA.P0) / UNIT.PSI : d.map / UNIT.ATA,
     pitchClock: raf ? null : { hours: (minutes / 60) % 12, minutes: minutes % 60 },
-    // Red marks on the Luftwaffe engine gauges: the 5-minute rating's rpm and manifold pressure.
-    limits: { rpm: [ac.propeller.rpmMax / UNIT.RPM], manifold: raf ? [] : [d.ratedMap / UNIT.ATA] },
     gearDown: plane.surfaces.gear > 0.99,
     gearUp: plane.surfaces.gear < 0.01,
     flaps: plane.surfaces.flaps, // fraction of travel

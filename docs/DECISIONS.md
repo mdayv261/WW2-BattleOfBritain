@@ -828,26 +828,28 @@ distribution make a lower figure than a single-engine fighter's plausible. The d
 rigging recomputed. The climb to 4-8 km is now within 10% and the ceiling 6.6% high; the low-level climb is 17-23% slow
 (FLIGHT_VALIDATION.md item 14).
 
-## D38. Bf 109 panel redrawn after the product owner's photograph (25 Oct 2026)
+## D38. Bf 109 panel redrawn after the product owner's photographs (25-26 Oct 2026)
 
-The product owner asked for the Bf 109 panel to look like a photograph of a preserved panel. It is now drawn in its
-own module (`src/ui/bf109Panel.js`, dials in `src/ui/luftwaffeDials.js`) with the photograph's outline, raised centre
-plate, square dial mountings and positions measured from the picture:
-- **Centre plate:** altimeter (Höhe km) and fine altimeter (one turn per km, with the millibar window) on the left;
-  repeater compass and turn and bank (DREHT / HÄNGT) in the middle; airspeed (km/h) and climb (Steigt / Sinkt, m/s) on
-  the right.
-- **Right:** rev counter (U/min x 100) above the manifold pressure gauge (ata), with red marks at the 5-minute rating
-  from the aircraft data (2,400 rpm, 1.30 ata).
-- **Left:** clock (time of day), ammeter, light switch, ball compass.
-- **Bottom:** fuel contents, oil pressure, oil temperature and coolant temperature, with their coloured rings.
+The product owner asked for the Bf 109 panel to look like a photograph of a preserved panel. A first version followed a
+photograph of a later Bf 109 panel; the product owner then supplied a photograph of a Bf 109 E panel, and the panel
+now follows that one. It is drawn in its own module (`src/ui/bf109Panel.js`, dials in `src/ui/luftwaffeDials.js`)
+with the photograph's grey outline, black square mountings and positions measured from the picture:
+- **Centre tab:** the clock.
+- **Upper row:** airspeed (km/h, round bezel), repeater compass (a card strip behind crossed lines, its figures running
+  down to the right as photographed), manifold pressure (ata).
+- **Lower row:** altimeter (one turn per km, a short hand for whole kilometres, millibar window), turn and bank
+  (DREHT / HÄNGT, yellow ball tube), rev counter (U/min x 100, 600-3,000), and the airscrew pitch indicator
+  (Luftschraubenstellung, S32's ten minutes to a degree).
+- **Switches:** the airscrew pitch switch (Größer, Drehzahl, Kleiner, Handbetrieb) between the lower dials; the magneto
+  switch at M1-2, a red push button and the pitot heater switch (Staurohr heiz) on the left.
+- **Placards:** drawn as plates whose small print, too fine to read on the photograph, is shown as grey lines rather
+  than invented.
 
-**Deviations from the photograph, flagged to the product owner:**
-- The photographed panel is from a later Bf 109 (automatic airscrew, two-speed supercharger, bomb release). The E-4
-  has a manually set airscrew, so its pitch clock (S32) stays, on the blank plate at the upper left.
-- The later aircraft's bomb switch boxes and bomb-release placard are left out; the undercarriage lamps and the flap
-  indicator (D34) take their places.
-- The speed placard gives the E-4's diving limit, 750 km/h (S15), not the photograph's 600 km/h. The warning plates
-  under the turn indicator carry only "Achtung!", because their text is for the later aircraft.
-- The fuel, oil and coolant gauges are not working yet: there is no fuel or engine-heat model until a later phase,
-  so their hands rest at typical running values.
-- The panel takes up to half the screen height (the RAF panel 40%) so the dials stay readable.
+**Added to the photograph:**
+- the flap position indicator (D34) between the compass and the manifold pressure gauge, where the product owner placed
+  it;
+- the undercarriage lamps on a small black plate on the right-hand wing of the panel (the photograph has none; the
+  real E-4 showed the undercarriage by indicators elsewhere).
+
+**Removed with the first version:** the climb indicator, fuel, oil and coolant gauges, ammeter and ball compass, which
+are not on the E panel. The panel takes up to half the screen height (the RAF panel 40%) so the dials stay readable.

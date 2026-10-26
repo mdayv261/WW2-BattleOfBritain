@@ -12,14 +12,13 @@ Read this at the start of every session.
   Bf 110 flight model) done; next checkpoint 2 (He 111, flying the twins, twin controls, Bf 110 cockpit).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
 
-## Bf 109 panel after the product owner's photograph (25 Oct 2026)
+## Bf 109 panel after the product owner's photograph of an E panel (26 Oct 2026)
 
-**Done** (D38): the Bf 109's instruments redrawn to look like the photograph: outline, centre plate, square mountings,
-period dial faces (altimeters, repeater compass, turn and bank, airspeed, climb, rpm, ata, clock, small engine gauges).
-The E-4's pitch clock is kept on the blank plate. `tests/ui/bf109Panel.test.js` checks the scales and layout.
-
-**Known issues:** the fuel, oil and coolant gauges are not working yet (resting hands); the photographed panel is from
-a later Bf 109, so some features were left out (D38).
+**Done** (D38): the Bf 109's instruments redrawn to look like the photograph: grey panel outline, black square
+mountings, clock on the centre tab, airspeed, strip compass, ata, altimeter, turn and bank, rev counter and airscrew
+pitch indicator, the pitch and magneto switches and placards. The flap indicator sits between the compass and the ata
+gauge, as the product owner asked; the undercarriage lamps on the right. `tests/ui/bf109Panel.test.js` checks the
+scales and layout. Checked in Chrome with no console errors.
 
 ## Phase 3 checkpoint 1: twin-engine physics and the Bf 110 (25 Oct 2026)
 
