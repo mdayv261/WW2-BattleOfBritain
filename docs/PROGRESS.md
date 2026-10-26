@@ -13,6 +13,11 @@ Read this at the start of every session.
   the acceptance test, agreed in D42).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
 
+## RAF undercarriage and flap displays (26 Oct 2026)
+
+**Done** (D47): the Hurricane and Spitfire use the Luftwaffe-style undercarriage display (lever and three lamps) and the
+upright flap indicator, from one shared module (`src/ui/panelControls.js`). Checked in Chrome, no console errors.
+
 ## Bf 110 engine columns and LANDING labels (26 Oct 2026)
 
 **Done** (D46): Bf 110 engine instruments in two columns (left engine left, right engine right: rpm, boost, pitch,

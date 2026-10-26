@@ -9,12 +9,13 @@
 import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
-import { face, needle, scale, headingDrum, lamp, label, flapIndicator } from './dials.js';
+import { face, needle, scale, headingDrum, label } from './dials.js';
 import { rafAltimeter, luftwaffeAltimeter } from './altimeters.js';
 import { rafAirspeed } from './airspeed.js';
 import { rafTachometer } from './engineGauges.js';
 import { rafHorizon, rafClimb, rafTurnSlip } from './rafBlindFlying.js';
 import { BF109_LAYOUT, bf109Panel } from './bf109Panel.js';
+import { undercarriageDisplay, flapDisplay } from './panelControls.js';
 import { BF110_LAYOUT, bf110Panel } from './bf110Panel.js';
 
 const DEG = 180 / Math.PI;
@@ -109,7 +110,9 @@ const RAF_LAYOUT = {
   width: 13.4, height: 4.9,
   airspeed: [-2.3, 1.3], horizon: [0, 1.3], climb: [2.3, 1.3],
   altimeter: [-2.3, 3.6], direction: [0, 3.6], turn: [2.3, 3.6],
-  rpm: [5.2, 1.3], boost: [5.2, 3.6], gear: [-5.0, 1.6], flaps: [-5.0, 3.5],
+  rpm: [5.2, 1.3], boost: [5.2, 3.6],
+  // Undercarriage and flap displays as on the Luftwaffe panels (product owner, D47): plates [left, top, right, bottom].
+  gear: [-6.45, 0.1, -3.8, 2.4], flaps: [-6.45, 2.55, -3.8, 4.8],
   blindFlying: { left: -3.55, right: 3.55, top: 0.1, bottom: 4.8 },
 };
 
@@ -135,12 +138,11 @@ function rafPanel(g, x0, y0, r, v) {
     min: -6, max: 14, ...ARC, major: 2, minor: 1, label: (s) => (s > 0 ? `+${s}` : String(s)), band: { from: 12, to: 14, colour: '#e07a26' },
   });
   label(g, at(L.boost)[0], at(L.boost)[1] + r * 0.66, r * 0.65, 'BOOST');
-  const [gx, gy] = at(L.gear);
-  lamp(g, gx - r * 0.35, gy, r * 0.17, '#3fbf4a', v.gearDown, 'DOWN');
-  lamp(g, gx + r * 0.35, gy, r * 0.17, '#d8402e', v.gearUp, 'UP');
-  label(g, gx, gy - r * 0.45, r * 1.3, 'UNDERCARRIAGE');
-  label(g, ...at(L.flaps), r * 1.3, 'FLAPS');
-  flapIndicator(g, at(L.flaps)[0], at(L.flaps)[1] + r * 0.55, r * 1.5, v, { up: 'UP', down: 'DOWN', takeoff: 'TAKEOFF', landing: 'LANDING' });
+  const plateBox = ([left, top, right, bottom]) => ({
+    x: x0 + ((left + right) / 2) * r, y: y0 + ((top + bottom) / 2) * r, w: (right - left) * r, h: (bottom - top) * r,
+  });
+  undercarriageDisplay(g, plateBox(L.gear), r, v, 'UNDERCARRIAGE');
+  flapDisplay(g, plateBox(L.flaps), r, v, 'FLAPS');
 }
 
 export class InstrumentPanel {

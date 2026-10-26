@@ -222,45 +222,6 @@ export function lamp(g, x, y, r, colour, lit, text) {
 }
 
 /**
- * Flap position indicator (not a period instrument; the product owner's request): a track from up to fully
- * down with the take-off and landing settings marked above it and a pointer below at the flaps' position.
- *   v: { flaps, flapTakeoff, flapLanding } (fractions of travel); text: { up, down, takeoff, landing }
- */
-export function flapIndicator(g, x, y, width, v, text) {
-  const x0 = x - width / 2;
-  const at = (f) => x0 + f * width;
-  const h = width * 0.06;
-  g.strokeStyle = INK;
-  g.fillStyle = INK;
-  g.lineWidth = 1.5;
-  g.strokeRect(x0, y - h / 2, width, h);
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
-  g.font = `${Math.max(8, Math.round(width * 0.09))}px ui-sans-serif, Helvetica, sans-serif`;
-  g.fillText(text.up, at(0), y + h * 3.2);
-  g.fillText(text.down, at(1), y + h * 3.2);
-  const mark = (f, words, colour) => {
-    g.strokeStyle = colour;
-    g.fillStyle = colour;
-    g.lineWidth = 2;
-    g.beginPath();
-    g.moveTo(at(f), y - h * 1.6);
-    g.lineTo(at(f), y + h / 2);
-    g.stroke();
-    g.fillText(words, at(f), y - h * 2.8);
-  };
-  mark(v.flapTakeoff, text.takeoff, '#e8c46a');
-  mark(v.flapLanding, text.landing, '#9fd38a');
-  g.fillStyle = INK;
-  const px = at(Math.max(0, Math.min(1, v.flaps)));
-  g.beginPath();
-  g.moveTo(px, y + h / 2);
-  g.lineTo(px - h, y + h * 2);
-  g.lineTo(px + h, y + h * 2);
-  g.fill();
-}
-
-/**
  * The flap position indicator standing upright (Bf 109, the product owner's request): up (0°) at the top and fully
  * down at the bottom, the take-off and landing settings marked to the left of the track and a pointer to its right.
  *   v: { flaps, flapTakeoff, flapLanding } (fractions of travel); text: { up, down, takeoff, landing }

@@ -8,7 +8,9 @@
 //   S24) and the fuel quantity in that wing's tanks (D45).
 //   Bottom left: the undercarriage display and the upright flap position indicator (D34, D44).
 
-import { lamp, label, flapIndicatorVertical } from './dials.js';
+import { undercarriageDisplay, flapDisplay } from './panelControls.js';
+
+export { gearLampState } from './panelControls.js';
 import { millibarWindow } from './altimeters.js';
 import { mount, lwRpm, lwAta, lwClock, lwPitchIndicator } from './luftwaffeDials.js';
 import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
@@ -109,46 +111,8 @@ export function bf110Panel(g, x0, y0, r, v) {
   });
 
   // Undercarriage display and flap position.
-  const gear = box(L.gear);
-  blackPlate(gear);
-  undercarriage(g, gear, r, v);
-  const f = box(L.flaps);
-  blackPlate(f);
-  label(g, f.x, f.y - f.h * 0.4, r * 0.8, 'KLAPPEN');
-  flapIndicatorVertical(g, f.x + f.w * 0.14, f.y + f.h * 0.08, f.h * 0.64, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'TAKEOFF', landing: 'LANDING' });
-}
-
-/**
- * The undercarriage display (product owner, D44): the UP/DOWN lever knob on the left, showing the selected position,
- * and three lamps in a row along the bottom (left, right and tail wheel), green with the undercarriage down and locked,
- * red with it up and locked, dark in between.
- */
-function undercarriage(g, { x, y, w, h }, r, v) {
-  label(g, x + w * 0.12, y - h * 0.36, r * 0.7, 'FAHRWERK');
-  // Lever: a slot on the left, the knob at UP or DOWN.
-  const sx = x - w * 0.3;
-  const top = y - h * 0.22;
-  const bottom = y + h * 0.16;
-  g.fillStyle = '#050505';
-  g.fillRect(sx - w * 0.05, top, w * 0.1, bottom - top);
-  g.fillStyle = '#e9e6dc';
-  g.textAlign = 'left';
-  g.textBaseline = 'middle';
-  g.font = `bold ${Math.max(6, Math.round(r * 0.17))}px ui-sans-serif, Helvetica, sans-serif`;
-  g.fillText('UP', sx + w * 0.12, top + h * 0.02);
-  g.fillText('DOWN', sx + w * 0.12, bottom - h * 0.02);
-  g.fillStyle = '#d8382c';
-  disc(g, sx, v.gearSelected ? bottom : top, r * 0.17);
-  // Three lamps along the base.
-  const state = gearLampState(v);
-  const colour = { green: '#3fbf4a', red: '#d8402e', off: '#2a2a28' }[state];
-  for (const k of [-1, 0, 1]) lamp(g, x + k * w * 0.28, y + h * 0.36, r * 0.12, colour, state !== 'off');
-}
-
-/** The undercarriage lamps: 'green' down and locked, 'red' up and locked, 'off' while it moves. */
-export function gearLampState(v) {
-  if (v.gearDown) return 'green';
-  return v.gearUp ? 'red' : 'off';
+  undercarriageDisplay(g, box(L.gear), r, v, 'FAHRWERK');
+  flapDisplay(g, box(L.flaps), r, v, 'KLAPPEN');
 }
 
 function disc(g, x, y, radius) {

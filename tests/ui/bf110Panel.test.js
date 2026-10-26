@@ -78,14 +78,16 @@ describe('Bf 110 panel changes (D44)', () => {
     expect(Object.keys(L.dials).some((k) => /^(fuel|oil)(Left|Right)$/.test(k))).toBe(false);
   });
 
-  it('labels the take-off and landing settings TAKEOFF and LANDING on every flap position indicator', async () => {
+  it('labels the take-off and landing settings TAKEOFF and LANDING on the one flap display all panels share (D47)', async () => {
     const { readFileSync } = await import('node:fs');
+    const shared = readFileSync(new URL('../../src/ui/panelControls.js', import.meta.url), 'utf8');
+    expect(shared).toMatch(/takeoff: 'TAKEOFF', landing: 'LANDING'/);
     for (const file of ['instruments.js', 'bf109Panel.js', 'bf110Panel.js']) {
       const text = readFileSync(new URL(`../../src/ui/${file}`, import.meta.url), 'utf8');
-      expect(text, file).toMatch(/takeoff: 'TAKEOFF'/);
-      expect(text, file).not.toMatch(/takeoff: '(START|T\/O)'/);
-      expect(text, file).toMatch(/landing: 'LANDING'/);
+      expect(text, file).toMatch(/flapDisplay\(/);
+      expect(text, file).not.toMatch(/'(START|T\/O|LANDUNG|LAND)'/);
     }
+    expect(readFileSync(new URL('../../src/ui/instruments.js', import.meta.url), 'utf8')).toMatch(/undercarriageDisplay\(/);
   });
 });
 

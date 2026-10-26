@@ -8,7 +8,8 @@
 //   bank and the rev counter, with the fuel and oil pressure gauge below it and the two undercarriage lamps to its
 //   right on the lower panel.
 
-import { lamp, label, flapIndicatorVertical } from './dials.js';
+import { lamp } from './dials.js';
+import { flapDisplay } from './panelControls.js';
 import { millibarWindow } from './altimeters.js';
 import {
   mount, lwAirspeed, lwRpm, lwAta, lwStripCompass, lwTurnBank, lwFineAltimeter, lwClock, lwPitchIndicator, placard,
@@ -98,11 +99,7 @@ export function bf109Panel(g, x0, y0, r, v) {
   if (v.pressures) pressureGauge(g, ...dial('pressure'), v.pressures.fuel, v.pressures.oil);
 
   // Flap position (D34), standing upright between the compass and the manifold pressure gauge.
-  const f = box(L.flaps);
-  g.fillStyle = '#0c0c0c';
-  g.fillRect(f.x - f.w / 2, f.y - f.h / 2, f.w, f.h);
-  label(g, f.x, f.y - f.h * 0.4, r * 0.75, 'KLAPPEN');
-  flapIndicatorVertical(g, f.x + f.w * 0.14, f.y + f.h * 0.08, f.h * 0.62, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'TAKEOFF', landing: 'LANDING' });
+  flapDisplay(g, box(L.flaps), r, v, 'KLAPPEN');
 
   // Undercarriage lever, and the two lamps to the right of the pressure gauge.
   gearLever(g, box(L.gearLever), r, v.gearSelected);

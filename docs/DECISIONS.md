@@ -989,3 +989,12 @@ below, in litres (0-700). Each wing held 375 litres in its main tank and 260 in 
   pressure gauges (D44) are removed from the Bf 110. The columns keep the even 6-pixel gap (D44).
 - **Flap indicators:** the landing setting is labelled LANDING on every flap position indicator, matching TAKEOFF.
 - The product owner accepted the removal of the Bf 110's decorative switch box and knobs (D44).
+
+## D47. RAF undercarriage and flap displays as on the Luftwaffe panels (26 Oct 2026, product owner)
+
+The Hurricane and Spitfire panels now use the same undercarriage display as the Bf 110 (UP/DOWN lever knob on the left,
+three lamps along the bottom, green down and locked, red up and locked) and the same upright flap position indicator
+(0° at the top, fully down at the bottom, TAKEOFF and LANDING marked), titled UNDERCARRIAGE and FLAPS. The product owner
+chose this knowing it is not historically correct: it reads more clearly. The two displays live in one shared module
+(`src/ui/panelControls.js`) used by all four cockpits; the Bf 109 keeps its own lever and two lamps placed as the product
+owner asked (D41). The old horizontal flap indicator was removed.
