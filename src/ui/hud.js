@@ -58,7 +58,7 @@ export class Hud {
   constructor() {
     this.strip = panel('strip', `${BOX}left:12px;bottom:12px;`);
     this.debug = panel('debug', `${BOX}right:12px;top:12px;display:none;`);
-    this.help = panel('help', `${BOX}left:50%;top:50%;transform:translate(-50%,-50%);white-space:normal;max-width:560px;`);
+    this.help = panel('help', `${BOX}left:12px;top:50%;transform:translateY(-50%);white-space:normal;max-width:560px;`); // at the far left (product owner)
     this.help.innerHTML = HELP;
     this.message = panel('message', `${BOX}left:50%;top:24px;transform:translateX(-50%);font-size:16px;display:none;`);
     this.showDebug = false;
