@@ -1021,3 +1021,18 @@ owner asked (D41). The old horizontal flap indicator was removed.
   throttle closed and slowly ran down; they now settle at about 730 and 780 rpm. The only validation change is the
   Bf 109's take-off, 1 m shorter (FLIGHT_VALIDATION.md).
 - A stopped engine can now come fully to rest (before, it crept at about 20 rpm).
+
+## D50. Phase 3 signed off (26 Oct 2026)
+
+The product owner accepted Phase 3 ("All working as planned. Sign off Phase 3"), against the acceptance test agreed in
+D42:
+- the Bf 110 and He 111 flight models, validated against S23 and S29 with the deviations recorded in
+  FLIGHT_VALIDATION.md (items 14-19);
+- single-engine behaviour of the Bf 110 as S24 and S25 describe (holds height feathered, worse windmilling,
+  controllable with rudder and trim);
+- the product owner's flight test, including the twin-engine controls, engine start and stop and feathering;
+- no earlier tests broken (840 pass).
+
+Also delivered during Phase 3 at the product owner's request: the Bf 109 and Bf 110 cockpits and instruments after his
+photographs and reference drawings (D38-D46), the shared undercarriage and flap displays (D47) and engine start/stop
+(D49).

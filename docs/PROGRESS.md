@@ -2,15 +2,14 @@
 
 Read this at the start of every session.
 
-## Current status (25 Oct 2026)
+## Current status (26 Oct 2026)
 
 - **Phase 0** (foundations and research): signed off (24 Oct 2026, D14). The game is live at
   https://mdayv261.github.io/WW2-BattleOfBritain/ (repository https://github.com/mdayv261/WW2-BattleOfBritain).
 - **Phase 1** (single-engine flight model): signed off (25 Oct 2026, D27).
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
-- **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): in progress. Checkpoints 1 (twin physics, Bf 110) and 2
-  (He 111, flying the twins, twin controls, Bf 110 panel) done; next checkpoint 3 (the product owner's flight test and
-  the acceptance test, agreed in D42).
+- **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
+- **Next: Phase 4** (world and visuals), planning first.
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
 
 ## Engine start/stop and twin lever fix (26 Oct 2026)
@@ -502,7 +501,7 @@ Each phase's acceptance test is a proposal, agreed with the product owner when t
   - Keyboard and mouse (joystick if chosen), cockpit, chase and free-look cameras, taxiing, take-off, landing,
     basic instruments.
   - Acceptance: take off, fly a circuit and land each fighter without the debug panel.
-- **Phase 3: Twin-engine aircraft.** Bf 110 C-4 and He 111 H-3.
+- **Phase 3: Twin-engine aircraft.** Bf 110 C-4 and He 111 H (H-6/H-11 data, D40). Done and signed off (26 Oct 2026).
   - Separate engines, asymmetric thrust, feathering.
   - Acceptance: validation as in Phase 1; single-engine behaviour matches the RAF reports.
 - **Phase 4: World and visuals.**
