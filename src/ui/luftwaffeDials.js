@@ -136,41 +136,73 @@ export function placard(g, x, y, w, h, { lines = [], scribbles = 0, plate = '#0c
 }
 
 /**
- * Fuel and oil pressure gauge (kg/cm²): the fuel needle sweeps the left half, the oil needle the right half, each over
- * its own scale with the normal range in green and the low range in red.
- *   fuel, oil: { value, max, low, normal: [from, to] } in kg/cm²
+ * A gauge with two half-scales, each with its own needle: the left one sweeps the left half and the right one the right
+ * half, from the bottom up, each over its own scale with its normal range in green and any low range in red.
+ *   left, right: { value, max, min = 0, low (red up to this, optional), normal: [from, to], step (tick spacing),
+ *     majorStep (longer ticks at multiples of this) }
+ *   labels: [left, right] captions; ring: the bezel ring's colour (none if omitted)
  */
-export function pressureGauge(g, x, y, r, fuel, oil) {
-  g.fillStyle = '#d9b623';
-  g.beginPath();
-  g.arc(x, y, r * 1.12, 0, Math.PI * 2);
-  g.fill();
+export function twoScaleGauge(g, x, y, r, left, right, { labels, ring }) {
+  if (ring) {
+    g.fillStyle = ring;
+    g.beginPath();
+    g.arc(x, y, r * 1.12, 0, Math.PI * 2);
+    g.fill();
+  }
   lwFace(g, x, y, r);
-  // Each half sweeps 140 degrees from the bottom up: fuel on the left (anticlockwise), oil on the right.
   const sweep = 140 * DEG;
-  const angleOf = (side, v, max) => Math.PI - side * (Math.max(0, Math.min(max, v)) / max) * sweep;
-  const band = (side, from, to, max, colour) => {
+  const angleOf = (side, o, v) => {
+    const min = o.min ?? 0;
+    return Math.PI - side * ((Math.max(min, Math.min(o.max, v)) - min) / (o.max - min)) * sweep;
+  };
+  const band = (side, o, from, to, colour) => {
     g.strokeStyle = colour;
     g.lineWidth = r * 0.14;
     g.beginPath();
-    const a0 = angleOf(side, from, max) - Math.PI / 2;
-    const a1 = angleOf(side, to, max) - Math.PI / 2;
+    const a0 = angleOf(side, o, from) - Math.PI / 2;
+    const a1 = angleOf(side, o, to) - Math.PI / 2;
     g.arc(x, y, r * 0.86, Math.min(a0, a1), Math.max(a0, a1));
     g.stroke();
   };
-  [[-1, fuel], [1, oil]].forEach(([side, o]) => {
-    band(side, 0, o.low, o.max, '#c0392b');
-    band(side, o.normal[0], o.normal[1], o.max, '#2f9e4a');
+  [[-1, left], [1, right]].forEach(([side, o]) => {
+    if (o.low !== undefined) band(side, o, o.min ?? 0, o.low, '#c0392b');
+    band(side, o, o.normal[0], o.normal[1], '#2f9e4a');
     centred(g);
-    for (let k = 0; k <= o.max; k += o.max <= 3 ? 0.5 : 1) {
-      tick(g, x, y, r, angleOf(side, k, o.max), 0.97, Number.isInteger(k) ? 0.8 : 0.88, Number.isInteger(k) ? 1.6 : 1);
+    const step = o.step ?? 1;
+    for (let k = o.min ?? 0; k <= o.max + 1e-9; k += step) {
+      const major = Math.abs(k / (o.majorStep ?? 1) - Math.round(k / (o.majorStep ?? 1))) < 1e-6;
+      tick(g, x, y, r, angleOf(side, o, k), 0.97, major ? 0.8 : 0.88, major ? 1.6 : 1);
     }
     font(g, r * 0.2, true);
-    for (const k of [0, o.max]) g.fillText(String(k), ...at(x, y, angleOf(side, k, o.max), r * 0.6));
+    for (const k of [o.min ?? 0, o.max]) g.fillText(String(k), ...at(x, y, angleOf(side, o, k), r * 0.6));
   });
   font(g, r * 0.16, true);
-  g.fillText('Kraftst.', x - r * 0.42, y - r * 0.05);
-  g.fillText('Öl', x + r * 0.42, y - r * 0.05);
-  lwHand(g, x, y, r, angleOf(-1, fuel.value, fuel.max), { length: 0.78, counterweight: false });
-  lwHand(g, x, y, r, angleOf(1, oil.value, oil.max), { length: 0.78, counterweight: false });
+  g.fillText(labels[0], x - r * 0.42, y - r * 0.05);
+  g.fillText(labels[1], x + r * 0.42, y - r * 0.05);
+  lwHand(g, x, y, r, angleOf(-1, left, left.value), { length: 0.78, counterweight: false });
+  lwHand(g, x, y, r, angleOf(1, right, right.value), { length: 0.78, counterweight: false });
+}
+
+/**
+ * Fuel and oil pressure gauge (kg/cm²): fuel on the left half, oil on the right, normal pressures in green and low in
+ * red, in a yellow ring.
+ *   fuel, oil: { value, max, low, normal: [from, to] } in kg/cm²
+ */
+export function pressureGauge(g, x, y, r, fuel, oil) {
+  const step = (o) => (o.max <= 3 ? 0.5 : 1);
+  twoScaleGauge(g, x, y, r, { ...fuel, step: step(fuel) }, { ...oil, step: step(oil) }, { labels: ['Kraftst.', 'Öl'], ring: '#d9b623' });
+}
+
+/** Temperature gauge, °C over `min`-`max` on a 270-degree scale, ticks every 10 °C, with its caption. */
+export function lwThermometer(g, x, y, r, value, { min = 0, max = 130, label }) {
+  lwFace(g, x, y, r);
+  const angleOf = (v) => (225 + ((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 270) * DEG;
+  centred(g);
+  for (let v = min; v <= max; v += 10) tick(g, x, y, r, angleOf(v), 0.95, v % 50 === 0 ? 0.78 : 0.87, v % 50 === 0 ? 1.8 : 1.1);
+  font(g, r * 0.22, true);
+  for (let v = min; v <= max; v += 50) g.fillText(String(v), ...at(x, y, angleOf(v), r * 0.58));
+  font(g, r * 0.16, true);
+  g.fillText(label, x, y + r * 0.7); // in the gap at the bottom of the scale
+  g.fillText('°C', x, y - r * 0.32);
+  lwHand(g, x, y, r, angleOf(value));
 }

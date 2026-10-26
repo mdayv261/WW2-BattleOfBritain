@@ -32,6 +32,9 @@ export const db601a = {
     coolantLapse: 0.003, // fall of that limit with height (estimate: as water's boiling point, about 3 °C per km)
     oilLimit: 105, // outlet, at most briefly 105-110 °C (manual p. 47)
     overRev: 2500 * UNIT.RPM, // diving limit, 30 s (manual p. 47)
+    // Green bands of the Bf 110's temperature gauges (D63).
+    oilNormal: { from: 90, to: 100 }, // outlet, normal (manual p. 47)
+    coolantNormal: { from: 75, to: 105 }, // estimate: the normal inlet temperature to 10 °C under the limit
   },
   // Fuel and oil pressures for the cockpit gauge (Pa, gauge pressure). Not modelled physically: with the engine
   // turning, the gauge reads the running values below, scaled down at low rpm.

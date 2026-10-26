@@ -5,15 +5,16 @@
 //   turn and bank, rev counter and the airscrew pitch indicator in the lower row; the magneto switch (shown only, not
 //   working) and a push button on the left. Placed where the product owner asked: the flap position indicator
 //   (upright, D34) between the compass and the manifold pressure gauge; the undercarriage lever between the turn and
-//   bank and the rev counter, with the fuel and oil pressure gauge below it and the two undercarriage lamps to its
-//   right on the lower panel.
+//   bank and the rev counter, with the two undercarriage lamps below it; the fuel and oil pressure gauge below the rev
+//   counter (swapped with the lamps, D63); and a row below the lower panel with the oil and coolant temperature gauges,
+//   the pressure gauge's size, under the rev counter and the pitch indicator (product owner, D63).
 
 import { lamp } from './dials.js';
 import { flapDisplay } from './panelControls.js';
 import { millibarWindow } from './altimeters.js';
 import {
   mount, lwAirspeed, lwRpm, lwAta, lwStripCompass, lwTurnBank, lwFineAltimeter, lwClock, lwPitchIndicator, placard,
-  pressureGauge,
+  pressureGauge, lwThermometer,
 } from './luftwaffeDials.js';
 
 /** The gap between neighbouring mountings and plates, photograph pixels (D44). */
@@ -28,23 +29,23 @@ const P = (px, py) => [(px - CENTRE) / PX, (py - TOP) / PX];
 const size = (px) => px / PX;
 
 export const BF109_LAYOUT = {
-  width: 14.6, height: 9.45, screenShare: 0.42, ownBackground: true, // kept below the sight glass (D41)
-  outline: [[190, 628], [190, 470], [205, 448], [240, 421], [290, 403], [345, 396], [400, 403], [450, 421], [490, 446],
-    [530, 470], [545, 500], [548, 628]].map(([x, y]) => P(x, y)),
-  lowerPanel: { from: [196, 590], to: [542, 628] },
+  width: 14.6, height: 11.2, screenShare: 0.42, ownBackground: true, // top kept below the sight glass (D41, D63)
+  outline: [[190, 672], [190, 470], [205, 448], [240, 421], [290, 403], [345, 396], [400, 403], [450, 421], [490, 446],
+    [530, 470], [545, 500], [548, 672]].map(([x, y]) => P(x, y)),
+  lowerPanel: { from: [196, 590], to: [542, 672] },
   // Dial centres, face radii and mounting half-widths (0: a round bezel, 1.2 times the face), in photograph pixels.
   // The rows and columns keep the photograph's order with the same gap (GAP) between every pair of mountings and
   // plates, none touching (product owner, D44).
   dials: {
     clock: [347, 433.5, 17.5, 22], altimeter: [285, 489, 23, 28.5], compass: [347, 489, 23.75, 0], ata: [449, 489, 23, 28.5],
     airspeed: [285, 551, 23, 28.5], turn: [347, 551, 23, 28.5], rpm: [449, 551, 23, 28.5], pitch: [511, 551, 23, 28.5],
-    pressure: [398, 603.7, 16, 0],
+    pressure: [442.2, 603.7, 16, 0], oilTemp: [458.3, 647.1, 16, 0], coolTemp: [501.7, 647.1, 16, 0],
   },
   knobs: [[313, 607, 13]],
-  bolts: [[214, 455], [524, 455], [200, 610], [538, 610]],
+  bolts: [[214, 455], [524, 455], [200, 655], [538, 655]],
   flaps: { from: [380.5, 460.5], to: [415.5, 517.5] },
   gearLever: { from: [380.5, 522.5], to: [415.5, 579.5] },
-  gearLamps: { from: [422.2, 591], to: [462.2, 616] },
+  gearLamps: { from: [378, 591], to: [418, 616] },
   magneto: { from: [221.5, 476], to: [251.5, 555] },
   button: [207, 528],
   placard: { from: [221.5, 560], to: [251.5, 574] },
@@ -97,11 +98,13 @@ export function bf109Panel(g, x0, y0, r, v) {
   lwRpm(g, ...dial('rpm'), v.rpm);
   lwPitchIndicator(g, ...dial('pitch'), v.pitchClock);
   if (v.pressures) pressureGauge(g, ...dial('pressure'), v.pressures.fuel, v.pressures.oil);
+  lwThermometer(g, ...dial('oilTemp'), v.oil, { label: 'Öl' });
+  lwThermometer(g, ...dial('coolTemp'), v.coolant, { label: 'Kühlst.' });
 
   // Flap position (D34), standing upright between the compass and the manifold pressure gauge.
   flapDisplay(g, box(L.flaps), r, v, 'KLAPPEN');
 
-  // Undercarriage lever, and the two lamps to the right of the pressure gauge.
+  // Undercarriage lever, and the two lamps below it.
   gearLever(g, box(L.gearLever), r, v.gearSelected);
   const k = box(L.gearLamps);
   g.fillStyle = '#0c0c0c';

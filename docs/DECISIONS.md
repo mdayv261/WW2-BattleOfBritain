@@ -1322,3 +1322,23 @@ is used:
 - **Leftover rows:** an editing slip had left the old guns table's rows behind as duplicates; they are removed.
 - **New rows:** every new data value of checkpoint 2 has its own row in its aircraft's or engine's section.
 
+## D63. Coolant and oil temperature gauges on the panels (26 Oct 2026, product owner)
+
+Placed as the product owner asked:
+- **Spitfire and Hurricane:** an oil temperature gauge (0-100 °C) to the right of the rev counter, with the radiator
+  temperature gauge (40-140 °C) below it. The panel widened to fit.
+- **Bf 109:**
+  - **Swap:** the oil pressure gauge and the undercarriage lamps changed places, putting the pressure gauge under the
+    rev counter and the lamps under the undercarriage lever.
+  - **New row:** a row below the lower panel (the product owner's choice) holds the oil and coolant thermometers
+    (0-130 °C), the pressure gauge's size. They are centred as a pair under the rev counter and the pitch indicator,
+    keeping the even gaps (D44).
+  - **Panel size:** the panel grew taller. Its top stays below the sight glass (D41), so the dials are about 16% smaller
+    than before.
+- **Bf 110:** a combined gauge below each engine's fuel gauge, oil on the left half and coolant on the right (0-130 °C
+  each), with the normal ranges in green:
+  - oil 90-100 °C (the DB 601 manual's normal outlet range, S18);
+  - coolant 75-105 °C: from the manual's normal inlet temperature (S18) to 10 °C under the 115 °C limit (D61). Flagged:
+    the top end is an estimate.
+- **Scales:** all the scale ranges are display choices, not from photographs of the period instruments.
+

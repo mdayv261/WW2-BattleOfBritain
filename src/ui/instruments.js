@@ -59,11 +59,15 @@ export function instrumentReadings(sim) {
     turnRate: -spin.y * DEG, // deg/s, + turning right
     sideG: d.sideG,
     rpm: plane.omega / UNIT.RPM,
+    coolant: plane.engines[0].heat.coolant, // °C, the first engine's (the single-engine panels)
+    oil: plane.engines[0].heat.oil,
     manifold: raf ? (d.map - ISA.P0) / UNIT.PSI : d.map / UNIT.ATA,
     pitchClock: raf ? null : pitchClock(plane.beta, ac),
     // Each engine's own readings (the twins have a set of engine instruments per engine).
     engines: plane.engines.map((e, i) => ({
       rpm: e.omega / UNIT.RPM,
+      coolant: e.heat.coolant, // °C (Phase 5, D62)
+      oil: e.heat.oil,
       manifold: raf ? (d.engines[i].map - ISA.P0) / UNIT.PSI : d.engines[i].map / UNIT.ATA,
       pitchClock: raf ? null : pitchClock(e.beta, ac),
     })),
@@ -71,6 +75,11 @@ export function instrumentReadings(sim) {
     fuelTanks: ac.fuel ? [ac.fuel.wingTank, ac.fuel.wingTank].map((m3) => ({ litres: m3 * 1000, capacity: m3 * 1000 })) : null,
     gearSelected: sim.input ? !!sim.input.gear : plane.surfaces.gear > 0.5, // the undercarriage lever: down
     pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, plane.omega / UNIT.RPM) : null,
+    // Normal temperature ranges for gauges that mark them (°C), where the engine data give them (D63).
+    normalTemps: plane.engine.heat.oilNormal ? {
+      oil: [plane.engine.heat.oilNormal.from, plane.engine.heat.oilNormal.to],
+      coolant: [plane.engine.heat.coolantNormal.from, plane.engine.heat.coolantNormal.to],
+    } : null,
     gearDown: plane.surfaces.gear > 0.99,
     gearUp: plane.surfaces.gear < 0.01,
     flaps: plane.surfaces.flaps, // fraction of travel
@@ -104,13 +113,14 @@ const ARC = { start: -Math.PI * 0.75, end: Math.PI * 0.75 };
 
 // RAF panel layout, after a Spitfire I panel (D32): the blind-flying panel in the middle, two rows of three
 // (airspeed, artificial horizon, rate of climb above; altimeter, direction indicator, turn and slip below),
-// the engine instruments to its right (rpm above, boost below) and the undercarriage indicator to its left.
+// the engine instruments to its right (rpm above, boost below), the oil temperature right of the rev counter with the
+// radiator (coolant) temperature below it (product owner, D63), and the undercarriage indicator to its left.
 // Positions are in dial radii from the top centre of the panel. No captions: the real panel has none.
-const RAF_LAYOUT = {
-  width: 13.4, height: 4.9,
+export const RAF_LAYOUT = {
+  width: 17.4, height: 4.9,
   airspeed: [-2.3, 1.3], horizon: [0, 1.3], climb: [2.3, 1.3],
   altimeter: [-2.3, 3.6], direction: [0, 3.6], turn: [2.3, 3.6],
-  rpm: [5.2, 1.3], boost: [5.2, 3.6],
+  rpm: [5.2, 1.3], boost: [5.2, 3.6], oilTemp: [7.5, 1.3], radTemp: [7.5, 3.6],
   // Undercarriage and flap displays as on the Luftwaffe panels (product owner, D47): plates [left, top, right, bottom].
   gear: [-6.45, 0.1, -3.8, 2.4], flaps: [-6.45, 2.55, -3.8, 4.8],
   blindFlying: { left: -3.55, right: 3.55, top: 0.1, bottom: 4.8 },
@@ -138,6 +148,11 @@ function rafPanel(g, x0, y0, r, v) {
     min: -6, max: 14, ...ARC, major: 2, minor: 1, label: (s) => (s > 0 ? `+${s}` : String(s)), band: { from: 12, to: 14, colour: '#e07a26' },
   });
   label(g, at(L.boost)[0], at(L.boost)[1] + r * 0.66, r * 0.65, 'BOOST');
+  // Temperatures, °C (D63; the scales are display choices).
+  gauge(g, ...at(L.oilTemp), r, v.oil, { min: 0, max: 100, ...ARC, major: 20, minor: 10, label: String });
+  label(g, at(L.oilTemp)[0], at(L.oilTemp)[1] + r * 0.66, r * 0.65, 'OIL °C');
+  gauge(g, ...at(L.radTemp), r, v.coolant, { min: 40, max: 140, ...ARC, major: 20, minor: 10, label: String });
+  label(g, at(L.radTemp)[0], at(L.radTemp)[1] + r * 0.66, r * 0.65, 'RADIATOR °C');
   const plateBox = ([left, top, right, bottom]) => ({
     x: x0 + ((left + right) / 2) * r, y: y0 + ((top + bottom) / 2) * r, w: (right - left) * r, h: (bottom - top) * r,
   });

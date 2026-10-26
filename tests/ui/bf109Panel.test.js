@@ -48,16 +48,31 @@ describe('Bf 109 panel layout (D41)', () => {
     expect(L.flaps.to[0]).toBeLessThan(ax - aHalf);
   });
 
-  it('puts the undercarriage lever between the turn and bank and the rev counter, the pressure gauge below it, the lamps to its right', () => {
+  it('puts the undercarriage lever between the turn and bank and the rev counter, the lamps below it, the pressure gauge below the rev counter (D63)', () => {
     const [tx, , , tHalf] = L.dials.turn;
     const [rx, , , rHalf] = L.dials.rpm;
     expect(L.gearLever.from[0]).toBeGreaterThan(tx + tHalf);
     expect(L.gearLever.to[0]).toBeLessThan(rx - rHalf);
+    const lampsX = (L.gearLamps.from[0] + L.gearLamps.to[0]) / 2;
+    expect(lampsX).toBeGreaterThan(L.gearLever.from[0]);
+    expect(lampsX).toBeLessThan(L.gearLever.to[0]);
+    expect(L.gearLamps.from[1]).toBeGreaterThan(L.gearLever.to[1]);
     const [px, py] = L.dials.pressure;
-    expect(px).toBeGreaterThan(L.gearLever.from[0]);
-    expect(px).toBeLessThan(L.gearLever.to[0]);
-    expect(py).toBeGreaterThan(L.gearLever.to[1]);
-    expect(L.gearLamps.from[0]).toBeGreaterThan(px);
+    expect(Math.abs(px - rx)).toBeLessThan(rHalf);
+    expect(py).toBeGreaterThan(L.dials.rpm[1]);
+  });
+
+  it('puts the oil and coolant temperature gauges in a row below, the pressure gauge\'s size, under the rev counter and pitch indicator (D63)', () => {
+    const [ox, oy, oFace] = L.dials.oilTemp;
+    const [cx, cy, cFace] = L.dials.coolTemp;
+    expect(oFace).toBe(L.dials.pressure[2]);
+    expect(cFace).toBe(L.dials.pressure[2]);
+    expect(oy).toBe(cy);
+    expect(oy).toBeGreaterThan(L.dials.pressure[1]);
+    expect(ox).toBeGreaterThan(L.dials.rpm[0] - L.dials.rpm[3]);
+    expect(cx).toBeLessThan(L.dials.pitch[0] + L.dials.pitch[3]);
+    expect(ox).toBeLessThan(cx);
+    expect(Math.max(...L.outline.map(([, y]) => y))).toBeGreaterThan((oy + oFace * 1.2 - 394) / 25);
   });
 });
 

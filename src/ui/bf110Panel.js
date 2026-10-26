@@ -5,14 +5,15 @@
 //   reference drawings (D43); everything sits on an even grid with the same gap between mountings (D44).
 //   Engine instruments on the right in two columns, the left engine's on the left and the right engine's on the right
 //   (product owner, D46): rev counter, manifold pressure, airscrew pitch indicator (the C-4's pitch is set by hand,
-//   S24) and the fuel quantity in that wing's tanks (D45).
+//   S24), the fuel quantity in that wing's tanks (D45) and a combined oil and coolant temperature gauge, oil on the left
+//   and coolant on the right, the normal ranges in green (product owner, D63).
 //   Bottom left: the undercarriage display and the upright flap position indicator (D34, D44).
 
 import { undercarriageDisplay, flapDisplay } from './panelControls.js';
 
 export { gearLampState } from './panelControls.js';
 import { millibarWindow } from './altimeters.js';
-import { mount, lwRpm, lwAta, lwClock, lwPitchIndicator } from './luftwaffeDials.js';
+import { mount, lwRpm, lwAta, lwClock, lwPitchIndicator, twoScaleGauge } from './luftwaffeDials.js';
 import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
 import { ringGauge, redRing } from './bf110Dials.js';
 
@@ -25,9 +26,9 @@ const size = (px) => px / PX;
 
 
 export const BF110_LAYOUT = {
-  width: 15.7, height: 8.9, screenShare: 0.5, ownBackground: true,
-  outline: [[12, 600], [12, 380], [28, 350], [50, 340], [300, 335], [306, 340], [462, 340], [471, 350], [471, 563],
-    [305, 566], [300, 600]].map(([x, y]) => P(x, y)),
+  width: 15.7, height: 9.55, screenShare: 0.54, ownBackground: true,
+  outline: [[12, 600], [12, 380], [28, 350], [50, 340], [300, 335], [306, 340], [462, 340], [471, 350], [471, 620],
+    [300, 620]].map(([x, y]) => P(x, y)),
   // Dial centres, face radii and mounting half-widths, in photograph pixels. The instruments sit on an even grid with
   // the same gap (GAP) between every pair of mountings, none touching (product owner, D44): the flying instruments in
   // 80-pixel cells (three columns, the turn and bank below the clock), the engine instruments in 55-pixel cells (a
@@ -37,6 +38,7 @@ export const BF110_LAYOUT = {
     altimeter: [70, 462, 30, 37], compass: [150, 462, 30, 37], clock: [230, 462, 30, 37], turn: [230, 542, 30, 37],
     rpmLeft: [360, 370, 19, 24.5], rpmRight: [415, 370, 19, 24.5], ataLeft: [360, 425, 19, 24.5], ataRight: [415, 425, 19, 24.5],
     pitchLeft: [360, 480, 19, 24.5], pitchRight: [415, 480, 19, 24.5], tankLeft: [360, 535, 18.5, 24.5], tankRight: [415, 535, 18.5, 24.5],
+    tempLeft: [360, 590, 19, 24.5], tempRight: [415, 590, 19, 24.5],
   },
   plates: [],
   gear: { from: [33, 505], to: [107, 579] },
@@ -108,6 +110,10 @@ export function bf110Panel(g, x0, y0, r, v) {
     });
     const [px, py, pr] = dial(`pitch${side}`);
     lwPitchIndicator(g, px, py, pr, e.pitchClock);
+    // Oil (left half) and coolant (right half) temperatures, °C, normal ranges in green (D63).
+    const scale = { min: 0, max: 130, step: 10, majorStep: 50 };
+    twoScaleGauge(g, ...dial(`temp${side}`), { ...scale, value: e.oil, normal: v.normalTemps.oil },
+      { ...scale, value: e.coolant, normal: v.normalTemps.coolant }, { labels: ['Öl', 'Kühl.'] });
   });
 
   // Undercarriage display and flap position.

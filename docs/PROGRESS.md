@@ -21,7 +21,8 @@ Read this at the start of every session.
 - temperatures and damage in the text strip and F3, with warnings on the message line;
 - tests in `tests/physics/cooling.test.js`, `tests/physics/structure.test.js`, `tests/ui/damageReports.test.js`.
 
-**Left:** temperature gauges on the panels (waiting for the product owner: positions on the Luftwaffe panels).
+**Gauges** (D63): coolant and oil temperature gauges on every flyable aircraft's panel, placed as the product owner
+asked; the Bf 110's with green normal bands.
 
 **Known issues:** all radiator and structural constants are estimates (D61, D62); one radiator control for both of the
 Bf 110's engines.

@@ -766,6 +766,10 @@ turns (scaled down at low rpm), with the normal range green and the low range re
 | Fall of the coolant limit with height (`heat.coolantLapse`) | 0.003 | °C/m | — | ASSUMPTION | estimate | As water's boiling point falls with pressure, about 3 °C per km low down. |
 | Oil limit (`heat.oilLimit`) | 105 | °C | 105–110 °C höchst. vorübergehend (outlet) | S18 | medium | The lower end of the brief maximum; S24 gives 105 °C for a short period only. |
 | Over-revving limit (`heat.overRev`) | 2500 | rpm | 2500 U/min 30 Sekunden lang (dive) | S18 | medium | |
+| Oil normal range, low end (`heat.oilNormal.from`) | 90 | °C | 90–100 °C normal (outlet) | S18 | medium | Green band of the Bf 110's oil temperature gauge (D63). |
+| Oil normal range, high end (`heat.oilNormal.to`) | 100 | °C | 90–100 °C normal (outlet) | S18 | medium | |
+| Coolant normal range, low end (`heat.coolantNormal.from`) | 75 | °C | 75 °C normal (inlet) | S18 | medium | Green band of the Bf 110's coolant gauge (D63). The manual gives the inlet's normal temperature; the gauge reads the outlet. |
+| Coolant normal range, high end (`heat.coolantNormal.to`) | 105 | °C | — | ASSUMPTION | estimate | 10 °C under the 115 °C limit (D61): no normal outlet range found. |
 
 ## Messerschmitt Bf 110 C-4 (2 × DB 601A)
 
