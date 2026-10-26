@@ -998,3 +998,9 @@ three lamps along the bottom, green down and locked, red up and locked) and the 
 chose this knowing it is not historically correct: it reads more clearly. The two displays live in one shared module
 (`src/ui/panelControls.js`) used by all four cockpits; the Bf 109 keeps its own lever and two lamps placed as the product
 owner asked (D41). The old horizontal flap indicator was removed.
+
+## D48. Compass decisions confirmed (26 Oct 2026, product owner)
+
+- The compasses show E for east (not the reference drawing's O), with N, S and W (D41, D43).
+- The Bf 109 E keeps its strip repeater compass from the product owner's cockpit photograph (D41); the Patin repeater
+  compass (D43) stays on the Bf 110 only.
