@@ -848,8 +848,8 @@ with the photograph's grey outline, black square mountings and positions measure
 **Added to the photograph:**
 - the flap position indicator (D34) between the compass and the manifold pressure gauge, where the product owner placed
   it;
-- the undercarriage lamps on a small black plate on the right-hand wing of the panel (the photograph has none; the
-  real E-4 showed the undercarriage by indicators elsewhere).
+- the undercarriage lamps on a small black plate on the right-hand wing of the panel (the photograph shows no
+  undercarriage indicator).
 
 **Removed with the first version:** the climb indicator, fuel, oil and coolant gauges, ammeter and ball compass, which
 are not on the E panel. The panel takes up to half the screen height (the RAF panel 40%) so the dials stay readable.
