@@ -17,6 +17,7 @@ import { rafHorizon, rafClimb, rafTurnSlip } from './rafBlindFlying.js';
 import { BF109_LAYOUT, bf109Panel } from './bf109Panel.js';
 import { undercarriageDisplay, flapDisplay } from './panelControls.js';
 import { BF110_LAYOUT, bf110Panel } from './bf110Panel.js';
+import { counterState } from './ammoCounter.js';
 
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
@@ -75,9 +76,12 @@ export function instrumentReadings(sim) {
     fuelTanks: ac.fuel ? [ac.fuel.wingTank, ac.fuel.wingTank].map((m3) => ({ litres: m3 * 1000, capacity: m3 * 1000 })) : null,
     gearSelected: sim.input ? !!sim.input.gear : plane.surfaces.gear > 0.5, // the undercarriage lever: down
     pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, plane.omega / UNIT.RPM) : null,
-    // The ammunition counter's columns (Bf 109, D64): the fraction of rounds left. Full until the guns are wired in
-    // checkpoint 3.
-    ammoCounters: ac.ammoCounter ? ac.ammoCounter.map((gun) => ({ gun, fraction: 1 })) : null,
+    // The ammunition counter's columns (Bf 109, D64, D65): each gun's tape and window from its rounds left, read from
+    // the simulation's guns ({ rounds, capacity } by gun, from checkpoint 3); full and still until then.
+    ammoCounters: ac.ammoCounter ? ac.ammoCounter.map((gun) => {
+      const state = sim.guns?.[gun];
+      return { gun, ...(state ? counterState(state.rounds, state.capacity) : { fraction: 1, angle: 0 }) };
+    }) : null,
     // Normal temperature ranges for gauges that mark them (°C), where the engine data give them (D63).
     normalTemps: plane.engine.heat.oilNormal ? {
       oil: [plane.engine.heat.oilNormal.from, plane.engine.heat.oilNormal.to],

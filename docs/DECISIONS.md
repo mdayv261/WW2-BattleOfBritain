@@ -1367,3 +1367,15 @@ Placed as the product owner asked:
   (`matchBf109` in `src/ui/bf110Panel.js`; `panelRadius` in `src/ui/instruments.js`).
 - **Engine dials:** these keep their own grid and are about 9% smaller than the Bf 109's small gauges.
 
+## D65. How the Bf 109 ammunition counter works (27 Oct 2026, product owner)
+
+- **Tapes:** each white tape is full at its gun's full load and shortens in proportion as the gun fires: the MG 17s
+  from 1,000 rounds each (S16), the cannon from its 60-round drum. This is the product owner's choice: the photograph's
+  500 marking is kept as drawn, without implying a 500-round load.
+- **Windows:** the round window above each tape turns with every round counted, so it spins while that gun fires and
+  stands still when it stops. The 0.21 rad per round (about 3.5 rad/s for an MG 17) is a display choice, kept with the
+  drawing code (`src/ui/ammoCounter.js`).
+- **Wiring:** the counter reads each gun's `{ rounds, capacity }` from the simulation (`sim.guns.mg17Left`, `cannon`,
+  `mg17Right`). Checkpoint 3 adds the guns that fill it; until then it reads full and still. Tested in
+  `tests/ui/ammoCounter.test.js`.
+

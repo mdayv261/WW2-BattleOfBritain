@@ -2,7 +2,17 @@
 // EIN/AUS switch on the left, then three counter columns, each with a round window at the top, a vertical scale marked
 // 500 with a white tape showing the rounds left, a push button below, and white label plates along the bottom.
 // The columns show the left MG 17, the cannon and the right MG 17 (the product owner's choice; not confirmed from a
-// source). How the real scale related to the rounds carried is not known: the tape shows the fraction left.
+// source). Each tape shows its gun's share of its own load (product owner, D65): full at 1,000 rounds for an MG 17
+// (S16), at 60 for the cannon drum, shortening as rounds are fired; the 500 marking is kept from the photograph. The
+// round window above it turns with every round counted, so it spins while the gun fires and stands still otherwise.
+
+const SPIN_PER_ROUND = 0.21; // rad the window turns per round counted (display choice: about 3.5 rad/s for an MG 17)
+
+/** A column's state for `rounds` left of `capacity`: { fraction of the tape shown, angle of the window (rad) }. */
+export function counterState(rounds, capacity) {
+  const left = Math.max(0, Math.min(capacity, rounds));
+  return { fraction: capacity > 0 ? left / capacity : 0, angle: (capacity - left) * SPIN_PER_ROUND };
+}
 
 const PLATE = '#1d1e1f';
 const FRAME = '#0b0b0b';
@@ -38,13 +48,13 @@ function gunSwitch(g, x, y, w, h) {
 }
 
 /** One counter column: round window, scale window with the white tape (fraction left, from the bottom), button. */
-function column(g, x, y, w, h, fraction) {
+function column(g, x, y, w, h, { fraction, angle }) {
   rect(g, x, y, w, h, FRAME);
   disc(g, x + w / 2, y + w * 0.42, w * 0.3, '#6c6f70'); // the round window
   g.strokeStyle = WHITE;
   g.lineWidth = Math.max(0.8, w * 0.05);
   for (let k = 0; k < 3; k += 1) {
-    const a = (k * 2 * Math.PI) / 3 - Math.PI / 2;
+    const a = (k * 2 * Math.PI) / 3 - Math.PI / 2 + angle;
     g.beginPath();
     g.moveTo(x + w / 2, y + w * 0.42);
     g.lineTo(x + w / 2 + Math.cos(a) * w * 0.24, y + w * 0.42 + Math.sin(a) * w * 0.24);
@@ -73,8 +83,8 @@ function column(g, x, y, w, h, fraction) {
 }
 
 /**
- * Draws the counter in its box { x, y, w, h } (screen pixels, centre and size). `counters` are [{ fraction }] in the
- * order left MG 17, cannon, right MG 17; missing ones are drawn full.
+ * Draws the counter in its box { x, y, w, h } (screen pixels, centre and size). `counters` are counterState()s in the
+ * order left MG 17, cannon, right MG 17; missing ones are drawn full and still.
  */
 export function ammoCounter(g, { x, y, w, h }, r, counters = []) {
   const left = x - w / 2;
@@ -88,7 +98,7 @@ export function ammoCounter(g, { x, y, w, h }, r, counters = []) {
   const colW = (w * 0.7) / 3;
   for (let i = 0; i < 3; i += 1) {
     const cx = left + w * 0.28 + i * colW;
-    column(g, cx + colW * 0.04, top + h * 0.04, colW * 0.92, h - labels - h * 0.06, counters[i]?.fraction ?? 1);
+    column(g, cx + colW * 0.04, top + h * 0.04, colW * 0.92, h - labels - h * 0.06, counters[i] ?? { fraction: 1, angle: 0 });
     rect(g, cx + colW * 0.12, top + h - labels * 0.85, colW * 0.76, labels * 0.6, WHITE);
   }
 }
