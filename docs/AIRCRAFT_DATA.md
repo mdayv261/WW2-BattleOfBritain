@@ -61,7 +61,7 @@ All values are stored in SI units. The original figure and unit from the source 
 | S15 | Bf 109 E Flugzeug-Handbuch, Berlin, 16 Dec 1939: Flugleistungskurven (Anlage 4, Blatt 3) and Teil IV Flug p. 18 (Flugbegrenzungen, best climbing speeds, engine operating data) | http://www.wwiiaircraftperformance.org/me109/me109e-handbookcurve.jpg and http://www.wwiiaircraftperformance.org/me109/me109e-enginelimits.jpg | Luftwaffe handbook (scans on archive site) |
 | S16 | Flugzeugdatenblatt 109 E-1 / E-3 (Anlage 4, Blatt 1) and Muster eines Ladeplanes Bf 109 E-3 (Anlage 5, Blatt 2). The document title is not given on the archive page; the Anlage numbering matches S15 | http://www.wwiiaircraftperformance.org/me109/Me-109e-flugzeugdatenblatt.jpg and http://www.wwiiaircraftperformance.org/me109/Me109e3-ladeplanes.jpg | Luftwaffe data sheet and loading plan (scans on archive site) |
 | S17 | Messerschmitt, "Baubeschreibung für das Flugzeugmuster Messerschmitt Me 109 mit Daimler-Benz-Motor DB 601", pp. 48-53 (Datenblatt Me 109), c. 1939 | http://www.kurfurst.org/Performance_tests/109E_Baubeschreibung/109E3_Baubeschreibung.html | Manufacturer's specification (German transcription on archive site) |
-| S18 | Daimler-Benz, "Betriebs- und Wartungsvorschrift zum Mercedes-Benz Flugmotor DB 601 A u. B", Ausgabe C, October 1940, p. 21 (Leistungs- und Verbrauchsangaben) and p. 22 (Bild 6, Höhenleistungslinien) | http://www.wwiiaircraftperformance.org/me109/db601-oct40-operation-maintenance-manual-p21.jpg and http://www.wwiiaircraftperformance.org/me109/DB601A-B-oct40-pg22.jpg | Engine manual (scans on archive site) |
+| S18 | Daimler-Benz, "Betriebs- und Wartungsvorschrift zum Mercedes-Benz Flugmotor DB 601 A u. B", Ausgabe C, October 1940, p. 21 (Leistungs- und Verbrauchsangaben), p. 47 (Steigflug und Waagrechtflug: temperature limits) and p. 22 (Bild 6, Höhenleistungslinien) | http://www.wwiiaircraftperformance.org/me109/db601-oct40-operation-maintenance-manual-p21.jpg and http://www.wwiiaircraftperformance.org/me109/DB601A-B-oct40-pg22.jpg | Engine manual (scans on archive site) |
 | S19 | Daimler-Benz DB 601 A-1 data sheet, via Messerschmitt AG, Augsburg, 25 Jul 1941 | http://www.kurfurst.org/Engine/DB60x/DB601_datasheets_A1.html | Engine data sheet (English transcription on archive site) |
 | S20 | A&AEE Boscombe Down, Report A.&A.E.E./755, "Messerschmitt 109 Fighter, Brief Handling Trials", June 1940 (TNA AVIA 18/703) | http://www.wwiiaircraftperformance.org/me109/me109e-aaee.pdf | Period test report (scan on archive site) |
 | S21 | W/Cdr G. H. Stainforth, "Report on Investigation of Turning Circles of M.E.109, Spitfire and Hurricane", 9 Jun 1940 | http://www.wwiiaircraftperformance.org/hurricane/109-spit-hurri-turn.pdf | Period trial report (scan on archive site) |
@@ -80,13 +80,19 @@ All values are stored in SI units. The original figure and unit from the source 
 | S34 | Valentine & Sons, aircraft recognition card No. 39, "He 111" (wartime; its data reproduced from "The Aeroplane"), IBCC Digital Archive, University of Lincoln | https://ibccdigitalarchive.lincoln.ac.uk/collections/document/39645 | Period recognition card (archive record) |
 | S35 | Smithsonian National Air and Space Museum, "Junkers Jumo 211, Inverted V-12 Engine", object A19710934000 | https://airandspace.si.edu/collection-objects/junkers-jumo-211-inverted-v-12-engine/nasm_A19710934000 | Museum record |
 | S36 | Heimatmuseum Alten (museum-digital Sachsen-Anhalt), "Handbuch für Junkers VS 11 Verstell-Luftschraubenanlage", Junkers Motorenbau, Dessau, July 1941, object 15931 (catalogue description) | https://st.museum-digital.de/object/15931 | Museum record |
+| S37 | War Office, "Textbook of Small Arms 1929", HMSO, 1929: p. 224 (the Mark VII cartridge), pp. 257-259 (armour-piercing and tracer cartridges) and Appendix I, pp. 371-372 ("Range Table of .303 Mk. VII from Hythe Firings") | https://archive.org/details/textbooksmallarms1929 | Published reference book (government manual, scan on archive site) |
+| S38 | Air Chief Marshal Sir Hugh Dowding, "The Battle of Britain" (despatch dated 20 Aug 1941), Supplement to the London Gazette No. 37719, 10 Sep 1946: paras. 89, 222-229 and Appendix F | https://www.thegazette.co.uk/London/issue/37719/data.pdf | Period official report (government publication) |
+| S39 | Ingenium (Canada Science and Technology Museum), artifact 1985.0079.001, "Gun, machine", Browning Mark II, B.S.A. 1938 | https://collection.ingenium.ca/en/id/1985.0079.001 | Museum record |
+| S40 | Department of the Army, TM 9-1985-3, "German Explosive Ordnance (Projectiles and Projectile Fuzes)", 1953: Table 4 (German cartridges, S.A.A., 7.92 mm) and Table 7 (German 20-mm Mauser and Oerlikon ammunition) | https://archive.org/details/TM9-1985-3 | Government technical manual (scan on archive site) |
+| S41 | E-Stelle Rechlin E 6 (Fl.-Bordwaffen-Munition), firing tables (Schußtafeln): "7,9 mm Panzergeschoss" (from measurements of 31 Mar 1943), "2 cm Sprgr.Patr. L'spur FFM m.Zerl." and related 117 g rounds (from the DWM table of 9 Sep 1940, recalculated May 1943) and "2 cm M-Gesch.Patr. FFM m.Zerl." (from the DWM table of 12 Dec 1941). Reproduced in "Handbuch der Flugzeug-Bordwaffenmunition 1936-1945", Teil 1 (Schußtafeln), pp. 7, 12, 13 of the scan | https://archive.org/details/HandbuchDerFlugzeugBordwaffenmunitionHandbookOfAirborneWeaponsAmmunition19361945German | Period test tables (Rechlin), in a retyped compilation whose compiler and date are not stated: see Notes on each row |
 
 **Archive sites used (D8):**
 - wwiiaircraftperformance.org;
 - spitfireperformance.com, read through the Internet Archive because the domain has lapsed;
 - kurfurst.org;
 - lonesentry.com;
-- the Internet Archive (archive.org), for the scans S28 and S29.
+- the Internet Archive (archive.org), for the scans S28, S29, S37, S40 and S41;
+- thegazette.co.uk (the London Gazette's own archive), for S38.
 
 Each source above names the original document. The site owners' own commentary was not used.
 
@@ -1064,10 +1070,79 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 | Peak efficiency of the 3-blade envelope (`etaMax`) | 0.86 | — | about 0.86 at J 1.2 | S30 | medium | Fig. 39, read by eye. Used as a ceiling so that extrapolated coefficients never beat the measured propeller. |
 | Static power coefficient at J = 0 (blade angle in degrees : CP) (`cpStatic`) | 15:0.06, 20:0.089, 25:0.148, 30:0.21, 35:0.267, 40:0.313, 45:0.397 | — | Fig. 11 | S30 | medium | Read from the dashed starts of the curves, about ±0.005. Only take-off depends on it. |
 
-## Guns (Phase 5 completes this section)
+## Guns (Phase 5)
 
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
+| Browning .303 Mk II rate of fire | 1100 | rounds/min | FASTER RATE OF FIRE (1100 RPM) | S39 | medium | Museum record of a B.S.A. 1938 Mark II. |
+| Hurricane I guns and rounds per gun | 8 × .303, 334 | rounds | .303, 8, Fwd. Wings, Rds/Gun 334 | S1 | high | |
+| Spitfire I guns | 8 × .303 Browning in the wings, fired pneumatically by a push-button on the spade grip | — | The eight machine guns are fired pneumatically by a push-button on the control column spade grip | S33 | high | Rounds per gun not found (see gaps). |
+| MG 17 rate of fire, synchronised | 1000 | rounds/min | 1,000 rds./min. (synchronized) | S27 | medium | Bf 109 cowling guns. |
+| MG 17 rate of fire, unsynchronised | 1100 | rounds/min | 1,100 rds./min. (unsynchronized) | S27 | medium | Bf 110 nose guns. |
+| MG 17 muzzle velocity | 853 | m/s | 2,800 f/s | S27 | medium | S41 measured 810 m/s for the 10 g armour-piercing bullet (see Ammunition). |
+| MG 17 weight | 12.6 | kg | 27 lb 11 oz | S27 | medium | |
+| Bf 109 E-3 ammunition | MG 17: 2,000 rounds in all; MG FF: 120 rounds in all | — | Munition für R.-MG 17 (2000 Schuß); Munition für Fl.-FF (120 Schuß) | S16 | medium | 1,000 per MG 17 and one 60-round drum per cannon. E-4 not confirmed (see gaps). |
+| MG 15 rate of fire (cyclic) | 1000–1100 | rounds/min | 1,000–1,100 rds./min. | S27 | medium | |
+| MG 15 drum capacity | 75 | rounds | saddle-type drum (75-rd. capacity) | S25, S27 | high | |
+| MG FF / MG FF/M rate of fire (cyclic) | 450–500 | rounds/min | 450 to 500 rds./min.—cyclic | S27 | medium | The catalog's "M.G. F.F.M." entry, "mechanically the same" as the M.G. F.F. |
+| MG FF drum capacity | 60 | rounds | Drum—60 rd. capacity | S16, S25, S27 | high | S16 gives 120 rounds for two guns on the E-3. |
+| MG FF / MG FF/M weight | 34.7 | kg | 76 1/2 lb. | S27 | medium | |
+
+### Ammunition and ballistics
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| .303 Mk VII ball bullet mass | 11.28 | g | pointed bullet weighing 174 grains | S37 | high | Lead core, cupro-nickel envelope, aluminium tip. |
+| .303 Mk VII muzzle velocity (range table) | 743.7 | m/s | M.V. 2,440 f/s | S37 | high | The Hythe range table's muzzle velocity. Fired from rifles and Vickers guns; no Browning-specific figure found (see gaps). |
+| .303 Mk VII remaining velocity at 100 / 200 / 300 / 400 / 500 / 600 yd | 680 / 619 / 561 / 506 / 457 / 415 | m/s | 2230 / 2030 / 1840 / 1660 / 1500 / 1360 f/s | S37 | high | Appendix I, Hythe firings, at sea level. Used to fit the drag and to test it (acceptance). |
+| .303 Mk VII time of flight to 100 / 200 / 300 / 400 / 500 / 600 yd | 0.2 / 0.3 / 0.4 / 0.6 / 0.8 / 1.0 | s | as tabled | S37 | high | Given to 0.1 s only. |
+| .303 Mk VII elevation needed at 100 / 200 / 300 / 400 / 500 / 600 yd | 3 / 7 / 11 / 15 / 19 / 25 | minutes of arc | as tabled | S37 | high | The drop below the line of departure is the range times the tangent of the elevation: 0.08 / 0.37 / 0.88 / 1.60 / 2.53 / 3.98 m. |
+| .303 armour-piercing (W Mk I) | same shape as Mk VII; muzzle velocity 2,500 f/s (762 m/s); should penetrate 10 mm of good armour plate at 100 yards | — | as quoted | S37 | high | |
+| .303 tracer (G Mk I) | trajectory close to ball up to 600 yd; over 70% trace for 300 yd and over 50% to about 600-800 yd | — | as quoted | S37 | high | |
+| RAF fighter ammunition, typical arrangement in the Battle | old-type incendiary in the 2 outer guns; de Wilde incendiary in 1 gun; armour-piercing in 2; ball in the other 3 | — | Old-type incendiary in the 2 outer guns, de Wilde in one gun while supplies were limited, Armour piercing in 2 guns, and ball in the other 3 | S38 | high | Para. 229. The old incendiary gave "a distinct smoke-tracer effect"; de Wilde had no flame or smoke trace; tracer proper was not used in fixed guns by day (paras. 227-228). |
+| 7.92 mm armour-piercing bullet (Rechlin table) | 10 g; 810 m/s; remaining velocity 715 / 624 / 538 / 460 / 396 / 348 m/s and time 0.132 / 0.281 / 0.453 / 0.654 / 0.889 / 1.159 s at 100-600 m; drop 0.1 / 0.4 / 0.9 / 1.8 / 3.2 / 5.1 m | — | Geschossgewicht 10 g, Anfangsgeschwindigkeit 810 m/sec; table as printed | S41 | medium | Sea-level air (1.2255 kg/m³). Measured 1943; the 1940 rounds are assumed to fly alike. Medium: retyped compilation. |
+| 7.92 mm types and penetration | ball; armour-piercing (12 mm at 100 yd); incendiary "observing" (phosphorus); armour-piercing incendiary (8 mm, white smoke 400-500 yd); practice tracer (white trace 800 yd) | — | as tabled | S40 | high | Table 4. No belt mix for 1940 found (see gaps). |
+| MG FF/M 117 g shells (Rechlin table) | 117 g; 585 m/s; remaining velocity 533 / 487 / 446 / 409 / 376 / 349 m/s and time 0.179 / 0.376 / 0.590 / 0.825 / 1.080 / 1.356 s at 100-600 m; drop 0.15 / 0.65 / 1.57 / 2.98 / 4.98 / 7.67 m | — | Geschossgewicht 117 g, Anfangsgeschwindigkeit 585 m/sec | S41 | medium | High-explosive tracer, high-explosive incendiary tracer and incendiary rounds for the FF/M ("FFM"). From the DWM table of 9 Sep 1940. Medium: retyped compilation. |
+| MG FF/M 92 g mine shell (Rechlin table) | 92 g; 695 m/s; remaining velocity 597 / 509 / 432 / 370 / 319 / 281 m/s and time 0.155 / 0.337 / 0.551 / 0.801 / 1.095 / 1.428 s at 100-600 m | — | Geschossgewicht 92 g, Anfangsgeschwindigkeit 695 m/sec | S41 | medium | From the DWM table of 12 Dec 1941; whether mine shells were in use in August 1940 is not confirmed. |
+| 20 mm types and penetration | armour-piercing 17 mm at 100 yd (10 mm at 30°); armour-piercing incendiary and armour-piercing HE 17 mm; tracer burns brilliant white about 1.8 s | — | as tabled | S40 | high | Table 7 (Mauser and Oerlikon ammunition). |
+
+### Harmonisation, armour and tanks
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| RAF harmonisation in the Battle | all guns converge on one point at 250 yards (229 m) | m | their lines of fire converged on a point 250 yards distant | S38 | high | Para. 224: fire "effective up to about 500 yards". |
+| RAF fighter armour | bullet-proof windscreen; front armour between the top of the engine and the windscreen; rear armour directly behind the pilot | — | as quoted | S38 | high | Para. 89 and Appendix F para. 3. Thicknesses not found (see gaps). |
+| Hurricane fuel tanks | wing tanks covered with Linatex, "fairly good self-sealing"; the fuselage reserve tank uncovered until covered during the Battle, with a metal bulkhead in front of the pilot | — | as quoted | S38 | high | Appendix F paras. 6-7: many Hurricanes were set on fire through the reserve tank. Tank sizes not found (see gaps). |
+| Spitfire I fuel tanks | two tanks one above the other forward of the cockpit: top 48 gallons, bottom 37 gallons | gal | Top tank 48 gallons, Bottom tank 37 gallons | S33 | high | Self-sealing not stated. S4: "armour over the fuel tank". |
+| Spitfire I oil system | 5.8-gallon tank below the engine mounting; two oil coolers in tandem under the port wing | — | as quoted | S33 | high | |
+| Spitfire I services | hydraulic (engine-driven pump): undercarriage; pneumatic (engine-driven compressor, two cylinders): flaps, brakes, guns | — | as quoted | S33 | high | |
+| Bf 109 E pilot armour (autumn 1940) | 8 mm | mm | the 8-mm. armour carried in the M.E. 109 | S38 | medium | Appendix F para. 15. Position not stated; the date it was fitted is not confirmed for August. |
+| German self-sealing tanks | German bombers had good self-sealing tanks | — | as quoted | S38 | high | Appendix F para. 5. |
+
+### Engine temperatures
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Merlin III coolant | 30% treated ethylene glycol | — | 30% Treated Ethylene Glycol | S33 | high | |
+| Merlin III coolant, maximum: climbing (½ hr) / cruising / all-out (5 min) | 120 / 95 / 120 | °C | as tabled | S33 | high | Pilot's Notes p. 26 (January 1942 page; the limits table for the Merlin II or III). |
+| Merlin III oil, maximum: climbing / cruising / all-out (5 min) | 90 / 90 / 95 | °C | as tabled | S33 | high | |
+| Merlin III minimum temperatures for take-off | oil 15, coolant 60 | °C | as quoted | S33 | high | |
+| DB 601 oil inlet temperature | 60–75 normal; 80 at most, briefly | °C | 60–75 °C normal, 80 °C höchstens vorübergehend | S18 | high | Page 47. |
+| DB 601 oil outlet temperature | 90–100 normal; 105–110 at most, briefly | °C | 90–100 °C normal, 105–110 °C höchst. vorübergehend | S18 | high | S24 (Bf 110): inlet maximum 75, outlet maximum 95, 105 for a short period only. |
+| DB 601 coolant inlet temperature | at least 60; 75 normal | °C | 60 °C mindestens, 75 °C normal | S18 | high | |
+| DB 601 coolant outlet temperature, maximum | 6 °C below the boiling curve | — | 6 °C unter Siedekurve höchstens | S18 | high | The boiling curve (it falls with height) was not found (see gaps). S24: the Bf 110's gauges mark the maximum for sea level, 5 km and 10 km. S21: over 120 °C in sustained turns (Bf 109). |
+| DB 601 engine speed | never above 2,400 rpm, even briefly; 2,500 rpm for 30 s in a dive | rpm | über 2400 U/min darf die Drehzahl, auch vorübergehend nicht steigen; 2500 U/min 30 Sekunden | S18 | high | Page 47. |
+| Bf 110 radiator and oil-cooler flaps | coolant flaps by two 9-position switches; oil-cooler flaps by levers with five positions | — | as quoted | S24 | high | |
+
+### Structural and speed limits
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Spitfire I maximum diving speed | 201.2 | m/s | 450 mph IAS | S6 | medium | Also in the Spitfire section. |
+| Bf 109 E maximum diving speed | 208.3 | m/s | 750 km/h | S15 | medium | Indicated or true not stated. |
+| Bf 110 maximum permissible speed | 180.6 | m/s | 650 Km./hr. (406 m.p.h.) (A.S.I.) | S24 | medium | |
+
+---|---|---|---|---|---|---|
 | MG 17 rate of fire, synchronised | 1000 | rounds/min | 1,000 rds./min. (synchronized) | S27 | medium | |
 | MG 17 rate of fire, unsynchronised | 1100 | rounds/min | 1,100 rds./min. (unsynchronized) | S27 | medium | |
 | MG 17 muzzle velocity | 853 | m/s | 2,800 f/s | S27 | medium | |
@@ -1092,7 +1167,7 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 | Merlin III reduction gear ratio, supercharger gear ratio, bore and stroke, dry weight | Engine model | A.P. 1590B full text; RAF Museum or Science Museum engine records |
 | A Merlin III power curve with a stated source (S9's origin is not named) | Engine model | Rolls-Royce Heritage Trust; A.P. 1590B |
 | Spitfire I wingspan from an allowed Mk I source (only the Mk V figure in S11 was found) | Geometry | Air Ministry data sheet for the Spitfire I; Supermarine drawings |
-| Spitfire I rounds per gun | Weapons | Air Ministry data sheet; A.P. 1565A |
+| Spitfire I rounds per gun (S33's gun section does not give it) | Weapons | Air Ministry data sheet for the Spitfire I; A.P. 1565A Vol. I armament section |
 | Spitfire I fabric-covered aileron area and travel (S11 is a metal-aileron VA) | Roll model | A&AEE or RAE reports on the Spitfire I |
 | Bf 109 E-4 armament (MG FF or MG FF/M) and weights: armour plate, cannon installation, any canopy change | Mass and CG | E-4 Ladeplan; Flugzeug-Handbuch E-4 |
 | Whether the 109 E-4 of August 1940 had the DB 601A or DB 601Aa | Engine model | Kennblatt or Flugzeug-Handbuch E-4; DB 601 Aa data sheet (the archive page is empty) |
@@ -1102,10 +1177,14 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 | Bf 110 C-4 weights: armour; C-4 compared with the C-2 | Mass | Bf 110 C-4 Ladeplan or handbook |
 | Bf 110 engine spacing, critical engine, airscrew rotation directions | Twin-engine model | Bf 110 handbook; drawings |
 | He 111 H-3: engine sub-type (Jumo 211 A-3 or D-1; even Wikipedia's own pages give both), wing area, weights, speeds, climb, ceiling, bomb load, airscrew, gun arcs, formation cruise speed | Phase 3 (twin engines) and Phase 6 (gunners) | IWM: RAE 1940 report "Enemy aircraft Heinkel He 111H, examination of electrical equipment" (LBY K. 70191); Nowarra, "Heinkel He 111: A Documentary History" (LBY 81/2079); Air Ministry German aero-engine files including the Jumo 211 (Documents.13462). None is online; each needs a visit or a copy request. Also the He 111 H Flugzeug-Handbuch Teil 0 or a Kennblatt |
-| Browning .303 Mk II rate of fire and muzzle velocity; .303 ball and incendiary bullet data | Weapons (Phase 5) | Royal Armouries records; A.P. 1641 (Browning gun manual) |
-| MG FF and MG FF/M rate of fire, muzzle velocity, shell mass | Weapons (Phase 5) | US Catalog of Enemy Ordnance (MG FF entry not found); Rheinmetall or Ikaria handbook |
-| Gun harmonisation ranges in August 1940 (RAF and Luftwaffe) | Weapons (Phase 5) | Fighter Command orders; AFDU reports |
-| Armour plate thickness and positions for all four fighters | Damage (Phase 5) | A&AEE and AFDU reports; Luftwaffe Ladepläne |
+| Browning .303 Mk II muzzle velocity (S37 gives the Mk VII round's from rifles and Vickers guns); B Mk VI (de Wilde) incendiary bullet data | Weapons (Phase 5) | Royal Armouries records; A.P. 1641 (Browning gun manual) |
+| MG FF (not FF/M) shell mass and muzzle velocity; whether mine shells were in use in August 1940 | Weapons (Phase 5) | DWM firing tables of 1940; Ikaria handbook |
+| 7.92 mm ball, incendiary and tracer bullet masses and their 1940 belt mix (only the armour-piercing round's table was found, S41) | Weapons (Phase 5) | Luftwaffe Munitions-Merkblätter; S41's other tables |
+| Luftwaffe gun harmonisation in August 1940 (the RAF's 250 yards is S38) | Weapons (Phase 5) | Luftwaffe Schießfibel; Bf 109 E Waffeneinbau handbook |
+| Gun positions on the wings and in the noses (drawings) | Weapons (Phase 5) | Supermarine, Hawker and Messerschmitt general-arrangement drawings; S32's figures for the Bf 109 |
+| Armour plate thickness and positions for all four fighters (only the Bf 109's 8 mm is in S38) | Damage (Phase 5) | A&AEE and AFDU reports; Luftwaffe Ladepläne |
+| Hurricane I fuel tank sizes (97 gallons in all, S1) and Bf 109 E tank self-sealing | Damage (Phase 5) | Hurricane Pilot's Notes A.P. 1564A; Bf 109 E Flugzeug-Handbuch |
+| g limits (limit and ultimate load factors) for all five aircraft; the Hurricane I's diving speed limit | Structural limits (Phase 5) | Pilot's Notes; A.P. 970 design requirements; Luftwaffe Beanspruchungsgruppen in the handbooks |
 | Moments of inertia (all aircraft) | Flight model | No measured data expected; Phase 1 estimates with the method shown |
 | Tailwheel types: castoring, fixed or lockable (all three) | Ground handling | Pilot's Notes A.P. 1564A (Hurricane I); Bf 109 E Flugzeug-Handbuch; Spitfire I descriptive A.P. |
 | Undercarriage design descent rate, oleo travel and tyre sizes | Hard landings, ground handling | A.P. 970 (design requirements); Dunlop and VDM/Elektron undercarriage records |
@@ -1113,4 +1192,4 @@ All three fighters use the full-scale coefficients of NACA Report 640's 3-blade 
 | Hurricane I Pilot's Notes (A.P. 1564A): flap selector, take-off and landing speeds | Controls and validation | Museum archives; the Mk II notes (A.P. 1564B) are a close variant |
 | Bf 109 E wheel track (dimensioned) | Ground handling | Flugzeug-Handbuch Teil 0; the S32 front view gives about 1.9 m |
 | Reflector gunsights: types fitted in August 1940 (GM 2, Revi C/12C) and reticle dimensions (ring diameter, range bars, centre dot) | Gunsight display now; aiming and ranging (Phase 5) | RAF gunnery manuals (e.g. A.P. 1641 series, "Bag the Hun"), Barr & Stroud drawings; Luftwaffe Schießfibel and Revi handbooks |
-| Coolant system data (radiator area, temperature limits) for the Merlin III and DB 601A | Cooling model | Pilot's Notes; DB 601 manual (temperatures partly in S24 for the Bf 110) |
+| DB 601 coolant boiling curve (the outlet limit is 6 °C below it, S18), the DB 601's coolant mixture and system pressure; radiator areas; whether the Bf 109 E's radiator flaps were manual or automatic | Cooling model (Phase 5) | DB 601 manual (other pages of S18); Bf 109 E Flugzeug-Handbuch |

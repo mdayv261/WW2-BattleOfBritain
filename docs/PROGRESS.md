@@ -10,8 +10,19 @@ Read this at the start of every session.
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
 - **Phase 4** (world and visuals): signed off (26 Oct 2026, D57).
-- **Next: Phase 5** (weapons and damage): plan to be proposed for approval.
-- **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
+- **Phase 5** (weapons and damage): in progress (plan approved 26 Oct 2026, D59). Checkpoint 1 (research) done (D60); waiting for the product owner's decisions on the estimates before checkpoint 2.
+- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026.
+
+## Phase 5 checkpoint 1: research (26 Oct 2026)
+
+**Done** (D60): guns, ammunition and ballistics, harmonisation, armour and tanks, engine temperatures and diving limits
+recorded in AIRCRAFT_DATA.md from allowed sources (new S37-S41), with the official .303 Mk VII range table and Rechlin
+firing tables for the German rounds, which the acceptance tests will check against.
+
+**Left:** the product owner's decisions on nine proposals (D60), then checkpoint 2 (engine heat and structural limits).
+
+**Known gaps:** see D60 and the gaps table (Spitfire rounds per gun, Luftwaffe harmonisation, armour thicknesses, g
+limits, DB 601 boiling curve and more).
 
 ## Instrument panel hidden when looking away (26 Oct 2026)
 

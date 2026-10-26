@@ -1177,3 +1177,77 @@ beyond this) or the mouse. Looking ahead again (releasing the hat, or a double-c
 never hides it. The I key still switches it off altogether, and the outside views are unchanged. The period 3D cockpits
 (Phase 7) will replace the overlay.
 
+## D59. Phase 5 plan and the product owner's choices (26 Oct 2026)
+
+Phases 1-4 were pushed to GitHub with the product owner's permission and deployed (26 Oct 2026). The Phase 5 plan
+(weapons and damage) was approved, in five checkpoints: research and data; engine heat and structural limits; guns and
+ballistics; a target aircraft, hit zones and damage; visible effects and the acceptance test. The product owner chose:
+- **Targets:** a target aircraft that flies straight and level on a simple autopilot (a test aid, not the Phase 6 AI),
+  and a test key that damages the player's own aircraft.
+- **Engine heat and structural limits:** both added in Phase 5 (coolant and oil temperatures, overheating and
+  over-revving damage, g and diving-speed limits).
+- **Hits:** hit zones. A round that strikes a zone (nose, cockpit, rear fuselage, tail, wing panels) damages a
+  component in that zone, picked by weight with a seeded random number generator, rather than tracing every bullet
+  through individual components.
+
+## D60. Phase 5 checkpoint 1: weapons, armour, cooling and limits research (26 Oct 2026)
+
+Recorded in AIRCRAFT_DATA.md (new sections under "Guns (Phase 5)"; sources S37-S41; gaps updated).
+
+**Found (allowed sources):**
+- **RAF:**
+  - Browning Mk II 1,100 rounds/min (Ingenium museum record, S39); Hurricane 334 rounds per gun (S1).
+  - Harmonisation on one point at 250 yards, and the typical gun-by-gun ammunition arrangement in the Battle (Dowding's
+    despatch, S38).
+  - Bullet-proof windscreen, front and rear armour (S38); the Hurricane's Linatex-covered wing tanks and its unprotected
+    reserve tank (S38); the Spitfire's tanks, oil coolers and services (Pilot's Notes, S33).
+- **.303 ballistics:** the official Mk VII range table from Hythe firings (Textbook of Small Arms 1929, S37), with the
+  armour-piercing and tracer rounds.
+- **German ballistics:** firing tables from Rechlin for the 7.92 mm armour-piercing bullet and the MG FF/M's 117 g
+  shells and 92 g mine shell (S41). Round types and armour penetration from the US Army's TM 9-1985-3 (S40).
+- **Engine temperatures:**
+  - Merlin III coolant and oil limits (S33);
+  - DB 601 oil and coolant limits and its absolute 2,400 rpm limit (manual page 47, S18);
+  - the Bf 110's radiator and oil-cooler flap controls and its 650 km/h limit (S24).
+
+**Flagged:**
+- **S41's provenance:** the Rechlin tables are retyped in a compilation whose compiler and date are not stated
+  (medium confidence). Each table names its origin (Rechlin measurement, or a DWM table recalculated by Rechlin).
+- **Muzzle velocity disagreement:** S27 gives the MG 17 2,800 f/s (853 m/s); Rechlin measured 810 m/s for the 10 g
+  armour-piercing bullet.
+- **.303 muzzle velocity:** S37's Mk VII table was fired from rifles and Vickers guns; no Browning-specific figure was
+  found.
+- **Not found:**
+  - Spitfire rounds per gun;
+  - the E-4's cannon (MG FF or FF/M) and whether mine shells were in use in August 1940;
+  - Luftwaffe harmonisation;
+  - gun positions;
+  - armour thicknesses other than the Bf 109's 8 mm;
+  - German 1940 belt mixes;
+  - the DB 601 coolant boiling curve;
+  - g limits for all aircraft;
+  - the Hurricane's diving speed limit.
+
+**Decisions needed from the product owner** (proposals, to be confirmed before checkpoint 2 uses them):
+1. **Bf 109 E-4 cannon:** the MG FF/M firing the 117 g shells at 585 m/s (S41, from a September 1940 table), without the
+   mine shell (its table dates from December 1941).
+2. **Spitfire rounds per gun:** the Hurricane's sourced 334, or the often-quoted 300 (not confirmed from an allowed
+   source), as an estimate.
+3. **Luftwaffe harmonisation** (estimate): Bf 109 and Bf 110 guns converge at 200 m.
+4. **Ballistics for unsourced rounds:**
+   - every 7.92 mm round flies like the Rechlin armour-piercing table;
+   - the MG 17 starts at 810 m/s;
+   - the Browning at the S37 Mk VII figures;
+   - the MG FF/M at 475 rounds/min (middle of S27's 450-500).
+5. **German belt mix** (estimate): armour-piercing, incendiary and incendiary-observing rounds in turn, with no
+   separate tracer, for the MG 17. The MG FF/M drum alternates HE-incendiary and HE-tracer.
+6. **DB 601 coolant limit** (estimate): 115 °C at sea level, falling with height as the pressure falls. S21 saw over
+   120 °C in sustained turns.
+7. **g limits** (estimates):
+   - fighters damaged beyond 9 g and broken beyond 13 g;
+   - Bf 110 7 g and 10.5 g;
+   - He 111 4.5 g and 7 g.
+8. **Hurricane diving limit** (estimate): 390 mph IAS.
+9. **Armour** (estimate): RAF rear armour taken as the same 8 mm as the Bf 109's. It stops rifle-calibre ball and
+   incendiary rounds, but not armour-piercing rounds at short range (S37: 10 mm at 100 yards).
+
