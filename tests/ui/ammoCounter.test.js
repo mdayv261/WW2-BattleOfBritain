@@ -8,7 +8,7 @@ import { aircraftById } from '../../src/aircraft/index.js';
 
 describe('ammunition counter', () => {
   it('shows a full tape and a still window at full load', () => {
-    expect(counterState(1000, 1000)).toEqual({ fraction: 1, angle: 0 });
+    expect(counterState(1000, 1000)).toEqual({ fraction: 1, angle: 0, empty: false });
   });
 
   it('shortens the tape in proportion to the rounds fired, and empties it', () => {
@@ -43,5 +43,15 @@ describe('ammunition counter', () => {
   it('reads full and still before the guns exist', () => {
     const v = instrumentReadings(new Simulation(aircraftById.bf109e4, 'air'));
     expect(v.ammoCounters.every((c) => c.fraction === 1 && c.angle === 0)).toBe(true);
+  });
+
+  it('lights the lamp under a tape red only when its gun is empty', () => {
+    expect(counterState(1000, 1000).empty).toBe(false);
+    expect(counterState(1, 1000).empty).toBe(false);
+    expect(counterState(0, 1000).empty).toBe(true);
+    expect(counterState(0, 60).empty).toBe(true);
+    const sim = new Simulation(aircraftById.bf109e4, 'air');
+    sim.guns = { mg17Left: { rounds: 12, capacity: 1000 }, cannon: { rounds: 0, capacity: 60 }, mg17Right: { rounds: 1000, capacity: 1000 } };
+    expect(instrumentReadings(sim).ammoCounters.map((c) => c.empty)).toEqual([false, true, false]);
   });
 });

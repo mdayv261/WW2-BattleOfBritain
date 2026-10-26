@@ -1378,4 +1378,5 @@ Placed as the product owner asked:
 - **Wiring:** the counter reads each gun's `{ rounds, capacity }` from the simulation (`sim.guns.mg17Left`, `cannon`,
   `mg17Right`). Checkpoint 3 adds the guns that fill it; until then it reads full and still. Tested in
   `tests/ui/ammoCounter.test.js`.
+- **Empty lights:** the round light under each tape turns red when that gun is empty (product owner, 27 Oct 2026).
 

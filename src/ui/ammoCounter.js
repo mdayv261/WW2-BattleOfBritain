@@ -5,13 +5,19 @@
 // source). Each tape shows its gun's share of its own load (product owner, D65): full at 1,000 rounds for an MG 17
 // (S16), at 60 for the cannon drum, shortening as rounds are fired; the 500 marking is kept from the photograph. The
 // round window above it turns with every round counted, so it spins while the gun fires and stands still otherwise.
+// The light below each tape turns red when that gun is empty (product owner, D65).
 
 const SPIN_PER_ROUND = 0.21; // rad the window turns per round counted (display choice: about 3.5 rad/s for an MG 17)
 
-/** A column's state for `rounds` left of `capacity`: { fraction of the tape shown, angle of the window (rad) }. */
+const EMPTY_RED = '#d8402e'; // the undercarriage lamps' red
+
+/**
+ * A column's state for `rounds` left of `capacity`: { fraction of the tape shown, angle of the window (rad), empty (the
+ * red light) }.
+ */
 export function counterState(rounds, capacity) {
   const left = Math.max(0, Math.min(capacity, rounds));
-  return { fraction: capacity > 0 ? left / capacity : 0, angle: (capacity - left) * SPIN_PER_ROUND };
+  return { fraction: capacity > 0 ? left / capacity : 0, angle: (capacity - left) * SPIN_PER_ROUND, empty: left <= 0 };
 }
 
 const PLATE = '#1d1e1f';
@@ -47,8 +53,8 @@ function gunSwitch(g, x, y, w, h) {
   disc(g, x + w / 2, y + h * 0.32, w * 0.1, '#8a8072');
 }
 
-/** One counter column: round window, scale window with the white tape (fraction left, from the bottom), button. */
-function column(g, x, y, w, h, { fraction, angle }) {
+/** One counter column: round window, scale window with the white tape (fraction left, from the bottom), light. */
+function column(g, x, y, w, h, { fraction, angle, empty }) {
   rect(g, x, y, w, h, FRAME);
   disc(g, x + w / 2, y + w * 0.42, w * 0.3, '#6c6f70'); // the round window
   g.strokeStyle = WHITE;
@@ -79,7 +85,7 @@ function column(g, x, y, w, h, { fraction, angle }) {
   g.rotate(-Math.PI / 2);
   text(g, '500', 0, 0, w * 0.22);
   g.restore();
-  disc(g, x + w / 2, y + h - w * 0.36, w * 0.24, '#050505'); // the push button
+  disc(g, x + w / 2, y + h - w * 0.36, w * 0.24, empty ? EMPTY_RED : '#050505'); // the light: red when empty
 }
 
 /**
@@ -98,7 +104,7 @@ export function ammoCounter(g, { x, y, w, h }, r, counters = []) {
   const colW = (w * 0.7) / 3;
   for (let i = 0; i < 3; i += 1) {
     const cx = left + w * 0.28 + i * colW;
-    column(g, cx + colW * 0.04, top + h * 0.04, colW * 0.92, h - labels - h * 0.06, counters[i] ?? { fraction: 1, angle: 0 });
+    column(g, cx + colW * 0.04, top + h * 0.04, colW * 0.92, h - labels - h * 0.06, counters[i] ?? { fraction: 1, angle: 0, empty: false });
     rect(g, cx + colW * 0.12, top + h - labels * 0.85, colW * 0.76, labels * 0.6, WHITE);
   }
 }

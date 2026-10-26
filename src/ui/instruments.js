@@ -80,7 +80,7 @@ export function instrumentReadings(sim) {
     // the simulation's guns ({ rounds, capacity } by gun, from checkpoint 3); full and still until then.
     ammoCounters: ac.ammoCounter ? ac.ammoCounter.map((gun) => {
       const state = sim.guns?.[gun];
-      return { gun, ...(state ? counterState(state.rounds, state.capacity) : { fraction: 1, angle: 0 }) };
+      return { gun, ...(state ? counterState(state.rounds, state.capacity) : { fraction: 1, angle: 0, empty: false }) };
     }) : null,
     // Normal temperature ranges for gauges that mark them (°C), where the engine data give them (D63).
     normalTemps: plane.engine.heat.oilNormal ? {
