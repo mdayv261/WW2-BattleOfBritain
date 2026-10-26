@@ -975,3 +975,9 @@ any. The instruments we have that appear on the sheet now follow it (`src/ui/lwF
   for the flap indicator and undercarriage lever). The mountings' tabs and knobs below the dials were dropped where they
   would close the gaps, and the Bf 110's decorative switch box and knobs were removed to make room for the grid.
   `tests/ui/panelSpacing.test.js` checks the gaps.
+
+## D45. Bf 110 fuel quantity gauges (26 Oct 2026, product owner)
+
+The two blank positions below the airscrew pitch indicators became fuel quantity gauges, left wing above, right wing
+below, in litres (0-700). Each wing held 375 litres in its main tank and 260 in its reserve (S24, S25), 635 in all
+(`fuel.wingTank`). Fuel use is not modelled yet, so they read full.

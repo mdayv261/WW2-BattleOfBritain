@@ -67,6 +67,8 @@ export function instrumentReadings(sim) {
       pitchClock: raf ? null : pitchClock(e.beta, ac),
       pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, e.omega / UNIT.RPM) : null,
     })),
+    // Fuel in each wing, litres (fuel use is not modelled yet: full tanks).
+    fuelTanks: ac.fuel ? [ac.fuel.wingTank, ac.fuel.wingTank].map((m3) => ({ litres: m3 * 1000, capacity: m3 * 1000 })) : null,
     gearSelected: sim.input ? !!sim.input.gear : plane.surfaces.gear > 0.5, // the undercarriage lever: down
     pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, plane.omega / UNIT.RPM) : null,
     gearDown: plane.surfaces.gear > 0.99,

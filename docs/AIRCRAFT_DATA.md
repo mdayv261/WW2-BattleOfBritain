@@ -717,6 +717,7 @@ flagged as a deviation. S24 and S25 come from RAF flying of an aircraft captured
 | Flying weight (C-2) (`mass.flying`) | 6530 | kg | Fluggewicht 6530 kg | S23 | medium | C-1: 6,040 kg. |
 | Wing loading (C-2) | 166 | kg/m² | 166 kg/m² | S23 | medium | |
 | Fuel tank capacity | 1270 | L | each wing: main 375 l (82.5 gal) and reserve 260 l (58 gal) | S24, S25 | high | S25: 82 + 57 gallons each side, 278 gallons in all. Engines feed from the main tanks only; reserve fuel is pumped across. |
+| Fuel in each wing, main and reserve tanks (`fuel.wingTank`) | 635 | L | main 375 litres and reserve 260 litres | S24, S25 | high | Full scale of the left and right fuel quantity gauges (D45). S25 agrees (82 + 57 gallons). |
 | Fuel and oil tanks self-sealing | yes | — | all fuel and oil tanks are self-sealing | S24, S25 | high | |
 | Oil tank capacity, each | 40 | L | approximately 8.8 gallons | S25 | medium | S24's drawing shows 9 gallons. |
 | Engines | 2 × Daimler-Benz DB 601A | — | DB 601 A | S23, S25 | high | |

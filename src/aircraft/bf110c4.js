@@ -91,6 +91,9 @@ export const bf110c4 = {
     belly: { x: 0, y: -0.95, z: 0 },
     tail: { x: -7.1, y: -0.1, z: 0 },
   },
+  // Fuel in each wing (m^3): main and reserve tanks together, for the cockpit's fuel quantity gauges. Fuel use is not
+  // modelled yet, so the gauges show full tanks.
+  fuel: { wingTank: 0.635 },
   // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
   sight: { type: 'Revi C/12C', ringMils: 100 },
   eye: { x: 1.0, y: 0.9 },

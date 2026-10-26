@@ -86,3 +86,16 @@ describe('Bf 110 panel changes (D44)', () => {
     }
   });
 });
+
+describe('Bf 110 fuel quantity gauges (D45)', () => {
+  it('show each wing\'s tanks in litres: full, 635 litres (S24: 375 main + 260 reserve)', () => {
+    const tanks = instrumentReadings(new Simulation(aircraftById.bf110c4)).fuelTanks;
+    expect(tanks).toHaveLength(2);
+    for (const t of tanks) {
+      expect(t.capacity).toBeCloseTo(635, 6);
+      expect(t.litres).toBeCloseTo(t.capacity, 6);
+    }
+    expect(BF110_LAYOUT.dials.tankLeft).toBeDefined();
+    expect(BF110_LAYOUT.dials.tankRight).toBeDefined();
+  });
+});

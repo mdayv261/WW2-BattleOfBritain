@@ -17,7 +17,11 @@ Read this at the start of every session.
 
 **Done** (D44): Bf 110 turn and bank below the clock; new undercarriage display (lever, three lamps green down / red
 up); TAKEOFF on all flap indicators; Bf 110 fuel and oil pressure gauges per engine with green normal bands; both
-Luftwaffe panels on an even grid with equal gaps, nothing touching. Checked in Chrome, no console errors.
+Luftwaffe panels on an even grid with equal gaps, nothing touching. Left and right wing fuel quantity gauges (litres)
+in the Bf 110's two blank positions (D45). Checked in Chrome, no console errors.
+
+**Known issues:** fuel use is not modelled, so the fuel quantity gauges read full; the pressure gauges show running
+values (not modelled physically).
 
 ## Luftwaffe instruments to the reference drawings (26 Oct 2026)
 

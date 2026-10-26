@@ -2,12 +2,12 @@
 // and sizes are measured on the photograph (pixels, 30 to a dial radius) from the panel's centre and its top edge.
 //   Flying instruments on the left: airspeed, the artificial horizon and the climb indicator above; the altimeter, the
 //   repeater compass and the clock below, the turn and bank under the clock. Their faces follow the product owner's
-//   reference drawings (D43); all sit on an even grid with the same gap between their mountings (D44). Engine instruments on the right, a pair for each engine (left engine on the
-//   left): rev counters, then manifold pressure, coolant and oil temperature. Black cover plates and the switch box at
-//   the bottom left. The photographed aircraft has automatic airscrews; the C-4's are set by hand (S24), so the two
-//   pitch indicators sit on the cover plates right of the engine instruments (S24: "on top at the extreme right of the
-//   dashboard"). Added: the flap position indicator (upright, D34) and undercarriage lamps on the cover plates at the
-//   bottom left.
+//   reference drawings (D43); everything sits on an even grid with the same gap between mountings (D44).
+//   Engine instruments on the right, a column for each engine (left engine on the left): rev counter, manifold
+//   pressure, fuel pressure and oil pressure. The photographed aircraft has automatic airscrews; the C-4's are set by
+//   hand (S24), so its two pitch indicators sit in a third column (S24: "on top at the extreme right of the
+//   dashboard"), with the left and right wing fuel quantity gauges below them (D45).
+//   Bottom left: the undercarriage display and the upright flap position indicator (D34, D44).
 
 import { lamp, label, flapIndicatorVertical } from './dials.js';
 import { millibarWindow } from './altimeters.js';
@@ -37,8 +37,9 @@ export const BF110_LAYOUT = {
     rpmLeft: [333, 370, 19, 24.5], rpmRight: [388, 370, 19, 24.5], ataLeft: [333, 425, 19, 24.5], ataRight: [388, 425, 19, 24.5],
     fuelLeft: [333, 480, 18.5, 24.5], fuelRight: [388, 480, 18.5, 24.5], oilLeft: [333, 535, 18.5, 24.5], oilRight: [388, 535, 18.5, 24.5],
     pitchLeft: [443, 370, 19, 24.5], pitchRight: [443, 425, 19, 24.5],
+    tankLeft: [443, 480, 18.5, 24.5], tankRight: [443, 535, 18.5, 24.5],
   },
-  plates: [{ from: [418.5, 455.5], to: [467.5, 504.5] }, { from: [418.5, 510.5], to: [467.5, 559.5] }],
+  plates: [],
   gear: { from: [33, 505], to: [107, 579] },
   flaps: { from: [113, 505], to: [187, 579] },
 };
@@ -110,6 +111,11 @@ export function bf110Panel(g, x0, y0, r, v) {
     ringGauge(g, ...dial(`oil${side}`), {
       min: 0, max: p.oil.max, labels: [0, 5, 10], ring: '#c9ad2a', bands: [{ from: p.oil.normal[0], to: p.oil.normal[1], colour: '#2f9e4a' }],
       value: p.oil.value, text: 'OIL\natm',
+    });
+    // Fuel quantity in this wing's tanks, litres (D45).
+    const tank = v.fuelTanks[i];
+    ringGauge(g, ...dial(`tank${side}`), {
+      min: 0, max: 700, labels: [0, 300, 600], ring: '#c9ad2a', value: tank.litres, text: `FUEL ${side === 'Left' ? 'L' : 'R'}\nLiter`,
     });
     const [px, py, pr] = dial(`pitch${side}`);
     lwPitchIndicator(g, px, py, pr, e.pitchClock);
