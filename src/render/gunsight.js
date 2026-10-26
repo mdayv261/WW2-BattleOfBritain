@@ -70,19 +70,31 @@ export function buildReticle(ac) {
   return reticle;
 }
 
-/** The sight body on the coaming just ahead of the pilot, with its tilted reflector glass. */
+/**
+ * The sight body on the coaming just ahead of the pilot, with its tilted reflector glass. The glass is centred on the
+ * line of sight from the pilot's eye, so the reticle (collimated, straight ahead) shows in the middle of the glass
+ * (product owner, D41). The Revi has a leather crash pad on the back of its body, as photographed.
+ */
 export function buildSightBody(ac) {
   const group = new THREE.Group();
   const { eye } = ac;
+  const revi = ac.side !== 'RAF';
   const body = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.1, 0.09), new THREE.MeshLambertMaterial({ color: 0x1d1d1b }));
-  body.position.set(eye.x + 0.55, eye.y - 0.14, 0);
-  // The glass faces the pilot and leans back 45 degrees.
-  const plate = new THREE.PlaneGeometry(0.11, 0.09).rotateY(-Math.PI / 2).rotateZ(Math.PI / 4);
+  body.position.set(eye.x + 0.55, eye.y - 0.12, 0);
+  group.add(body);
+  if (revi) {
+    const pad = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.11, 0.07), new THREE.MeshLambertMaterial({ color: 0x7a4a26 }));
+    pad.position.set(eye.x + 0.45, eye.y - 0.1, 0);
+    group.add(pad);
+  }
+  // The glass faces the pilot, leaning back 45 degrees, its centre on the line of sight.
+  const [w, h] = revi ? [0.11, 0.12] : [0.1, 0.09];
+  const plate = new THREE.PlaneGeometry(w, h).rotateY(-Math.PI / 2).rotateZ(Math.PI / 4);
   const glass = new THREE.Mesh(
     plate,
-    new THREE.MeshBasicMaterial({ color: 0xa9c4c8, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false }),
+    new THREE.MeshBasicMaterial({ color: 0xa9c4c8, transparent: true, opacity: 0.16, side: THREE.DoubleSide, depthWrite: false }),
   );
-  glass.position.set(eye.x + 0.52, eye.y - 0.05, 0);
-  group.add(body, glass);
+  glass.position.set(eye.x + 0.55, eye.y, 0);
+  group.add(glass);
   return group;
 }

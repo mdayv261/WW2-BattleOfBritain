@@ -680,6 +680,22 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Change of supercharger delivery with engine speed (exponent) (`mapSpeedExponent`) | 1 | — | — | S18, ASSUMPTION | estimate | Reproduces the gap between the 2200 and 2400 rpm full-throttle lines at 7 km within 1%. |
 | 5-minute engine-speed limit (`maxSpeed`) | 2400 | rpm | 2400 U/min | S15, S18 | high | Not yet used (warnings come in Phase 8). |
 
+### Cockpit gauge pressures (fuel and oil)
+
+The pressures are not modelled physically; the fuel and oil pressure gauge shows these running values while the engine
+turns (scaled down at low rpm), with the normal range green and the low range red.
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Lowest oil pressure at 2400 rpm (`pressures.oilLow`) | 2.2 | kg/cm² | Minimum at 2400 r.p.m. 2·2 Kg. per sq. cm. | S24 | medium | Bf 110 instructions; same DB 601A engine. Top of the red band. |
+| Oil pressure, normal range (`pressures.oilNormal`) | 2.5:5 | kg/cm² | Take-off: Maximum 5 Kg. per sq. cm., Minimum 2·5 Kg. per sq. cm. | S24 | medium | The green band. Written as from:to. |
+| Oil pressure shown while running (`pressures.oilRunning`) | 4 | kg/cm² | — | ASSUMPTION | estimate | Inside the normal range; no measured running value found. |
+| Oil scale, full deflection (`pressures.oilFullScale`) | 10 | kg/cm² | — | ASSUMPTION | estimate | Read approximately from the Bf 110 photograph's combined gauge (D39); not confirmed. |
+| Lowest fuel pressure (`pressures.fuelLow`) | 0.8 | kg/cm² | — | ASSUMPTION | estimate | No fuel pressure limits found for the DB 601A; a typical injection-pump feed. Top of the red band. |
+| Fuel pressure, normal range (`pressures.fuelNormal`) | 1.2:1.8 | kg/cm² | — | ASSUMPTION | estimate | No source found; the green band. S24 notes hand pumping cannot exceed about 1 kg/cm². |
+| Fuel pressure shown while running (`pressures.fuelRunning`) | 1.5 | kg/cm² | — | ASSUMPTION | estimate | Middle of the assumed normal range. |
+| Fuel scale, full deflection (`pressures.fuelFullScale`) | 3 | kg/cm² | — | ASSUMPTION | estimate | No source found; covers the assumed range. |
+
 ## Messerschmitt Bf 110 C-4 (2 × DB 601A)
 
 No C-4 specific document was found. S23 covers the C-1 and C-2. The C-4 added armour, whose weight is an open gap. This is

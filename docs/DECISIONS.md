@@ -908,3 +908,31 @@ flagged as a deviation (more engine power than the H-3).
   Differential throttle steers on the ground. A short message confirms each key; the F2 readout shows each engine.
 - **Turn time** added to the validation kinds (`turnTime` in `src/physics/performance.js`): the steepest sustained
   level turn at a speed with the power setting.
+
+## D41. Bf 109 cockpit after the product owner's photograph of a Bf 109 E cockpit (26 Oct 2026)
+
+The product owner supplied a photograph of a preserved Bf 109 E cockpit seen from the seat, with notes. The panel
+(`src/ui/bf109Panel.js`) and the cockpit frame follow it:
+- **Panel:** black, with the clock at the top; altimeter, repeater compass and manifold pressure above; airspeed, turn
+  and bank, rev counter and the airscrew pitch indicator (right of the rev counter) below.
+- **Placed as the product owner asked:** the upright flap indicator between the compass and the manifold pressure
+  gauge; the undercarriage lever (showing the selected position, EIN up, AUS down) between the turn and bank and the rev
+  counter; the fuel and oil pressure gauge below the lever, normal pressures in green and low in red; the two
+  undercarriage lamps to its right.
+- **Magneto switch** (M1+2, M2, M1): drawn for accuracy, not working. It is on the left, as in the photograph.
+- **Compasses:** N, E, S and W at the cardinal points (the Bf 110's repeater compass too).
+- **Fuel and oil pressures** are not modelled physically: the gauge shows running values while the engine turns. The
+  oil limits come from the Bf 110 instructions for the same DB 601A (S24); the fuel values are estimates
+  (AIRCRAFT_DATA.md, "Cockpit gauge pressures").
+- **Canopy:** the framed windscreen and hood as photographed: the front pane's posts and cross bar, the front arch, its
+  corner braces, top rails and sills (`bf109Hood` in `src/render/cockpitFrame.js`, positions judged from the photograph).
+- **Reflector sight:** the glass is centred on the line of sight, so the reticle shows in the middle of the glass; the
+  Revi's leather pad is shown. The panel now takes up to 42% of the screen height so it stays below the glass.
+
+## D42. Phase 3 sources, deviations and acceptance test agreed (26 Oct 2026, product owner)
+
+- The wartime British recognition card (S34) is accepted as the source of the He 111's wing area.
+- The He 111 deviations (FLIGHT_VALIDATION.md items 18-19) are accepted as recorded.
+- **Phase 3 acceptance test:** speeds ±5%, climbs ±10%, ceilings ±5% apart from the recorded deviations; the Bf 110
+  holds height on either engine with the dead airscrew feathered and does noticeably worse windmilling; the product
+  owner's flight test (Bf 110 circuit, single-engine flight, Bf 109 flaps, He 111 from outside); no earlier tests broken.

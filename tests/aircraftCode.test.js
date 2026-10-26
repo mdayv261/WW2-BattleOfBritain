@@ -29,7 +29,7 @@ const DATA_FILES = [
 ];
 
 // Multiply a value written in the document's unit by this to get the SI value in the code.
-const UNIT_FACTOR = { kW: 1e3, kPa: 1e3, deg: Math.PI / 180, rpm: (2 * Math.PI) / 60, ata: 98066.5 };
+const UNIT_FACTOR = { kW: 1e3, kPa: 1e3, deg: Math.PI / 180, rpm: (2 * Math.PI) / 60, ata: 98066.5, 'kg/cm²': 98066.5 };
 const TOLERANCE = 0.005;
 
 const markdown = readFileSync(new URL('../docs/AIRCRAFT_DATA.md', import.meta.url), 'utf8');

@@ -26,6 +26,19 @@ function pitchClock(beta, ac) {
   return { hours: (minutes / 60) % 12, minutes: minutes % 60 };
 }
 
+/**
+ * Fuel and oil pressure gauge readings (kg/cm²) from the engine's gauge data: the running values while the engine
+ * turns, rising from nothing as it starts (the pressures are not modelled physically).
+ */
+function gaugePressures(p, rpm) {
+  const kg = (pa) => Math.round((pa / UNIT.ATA) * 100) / 100;
+  const running = Math.min(1, Math.max(0, (rpm - 200) / 800));
+  return {
+    fuel: { value: kg(p.fuelRunning) * running, max: kg(p.fuelFullScale), low: kg(p.fuelLow), normal: p.fuelNormal.map(kg) },
+    oil: { value: kg(p.oilRunning) * running, max: kg(p.oilFullScale), low: kg(p.oilLow), normal: p.oilNormal.map(kg) },
+  };
+}
+
 /** What the instruments show, in the aircraft's own units. Pure: used by the panel and the tests. */
 export function instrumentReadings(sim) {
   const { ac, plane } = sim;
@@ -53,6 +66,8 @@ export function instrumentReadings(sim) {
       manifold: raf ? (d.engines[i].map - ISA.P0) / UNIT.PSI : d.engines[i].map / UNIT.ATA,
       pitchClock: raf ? null : pitchClock(e.beta, ac),
     })),
+    gearSelected: sim.input ? !!sim.input.gear : plane.surfaces.gear > 0.5, // the undercarriage lever: down
+    pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, plane.omega / UNIT.RPM) : null,
     gearDown: plane.surfaces.gear > 0.99,
     gearUp: plane.surfaces.gear < 0.01,
     flaps: plane.surfaces.flaps, // fraction of travel

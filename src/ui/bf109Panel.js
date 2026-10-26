@@ -1,50 +1,47 @@
-// Bf 109 E instrument panel laid out after the product owner's photograph of a preserved E panel (D38, revised
-// 26 Oct 2026). Positions and sizes are measured on the photograph (pixels, 30 to a dial radius) from the panel's
-// centre and the top of its centre tab, so the drawing keeps the photograph's proportions.
-//   The grey panel with the clock on its centre tab; airspeed, repeater compass and manifold pressure in the upper
-//   row; altimeter, turn and bank and rev counter below, with the airscrew pitch indicator to the right; the airscrew
-//   pitch switch between the lower dials; the magneto switch, a push button and the pitot heater switch on the left;
-//   placards. Added to the photograph: the flap position indicator (D34) between the compass and the manifold
-//   pressure gauge, where the product owner placed it, standing upright with 0° at the top, and the undercarriage lamps on the right wing of the panel.
+// Bf 109 E instrument panel laid out after the product owner's photograph of a preserved Bf 109 E cockpit (D41).
+// Positions and sizes are measured on the photograph (pixels, 25 to a dial radius) from the panel's centre and the top
+// of its arch, so the drawing keeps the photograph's proportions.
+//   Black panel: the clock at the top; altimeter, repeater compass and manifold pressure in the upper row; airspeed,
+//   turn and bank, rev counter and the airscrew pitch indicator in the lower row; the magneto switch (shown only, not
+//   working) and a push button on the left. Placed where the product owner asked: the flap position indicator
+//   (upright, D34) between the compass and the manifold pressure gauge; the undercarriage lever between the turn and
+//   bank and the rev counter, with the fuel and oil pressure gauge below it and the two undercarriage lamps to its
+//   right on the lower panel.
 
 import { lamp, label, flapIndicatorVertical } from './dials.js';
 import { millibarWindow } from './altimeters.js';
 import {
   mount, lwAirspeed, lwRpm, lwAta, lwStripCompass, lwTurnBank, lwFineAltimeter, lwClock, lwPitchIndicator, placard,
+  pressureGauge,
 } from './luftwaffeDials.js';
 
-const PX = 30; // photograph pixels per dial radius
-const CENTRE = 350; // the panel's centre on the photograph
-const TOP = 26; // the top of the centre tab
+const PX = 25; // photograph pixels per dial radius
+const CENTRE = 369; // the panel's centre on the photograph
+const TOP = 394; // the top of its arch
 
 /** Photograph pixels to panel units (dial radii from the top centre). */
 const P = (px, py) => [(px - CENTRE) / PX, (py - TOP) / PX];
 const size = (px) => px / PX;
 
-const PANEL_GREY = '#7d8388';
-const PANEL_EDGE = '#5b6065';
-
 export const BF109_LAYOUT = {
-  width: 20.5, height: 9.6, screenShare: 0.5, ownBackground: true,
-  outline: [[106, 312], [106, 246], [44, 244], [44, 236], [180, 89], [192, 56], [231, 41], [282, 31], [285, 28], [367, 28],
-    [367, 108], [446, 108], [446, 36], [508, 56], [515, 88], [561, 98], [656, 239], [656, 244], [602, 249], [600, 312]]
-    .map(([x, y]) => P(x, y)),
-  // Dial centres, face radii and mounting half-widths (0: a round black bezel instead), in photograph pixels.
+  width: 14.6, height: 9.45, screenShare: 0.42, ownBackground: true, // kept below the sight glass (D41)
+  outline: [[190, 628], [190, 470], [205, 448], [240, 421], [290, 403], [345, 396], [400, 403], [450, 421], [490, 446],
+    [530, 470], [545, 500], [548, 628]].map(([x, y]) => P(x, y)),
+  lowerPanel: { from: [196, 590], to: [542, 628] },
+  // Dial centres, face radii and mounting half-widths (0: a round bezel), in photograph pixels.
   dials: {
-    clock: [315, 62, 23, 34], airspeed: [220, 155, 32, 0], compass: [314, 154, 32, 41], ata: [477, 152, 32, 41],
-    altimeter: [220, 255, 32, 41], turn: [315, 255, 32, 41], rpm: [477, 254, 32, 41], pitch: [562, 254, 25, 33],
+    clock: [342, 425, 17, 22], altimeter: [285, 489, 23, 31], compass: [345, 487, 25, 0], ata: [448, 489, 25, 32],
+    airspeed: [288, 555, 25, 32], turn: [347, 555, 23, 30], rpm: [449, 555, 24, 31], pitch: [501, 555, 19, 24],
+    pressure: [394, 607, 16, 0],
   },
-  knobs: [[218, 201], [218, 301], [477, 200]],
-  bolts: [[229, 53], [68, 223], [467, 51], [629, 221]],
-  pitchSwitch: { from: [374, 190], to: [418, 298] },
-  magneto: { from: [124, 158], to: [168, 236] },
-  button: [95, 212],
-  placards: {
-    left: { from: [199, 64], to: [257, 106] }, right: { from: [527, 110], to: [561, 216] },
-    magneto: { from: [127, 243], to: [164, 262] }, pitot: { from: [109, 273], to: [165, 301] },
-  },
-  flaps: { from: [360, 113], to: [430, 184] },
-  gear: { from: [566, 150], to: [618, 214] },
+  knobs: [[313, 607, 13], [285, 520, 5], [448, 521, 5]],
+  bolts: [[214, 455], [524, 455], [200, 610], [538, 610]],
+  flaps: { from: [378, 456], to: [415, 521] },
+  gearLever: { from: [384, 527], to: [414, 581] },
+  gearLamps: { from: [415, 595], to: [455, 620] },
+  magneto: { from: [225, 476], to: [255, 555] },
+  button: [215, 528],
+  placard: { from: [226, 560], to: [254, 574] },
 };
 
 /** Draws the panel with its top centre at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
@@ -64,63 +61,62 @@ export function bf109Panel(g, x0, y0, r, v) {
     return [...xy([px, py]), size(face) * r];
   };
 
-  // The grey panel, its bolts and knobs, and the dials' mountings (the airspeed indicator has a round bezel).
-  g.fillStyle = PANEL_GREY;
-  g.strokeStyle = PANEL_EDGE;
+  // The black panel and the lower panel below it, bolts, knobs and the dials' mountings.
+  g.fillStyle = '#1a1b1c';
+  g.strokeStyle = '#2f3133';
   g.lineWidth = 2;
   g.beginPath();
   L.outline.forEach(([dx, dy], i) => (i ? g.lineTo(x0 + dx * r, y0 + dy * r) : g.moveTo(x0 + dx * r, y0 + dy * r)));
   g.closePath();
   g.fill();
   g.stroke();
-  for (const b of L.bolts) disc(g, ...xy(b), r * 0.2, '#6c7276');
-  for (const k of L.knobs) disc(g, ...xy(k), r * 0.22, '#3a3d40');
+  const low = box(L.lowerPanel);
+  g.fillStyle = '#141516';
+  g.fillRect(low.x - low.w / 2, low.y - low.h / 2, low.w, low.h);
+  for (const b of L.bolts) disc(g, ...xy(b), r * 0.14, '#3c3e40');
+  for (const [px, py, rad] of L.knobs) disc(g, ...xy([px, py]), size(rad) * r, '#2b2c2e');
   for (const [px, py, face, half] of Object.values(L.dials)) {
     if (half) mount(g, ...xy([px, py]), size(half) * r);
-    else disc(g, ...xy([px, py]), size(face) * r * 1.38, '#111');
+    else disc(g, ...xy([px, py]), size(face) * r * 1.2, '#0d0d0d');
   }
 
   // Instruments.
   lwClock(g, ...dial('clock'), new Date());
-  lwAirspeed(g, ...dial('airspeed'), v.airspeed);
-  lwStripCompass(g, ...dial('compass'), v.heading);
-  lwAta(g, ...dial('ata'), v.manifold);
   const [ax, ay, ar] = dial('altimeter');
   lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013));
+  lwStripCompass(g, ...dial('compass'), v.heading);
+  lwAta(g, ...dial('ata'), v.manifold);
+  lwAirspeed(g, ...dial('airspeed'), v.airspeed);
   lwTurnBank(g, ...dial('turn'), v.turnRate, v.sideG);
   lwRpm(g, ...dial('rpm'), v.rpm);
   lwPitchIndicator(g, ...dial('pitch'), v.pitchClock);
+  if (v.pressures) pressureGauge(g, ...dial('pressure'), v.pressures.fuel, v.pressures.oil);
 
-  // Switches, the push button and placards (their small print is too fine to read on the photograph).
-  pitchSwitch(g, box(L.pitchSwitch), r);
+  // Flap position (D34), standing upright between the compass and the manifold pressure gauge.
+  const f = box(L.flaps);
+  g.fillStyle = '#0c0c0c';
+  g.fillRect(f.x - f.w / 2, f.y - f.h / 2, f.w, f.h);
+  label(g, f.x, f.y - f.h * 0.4, r * 0.75, 'KLAPPEN');
+  flapIndicatorVertical(g, f.x + f.w * 0.14, f.y + f.h * 0.08, f.h * 0.62, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'START', landing: 'LANDUNG' });
+
+  // Undercarriage lever, and the two lamps to the right of the pressure gauge.
+  gearLever(g, box(L.gearLever), r, v.gearSelected);
+  const k = box(L.gearLamps);
+  g.fillStyle = '#0c0c0c';
+  g.fillRect(k.x - k.w / 2, k.y - k.h / 2, k.w, k.h);
+  lamp(g, k.x - k.w * 0.25, k.y - k.h * 0.12, r * 0.14, '#3fbf4a', v.gearDown, 'AUS');
+  lamp(g, k.x + k.w * 0.25, k.y - k.h * 0.12, r * 0.14, '#d8402e', v.gearUp, 'EIN');
+
+  // Magneto switch (shown for accuracy only), the push button and a placard.
   magnetoSwitch(g, box(L.magneto), r);
   const [bx, by] = xy(L.button);
-  g.fillStyle = '#111';
+  g.fillStyle = '#0c0c0c';
   g.beginPath();
-  g.roundRect(bx - r * 0.5, by - r * 0.5, r, r, r * 0.15);
+  g.roundRect(bx - r * 0.42, by - r * 0.42, r * 0.84, r * 0.84, r * 0.12);
   g.fill();
-  disc(g, bx, by, r * 0.36, '#d8382c');
-  const plate = (p, opts) => {
-    const { x, y, w, h } = box(p);
-    placard(g, x, y, w, h, opts);
-  };
-  plate(L.placards.left, { scribbles: 5 });
-  plate(L.placards.right, { scribbles: 12, plate: '#e8e6df', ink: '#222' });
-  plate(L.placards.magneto, { scribbles: 3 });
-  plate(L.placards.pitot, { lines: ['Staurohr heiz'] });
-
-  // Flap position (D34) and undercarriage lamps, on black plates.
-  const f = box(L.flaps);
-  g.fillStyle = '#0f1011';
-  g.fillRect(f.x - f.w / 2, f.y - f.h / 2, f.w, f.h);
-  label(g, f.x, f.y - f.h * 0.4, r * 0.85, 'KLAPPEN');
-  flapIndicatorVertical(g, f.x + f.w * 0.12, f.y + f.h * 0.08, f.h * 0.66, v, { up: '0°', down: `${Math.round(v.flapTravel)}°`, takeoff: 'START', landing: 'LANDUNG' });
-  const k = box(L.gear);
-  g.fillStyle = '#0f1011';
-  g.fillRect(k.x - k.w / 2, k.y - k.h / 2, k.w, k.h);
-  label(g, k.x, k.y - k.h * 0.3, r * 0.75, 'FAHRWERK');
-  lamp(g, k.x - k.w * 0.22, k.y, r * 0.13, '#3fbf4a', v.gearDown, 'AUS');
-  lamp(g, k.x + k.w * 0.22, k.y, r * 0.13, '#d8402e', v.gearUp, 'EIN');
+  disc(g, bx, by, r * 0.28, '#d8382c');
+  const pl = box(L.placard);
+  placard(g, pl.x, pl.y, pl.w, pl.h, { scribbles: 2, plate: '#4a2a1c' });
 }
 
 function disc(g, x, y, radius, colour) {
@@ -130,30 +126,34 @@ function disc(g, x, y, radius, colour) {
   g.fill();
 }
 
-/** The airscrew pitch switch: a slot with a red-knobbed lever, marked Größer, Drehzahl, Kleiner and Handbetrieb. */
-function pitchSwitch(g, { x, y, w, h }, r) {
-  g.fillStyle = '#121314';
+/** Undercarriage lever in its slot: up at EIN (raised), down at AUS (lowered). */
+function gearLever(g, { x, y, w, h }, r, down) {
+  g.fillStyle = '#0c0c0c';
   g.fillRect(x - w / 2, y - h / 2, w, h);
   g.fillStyle = '#050505';
-  g.fillRect(x - w * 0.36, y - h * 0.4, w * 0.16, h * 0.78);
+  g.fillRect(x - w * 0.1, y - h * 0.36, w * 0.2, h * 0.72);
   g.fillStyle = '#e9e6dc';
-  g.textAlign = 'left';
+  g.textAlign = 'center';
   g.textBaseline = 'middle';
-  g.font = `bold ${Math.max(6, Math.round(r * 0.15))}px ui-sans-serif, Helvetica, sans-serif`;
-  ['Größer', 'Drehzahl', 'Kleiner', 'Handbetrieb'].forEach((t, i) => g.fillText(t, x - w * 0.08, y - h * 0.36 + i * h * 0.25));
-  disc(g, x - w * 0.28, y + h * 0.36, r * 0.17, '#d8382c');
+  g.font = `bold ${Math.max(6, Math.round(r * 0.18))}px ui-sans-serif, Helvetica, sans-serif`;
+  g.fillText('EIN', x, y - h * 0.44);
+  g.fillText('AUS', x, y + h * 0.44);
+  const ky = y + (down ? 0.3 : -0.3) * h;
+  g.fillStyle = '#9a9a96';
+  g.fillRect(x - w * 0.06, Math.min(y, ky), w * 0.12, Math.abs(ky - y));
+  disc(g, x, ky, r * 0.2, '#d8382c');
 }
 
-/** The magneto switch: a lever in a slot, at M1-2 (both magnetos on), marked M1-2, M2 and M1. */
+/** The magneto switch (not working): a lever in a slot at M1+2, marked M1+2, M2 and M1. */
 function magnetoSwitch(g, { x, y, w, h }, r) {
-  g.fillStyle = '#121314';
+  g.fillStyle = '#0c0c0c';
   g.fillRect(x - w / 2, y - h / 2, w, h);
   g.fillStyle = '#050505';
   g.fillRect(x - w * 0.36, y - h * 0.4, w * 0.18, h * 0.8);
   g.fillStyle = '#e9e6dc';
   g.textAlign = 'left';
   g.textBaseline = 'middle';
-  g.font = `bold ${Math.max(6, Math.round(r * 0.22))}px ui-sans-serif, Helvetica, sans-serif`;
-  ['M1-2', 'M2', 'M1'].forEach((t, i) => g.fillText(t, x - w * 0.08, y - h * 0.32 + i * h * 0.32));
-  disc(g, x - w * 0.27, y - h * 0.32, r * 0.17, '#d8382c');
+  g.font = `bold ${Math.max(6, Math.round(r * 0.2))}px ui-sans-serif, Helvetica, sans-serif`;
+  ['M1+2', 'M2', 'M1'].forEach((t, i) => g.fillText(t, x - w * 0.12, y - h * 0.3 + i * h * 0.3));
+  disc(g, x - w * 0.27, y - h * 0.3, r * 0.15, '#d8382c');
 }

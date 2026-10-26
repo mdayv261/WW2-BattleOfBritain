@@ -180,7 +180,7 @@ export function repeaterCompass(g, x, y, r, heading) {
   for (let d = 0; d < 360; d += 5) tick(g, x, y, r, card(d), 0.95, d % 30 === 0 ? 0.8 : d % 10 === 0 ? 0.86 : 0.9, d % 30 === 0 ? 1.8 : 1);
   font(g, r * 0.17, true);
   for (let d = 0; d < 360; d += 30) {
-    const text = d % 90 === 0 ? 'NOSW'[d / 90] : String(d / 10);
+    const text = d % 90 === 0 ? 'NESW'[d / 90] : String(d / 10); // cardinal points in English (product owner)
     g.save();
     g.translate(...at(x, y, card(d), r * 0.64));
     g.rotate(card(d));

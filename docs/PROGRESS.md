@@ -10,8 +10,18 @@ Read this at the start of every session.
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): in progress. Checkpoints 1 (twin physics, Bf 110) and 2
   (He 111, flying the twins, twin controls, Bf 110 panel) done; next checkpoint 3 (the product owner's flight test and
-  the acceptance test).
+  the acceptance test, agreed in D42).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
+
+## Bf 109 cockpit after the product owner's E cockpit photograph (26 Oct 2026)
+
+**Done** (D41): panel, canopy frame and reflector sight redrawn after the photograph; flap indicator, undercarriage
+lever, fuel and oil pressure gauge and undercarriage lamps where the product owner placed them; N/E/S/W on the
+compasses. Checked in Chrome with no console errors.
+
+**Known issues:** fuel and oil pressures are display values only (not modelled); the fuel pressure bands are estimates.
+
+**Next:** the product owner's Phase 3 flight test against the agreed acceptance test (D42).
 
 ## Phase 3 checkpoint 2: He 111 and flying the twins (26 Oct 2026)
 

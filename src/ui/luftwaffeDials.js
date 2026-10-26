@@ -123,8 +123,9 @@ export function lwAta(g, x, y, r, ata) {
 }
 
 /**
- * Repeater compass: a card strip seen through the face, its figures (tens of degrees) running down to the right as
- * on the photographed instrument, behind a fixed vertical lubber line and a horizontal line. Heading in degrees.
+ * Repeater compass: a card strip seen through the face, its figures (tens of degrees, with N, E, S and W at the
+ * cardinal points, as the product owner asked) running down to the right as on the photographed instrument, behind a
+ * fixed vertical lubber line and a horizontal line. Heading in degrees.
  */
 export function lwStripCompass(g, x, y, r, heading) {
   face(g, x, y, r);
@@ -141,8 +142,8 @@ export function lwStripCompass(g, x, y, r, heading) {
     const long = deg % 10 === 0;
     tick(g, px, sy - r * 0.12, 1, 0, 0, long ? r * 0.16 : r * 0.09, long ? 1.6 : 1);
     if (deg % 30 === 0) {
-      font(g, r * 0.2, true);
-      g.fillText(String(deg / 10), px, sy + r * 0.14);
+      font(g, r * (deg % 90 === 0 ? 0.24 : 0.2), true);
+      g.fillText(deg % 90 === 0 ? 'NESW'[deg / 90] : String(deg / 10), px, sy + r * 0.14);
     }
   }
   g.restore();
@@ -273,4 +274,44 @@ export function placard(g, x, y, w, h, { lines = [], scribbles = 0, plate = '#0c
     g.stroke();
   }
   g.globalAlpha = 1;
+}
+
+/**
+ * Fuel and oil pressure gauge (kg/cm²): the fuel needle sweeps the left half, the oil needle the right half, each over
+ * its own scale with the normal range in green and the low range in red.
+ *   fuel, oil: { value, max, low, normal: [from, to] } in kg/cm²
+ */
+export function pressureGauge(g, x, y, r, fuel, oil) {
+  g.fillStyle = '#d9b623';
+  g.beginPath();
+  g.arc(x, y, r * 1.12, 0, Math.PI * 2);
+  g.fill();
+  face(g, x, y, r);
+  // Each half sweeps 140 degrees from the bottom up: fuel on the left (anticlockwise), oil on the right.
+  const sweep = 140 * DEG;
+  const angleOf = (side, v, max) => Math.PI - side * (Math.max(0, Math.min(max, v)) / max) * sweep;
+  const band = (side, from, to, max, colour) => {
+    g.strokeStyle = colour;
+    g.lineWidth = r * 0.14;
+    g.beginPath();
+    const a0 = angleOf(side, from, max) - Math.PI / 2;
+    const a1 = angleOf(side, to, max) - Math.PI / 2;
+    g.arc(x, y, r * 0.86, Math.min(a0, a1), Math.max(a0, a1));
+    g.stroke();
+  };
+  [[-1, fuel], [1, oil]].forEach(([side, o]) => {
+    band(side, 0, o.low, o.max, '#c0392b');
+    band(side, o.normal[0], o.normal[1], o.max, '#2f9e4a');
+    centred(g);
+    for (let k = 0; k <= o.max; k += o.max <= 3 ? 0.5 : 1) {
+      tick(g, x, y, r, angleOf(side, k, o.max), 0.97, Number.isInteger(k) ? 0.8 : 0.88, Number.isInteger(k) ? 1.6 : 1);
+    }
+    font(g, r * 0.2, true);
+    for (const k of [0, o.max]) g.fillText(String(k), ...at(x, y, angleOf(side, k, o.max), r * 0.6));
+  });
+  font(g, r * 0.16, true);
+  g.fillText('Kraftst.', x - r * 0.42, y - r * 0.05);
+  g.fillText('Öl', x + r * 0.42, y - r * 0.05);
+  hand(g, x, y, r, angleOf(-1, fuel.value, fuel.max), 0.78, 0.05);
+  hand(g, x, y, r, angleOf(1, oil.value, oil.max), 0.78, 0.05);
 }

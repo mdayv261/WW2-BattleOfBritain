@@ -26,4 +26,16 @@ export const db601a = {
   mapSpeedExponent: 1, // the full-throttle 2200 rpm line sits below the 2400 rpm line in proportion
   negativeG: null,
   maxSpeed: 2400 * UNIT.RPM, // 5-minute limit
+  // Fuel and oil pressures for the cockpit gauge (Pa, gauge pressure). Not modelled physically: with the engine
+  // turning, the gauge reads the running values below, scaled down at low rpm.
+  pressures: {
+    oilLow: 215746, // 2.2 kg/cm²: minimum at 2400 rpm
+    oilNormal: [245166, 490333], // 2.5-5 kg/cm²: take-off limits
+    oilRunning: 392266, // 4 kg/cm²
+    oilFullScale: 980665, // 10 kg/cm²
+    fuelLow: 78453, // 0.8 kg/cm²
+    fuelNormal: [117680, 176520], // 1.2-1.8 kg/cm²
+    fuelRunning: 147100, // 1.5 kg/cm²
+    fuelFullScale: 294200, // 3 kg/cm²
+  },
 };

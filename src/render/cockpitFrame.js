@@ -41,6 +41,32 @@ function bar(from, to, thickness, material) {
   return m;
 }
 
+/**
+ * The Bf 109 E's framed windscreen and hood as the product owner's photograph shows them from the seat (D41): the flat
+ * front pane between two posts, crossed by a bar a little above eye level; the wide front arch of the hood, its sides
+ * leaning in to a top bar; a diagonal brace across each upper corner; and the top rails running back over the head.
+ * Positions are from the pilot's eye (m), judged from the photograph.
+ */
+function bf109Hood(eye, x0, base) {
+  const group = new THREE.Group();
+  const grey = new THREE.MeshLambertMaterial({ color: 0xa3aaa6, emissive: 0x2a2d2c });
+  const t = 0.02; // tube thickness
+  const top = eye.y + 0.32;
+  const xTop = x0 - 0.45;
+  const bar1 = eye.y + 0.12; // the cross bar of the front pane
+  const xBar = x0 - 0.25;
+  for (const s of [-1, 1]) {
+    group.add(bar([x0, base, s * 0.2], [xTop, top, s * 0.19], t, grey)); // front pane posts
+    group.add(bar([x0 - 0.05, base - 0.02, s * 0.5], [xTop, top, s * 0.4], t, grey)); // sides of the front arch
+    group.add(bar([x0 - 0.3, eye.y + 0.12, s * 0.45], [xTop, top, s * 0.24], t, grey)); // corner braces
+    group.add(bar([xTop, top, s * 0.38], [eye.x - 0.5, top, s * 0.36], t, grey)); // top rails back over the head
+    group.add(bar([x0 - 0.05, base - 0.02, s * 0.5], [eye.x - 0.5, base - 0.02, s * 0.5], t, grey)); // sills
+  }
+  group.add(bar([xBar, bar1, -0.2], [xBar, bar1, 0.2], t, grey));
+  group.add(bar([xTop, top, -0.4], [xTop, top, 0.4], t, grey));
+  return group;
+}
+
 const TWIN_NOSE = { ahead: 2.2, below: 1.1 }; // m: a twin's nose from the pilot's eye (an estimate for the view)
 
 /** The cowling and windscreen frame of an aircraft, in its body axes (centre of gravity at the origin). */
@@ -57,15 +83,19 @@ export function buildCockpitFrame(ac) {
   const front = { top: propHub.y + COWL_TOP_FRONT, bottom: propHub.y - 0.6, w: COWL_HALF_WIDTH.front };
   group.add(new THREE.Mesh(taperedBox(x0, x1, rear, front), paint));
 
-  // Windscreen: two side posts leaning back, a top bar, and (Bf 109) the extra panes of its framed hood.
   const base = eye.y - COWL_TOP_DROP;
-  const top = eye.y + 0.2;
-  const xt = x0 - 0.35;
-  for (const s of [-1, 1]) group.add(bar([x0, base, s * 0.42], [xt, top, s * 0.3], 0.015, frame));
-  group.add(bar([xt, top, -0.3], [xt, top, 0.3], 0.015, frame));
-  if (ac.side === 'Luftwaffe') {
-    for (const s of [-1, 1]) group.add(bar([x0 - 0.1, base, s * 0.47], [xt - 0.1, top, s * 0.33], 0.015, frame));
-    group.add(bar([xt - 0.6, top, -0.3], [xt - 0.6, top, 0.3], 0.015, frame));
+  if (ac.id === 'bf109e4') {
+    group.add(bf109Hood(eye, x0, base));
+  } else {
+    // Windscreen: two side posts leaning back and a top bar, and (Bf 110) the extra panes of its framed hood.
+    const top = eye.y + 0.2;
+    const xt = x0 - 0.35;
+    for (const s of [-1, 1]) group.add(bar([x0, base, s * 0.42], [xt, top, s * 0.3], 0.015, frame));
+    group.add(bar([xt, top, -0.3], [xt, top, 0.3], 0.015, frame));
+    if (ac.side === 'Luftwaffe') {
+      for (const s of [-1, 1]) group.add(bar([x0 - 0.1, base, s * 0.47], [xt - 0.1, top, s * 0.33], 0.015, frame));
+      group.add(bar([xt - 0.6, top, -0.3], [xt - 0.6, top, 0.3], 0.015, frame));
+    }
   }
   // Canopy arch behind the head.
   const arch = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.015, 6, 16, Math.PI), frame);
