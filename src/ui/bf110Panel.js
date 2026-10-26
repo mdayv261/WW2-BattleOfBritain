@@ -47,6 +47,9 @@ export const BF110_LAYOUT = {
   flaps: { from: [113, 505], to: [187, 579] },
 };
 
+/** The undercarriage display's words (product owner, D66): OBEN (up) and UNTEN (down), titled GEAR. */
+export const GEAR_LABELS = { title: 'GEAR', up: 'OBEN', down: 'UNTEN' };
+
 /** The gap between neighbouring mountings and plates, photograph pixels (D44). */
 export const GAP = 6;
 
@@ -119,7 +122,7 @@ export function bf110Panel(g, x0, y0, r, v) {
   });
 
   // Undercarriage display and flap position.
-  undercarriageDisplay(g, box(L.gear), r, v, 'FAHRWERK');
+  undercarriageDisplay(g, box(L.gear), r, v, GEAR_LABELS.title, GEAR_LABELS);
   flapDisplay(g, box(L.flaps), r, v, 'KLAPPEN');
 }
 

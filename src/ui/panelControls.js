@@ -25,8 +25,11 @@ function plate(g, { x, y, w, h }, r) {
   }
 }
 
-/** The undercarriage display on its plate. `box` is { x, y, w, h } in canvas pixels; r the panel's dial radius. */
-export function undercarriageDisplay(g, box, r, v, title) {
+/**
+ * The undercarriage display on its plate. `box` is { x, y, w, h } in canvas pixels; r the panel's dial radius; `up` and
+ * `down` the lever's position words (the Luftwaffe panels: OBEN and UNTEN, D66).
+ */
+export function undercarriageDisplay(g, box, r, v, title, { up = 'UP', down = 'DOWN' } = {}) {
   const { x, y, w, h } = box;
   plate(g, box, r);
   label(g, x + w * 0.12, y - h * 0.36, r * 0.7, title);
@@ -40,8 +43,8 @@ export function undercarriageDisplay(g, box, r, v, title) {
   g.textAlign = 'left';
   g.textBaseline = 'middle';
   g.font = `bold ${Math.max(6, Math.round(r * 0.17))}px ui-sans-serif, Helvetica, sans-serif`;
-  g.fillText('UP', sx + w * 0.12, top + h * 0.02);
-  g.fillText('DOWN', sx + w * 0.12, bottom - h * 0.02);
+  g.fillText(up, sx + w * 0.12, top + h * 0.02);
+  g.fillText(down, sx + w * 0.12, bottom - h * 0.02);
   g.fillStyle = '#d8382c';
   g.beginPath();
   g.arc(sx, v.gearSelected ? bottom : top, r * 0.17, 0, Math.PI * 2);

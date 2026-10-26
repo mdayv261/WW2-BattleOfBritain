@@ -1380,3 +1380,16 @@ Placed as the product owner asked:
   `tests/ui/ammoCounter.test.js`.
 - **Empty lights:** the round light under each tape turns red when that gun is empty (product owner, 27 Oct 2026).
 
+## D66. OBEN / UNTEN and "GEAR" on the Luftwaffe undercarriage indicators (27 Oct 2026, product owner)
+
+- **Bf 109:**
+  - its undercarriage lever reads OBEN (up) at the top and UNTEN (down) at the bottom, in place of EIN and AUS;
+  - its two lamps read UNTEN (green: down and locked) and OBEN (red: up);
+  - the lamps' plate is captioned GEAR.
+- **Bf 110:** the undercarriage display reads OBEN and UNTEN and is titled GEAR, in place of UP/DOWN and FAHRWERK.
+- **Unchanged:**
+  - the RAF panels keep UP, DOWN and UNDERCARRIAGE;
+  - the ammunition counter's gun switch keeps EIN and AUS, as in the photograph (it is not an undercarriage
+    indicator).
+- **Tests:** `tests/ui/gearLabels.test.js` draws each panel on a recording canvas and checks the words.
+

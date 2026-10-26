@@ -19,6 +19,9 @@ import {
   pressureGauge, lwThermometer,
 } from './luftwaffeDials.js';
 
+/** The undercarriage lever's and lamps' words (product owner, D66): OBEN (up) and UNTEN (down); the lamps titled GEAR. */
+export const GEAR_LABELS = { title: 'GEAR', up: 'OBEN', down: 'UNTEN' };
+
 /** The gap between neighbouring mountings and plates, photograph pixels (D44). */
 export const GAP = 5;
 
@@ -113,8 +116,17 @@ export function bf109Panel(g, x0, y0, r, v) {
   const k = box(L.gearLamps);
   g.fillStyle = '#0c0c0c';
   g.fillRect(k.x - k.w / 2, k.y - k.h / 2, k.w, k.h);
-  lamp(g, k.x - k.w * 0.25, k.y - k.h * 0.12, r * 0.14, '#3fbf4a', v.gearDown, 'AUS');
-  lamp(g, k.x + k.w * 0.25, k.y - k.h * 0.12, r * 0.14, '#d8402e', v.gearUp, 'EIN');
+  g.fillStyle = '#e9e6dc';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.font = `bold ${Math.max(6, Math.round(r * 0.16))}px ui-sans-serif, Helvetica, sans-serif`;
+  g.fillText(GEAR_LABELS.title, k.x, k.y - k.h * 0.34);
+  lamp(g, k.x - k.w * 0.25, k.y - k.h * 0.02, r * 0.12, '#3fbf4a', v.gearDown);
+  lamp(g, k.x + k.w * 0.25, k.y - k.h * 0.02, r * 0.12, '#d8402e', v.gearUp);
+  g.fillStyle = '#e9e6dc';
+  g.font = `bold ${Math.max(5, Math.round(r * 0.12))}px ui-sans-serif, Helvetica, sans-serif`;
+  g.fillText(GEAR_LABELS.down, k.x - k.w * 0.25, k.y + k.h * 0.32);
+  g.fillText(GEAR_LABELS.up, k.x + k.w * 0.25, k.y + k.h * 0.32);
 
   // Gun ammunition counter: left MG 17, cannon, right MG 17 (product owner, D64).
   ammoCounter(g, box(L.ammo), r, v.ammoCounters);
@@ -138,7 +150,7 @@ function disc(g, x, y, radius, colour) {
   g.fill();
 }
 
-/** Undercarriage lever in its slot: up at EIN (raised), down at AUS (lowered). */
+/** Undercarriage lever in its slot: up at OBEN (raised), down at UNTEN (lowered). */
 function gearLever(g, { x, y, w, h }, r, down) {
   g.fillStyle = '#0c0c0c';
   g.fillRect(x - w / 2, y - h / 2, w, h);
@@ -148,8 +160,8 @@ function gearLever(g, { x, y, w, h }, r, down) {
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.font = `bold ${Math.max(6, Math.round(r * 0.18))}px ui-sans-serif, Helvetica, sans-serif`;
-  g.fillText('EIN', x, y - h * 0.44);
-  g.fillText('AUS', x, y + h * 0.44);
+  g.fillText(GEAR_LABELS.up, x, y - h * 0.44);
+  g.fillText(GEAR_LABELS.down, x, y + h * 0.44);
   const ky = y + (down ? 0.3 : -0.3) * h;
   g.fillStyle = '#9a9a96';
   g.fillRect(x - w * 0.06, Math.min(y, ky), w * 0.12, Math.abs(ky - y));
