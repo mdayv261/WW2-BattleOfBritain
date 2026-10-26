@@ -1,7 +1,7 @@
 // The test flight: one aircraft, its control inputs, and the fixed-step loop, at the Phase 2 aerodrome.
 // Rendering reads `previous` and `current` poses and blends them with the loop's alpha (D4).
 //
-// Three starts: on the ground at the aerodrome with the engine idling (the default), on the approach at
+// Three starts: on the ground at the aerodrome with the engines off (the default; L starts them), on the approach at
 // 1,000 ft about 5 km out with wheels and flaps up, or in the air at 1,500 m (the Phase 1 start).
 // Twins get a lever per engine (src/input/twinLevers.js).
 
@@ -13,7 +13,8 @@ import { airfieldTerrain, STARTS } from '../world/airfield.js';
 import { engineFor } from '../aircraft/index.js';
 import { lerp } from '../physics/interp.js';
 import { engineMounts } from '../physics/powerplant.js';
-import { createTwinLevers, applyTwinLevers, selectNextEngine, toggleCut, toggleFeather } from '../input/twinLevers.js';
+import { createTwinLevers, applyTwinLevers, selectNextEngine, toggleRunning, toggleFeather } from '../input/twinLevers.js';
+import { common } from '../aircraft/common.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 export const START_MODES = ['ground', 'approach', 'air'];
@@ -73,6 +74,13 @@ export class Simulation {
     ({ plane: this.plane, input: this.input } = startPlane(ac, this.mode));
     const engines = engineMounts(ac).length;
     this.twin = engines > 1 ? createTwinLevers(this.input, engines) : null;
+    // A single engine's own switch (no levers of its own: it uses the shared throttle and rpm).
+    if (!this.twin) this.input.engines = [{ failed: false, feather: false }];
+    // On the ground every aircraft starts with its engines off (product owner, D49): L starts them.
+    if (this.mode === 'ground') {
+      for (const e of this.input.engines) e.failed = true;
+      for (const e of this.plane.engines) e.omega = 0;
+    }
     this.notice = null; // a short message for the pilot: { text, until } (simulation time)
     this.crashed = false;
     this.previous = { position: new Vector3(), quaternion: new Quaternion() };
@@ -91,15 +99,24 @@ export class Simulation {
     if (this.twin) applyTwinLevers(this.twin, this.input);
   }
 
-  /** Twin-engine keys: select engines (K), cut one (L), feather one (M). */
+  /**
+   * Engine keys: start or stop (L, every aircraft; on a twin, the engines the levers are set to); and on the twins,
+   * select the engines the levers move (K) and feather one (M). A started engine is turned to the starter's speed.
+   */
   engineKey(action) {
+    if (action === 'startStop') {
+      const { text, started } = toggleRunning(this.twin, this.input);
+      for (const i of started) this.plane.engines[i].omega = Math.max(this.plane.engines[i].omega, common.starterSpeed);
+      this.notice = { text, until: this.plane.time + 3 };
+      return;
+    }
     if (!this.twin) return;
     if (action === 'feather' && !this.ac.propeller.featherAngle) {
       this.notice = { text: `The ${this.ac.name}'s airscrews do not feather (not confirmed from a source)`, until: this.plane.time + 3 };
       return;
     }
-    const text = action === 'select' ? `Levers: ${selectNextEngine(this.twin)}`
-      : action === 'cut' ? toggleCut(this.twin, this.input) : toggleFeather(this.twin, this.input);
+    const text = action === 'select' ? `Levers: ${selectNextEngine(this.twin, this.input)}`
+      : toggleFeather(this.twin, this.input);
     this.notice = { text, until: this.plane.time + 3 };
   }
 

@@ -13,6 +13,11 @@ Read this at the start of every session.
   the acceptance test, agreed in D42).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
 
+## Engine start/stop and twin lever fix (26 Oct 2026)
+
+**Done** (D49): L starts or stops the engine(s) on every aircraft; ground starts begin with engines off; twin engines
+follow the throttle lever's position (fixes the joystick slider problem after K); the DB 601 and Jumo now hold an idle.
+
 ## RAF undercarriage and flap displays (26 Oct 2026)
 
 **Done** (D47): the Hurricane and Spitfire use the Luftwaffe-style undercarriage display (lever and three lamps) and the

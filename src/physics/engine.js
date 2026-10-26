@@ -64,7 +64,9 @@ export function enginePower(engine, { altitude, airspeed, throttle, speed, emerg
   const rating = emergency && engine.ratings.emergency ? engine.ratings.emergency : engine.ratings.normal;
   const speedRatio = Math.max(speed, 0) / engine.refSpeed;
   const demanded = engine.idleMap + clamp(throttle, 0, 1) * (rating.map - engine.idleMap);
-  const reachable = availableMap(engine, intakeAltitude) * speedRatio ** engine.mapSpeedExponent;
+  // The supercharger's delivery falls with engine speed, but the engine can always draw the air at its intake, so a
+  // slow-running engine (idling, starting) still reaches the outside pressure (D49).
+  const reachable = Math.max(availableMap(engine, intakeAltitude) * speedRatio ** engine.mapSpeedExponent, air.pressure + ram);
   const map = Math.min(demanded, reachable);
   const power = powerAtMap(engine, intakeAltitude, map) * speedRatio ** engine.rpmPowerExponent;
   return { power: speedRatio > 0 ? Math.max(power, 0) : 0, map, ratedMap: rating.map, intakeAltitude };

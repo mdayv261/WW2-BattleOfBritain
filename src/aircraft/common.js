@@ -25,5 +25,6 @@ export const common = {
   groundEffect: 16, // McCormick's constant: induced drag in ground effect x (16h/b)^2 / (1 + (16h/b)^2)
   lowSpeed: 15, // m/s: below this the airflow angles and rotation terms are worked out as at this speed
   sinkLimit: 3.5, // m/s: wheel descent rate at touchdown that collapses the undercarriage
+  starterSpeed: 600 * ((2 * Math.PI) / 60), // rad/s: crankshaft speed a starting engine is turned to (L key, D49)
   deadEngineFriction: 0.1, // friction of a stopped engine's internals, as a fraction of its rated torque
 };

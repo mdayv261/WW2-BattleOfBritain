@@ -189,8 +189,8 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
 | Spitfire Mk I | S4 | Landing run with brakes | 310 yd | 458 yd | +48% |
 | Hurricane Mk I | S1 | Take-off to clear 50 ft (maximum weight) | 470 yd | 468 yd | -0.5% |
 | Hurricane Mk I | S1 | Landing from 50 ft (light weight) | 540 yd | 518 yd | -4.1% |
-| Bf 109 E-4 | S15 | Take-off ground run (20° flap) | 260 m | 196 m | -24.8% |
-| Bf 109 E-4 | S15 | Take-off to clear 20 m | 470 m | 378 m | -19.5% |
+| Bf 109 E-4 | S15 | Take-off ground run (20° flap) | 260 m | 195 m | -25.0% |
+| Bf 109 E-4 | S15 | Take-off to clear 20 m | 470 m | 377 m | -19.7% |
 | Bf 109 E-4 | S15 | Landing from 20 m | 530 m | 563 m | +6.3% |
 | Spitfire Mk I | S33 | Engine speed at full throttle on the ground | 2650-2700 rpm | 2700 rpm | within |
 

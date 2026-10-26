@@ -1004,3 +1004,20 @@ owner asked (D41). The old horizontal flap indicator was removed.
 - The compasses show E for east (not the reference drawing's O), with N, S and W (D41, D43).
 - The Bf 109 E keeps its strip repeater compass from the product owner's cockpit photograph (D41); the Patin repeater
   compass (D43) stays on the Bf 110 only.
+
+## D49. Engine start and stop; engines off on the ground; twin levers follow the lever position (26 Oct 2026)
+
+- **L starts or stops the engine** on every aircraft (product owner). On the twins it acts on the engines K has
+  selected: both together, or one. A started engine is turned to the starter's speed (`common.starterSpeed`, 600 rpm,
+  an estimate) and runs up from there, unfeathered; no start-up sequence is modelled. It replaces the twins' engine
+  cut key (also L).
+- **Ground starts begin with the engines off** (product owner); the message line says to press L.
+- **Twin levers follow the lever position:** the selected engines take the throttle and rpm levers' positions rather
+  than their movement. With a joystick slider the movement-based version left an engine behind after K had selected
+  the other, so the two could look stuck or cut (reported by the product owner). Selecting one engine with K starts
+  the keyboard levers from that engine's setting so it does not jump.
+- **Idle:** a slow-running engine can always draw the outside air pressure, even where the supercharger's delivery
+  (which falls with engine speed) would give less. Before, the DB 601 and Jumo 211 could not hold an idle with the
+  throttle closed and slowly ran down; they now settle at about 730 and 780 rpm. The only validation change is the
+  Bf 109's take-off, 1 m shorter (FLIGHT_VALIDATION.md).
+- A stopped engine can now come fully to rest (before, it crept at about 20 rpm).

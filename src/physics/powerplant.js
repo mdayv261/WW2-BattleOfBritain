@@ -105,9 +105,10 @@ export function stepEngines(plane, input, power, loadFactor, dt) {
     const inp = engineInput(input, i);
     const loads = power.engines[i];
     updateCutout(plane.engine, e.cutout, loadFactor, dt);
-    const omegaProp = Math.max(e.omega * pr.gearRatio, 1);
+    // A running engine never falls below 5 rad/s; a stopped one can come to rest.
+    const omegaProp = e.omega * pr.gearRatio;
     const friction = inp.failed ? common.deadEngineFriction * ratedTorque(plane.engine, pr) * Math.min(1, e.omega / 20) : 0;
-    const accel = (loads.power / omegaProp - loads.torque - friction) / pr.inertia;
+    const accel = (loads.power / Math.max(omegaProp, 1) - loads.torque - friction) / pr.inertia;
     e.omega = Math.max(inp.failed ? 0 : 5, (omegaProp + accel * dt) / pr.gearRatio);
     e.slipQ = loads.slipQ;
 

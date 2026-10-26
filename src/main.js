@@ -50,7 +50,7 @@ function gameKeys() {
   if (keyboard.took('KeyH')) hud.toggleHelp();
   if (keyboard.took('KeyJ')) joyPanel.toggle();
   if (keyboard.took('KeyK')) sim.engineKey('select');
-  if (keyboard.took('KeyL')) sim.engineKey('cut');
+  if (keyboard.took('KeyL')) sim.engineKey('startStop');
   if (keyboard.took('KeyM')) sim.engineKey('feather');
 }
 window.addEventListener('keydown', (e) => {

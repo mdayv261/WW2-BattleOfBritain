@@ -30,12 +30,15 @@ describe('aerodrome and starts', () => {
     expect(onAirfield(STARTS.ground.x, STARTS.ground.z)).toBe(true);
   });
 
-  it('starts on the ground at the aerodrome, at rest, engine idling', () => {
+  it('starts on the ground at the aerodrome, at rest, engine off until L starts it (D49)', () => {
     const sim = new Simulation(spitfire);
     const { position } = sim.plane.body;
     expect(onAirfield(position.x, position.z)).toBe(true);
     expect(sim.plane.ground.touching).toEqual([true, true, true]);
     expect(sim.plane.body.velocity.length()).toBeLessThan(0.05);
+    expect(sim.plane.omega / UNIT.RPM).toBe(0);
+    expect(sim.input.engines[0].failed).toBe(true);
+    sim.engineKey('startStop');
     expect(sim.plane.omega / UNIT.RPM).toBeGreaterThan(500);
     expect(sim.input.gear).toBe(1);
   });
