@@ -12,6 +12,11 @@ Read this at the start of every session.
 - **Phase 4** (world and visuals): all four checkpoints done; waiting for the product owner's acceptance test (D55).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
 
+## Bf 109 yellow nose, wingtips and rudder (26 Oct 2026)
+
+**Done** (D56): the Bf 109 E model has a yellow cowling, wingtips and rudder, after the product owner's photograph;
+the paint now knows which part it is colouring. 908 tests pass; `npm run validate` unchanged.
+
 ## Phase 4 checkpoint 4: frame rate and the acceptance test (26 Oct 2026)
 
 **Done** (D55): acceptance test agreed; the F3 overlay's top line shows the frame rate, the longest recent frame, the

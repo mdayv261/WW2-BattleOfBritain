@@ -24,6 +24,9 @@ const glass = () => new THREE.MeshLambertMaterial({
   color: 0x9fb4c0, transparent: true, opacity: 0.45, flatShading: true, side: THREE.DoubleSide, depthWrite: false,
 });
 
+/** A colour function for one named part: (centre, normal) -> colour. */
+const partColour = (colourOf, part) => (p, n) => colourOf(p, n, part);
+
 /** A painted mesh from a geometry in body axes. */
 const painted = (geometry, colourOf) => new THREE.Mesh(paint(geometry, colourOf), skin());
 
@@ -31,17 +34,18 @@ const painted = (geometry, colourOf) => new THREE.Mesh(paint(geometry, colourOf)
  * right for a rudder). */
 function hinged(mover, colourOf, sign) {
   const { a, b } = mover.hinge;
-  const geometry = paint(mover.geometry.clone(), colourOf).translate(-a.x, -a.y, -a.z); // a copy: the original is mirrored next
+  const geometry = paint(mover.geometry.clone(), (p, n) => colourOf(p, n, mover.name)).translate(-a.x, -a.y, -a.z); // a copy: the original is mirrored next
   const pivot = new THREE.Group();
   pivot.position.copy(a);
   pivot.add(new THREE.Mesh(geometry, skin()));
   return { pivot, axis: new THREE.Vector3().subVectors(b, a).normalize(), sign, name: mover.name };
 }
 
-/** Both halves of a horizontal surface (wing or tailplane): meshes into `group`, movers returned. */
-function pair(spec, colourOf, group) {
+/** Both halves of a horizontal surface (wing or tailplane, named by `part`): meshes into `group`, movers returned. */
+function pair(spec, colourOf, group, part) {
   const half = buildHalf(spec);
-  group.add(painted(half.fixed, colourOf), painted(mirrorZ(half.fixed), colourOf));
+  const fixed = partColour(colourOf, part);
+  group.add(painted(half.fixed, fixed), painted(mirrorZ(half.fixed), fixed));
   const movers = [];
   for (const m of half.movers) {
     movers.push({ ...hinged(m, colourOf, 1), side: 1 });
@@ -60,7 +64,7 @@ function fin(spec, colourOf, group, at) {
   const half = buildHalf(spec);
   const stand = (g) => g.rotateX(-Math.PI / 2).translate(at.x, at.y, at.z);
   const upright = (v) => new THREE.Vector3(v.x + at.x, v.z + at.y, -v.y + at.z);
-  group.add(painted(stand(half.fixed), colourOf));
+  group.add(painted(stand(half.fixed), partColour(colourOf, 'fin')));
   return half.movers.map((m) => {
     const mover = hinged({ name: m.name, geometry: stand(m.geometry), hinge: { a: upright(m.hinge.a), b: upright(m.hinge.b) } }, colourOf, 1);
     group.add(mover.pivot);
@@ -126,7 +130,8 @@ function withSections(sections, fs) {
 
 /** The model of an aircraft. Returns { group, update(plane, dt, { inside }) } and its moving parts (movers, legs, screws). */
 export function buildAircraftModel(ac, design) {
-  const colourOf = scheme(design.scheme, { band: design.band });
+  const colourOf = scheme(design.scheme, { band: design.band, yellow: design.yellow });
+  const bodyColour = partColour(colourOf, 'fuselage');
   const group = new THREE.Group();
   const body = new THREE.Group();
   body.name = 'fuselage';
@@ -134,25 +139,27 @@ export function buildAircraftModel(ac, design) {
   const L = ac.geometry.length;
   const x = (f) => design.nose - f * L;
 
-  // Fuselage (with extra sections at the Sky band's edges, so the band is painted square), canopy, any gondola and nacelles.
-  const fuselage = withSections(design.fuselage, (design.band ?? []).map((bx) => (design.nose - bx) / L));
-  body.add(painted(loft(fuselage.map(ring(x))), colourOf));
+  // Fuselage (with extra sections at the Sky band's and yellow cowling's edges, so they are painted square), canopy, any
+  // gondola and nacelles.
+  const edges = [...(design.band ?? []), ...(design.yellow?.noseFrom !== undefined ? [design.yellow.noseFrom] : [])];
+  const fuselage = withSections(design.fuselage, edges.map((ex) => (design.nose - ex) / L));
+  body.add(painted(loft(fuselage.map(ring(x))), bodyColour));
   for (const c of design.glazing) body.add(new THREE.Mesh(loft(c.map(ring(x)), { round: 2 }), glass()));
-  for (const g of design.extras ?? []) body.add(painted(loft(g.map(ring(x))), colourOf));
+  for (const g of design.extras ?? []) body.add(painted(loft(g.map(ring(x))), bodyColour));
   for (const n of design.nacelles ?? []) {
     for (const mount of engineMounts(ac)) {
       const rings = n.map(([dx, w, top, bottom]) => ring((d) => mount.x + d)([dx, w, top + mount.y, bottom + mount.y]));
-      group.add(painted(loft(rings, { round: 2.2 }).translate(0, 0, mount.z), colourOf));
+      group.add(painted(loft(rings, { round: 2.2 }).translate(0, 0, mount.z), partColour(colourOf, 'nacelle')));
     }
   }
   for (const r of design.radiators ?? []) {
-    group.add(painted(new THREE.BoxGeometry(r.l, r.h, r.w).toNonIndexed().translate(r.x, r.y, r.z), colourOf));
+    group.add(painted(new THREE.BoxGeometry(r.l, r.h, r.w).toNonIndexed().translate(r.x, r.y, r.z), partColour(colourOf, 'radiator')));
   }
 
   // Wings, tailplane and fins with their moving surfaces.
   const wings = new THREE.Group();
   group.add(wings);
-  const movers = [...pair(design.wing(ac), colourOf, wings), ...pair(design.tailplane(ac), colourOf, body)];
+  const movers = [...pair(design.wing(ac), colourOf, wings, 'wing'), ...pair(design.tailplane(ac), colourOf, body, 'tail')];
   for (const f of design.fins(ac)) movers.push(...fin(f.spec, colourOf, body, f.at));
 
   // Undercarriage, and the fixed tailwheel.

@@ -28,6 +28,34 @@ function tipOf(object) {
   return new THREE.Vector3(p.getX(p.count - 1), p.getY(p.count - 1), p.getZ(p.count - 1)).applyMatrix4(mesh.matrixWorld);
 }
 
+const YELLOW = new THREE.Color(0xe0b02a);
+
+/** The world-space centres of the yellow-painted triangles in an object (vertex-coloured meshes only). */
+function yellowTriangles(object) {
+  object.updateMatrixWorld(true);
+  const centres = [];
+  object.traverse((o) => {
+    const colour = o.isMesh && o.geometry.attributes.color;
+    if (!colour) return;
+    const p = o.geometry.attributes.position;
+    for (let i = 0; i < p.count; i += 3) {
+      const yellow = Math.abs(colour.getX(i) - YELLOW.r) + Math.abs(colour.getY(i) - YELLOW.g) + Math.abs(colour.getZ(i) - YELLOW.b) < 1e-3;
+      if (!yellow) continue;
+      const c = new THREE.Vector3();
+      for (let k = 0; k < 3; k += 1) c.add(new THREE.Vector3().fromBufferAttribute(p, i + k));
+      centres.push(c.divideScalar(3).applyMatrix4(o.matrixWorld));
+    }
+  });
+  return centres;
+}
+
+/** The number of vertex-coloured triangles in an object. */
+function triangleCount(object) {
+  let n = 0;
+  object.traverse((o) => { if (o.isMesh && o.geometry.attributes.color) n += o.geometry.attributes.position.count / 3; });
+  return n;
+}
+
 describe('aircraft models', () => {
   for (const ac of aircraftList) {
     describe(ac.id, () => {
@@ -106,6 +134,22 @@ describe('aircraft models', () => {
         let marks = 0;
         model.group.traverse((o) => { if (o.userData.marking) marks += 1; });
         expect(marks).toBe(kinds.length);
+      });
+
+      it(ac.id === 'bf109e4' ? 'has a yellow cowling, wingtips and rudder, and nothing else yellow (D56)' : 'has no yellow (D56)', () => {
+        const yellow = yellowTriangles(model.group);
+        if (ac.id !== 'bf109e4') {
+          expect(yellow.length).toBe(0);
+          return;
+        }
+        const rudder = model.movers.find((m) => m.name === 'rudder');
+        expect(yellowTriangles(rudder.pivot).length).toBe(triangleCount(rudder.pivot));
+        const { noseFrom, tipsFrom } = DESIGNS[ac.id].yellow;
+        expect(yellow.some((c) => c.x > noseFrom + 1 && Math.abs(c.z) < 0.5)).toBe(true); // the cowling
+        expect(yellow.some((c) => c.z > tipsFrom + 0.3)).toBe(true); // right wingtip
+        expect(yellow.some((c) => c.z < -tipsFrom - 0.3)).toBe(true); // left wingtip
+        // Elsewhere stays camouflaged: the rear fuselage, the wing roots and the tailplane.
+        expect(yellow.every((c) => c.x > noseFrom - 0.01 || Math.abs(c.z) > tipsFrom - 0.01 || c.x < -4.3)).toBe(true);
       });
     });
   }

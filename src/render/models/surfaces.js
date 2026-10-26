@@ -1,20 +1,22 @@
 // Wings, tailplanes and fins for the aircraft models (D54), with their control surfaces cut from the trailing edge and
 // hung on hinges so they can move. A spec describes one half (span along +Z from `root` to `semi`):
 //   { root, semi, chord: (s) -> m, le: (s) -> leading-edge x, y: (s) -> chord-line height, t: (s) -> thickness ratio,
-//     cuts: [{ name, from, to, depth }] (span positions in m, depth as a fraction of chord), steps }
+//     cuts: [{ name, from, to, depth }] (span positions in m, depth as a fraction of chord), steps,
+//     breaks: [span positions that must have a station, e.g. where a paint edge runs] }
 // buildHalf returns { fixed: geometry, movers: [{ name, geometry, hinge: { a, b } }] } in body axes.
 
 import * as THREE from 'three';
 import { surface, merge } from './geometry.js';
 
-/** Span positions: evenly spaced, plus every cut's ends. */
+/** Span positions: evenly spaced, plus every cut's ends and break. */
 function spanPoints(spec) {
-  const { root, semi, cuts = [], steps = 10 } = spec;
+  const { root, semi, cuts = [], steps = 10, breaks = [] } = spec;
   const set = new Set(Array.from({ length: steps + 1 }, (_, k) => root + ((semi - root) * k) / steps));
   for (const c of cuts) {
     set.add(c.from);
     set.add(c.to);
   }
+  for (const b of breaks) set.add(b);
   return [...set].filter((s) => s >= root - 1e-9 && s <= semi + 1e-9).sort((a, b) => a - b);
 }
 

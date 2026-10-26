@@ -20,6 +20,7 @@ function liftingSpec(ac, w, dihedral) {
     y: (s) => w.y + s * Math.tan(dihedral),
     t: linear(w.tRoot, w.tTip, semi),
     cuts: w.cuts,
+    breaks: w.breaks,
   };
 }
 
@@ -27,6 +28,12 @@ const wingOf = (w) => (ac) => {
   const semi = ac.geometry.span / 2;
   const cut = (name, [from, to, depth]) => ({ name, from: from * semi, to: to * semi, depth });
   return liftingSpec(ac, { ...w, cuts: [cut('flap', w.flap), cut('aileron', w.aileron)] }, ac.aero.dihedral);
+};
+
+/** A design's wing, with a station where yellow wingtips begin so their edge is straight. */
+const wingWithTips = (design, w) => (ac) => {
+  const tips = design.yellow?.tipsFrom;
+  return wingOf({ ...w, breaks: tips ? [tips] : [] })(ac);
 };
 
 const tailOf = (t) => (ac) => liftingSpec(ac, {
@@ -146,8 +153,11 @@ const bf109 = {
   radiators: [{ x: -0.3, y: -0.6, z: 1.6, l: 0.9, w: 0.45, h: 0.18 }, { x: -0.3, y: -0.6, z: -1.6, l: 0.9, w: 0.45, h: 0.18 },
     { x: 1.5, y: -0.55, z: 0, l: 0.6, w: 0.3, h: 0.2 }],
   gear: { top: -0.45, retract: 'out' },
+  // Yellow cowling (back to just ahead of the windscreen), wingtips (outer 0.95 m) and rudder: the product owner's
+  // choice from a photograph (D56), extents by eye.
+  yellow: { noseFrom: -0.1, tipsFrom: 4.0, rudder: true },
 };
-bf109.wing = wingOf({ root: 0.4, chord: tapered(2.2, 1.15, 9.9 / 2, 0.02), quarter: 0.35, y: -0.4, tRoot: 0.142, tTip: 0.11, aileron: [0.6, 0.97, 0.25], flap: [0.15, 0.58, 0.25] });
+bf109.wing = wingWithTips(bf109, { root: 0.4, chord: tapered(2.2, 1.15, 9.9 / 2, 0.02), quarter: 0.35, y: -0.4, tRoot: 0.142, tTip: 0.11, aileron: [0.6, 0.97, 0.25], flap: [0.15, 0.58, 0.25] });
 bf109.tailplane = tailOf({ semi: 1.55, chord: tapered(1.05, 0.6, 1.55, 0.25), quarter: -4.85, y: 0.62, tRoot: 0.1, tTip: 0.08, elevator: 0.38 });
 bf109.fins = () => [finOf({ h: 1.0, chord: tapered(1.1, 0.55, 1.0, 0.4), le: -4.6, base: 0.38, rudder: 0.5 })];
 bf109.markings = lwMarkings(bf109, { wingCross: 0.95, fuselageAt: 0.7 });

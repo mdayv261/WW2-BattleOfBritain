@@ -1148,3 +1148,17 @@ left as they are (terrain levels of detail, houses within 9 km, cloud fading). I
 short, the first steps are a lower pixel ratio, shorter house distance and coarser distant terrain; a graphics-quality
 setting comes with the settings screen (Phase 7).
 
+## D56. Yellow nose, wingtips and rudder on the Bf 109 E (26 Oct 2026, product owner)
+
+The product owner asked for the Bf 109 E model to have a yellow engine cowling, wingtips and rudder, as in their
+reference photograph (a Bf 109 E-4 in flight). In the summer of 1940 such yellow areas were applied to German fighters
+as quick identification markings; the game uses them on every Bf 109 as part of its generic scheme (D14).
+- **Areas:**
+  - the cowling all round, underside and chin oil cooler included, back to just ahead of the windscreen (x > -0.1 m);
+  - both wingtips, upper and lower surfaces, the outer 0.95 m (|z| > 4.0 m), ailerons included;
+  - the whole rudder; the fin stays camouflaged and keeps the swastika.
+- **Flagged:** the photograph shows a modern restoration, so the extents are judged by eye, not from a period source.
+  The colour (RLM 04 yellow, 0xe0b02a) is a display approximation like the other paints (D54).
+- **Not adopted from the photograph:** its pale blue-grey sides with little mottling, and its white unit number (D14).
+  The Bf 110 and He 111 have no yellow.
+
