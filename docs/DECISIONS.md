@@ -1342,3 +1342,28 @@ Placed as the product owner asked:
     the top end is an estimate.
 - **Scales:** all the scale ranges are display choices, not from photographs of the period instruments.
 
+## D64. Bf 109 panel rearranged, its ammunition counter, and the Bf 110 sized like the Bf 109 (27 Oct 2026, product owner)
+
+**Bf 109** (supersedes D63's Bf 109 placement), as the product owner asked:
+- **Moves:**
+  - the airscrew pitch indicator is now the small gauges' size, beside the rev counter;
+  - the fuel and oil pressure gauge moved up beside the manifold pressure (ata) gauge;
+  - the oil and coolant thermometers sit side by side under the rev counter (their choice), with the undercarriage
+    lamps under the lever to their left.
+- **Panel size:** the extra bottom row of D63 is gone, so the panel is back to its D41 height and its dials to their
+  earlier size. Every instrument keeps the even 5-pixel gap (D44).
+- **Ammunition counter:** placed above the altimeter, drawn after the product owner's photograph (`src/ui/ammoCounter.js`):
+  - the guns' EIN/AUS switch, three counter columns with round windows, scales marked 500 with white tapes, push buttons
+    and label plates;
+  - columns: left MG 17, cannon, right MG 17 (the product owner's choice);
+  - until the guns are wired in checkpoint 3, the tapes read full and the switch shows EIN.
+  - **Flagged:**
+    - which gun each column showed is not confirmed from a source;
+    - the photograph's scales read 500, while the E-3 carried 1,000 rounds per MG 17 (S16) and 60 per cannon drum, so
+      the tape shows the fraction of rounds left.
+
+**Bf 110:**
+- **Size:** its panel is now drawn at the Bf 109's scale. Its large dials come out exactly the size of the Bf 109's
+  (`matchBf109` in `src/ui/bf110Panel.js`; `panelRadius` in `src/ui/instruments.js`).
+- **Engine dials:** these keep their own grid and are about 9% smaller than the Bf 109's small gauges.
+

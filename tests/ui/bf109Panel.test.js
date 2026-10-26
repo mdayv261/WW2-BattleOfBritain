@@ -48,7 +48,7 @@ describe('Bf 109 panel layout (D41)', () => {
     expect(L.flaps.to[0]).toBeLessThan(ax - aHalf);
   });
 
-  it('puts the undercarriage lever between the turn and bank and the rev counter, the lamps below it, the pressure gauge below the rev counter (D63)', () => {
+  it('puts the undercarriage lever between the turn and bank and the rev counter, with the lamps below it', () => {
     const [tx, , , tHalf] = L.dials.turn;
     const [rx, , , rHalf] = L.dials.rpm;
     expect(L.gearLever.from[0]).toBeGreaterThan(tx + tHalf);
@@ -57,22 +57,35 @@ describe('Bf 109 panel layout (D41)', () => {
     expect(lampsX).toBeGreaterThan(L.gearLever.from[0]);
     expect(lampsX).toBeLessThan(L.gearLever.to[0]);
     expect(L.gearLamps.from[1]).toBeGreaterThan(L.gearLever.to[1]);
-    const [px, py] = L.dials.pressure;
-    expect(Math.abs(px - rx)).toBeLessThan(rHalf);
-    expect(py).toBeGreaterThan(L.dials.rpm[1]);
   });
 
-  it('puts the oil and coolant temperature gauges in a row below, the pressure gauge\'s size, under the rev counter and pitch indicator (D63)', () => {
+  it('puts the pressure gauge beside the manifold pressure gauge and the small pitch indicator beside the rev counter (D64)', () => {
+    const small = L.dials.pressure[2];
+    expect(L.dials.pressure[1]).toBe(L.dials.ata[1]);
+    expect(L.dials.pressure[0]).toBeGreaterThan(L.dials.ata[0]);
+    expect(L.dials.pitch[1]).toBe(L.dials.rpm[1]);
+    expect(L.dials.pitch[0]).toBeGreaterThan(L.dials.rpm[0]);
+    expect(L.dials.pitch[2]).toBe(small);
+  });
+
+  it('puts the oil and coolant thermometers, the small size, side by side under the rev counter (D64)', () => {
     const [ox, oy, oFace] = L.dials.oilTemp;
     const [cx, cy, cFace] = L.dials.coolTemp;
+    const [rx, ry, , rHalf] = L.dials.rpm;
     expect(oFace).toBe(L.dials.pressure[2]);
     expect(cFace).toBe(L.dials.pressure[2]);
     expect(oy).toBe(cy);
-    expect(oy).toBeGreaterThan(L.dials.pressure[1]);
-    expect(ox).toBeGreaterThan(L.dials.rpm[0] - L.dials.rpm[3]);
-    expect(cx).toBeLessThan(L.dials.pitch[0] + L.dials.pitch[3]);
+    expect(oy).toBeGreaterThan(ry + rHalf);
+    expect((ox + cx) / 2).toBeCloseTo(rx, 0);
     expect(ox).toBeLessThan(cx);
-    expect(Math.max(...L.outline.map(([, y]) => y))).toBeGreaterThan((oy + oFace * 1.2 - 394) / 25);
+  });
+
+  it('puts the ammunition counter above the altimeter, the same width, and keeps the panel its D41 height', () => {
+    const [ax, ay, , aHalf] = L.dials.altimeter;
+    expect((L.ammo.from[0] + L.ammo.to[0]) / 2).toBeCloseTo(ax, 6);
+    expect(L.ammo.to[0] - L.ammo.from[0]).toBeCloseTo(2 * aHalf, 6);
+    expect(L.ammo.to[1]).toBeLessThan(ay - aHalf);
+    expect(L.height).toBe(9.45);
   });
 });
 

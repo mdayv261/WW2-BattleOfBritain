@@ -20,7 +20,7 @@ function boxes(L, plates) {
 const clearance = (a, b) => Math.max(Math.abs(a.x - b.x) - a.hw - b.hw, Math.abs(a.y - b.y) - a.hh - b.hh);
 
 const PANELS = [
-  ['Bf 109', GAP109, boxes(BF109_LAYOUT, [['flaps', BF109_LAYOUT.flaps], ['gear lever', BF109_LAYOUT.gearLever], ['gear lamps', BF109_LAYOUT.gearLamps]])],
+  ['Bf 109', GAP109, boxes(BF109_LAYOUT, [['flaps', BF109_LAYOUT.flaps], ['gear lever', BF109_LAYOUT.gearLever], ['gear lamps', BF109_LAYOUT.gearLamps], ['ammo counter', BF109_LAYOUT.ammo]])],
   ['Bf 110', GAP110, boxes(BF110_LAYOUT, [['flaps', BF110_LAYOUT.flaps], ['gear', BF110_LAYOUT.gear],
     ...BF110_LAYOUT.plates.map((p, i) => [`plate ${i}`, p])])],
 ];

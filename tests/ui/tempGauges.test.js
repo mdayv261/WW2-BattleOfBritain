@@ -1,6 +1,7 @@
 // Coolant and oil temperature gauges on the panels (product owner's placements, D63), and the readings that drive them.
 import { describe, it, expect } from 'vitest';
-import { RAF_LAYOUT, instrumentReadings } from '../../src/ui/instruments.js';
+import { RAF_LAYOUT, instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
+import { BF109_LAYOUT } from '../../src/ui/bf109Panel.js';
 import { BF110_LAYOUT } from '../../src/ui/bf110Panel.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
@@ -41,5 +42,20 @@ describe('temperature gauges (D63)', () => {
     const v = instrumentReadings(sim);
     expect(v.coolant).toBe(88);
     expect(v.normalTemps).toBeNull();
+  });
+
+  it('reads the Bf 109 ammunition counter: left MG 17, cannon, right MG 17, full until the guns are wired', () => {
+    const v = instrumentReadings(new Simulation(aircraftById.bf109e4, 'air'));
+    expect(v.ammoCounters.map((c) => c.gun)).toEqual(['mg17Left', 'cannon', 'mg17Right']);
+    expect(v.ammoCounters.every((c) => c.fraction === 1)).toBe(true);
+    expect(instrumentReadings(new Simulation(aircraftById.spitfire, 'air')).ammoCounters).toBeNull();
+  });
+
+  it('draws the Bf 110\'s large dials the same size as the Bf 109\'s on any screen (D64)', () => {
+    for (const [w, h] of [[1548, 784], [1920, 1080], [1280, 720], [2560, 1259]]) {
+      const big109 = panelRadius(BF109_LAYOUT, w, h) * (BF109_LAYOUT.dials.airspeed[2] / 25);
+      const big110 = panelRadius(BF110_LAYOUT, w, h) * (BF110_LAYOUT.dials.airspeed[2] / 30);
+      expect(big110, `${w}x${h}`).toBeCloseTo(big109, 6);
+    }
   });
 });

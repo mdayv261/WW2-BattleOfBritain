@@ -21,8 +21,9 @@ Read this at the start of every session.
 - temperatures and damage in the text strip and F3, with warnings on the message line;
 - tests in `tests/physics/cooling.test.js`, `tests/physics/structure.test.js`, `tests/ui/damageReports.test.js`.
 
-**Gauges** (D63): coolant and oil temperature gauges on every flyable aircraft's panel, placed as the product owner
-asked; the Bf 110's with green normal bands.
+**Gauges** (D63, D64): coolant and oil temperature gauges on every flyable aircraft's panel, placed as the product owner
+asked; the Bf 110's with green normal bands. The Bf 109 panel rearranged with an ammunition counter (full until
+checkpoint 3); the Bf 110 panel drawn at the Bf 109's size.
 
 **Known issues:** all radiator and structural constants are estimates (D61, D62); one radiator control for both of the
 Bf 110's engines.

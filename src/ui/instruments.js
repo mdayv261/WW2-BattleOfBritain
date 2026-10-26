@@ -75,6 +75,9 @@ export function instrumentReadings(sim) {
     fuelTanks: ac.fuel ? [ac.fuel.wingTank, ac.fuel.wingTank].map((m3) => ({ litres: m3 * 1000, capacity: m3 * 1000 })) : null,
     gearSelected: sim.input ? !!sim.input.gear : plane.surfaces.gear > 0.5, // the undercarriage lever: down
     pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, plane.omega / UNIT.RPM) : null,
+    // The ammunition counter's columns (Bf 109, D64): the fraction of rounds left. Full until the guns are wired in
+    // checkpoint 3.
+    ammoCounters: ac.ammoCounter ? ac.ammoCounter.map((gun) => ({ gun, fraction: 1 })) : null,
     // Normal temperature ranges for gauges that mark them (°C), where the engine data give them (D63).
     normalTemps: plane.engine.heat.oilNormal ? {
       oil: [plane.engine.heat.oilNormal.from, plane.engine.heat.oilNormal.to],
@@ -160,6 +163,20 @@ function rafPanel(g, x0, y0, r, v) {
   flapDisplay(g, plateBox(L.flaps), r, v, 'FLAPS');
 }
 
+/** The fitted dial radius for a panel layout on a screen: as large as fits, capped. */
+function fittedRadius(L, width, height) {
+  return Math.min(66, (width * 0.96) / L.width, (height * (L.screenShare ?? 0.4)) / L.height);
+}
+
+/**
+ * A panel's dial radius (screen pixels) on a screen `width` x `height`. A layout with `matchBf109` takes the Bf 109's
+ * radius times that factor, so its instruments come out the same size as the Bf 109's (D64), but never more than fits.
+ */
+export function panelRadius(L, width, height) {
+  const r = fittedRadius(L, width, height);
+  return L.matchBf109 ? Math.min(r, fittedRadius(BF109_LAYOUT, width, height) * L.matchBf109) : r;
+}
+
 export class InstrumentPanel {
   constructor() {
     this.canvas = document.createElement('canvas');
@@ -200,7 +217,7 @@ export class InstrumentPanel {
     const width = window.innerWidth;
     const twin = sim.ac.id === 'bf110c4';
     const L = v.raf ? RAF_LAYOUT : twin ? BF110_LAYOUT : BF109_LAYOUT;
-    const r = Math.min(66, (width * 0.96) / L.width, (window.innerHeight * (L.screenShare ?? 0.4)) / L.height);
+    const r = panelRadius(L, width, window.innerHeight);
     const height = L.height * r + 6;
     const g = this.context(width, height);
     if (!L.ownBackground) {
