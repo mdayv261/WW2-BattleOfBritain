@@ -15,6 +15,9 @@ import {
   pressureGauge,
 } from './luftwaffeDials.js';
 
+// The tabs below some mountings, as on the reference drawings (D43): the altimeter's setting knob, a screw elsewhere.
+const TABS = { altimeter: 'knob', airspeed: 'screw' };
+
 const PX = 25; // photograph pixels per dial radius
 const CENTRE = 369; // the panel's centre on the photograph
 const TOP = 394; // the top of its arch
@@ -34,7 +37,7 @@ export const BF109_LAYOUT = {
     airspeed: [288, 555, 25, 32], turn: [347, 555, 23, 30], rpm: [449, 555, 24, 31], pitch: [501, 555, 19, 24],
     pressure: [394, 607, 16, 0],
   },
-  knobs: [[313, 607, 13], [285, 520, 5], [448, 521, 5]],
+  knobs: [[313, 607, 13], [448, 521, 5]],
   bolts: [[214, 455], [524, 455], [200, 610], [538, 610]],
   flaps: { from: [378, 456], to: [415, 521] },
   gearLever: { from: [384, 527], to: [414, 581] },
@@ -75,8 +78,8 @@ export function bf109Panel(g, x0, y0, r, v) {
   g.fillRect(low.x - low.w / 2, low.y - low.h / 2, low.w, low.h);
   for (const b of L.bolts) disc(g, ...xy(b), r * 0.14, '#3c3e40');
   for (const [px, py, rad] of L.knobs) disc(g, ...xy([px, py]), size(rad) * r, '#2b2c2e');
-  for (const [px, py, face, half] of Object.values(L.dials)) {
-    if (half) mount(g, ...xy([px, py]), size(half) * r);
+  for (const [name, [px, py, face, half]] of Object.entries(L.dials)) {
+    if (half) mount(g, ...xy([px, py]), size(half) * r, TABS[name]);
     else disc(g, ...xy([px, py]), size(face) * r * 1.2, '#0d0d0d');
   }
 

@@ -1,7 +1,7 @@
 // Bf 110 instrument panel laid out after the product owner's photograph of a preserved Bf 110 cockpit (D39). Positions
 // and sizes are measured on the photograph (pixels, 30 to a dial radius) from the panel's centre and its top edge.
-//   Flying instruments on the left: airspeed, the combined horizon and the climb indicator above; the altimeter, the
-//   repeater compass and the clock below. Engine instruments on the right, a pair for each engine (left engine on the
+//   Flying instruments on the left: airspeed, the artificial horizon and the climb indicator above; the altimeter, the
+//   repeater compass and the clock below. Their faces follow the product owner's reference drawings (D43). Engine instruments on the right, a pair for each engine (left engine on the
 //   left): rev counters, then manifold pressure, coolant and oil temperature. Black cover plates and the switch box at
 //   the bottom left. The photographed aircraft has automatic airscrews; the C-4's are set by hand (S24), so the two
 //   pitch indicators sit on the cover plates right of the engine instruments (S24: "on top at the extreme right of the
@@ -10,8 +10,9 @@
 
 import { lamp, label, flapIndicatorVertical } from './dials.js';
 import { millibarWindow } from './altimeters.js';
-import { mount, lwRpm, lwAta, lwFineAltimeter, lwClock, lwPitchIndicator } from './luftwaffeDials.js';
-import { airspeed900, climb30, combinedHorizon, ringGauge, redRing, repeaterCompass } from './bf110Dials.js';
+import { mount, lwRpm, lwAta, lwClock, lwPitchIndicator } from './luftwaffeDials.js';
+import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass } from './lwFlightDials.js';
+import { ringGauge, redRing } from './bf110Dials.js';
 
 const PX = 30; // photograph pixels per dial radius
 const CENTRE = 241; // the panel's centre on the photograph
@@ -81,15 +82,16 @@ export function bf110Panel(g, x0, y0, r, v) {
     g.fillStyle = '#26282b';
     disc(g, ...xy(k), r * 0.22);
   }
-  for (const [px, py, , half] of Object.values(L.dials)) if (half) mount(g, ...xy([px, py]), size(half) * r);
+  const tabs = { altimeter: 'knob', airspeed: 'screw', climb: 'screw' }; // as on the reference drawings (D43)
+  for (const [name, [px, py, , half]] of Object.entries(L.dials)) if (half) mount(g, ...xy([px, py]), size(half) * r, tabs[name]);
 
   // Flying instruments.
-  airspeed900(g, ...dial('airspeed'), v.airspeed);
-  combinedHorizon(g, ...dial('horizon'), v.bank, v.pitch, v.turnRate, v.sideG);
-  climb30(g, ...dial('climb'), v.climb);
+  lwAirspeed(g, ...dial('airspeed'), v.airspeed);
+  lwHorizon(g, ...dial('horizon'), v.bank, v.pitch);
+  lwVario(g, ...dial('climb'), v.climb);
   const [ax, ay, ar] = dial('altimeter');
   lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013));
-  repeaterCompass(g, ...dial('compass'), v.heading);
+  lwPatinCompass(g, ...dial('compass'), v.heading);
   lwClock(g, ...dial('clock'), new Date());
 
   // Engine instruments: left engine on the left.

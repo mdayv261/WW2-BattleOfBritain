@@ -936,3 +936,25 @@ The product owner supplied a photograph of a preserved Bf 109 E cockpit seen fro
 - **Phase 3 acceptance test:** speeds ±5%, climbs ±10%, ceilings ±5% apart from the recorded deviations; the Bf 110
   holds height on either engine with the dead airscrew feathered and does noticeably worse windmilling; the product
   owner's flight test (Bf 110 circuit, single-engine flight, Bf 109 flaps, He 111 from outside); no earlier tests broken.
+
+## D43. Luftwaffe instruments redrawn to the product owner's reference drawings (26 Oct 2026)
+
+The product owner supplied a sheet of drawings of Luftwaffe instruments and asked for ours to match, without adding
+any. The instruments we have that appear on the sheet now follow it (`src/ui/lwFlightDials.js`):
+- **Fahrtmesser Fl. 22231** (airspeed, both aircraft): its scale positions, white figures and ticks.
+- **Fein-Grobhöhenmesser Fl. 22320** (altimeter, both): 0.1-0.9 round the face, whole kilometres in a two-figure
+  counter below the centre (replacing the short hand), the millibar window at the top, the setting knob below.
+- **Wendezeiger Fl. 22402** (turn and bank, Bf 109): a long needle pivoted near the bottom with its flag under a fixed
+  index above DREHT; a white ball tube above HÄNGT; L and R; the small screws.
+- **Variometer Fl. 22383** (climb, Bf 110): 0 at nine o'clock, 5, 10 and 15 m/s up and down, the black centre and the
+  black m/s bar. This replaces the 30 m/s blue-faced dial drawn from the Bf 110 photograph (D39).
+- **Führertochterkompass "Patin" Fl. 23338** (repeater compass, Bf 110): the turning card ring, fixed white aircraft
+  and index bars. The cardinal points are N, E, S and W as the product owner asked in D41; the drawing has O for east.
+- **Wendehorizont Fl. 22427** (artificial horizon, Bf 110): the scalloped bezel, the straight-sided window and the white
+  horizon bar. It has no turn pointer or ball, as drawn, so the Bf 110 panel no longer shows them (they were on the
+  combined horizon drawn from the photograph, D39).
+- **The shared look** (`src/ui/lwStyle.js`): dark grey square mountings with domed corner screws and a tab or knob below
+  where drawn, thick black bezels, charcoal faces, white markings, pale yellow hands with a dark counterweight. The
+  other Luftwaffe dials (rev counter, manifold pressure, clock, pitch indicator, pressure and temperature gauges, the
+  Bf 109 E's strip compass) take the same look, but their layouts are unchanged since the sheet does not show them.
+- **Not added:** the sheet's directional gyro, direction finder and its control, which our aircraft do not have.

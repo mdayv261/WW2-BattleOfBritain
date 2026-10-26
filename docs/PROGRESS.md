@@ -13,6 +13,15 @@ Read this at the start of every session.
   the acceptance test, agreed in D42).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
 
+## Luftwaffe instruments to the reference drawings (26 Oct 2026)
+
+**Done** (D43): airspeed, altimeter, turn and bank, variometer, Patin repeater compass and artificial horizon redrawn to
+the product owner's drawings; all Luftwaffe dials share the drawings' mountings, bezels, faces and hands. Checked in
+Chrome against the sheet, no console errors.
+
+**Known issues:** the Bf 110 has no turn and slip indicator now (the drawn Wendehorizont has none); compass cardinal
+points use E rather than the drawing's O (D41).
+
 ## Bf 109 cockpit after the product owner's E cockpit photograph (26 Oct 2026)
 
 **Done** (D41): panel, canopy frame and reflector sight redrawn after the photograph; flap indicator, undercarriage

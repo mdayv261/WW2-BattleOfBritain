@@ -8,9 +8,10 @@ const DEG = Math.PI / 180;
 const clockwise = (a) => ((a / DEG) % 360 + 360) % 360;
 
 describe('Bf 109 dial scales (as photographed)', () => {
-  it('airspeed: rests near six o\'clock, 200 km/h at about eight, rising steadily to 750', () => {
-    expect(clockwise(lwAirspeedAngle(0))).toBeCloseTo(172, 0);
-    expect(clockwise(lwAirspeedAngle(200))).toBeCloseTo(237, 0);
+  it('airspeed (Fl. 22231 drawing): rests at six o\'clock, 200 km/h at about eight, 400 just left of twelve, rising to 750', () => {
+    expect(clockwise(lwAirspeedAngle(0))).toBeCloseTo(180, 6);
+    expect(clockwise(lwAirspeedAngle(200))).toBeCloseTo(245, 6);
+    expect(clockwise(lwAirspeedAngle(400))).toBeCloseTo(347, 6);
     for (let v = 0; v < 750; v += 10) expect(lwAirspeedAngle(v + 10)).toBeGreaterThan(lwAirspeedAngle(v));
   });
 

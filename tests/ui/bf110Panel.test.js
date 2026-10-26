@@ -1,7 +1,7 @@
 // The Bf 110 panel after the product owner's photograph (D39): dial scales as photographed, the layout inside the
 // panel, and each engine's own readings on its own instruments.
 import { describe, it, expect } from 'vitest';
-import { airspeed900Angle, climb30Angle } from '../../src/ui/bf110Dials.js';
+import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
 import { BF110_LAYOUT } from '../../src/ui/bf110Panel.js';
 import { instrumentReadings } from '../../src/ui/instruments.js';
 import { Simulation } from '../../src/core/simulation.js';
@@ -11,23 +11,14 @@ import { UNIT } from '../../src/core/constants.js';
 const DEG = Math.PI / 180;
 const clockwise = (a) => ((a / DEG) % 360 + 360) % 360;
 
-describe('Bf 110 dial scales (as photographed)', () => {
-  it('airspeed to 900 km/h: 300 at nine o\'clock, 500 at twelve, rising steadily', () => {
-    expect(clockwise(airspeed900Angle(300))).toBeCloseTo(270, 6);
-    expect(clockwise(airspeed900Angle(500))).toBeCloseTo(0, 6);
-    for (let v = 0; v < 900; v += 10) expect(airspeed900Angle(v + 10)).toBeGreaterThan(airspeed900Angle(v));
-  });
-
-  it('climb to 30 m/s: 0 at nine o\'clock, climbs above and descents mirrored below', () => {
-    expect(clockwise(climb30Angle(0))).toBeCloseTo(270, 6);
-    for (const v of [5, 10, 20, 30]) {
-      const up = clockwise(climb30Angle(v));
-      const down = clockwise(climb30Angle(-v));
-      expect(up > 270 || up < 90).toBe(true);
-      expect(down).toBeGreaterThan(90);
-      expect(down).toBeLessThan(270);
-      expect((up + down) % 360).toBeCloseTo(180, 6);
-    }
+describe('variometer (Fl. 22383 drawing)', () => {
+  it('reads 0 at nine o\'clock, 10 m/s at about twelve and six, 15 at about half past one and half past four', () => {
+    expect(clockwise(lwVarioAngle(0))).toBeCloseTo(270, 6);
+    expect(clockwise(lwVarioAngle(10))).toBeCloseTo(4, 0);
+    expect(clockwise(lwVarioAngle(-10))).toBeCloseTo(176, 0);
+    expect(clockwise(lwVarioAngle(15))).toBeCloseTo(51, 0);
+    expect(clockwise(lwVarioAngle(-15))).toBeCloseTo(129, 0);
+    expect(lwVarioAngle(30)).toBe(lwVarioAngle(15)); // held at the end of the scale
   });
 });
 
