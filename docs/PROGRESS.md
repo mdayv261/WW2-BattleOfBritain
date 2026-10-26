@@ -9,9 +9,14 @@ Read this at the start of every session.
 - **Phase 1** (single-engine flight model): signed off (25 Oct 2026, D27).
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
-- **Phase 4** (world and visuals): in progress (plan approved 26 Oct 2026). Checkpoint 1 (the land) done; next
-  checkpoint 2 (the sky), then 3 (aircraft models) and 4 (performance and the acceptance test).
+- **Phase 4** (world and visuals): in progress (plan approved 26 Oct 2026). Checkpoints 1 (the land) and 2
+  (the sky) done; next checkpoint 3 (aircraft models), then 4 (performance and the acceptance test).
 - **Not yet pushed:** nothing from Phases 1-3 has been pushed to GitHub; pushing needs the product owner's permission.
+
+## Phase 4 checkpoint 2: the sky (26 Oct 2026)
+
+**Done** (D53): the sun placed for 15 August 1940, 15:00 BST, with its disc and glow; low-polygon fair-weather cumulus
+(bases 1,000-1,500 m) that fade near the camera. Tests in `tests/world/sky.test.js`; 855 tests pass.
 
 ## Phase 4 checkpoint 1: the land (26 Oct 2026)
 

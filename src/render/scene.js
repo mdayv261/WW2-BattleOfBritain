@@ -6,20 +6,26 @@ import { buildAirfield, buildAerodrome } from './airfield.js';
 import { buildTerrainMesh } from './terrainMesh.js';
 import { buildTowns } from './towns.js';
 import { AIRFIELDS } from '../world/airfields.js';
+import { buildClouds } from './clouds.js';
+import { sunDirection } from '../world/sun.js';
 
 const SKY_ZENITH = new THREE.Color(0x4f7fb8);
 const SKY_HORIZON = new THREE.Color(0xd9e3ea);
 const SEA = 0x3d5f6e;
 const HAZE_DENSITY = 0.000045;
 
-/** A large sphere seen from inside, shaded from a pale hazy horizon to a deeper blue overhead. */
-function makeSky() {
+/**
+ * A large sphere seen from inside, shaded from a pale hazy horizon to a deeper blue overhead, with the sun's disc and a
+ * glow round it in the direction `sun` (a unit vector, D53).
+ */
+function makeSky(sun) {
   const material = new THREE.ShaderMaterial({
     side: THREE.BackSide,
     depthWrite: false,
     uniforms: {
       zenith: { value: SKY_ZENITH },
       horizon: { value: SKY_HORIZON },
+      sunDir: { value: sun },
     },
     vertexShader: /* glsl */ `
       varying vec3 vDirection;
@@ -30,10 +36,16 @@ function makeSky() {
     fragmentShader: /* glsl */ `
       uniform vec3 zenith;
       uniform vec3 horizon;
+      uniform vec3 sunDir;
       varying vec3 vDirection;
       void main() {
-        float height = clamp(vDirection.y, 0.0, 1.0);
-        gl_FragColor = vec4(mix(horizon, zenith, pow(height, 0.45)), 1.0);
+        vec3 d = normalize(vDirection);
+        float height = clamp(d.y, 0.0, 1.0);
+        vec3 colour = mix(horizon, zenith, pow(height, 0.45));
+        float toSun = max(dot(d, normalize(sunDir)), 0.0);
+        colour += vec3(1.0, 0.93, 0.78) * (0.35 * pow(toSun, 12.0) + 0.5 * pow(toSun, 200.0));
+        colour = mix(colour, vec3(1.0, 0.98, 0.9), smoothstep(0.9993, 0.9996, toSun)); // the disc
+        gl_FragColor = vec4(colour, 1.0);
       }`,
   });
   const sky = new THREE.Mesh(new THREE.SphereGeometry(90000, 32, 16), material);
@@ -119,20 +131,21 @@ export function createScene(container, terrain = null) {
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(SKY_HORIZON, HAZE_DENSITY);
-  scene.add(makeSky());
+  const sunDir = new THREE.Vector3(...Object.values(sunDirection()));
+  scene.add(makeSky(sunDir));
   const sea = makeSea();
   scene.add(sea);
   let update = () => {};
   if (terrain) {
     const world = buildWorld(terrain);
-    scene.add(world.group);
+    scene.add(world.group, buildClouds());
     update = world.update;
   } else {
     scene.add(buildAirfield());
   }
 
   const sun = new THREE.DirectionalLight(0xfff4e0, 2.2);
-  sun.position.set(-0.4, 0.7, -0.6);
+  sun.position.copy(sunDir); // a directional light shines from its position toward the origin
   scene.add(sun);
   scene.add(new THREE.HemisphereLight(SKY_HORIZON, SEA, 1.0));
 

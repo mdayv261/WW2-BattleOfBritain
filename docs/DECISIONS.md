@@ -1080,3 +1080,15 @@ product owner decided to use it with the citation here only: positions are "base
 - Which Luftwaffe fields were used in the summer of 1940 is not confirmed from an allowed source; they stand as fields
   round Calais and St-Omer.
 - **Home fields in the test version:** RAF aircraft start at Hawkinge, Luftwaffe aircraft at Saint-Inglevert.
+
+## D53. The sky: sun, haze and cumulus (26 Oct 2026, Phase 4 checkpoint 2)
+
+- **Sun** (`src/world/sun.js`): the standard low-precision solar formulas (declination and equation of time from the
+  day of the year), good to about half a degree. The default time is 15 August 1940, 14:00 GMT (15:00 British Summer
+  Time), with the sun about 46° up in the south-west; the mission screen will set the time of day (Phase 7). The sky
+  shader draws the sun's disc and a glow round it, and the directional light shines from it.
+- **Haze:** the Phase 2 summer haze is kept (`FogExp2`).
+- **Cumulus** (`src/world/clouds.js`, `src/render/clouds.js`): 420 fair-weather clouds, seeded so they are the same
+  every time, over the map and 30 km round it. Each is a cluster of 4-10 flattened, flat-shaded blobs (low-polygon, in
+  keeping with the style); bases 1,000-1,500 m, tops at most 2,500 m. They fade out within about 700 m of the camera,
+  so flying into one is a soft white-out. They are scenery only for now (no effect on the physics).
