@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { Vector3, Quaternion, Euler } from 'three';
 import { Keyboard, stepFlaps } from '../../src/input/keyboard.js';
-import { Joystick, hatDirection, DEFAULT_MAPPING, centred } from '../../src/input/joystick.js';
+import { Joystick, hatDirection, DEFAULT_MAPPING, centred, sensitivity, SENSITIVITIES } from '../../src/input/joystick.js';
 import { cockpitQuaternion, eyePosition, CameraRig, HAT_LOOKS } from '../../src/render/cameras.js';
 import { instrumentReadings } from '../../src/ui/instruments.js';
 import { rafAirspeedAngle } from '../../src/ui/airspeed.js';
@@ -321,5 +321,54 @@ describe('joystick neutral calibration (D70)', () => {
     expect(joy.axis(6)).toBe(-0.4);
     expect(joy.axis(0)).toBe(0);
     expect(joy.axis(1)).toBe(0);
+  });
+});
+
+describe('joystick sensitivity (D71)', () => {
+  function stick(axes) {
+    const store = {};
+    globalThis.localStorage = { getItem: (k) => store[k] ?? null, setItem: (k, v) => { store[k] = v; } };
+    const joy = new Joystick();
+    joy.poll = () => (joy.pad = { axes, buttons: Array.from({ length: 12 }, () => ({ pressed: false })) });
+    return { joy, axes, store, input: { flaps: 0, gear: 1, throttle: 0.5 } };
+  }
+
+  it('Normal is the straight line it was; Low gives less at half stick and High more', () => {
+    expect(sensitivity(0.5, 1)).toBe(0.5);
+    const { joy, axes, input } = stick([0.5, 0, 0, 0, 0, 0, -1, 0, 0, 1.2857]);
+    joy.update(input, hurricane);
+    const normal = input.roll;
+    joy.mapping.roll.curve = 1.5;
+    joy.update(input, hurricane);
+    expect(input.roll).toBeLessThan(normal * 0.8);
+    joy.mapping.roll.curve = 0.8;
+    joy.update(input, hurricane);
+    expect(input.roll).toBeGreaterThan(normal * 1.1);
+    expect(axes[0]).toBe(0.5);
+  });
+
+  it('every choice gives full control at full stick and none at the centre', () => {
+    for (const [, k] of SENSITIVITIES) {
+      expect(sensitivity(1, k)).toBe(1);
+      expect(sensitivity(-1, k)).toBe(-1);
+      expect(sensitivity(0, k)).toBe(0);
+    }
+  });
+
+  it('each axis keeps its own setting, saved and reloaded; an older saved mapping reads as Normal', () => {
+    const { joy, axes, input, store } = stick([0.5, 0.5, 0, 0, 0, 0.5, -1, 0, 0, 1.2857]);
+    joy.mapping.pitch.curve = 2;
+    joy.saveMapping();
+    joy.update(input, hurricane);
+    expect(input.pitch).toBeLessThan(input.roll);
+    expect(input.yaw).toBeCloseTo(input.roll, 9);
+    expect(new Joystick().mapping.pitch.curve).toBe(2);
+    const old = JSON.parse(store['bob1940.joystick']);
+    for (const k of ['roll', 'pitch', 'yaw']) delete old[k].curve;
+    store['bob1940.joystick'] = JSON.stringify(old);
+    const older = new Joystick();
+    older.poll = () => (older.pad = { axes, buttons: [] });
+    older.update(input, hurricane);
+    expect(input.pitch).toBeCloseTo(input.roll, 9); // Normal
   });
 });

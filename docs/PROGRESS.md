@@ -15,6 +15,11 @@ Read this at the start of every session.
   (D69). Next: the product owner's Phase 5 acceptance test (proposed in D69).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026.
 
+## Joystick sensitivity (27 Oct 2026)
+
+**Done** (D71): a sensitivity choice for Roll, Pitch and Rudder in the joystick panel (J), from Very high to Lowest.
+Full stick always gives full control. Tests are in `tests/ui/phase2Controls.test.js`.
+
 ## Joystick neutral calibration (27 Oct 2026)
 
 **Done** (D70): Set neutral buttons for axes 0-5 in the joystick panel (J), plus Set all neutral and Clear. The axis

@@ -10,6 +10,10 @@
 // Neutral calibration (D70): a stick whose axis does not read 0 when centred (the product owner's twist read 0.15
 // hands off) can have its centre set in the panel, for axes 0-5. The axis then reads 0 there and still reaches ±1 at
 // full travel each way.
+//
+// Sensitivity (D71): roll, pitch and rudder each have a response curve, output = sign(x)·|x|^k after the dead zone.
+// A lower sensitivity softens small stick movements; full stick always gives full control, so no aircraft loses any
+// control travel.
 
 import { clamp } from '../physics/interp.js';
 import { stepFlaps } from './keyboard.js';
@@ -17,6 +21,9 @@ import { stepFlaps } from './keyboard.js';
 const STORAGE_KEY = 'bob1940.joystick';
 const DEADZONE = 0.05;
 export const CALIBRATED_AXES = [0, 1, 2, 3, 4, 5]; // the stick, twist and spare axes; not the slider (6) or hat (9)
+// Sensitivity choices for the flight-control axes: the curve's exponent k (feel choices, not aircraft data).
+export const SENSITIVITIES = [['Very high', 0.6], ['High', 0.8], ['Normal', 1], ['Low', 1.5], ['Lower', 2], ['Lowest', 2.5]];
+export const FLIGHT_AXES = ['roll', 'pitch', 'yaw'];
 
 // Mapping of the product owner's Extreme 3D Pro in Chrome on macOS, as set in the joystick panel
 // (25 Oct 2026): stick X axis 0, stick Y axis 1, twist axis 5, throttle slider axis 6 (reversed), hat axis 9.
@@ -26,9 +33,9 @@ export const CALIBRATED_AXES = [0, 1, 2, 3, 4, 5]; // the stick, twist and spare
 export const MAPPING_VERSION = 3;
 export const DEFAULT_MAPPING = {
   version: MAPPING_VERSION,
-  roll: { axis: 0, invert: false },
-  pitch: { axis: 1, invert: false }, // pulling back gives +1 on this axis
-  yaw: { axis: 5, invert: false },
+  roll: { axis: 0, invert: false, curve: 1 },
+  pitch: { axis: 1, invert: false, curve: 1 }, // pulling back gives +1 on this axis
+  yaw: { axis: 5, invert: false, curve: 1 },
   throttle: { axis: 6, invert: true },
   hat: { axis: 9 },
   buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1 },
@@ -77,6 +84,9 @@ function loadMapping() {
 }
 
 const shape = (v) => (Math.abs(v) < DEADZONE ? 0 : Math.sign(v) * ((Math.abs(v) - DEADZONE) / (1 - DEADZONE)));
+
+/** A flight-control input (-1 to 1, after the dead zone) through the sensitivity curve of exponent k. */
+export const sensitivity = (v, k = 1) => Math.sign(v) * Math.abs(v) ** k;
 
 export class Joystick {
   constructor() {
@@ -156,9 +166,9 @@ export class Joystick {
    */
   update(input, ac, dt = 0) {
     if (!this.poll()) return null;
-    input.roll = clamp(shape(this.read('roll')), -1, 1);
-    input.pitch = clamp(shape(this.read('pitch')), -1, 1);
-    input.yaw = clamp(shape(this.read('yaw')), -1, 1);
+    for (const name of FLIGHT_AXES) {
+      input[name] = sensitivity(clamp(shape(this.read(name)), -1, 1), this.mapping[name].curve ?? 1);
+    }
     const slider = this.read('throttle');
     if (this.throttleStart === null) this.throttleStart = slider;
     if (Math.abs(slider - this.throttleStart) > 0.05) this.throttleLive = true;

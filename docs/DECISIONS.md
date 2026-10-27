@@ -1656,3 +1656,27 @@ off)** and **Clear neutral settings**.
 - 8 s of hands-off flight then gave 0% rudder and no change of heading.
 
 The product owner's saved settings were then restored as they were, for them to set their own neutral.
+
+## D71. Joystick sensitivity for the flight controls (27 Oct 2026, product owner)
+
+**What it is:** the Roll, Pitch and Rudder rows of the joystick panel (J) each have a sensitivity choice. It's a
+response curve, output = sign(x)·|x|^k, applied after the dead zone and the neutral setting (D70).
+
+| Choice | k | Half stick gives |
+|---|---|---|
+| Very high | 0.6 | 66% |
+| High | 0.8 | 57% |
+| Normal (the default) | 1.0 | 50%, the straight line used before |
+| Low | 1.5 | 35% |
+| Lower | 2.0 | 25% |
+| Lowest | 2.5 | 18% |
+
+**Why a curve, not a cut in travel:** full stick always gives full control, so no aircraft loses any control travel
+and the flight model is untouched. Lower settings soften small movements, for fine aiming and steady flight.
+
+**Stored:** the choices are saved with the joystick mapping in browser storage. Older saved mappings read as Normal.
+
+**Not included:** the throttle slider and the hat.
+
+**Status:** these are feel choices, not aircraft data. Checked in Chrome: the dropdowns work and are kept after a
+reload. The product owner's saved settings, including their axis 5 neutral, were restored afterwards.

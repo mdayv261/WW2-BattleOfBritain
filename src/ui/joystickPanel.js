@@ -1,15 +1,18 @@
 // Joystick check panel (J): shows every raw axis and button live, and lets the player choose which
 // axis drives roll, pitch, rudder, throttle and the hat (and whether each is reversed), and which button
 // works the elevator trim, brakes, flaps, undercarriage and view. Kept in browser storage. Axes 0-5 each have a
-// "Set neutral" button that takes the hands-off reading as 0.00 (D70); their bars show the calibrated reading.
+// "Set neutral" button that takes the hands-off reading as 0.00 (D70); their bars show the calibrated reading. Roll,
+// pitch and rudder each have a sensitivity choice (D71).
 
-import { DEFAULT_MAPPING, CALIBRATED_AXES, hatDirection } from '../input/joystick.js';
+import { DEFAULT_MAPPING, CALIBRATED_AXES, SENSITIVITIES, FLIGHT_AXES, hatDirection } from '../input/joystick.js';
 
 const FUNCTIONS = [['roll', 'Roll'], ['pitch', 'Pitch (pull back = +)'], ['yaw', 'Rudder (twist)'], ['throttle', 'Throttle slider']];
 const BUTTONS = [
   ['trimUp', 'Elevator trim nose up (hold)'], ['trimDown', 'Elevator trim nose down (hold)'], ['brake', 'Brakes (hold)'],
   ['flapsUp', 'Flaps up a stop'], ['flapsDown', 'Flaps down a stop'], ['gear', 'Undercarriage'], ['view', 'Cockpit / outside'],
 ];
+// Sensitivity choices, each with what half stick gives.
+const sensitivityOptions = SENSITIVITIES.map(([name, k]) => `<option value="${k}">${name} (half stick ${Math.round(100 * 0.5 ** k)}%)</option>`).join('');
 const AXES = 10; // axis rows drawn (those the joystick lacks are hidden)
 const HAT_NAMES = ['up', 'up-right', 'right', 'down-right', 'down', 'down-left', 'left', 'up-left'];
 
@@ -35,11 +38,13 @@ export class JoystickPanel {
       <div id="joy-buttons" style="margin:6px 0"></div><div id="joy-hat" style="margin:0 0 10px"></div>
       <table>${FUNCTIONS.map(([key, label]) => `<tr><td>${label}</td>
         <td>axis <select data-fn="${key}">${options(10)}</select></td>
-        <td><label><input type="checkbox" data-inv="${key}"> reverse</label></td></tr>`).join('')}
+        <td><label><input type="checkbox" data-inv="${key}"> reverse</label></td>
+        <td>${FLIGHT_AXES.includes(key) ? `sensitivity <select data-curve="${key}">${sensitivityOptions}</select>` : ''}</td></tr>`).join('')}
         <tr><td>Hat (look around)</td><td>axis <select data-hat="1">${options(10)}</select></td><td></td></tr>
         ${BUTTONS.map(([key, label]) => `<tr><td>${label}</td><td>button <select data-btn="${key}">${buttonOptions(12)}</select></td><td></td></tr>`).join('')}
       </table>
-      <div style="margin-top:6px;opacity:0.8">Buttons are numbered as printed on the stick (the trigger is 1, the thumb button 2).</div>
+      <div style="margin-top:6px;opacity:0.8">Sensitivity: lower softens small stick movements; full stick always gives full control.</div>
+      <div style="opacity:0.8">Buttons are numbered as printed on the stick (the trigger is 1, the thumb button 2).</div>
       <button id="joy-reset" style="margin-top:8px">Reset to default</button>`;
     const save = () => this.joystick.saveMapping();
     this.el.querySelectorAll('select[data-fn]').forEach((s) => s.addEventListener('change', () => {
@@ -48,6 +53,10 @@ export class JoystickPanel {
     }));
     this.el.querySelectorAll('input[type=checkbox]').forEach((c) => c.addEventListener('change', () => {
       this.joystick.mapping[c.dataset.inv].invert = c.checked;
+      save();
+    }));
+    this.el.querySelectorAll('select[data-curve]').forEach((s) => s.addEventListener('change', () => {
+      this.joystick.mapping[s.dataset.curve].curve = Number(s.value);
       save();
     }));
     this.el.querySelector('select[data-hat]').addEventListener('change', (e) => {
@@ -80,6 +89,7 @@ export class JoystickPanel {
       this.el.querySelector(`select[data-fn="${key}"]`).value = String(m[key].axis);
       this.el.querySelector(`input[data-inv="${key}"]`).checked = m[key].invert;
     }
+    for (const key of FLIGHT_AXES) this.el.querySelector(`select[data-curve="${key}"]`).value = String(m[key].curve ?? 1);
     this.el.querySelector('select[data-hat]').value = String(m.hat.axis);
     for (const [key] of BUTTONS) this.el.querySelector(`select[data-btn="${key}"]`).value = String(m.buttons[key]);
   }
