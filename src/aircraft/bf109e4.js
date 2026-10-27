@@ -88,6 +88,22 @@ export const bf109e4 = {
     g: { damage: 9, fail: 13 },
     diveEas: 208.3, // m/s: 750 km/h (S15); past it, flutter damages the control surfaces
   },
+  // Hit zones (Phase 5, D68): fuselage sections [front, back] x, fuselage size, the wing's chord band and height, the
+  // tail surfaces (estimates from the aircraft model, m in body axes).
+  hitZones: {
+    sections: { engine: [2.76, 0.2], cockpit: [0.2, -1.9], fuselage: [-1.9, -4.6], tail: [-4.6, -6.0] },
+    halfWidth: 0.42, top: 0.6, bottom: -0.62,
+    wing: { front: 0.9, back: -1.3, y: -0.4, halfThickness: 0.16 },
+    tailSpan: 3.1, finTop: 1.4,
+  },
+  // A fuel tank under and behind the pilot (self-sealing: an estimate), radiators under both wings, the oil cooler under
+  // the nose; 8 mm pilot armour (S38).
+  systems: {
+    fuel: { cockpit: 'selfSealing' },
+    coolant: { wingInnerLeft: 0, wingInnerRight: 0 },
+    oil: { engine: 0 },
+    armour: 0.008,
+  },
   contacts: {
     leftTip: { x: -0.2, y: 0.1, z: -4.95 },
     rightTip: { x: -0.2, y: 0.1, z: 4.95 },

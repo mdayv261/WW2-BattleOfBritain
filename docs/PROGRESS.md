@@ -10,9 +10,29 @@ Read this at the start of every session.
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
 - **Phase 4** (world and visuals): signed off (26 Oct 2026, D57).
-- **Phase 5** (weapons and damage): in progress (plan approved 26 Oct 2026, D59). Checkpoint 1 (research) done (D60); estimates accepted (D61). Checkpoint 2 (engine heat and structural limits) done (D62); checkpoint 3 (guns and ballistics) done (D67); next
-  checkpoint 4 (target aircraft, hit zones and damage).
+- **Phase 5** (weapons and damage): in progress (plan approved 26 Oct 2026, D59). Checkpoint 1 (research) done (D60); estimates accepted (D61). Checkpoint 2 (engine heat and structural limits) done (D62); checkpoint 3 (guns and ballistics) done (D67);
+  checkpoint 4 (target aircraft, hit zones and damage) done (D68); next checkpoint 5 (visible effects: hit flashes,
+  smoke, glycol, fire, parts breaking off) and the phase acceptance test.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026.
+
+## Phase 5 checkpoint 4: target aircraft, hit zones and damage (27 Oct 2026)
+
+**Done** (D68):
+- key Y: a target ahead of you (each of the five types in turn, then none), flown by a simple autopilot on its own
+  flight model;
+- hit zones for every aircraft; rounds hit the target or you, never the aircraft that fired them;
+- damage through the existing models: engine wear, coolant and oil leaks, fires, pilot wounds and armour, cut cables,
+  damaged control surfaces, wing panels that lose lift and break, tail failure, jammed undercarriage and flaps;
+- key 9: a 20 mm hit on your own aircraft, each component in turn;
+- F3: the target's range, bearing, hits and damage, and your own damage;
+- tests in `tests/weapons/hits.test.js`, `tests/weapons/damage.test.js` and `tests/core/target.test.js`
+  (1412 tests pass; `npm run validate` unchanged).
+
+**Known issues:**
+- all hit-zone sizes, system positions and damage amounts are estimates (no vulnerability data found);
+- the Spitfire's tank is modelled as plain and the Bf 109's as self-sealing (not confirmed);
+- the target cruises at its own speed, so from the slow approach start it pulls away (use the air start);
+- no visible damage effects yet (checkpoint 5).
 
 ## Phase 5 checkpoint 3: guns and ballistics (27 Oct 2026)
 
@@ -28,7 +48,6 @@ Read this at the start of every session.
 **Known issues:**
 - gun positions are estimates;
 - the .303's Browning muzzle velocity was not found (the Mk VII table's is used);
-- no hits yet (checkpoint 4);
 - the Bf 110's rear gun and drum changes come in Phase 6.
 
 ## Phase 5 checkpoint 2: engine heat and structural limits (26 Oct 2026)

@@ -51,6 +51,8 @@ function gameKeys() {
     view.setAircraft(sim.ac);
   }
   if (keyboard.took('KeyP')) sim.paused = !sim.paused;
+  if (keyboard.took('KeyY')) sim.nextTarget(); // target aircraft (D68)
+  if (keyboard.took('Digit9')) sim.testHit(); // a 20 mm hit on your own aircraft (D68)
   if (keyboard.took('KeyC')) view.rig.toggleCockpit();
   if (keyboard.took('KeyV')) view.rig.nextOutside();
   if (keyboard.took('KeyI')) instruments.toggle();

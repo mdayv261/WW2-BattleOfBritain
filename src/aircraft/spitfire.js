@@ -91,6 +91,22 @@ export const spitfire = {
     g: { damage: 9, fail: 13 },
     diveEas: 201.2, // m/s: 450 mph IAS (S6); past it, flutter damages the control surfaces
   },
+  // Hit zones (Phase 5, D68): fuselage sections [front, back] x, fuselage size, the wing's chord band and height, the
+  // tail surfaces (estimates from the aircraft model, m in body axes).
+  hitZones: {
+    sections: { engine: [2.55, 0.3], cockpit: [0.3, -2.3], fuselage: [-2.3, -5.2], tail: [-5.2, -6.57] },
+    halfWidth: 0.42, top: 0.6, bottom: -0.75,
+    wing: { front: 0.78, back: -1.76, y: -0.55, halfThickness: 0.17 },
+    tailSpan: 3.3, finTop: 1.5,
+  },
+  // Where the tanks, radiator and oil coolers are (S33): fuel ahead of the cockpit (not known to be self-sealing), the
+  // radiator under the starboard wing, the oil coolers under the port wing; 8 mm rear armour (D61). Engine index 0.
+  systems: {
+    fuel: { cockpit: 'plain' },
+    coolant: { wingInnerRight: 0 },
+    oil: { wingInnerLeft: 0 },
+    armour: 0.008,
+  },
   contacts: {
     leftTip: { x: -0.3, y: 0.04, z: -5.62 },
     rightTip: { x: -0.3, y: 0.04, z: 5.62 },

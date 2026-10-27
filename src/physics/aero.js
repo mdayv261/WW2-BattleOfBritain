@@ -183,10 +183,12 @@ export function aeroCoefficients(ac, flow, surfaces) {
     const sectionMax = (def.outer ? pc.outerClosed + (pc.outerOpen - pc.outerClosed) * slat : pc.inner) + flaps * pc.flaps;
     const lc = liftCurve(alpha, w.clAlpha, stallAngle(w.clAlpha, sectionMax), common.stallWidth);
     const qRatio = speed * speed;
-    const cl = lc.cl * (def.outer ? 1 : slipInner[side]) * qRatio;
+    // A panel damaged by hits (src/weapons/damage.js) loses lift and gains drag.
+    const hurt = surfaces.wingDamage ? surfaces.wingDamage[side < 0 ? 0 : 1][def.outer ? 1 : 0] : 0;
+    const cl = lc.cl * (def.outer ? 1 : slipInner[side]) * qRatio * (1 - common.damage.wingLiftLoss * hurt);
     const cdi = (ge * lc.cl * lc.cl) / (Math.PI * a.oswald * w.aspectRatio);
     const cdStall = lc.stalled * common.flatPlateCd * Math.sin(alpha) ** 2;
-    return { cl, cd: (cdi + cdStall) * qRatio, alpha, stalled: lc.stalled, lift: def.lift, arm: def.arm };
+    return { cl, cd: (cdi + cdStall + common.damage.wingDrag * hurt) * qRatio, alpha, stalled: lc.stalled, lift: def.lift, arm: def.arm };
   };
   const sides = [-1, 1].map((side) => {
     const slat = side < 0 ? surfaces.slatLeft ?? 1 : surfaces.slatRight ?? 1;

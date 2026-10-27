@@ -95,6 +95,23 @@ export const he111h = {
     g: { damage: 4.5, fail: 7 },
     diveEas: null, // no diving limit found: no flutter damage
   },
+  // Hit zones (Phase 5, D68): fuselage sections [front, back] x, fuselage size, the wing's chord band and height, the
+  // tail surfaces (estimates from the aircraft model, m in body axes).
+  hitZones: {
+    sections: { cockpit: [6.45, 4.0], fuselage: [4.0, -7.5], tail: [-7.5, -9.95] },
+    halfWidth: 0.88, top: 1.0, bottom: -1.35,
+    wing: { front: 2.1, back: -2.8, y: -0.8, halfThickness: 0.42 },
+    tailSpan: 7.8, finTop: 2.95,
+    nacelle: { halfWidth: 0.62, halfHeight: 0.72, length: 4.5 },
+  },
+  // Self-sealing wing tanks ("good self-sealing tanks", S38); radiators and oil coolers in the nacelles; no armour
+  // modelled. Engine 0 left, 1 right.
+  systems: {
+    fuel: { wingInnerLeft: 'selfSealing', wingInnerRight: 'selfSealing' },
+    coolant: { engineLeft: 0, engineRight: 1 },
+    oil: { engineLeft: 0, engineRight: 1 },
+    armour: 0,
+  },
   contacts: {
     leftTip: { x: -0.6, y: 0.4, z: -11.3 },
     rightTip: { x: -0.6, y: 0.4, z: 11.3 },

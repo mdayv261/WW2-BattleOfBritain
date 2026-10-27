@@ -109,6 +109,23 @@ export const bf110c4 = {
     g: { damage: 7, fail: 10.5 },
     diveEas: 180.6, // m/s: 650 km/h ASI (S24); past it, flutter damages the control surfaces
   },
+  // Hit zones (Phase 5, D68): fuselage sections [front, back] x, fuselage size, the wing's chord band and height, the
+  // tail surfaces (estimates from the aircraft model, m in body axes).
+  hitZones: {
+    sections: { nose: [4.45, 2.0], cockpit: [2.0, -1.5], fuselage: [-1.5, -6.3], tail: [-6.3, -7.55] },
+    halfWidth: 0.5, top: 1.0, bottom: -0.95,
+    wing: { front: 1.23, back: -1.87, y: -0.4, halfThickness: 0.28 },
+    tailSpan: 4.8, finTop: 1.25,
+    nacelle: { halfWidth: 0.5, halfHeight: 0.6, length: 4.0 },
+  },
+  // Self-sealing wing tanks (S24, S25); radiators under the wings outboard of the nacelles, oil in the nacelles; the
+  // C-4's armour is a gap (none modelled). Engine 0 left, 1 right.
+  systems: {
+    fuel: { wingInnerLeft: 'selfSealing', wingInnerRight: 'selfSealing' },
+    coolant: { wingInnerLeft: 0, wingInnerRight: 1 },
+    oil: { engineLeft: 0, engineRight: 1 },
+    armour: 0,
+  },
   contacts: {
     leftTip: { x: -0.4, y: 0.3, z: -8.1 },
     rightTip: { x: -0.4, y: 0.3, z: 8.1 },

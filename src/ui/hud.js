@@ -6,6 +6,20 @@ import { speedText, altitudeText, manifoldText, rpmText, degText, headingOf, cli
 import { G } from '../core/constants.js';
 import { coolantLimit } from '../physics/cooling.js';
 import { groupRounds } from '../weapons/guns.js';
+import { damageSummary } from '../weapons/damage.js';
+import { targetBearing } from '../core/combat.js';
+
+/** The target's line for F3: type, range, hits and damage, and the last hit's result (D68). */
+function targetLine(sim) {
+  const t = sim.target;
+  if (!t) return 'Target    none (Y)';
+  const range = t.plane.body.position.distanceTo(sim.plane.body.position);
+  const last = sim.lastTargetHit && sim.plane.time - sim.lastTargetHit.time < 3 ? `  last hit: ${sim.lastTargetHit.text}` : '';
+  const { right, up } = targetBearing(sim);
+  const deg = (a, plus, minus) => `${Math.abs(a * 180 / Math.PI).toFixed(0)}° ${a >= 0 ? plus : minus}`;
+  const where = `${deg(right, 'right', 'left')} ${deg(up, 'up', 'down')}`;
+  return `Target    ${t.ac.name}  ${range.toFixed(0)} m  ${where}  hits ${t.plane.damage.hits}  ${damageSummary(t.plane) || 'undamaged'}${last}`;
+}
 
 /** Rounds left per firing group, e.g. "Rounds MG 2648/2672  cannon 120/120"; null for an unarmed aircraft. */
 export function roundsLine(sim) {
@@ -55,6 +69,7 @@ const HELP = `
 <tr><td>Mouse</td><td>drag to look around; wheel to zoom; double-click to look ahead</td></tr>
 <tr><td>I &nbsp; F2 &nbsp; F3</td><td>instruments, text readout, debug overlay</td></tr>
 <tr><td>Space &nbsp; Enter</td><td>fire the machine guns (RAF: all eight) / the cannon</td></tr>
+<tr><td>Y &nbsp; 9</td><td>target aircraft ahead (each press: the next type, then none) / a test 20 mm hit on your own aircraft</td></tr>
 <tr><td>Joystick</td><td>trigger: machine guns; thumb button: cannon; hat: look around (the panel hides while you look away); 5 / 3 trim nose up / down; 4 / 6 flaps up / down; 12 brakes; 10 cockpit view; 11 undercarriage</td></tr>
 <tr><td>J &nbsp; H</td><td>joystick panel (change the buttons there), this help</td></tr>
 </table>
@@ -193,6 +208,8 @@ export class Hud {
       `Flaps ${(plane.surfaces.flaps * 100).toFixed(0)}%  gear ${(plane.surfaces.gear * 100).toFixed(0)}%  cut-out ${(d.cutout * 100).toFixed(0)}%`,
       ...plane.engines.map((e, i) => `Heat ${plane.engines.length > 1 ? ['L', 'R'][i] : ''}     coolant ${e.heat.coolant.toFixed(0)} °C (limit ${coolantLimit(plane.engine, d.altitude).toFixed(0)})  oil ${e.heat.oil.toFixed(0)} °C (limit ${plane.engine.heat.oilLimit})  wear ${(e.heat.wear * 100).toFixed(0)}%  coolant left ${(e.heat.coolantLeft * 100).toFixed(0)}%${e.heat.seized ? '  SEIZED' : ''}`),
       roundsLine(sim) ?? 'Rounds    unarmed',
+      targetLine(sim),
+      `Damage    ${damageSummary(plane) || 'none'}`,
       `Airframe  overstress ${(plane.damage.airframe * 100).toFixed(0)}%  flutter ${(plane.damage.flutter * 100).toFixed(0)}%  radiator ${sim.input.radiator ? 'open' : 'closed'}`,
     ].join('\n');
   }

@@ -1460,3 +1460,80 @@ Measured in Chrome while firing: 75 fps (the screen's limit), 3.5 ms of work per
 **Muzzle flash colour** (27 Oct 2026, product owner): yellow (0xffcc00), drawn with normal blending so the sky no
 longer washes it white. The tracers keep their warm white (S40).
 
+
+## D68. Target aircraft, hit zones and damage (27 Oct 2026, Phase 5 checkpoint 4)
+
+**Target aircraft** (`src/core/target.js`, `src/core/autopilot.js`): a test aid, not the Phase 6 AI.
+- **Key Y** puts a target 400 m ahead, at the player's heading and height (at least 300 m above the ground). Further
+  presses step through the five types, then none.
+- **How it flies:** it flies its own full flight model. An autopilot moves only its normal controls: pitch for height,
+  small banks (up to about 15°) for heading, throttle for speed. It cruises at its level speed for 60% throttle, so it
+  never dodges or fights. Its gains are in `common.autopilot`. The test holds each type within 30 m, 3° and 5 m/s for a
+  minute.
+- **Damage shows in its flight:** the autopilot has no more authority than a pilot. Cut cables lose that control, a
+  damaged wing panel rolls it, a dead engine sinks it, and a dead pilot freezes its controls.
+- **Removed:** when it breaks up, burns or reaches the ground ("Target destroyed: ..."). Its hits and damage show in F3.
+- **Flagged:** it holds its own cruising speed. From the slow approach start (N once) it pulls away. Use the air start
+  (N twice), which is faster than every target's cruise.
+
+**Hit zones** (`src/weapons/hitZones.js`, sizes in each aircraft's `hitZones`):
+- **Zones** (boxes in the aircraft's body axes):
+  - engine, cockpit, rear fuselage and tail along the fuselage (the He 111's glazed nose counts as the cockpit);
+  - inner and outer panels of each wing (inner to 45% of the semispan);
+  - an engine nacelle on each wing of the twins.
+- **Detection:** each round's path over a step is tested in the aircraft's body axes, allowing for the aircraft's own
+  motion. The first box crossed is the hit.
+- **Rounds:** a round never hits the aircraft that fired it. It is removed when it hits.
+- **Sizes:** taken from the aircraft models (D54), with no structural drawings. All are estimates, recorded in
+  AIRCRAFT_DATA.
+
+**Damage** (`src/weapons/damage.js`, constants in `common.damage`, all estimates: no measured vulnerability data was
+found):
+- **Choosing what is hit:** each kind of zone holds components by weight. A zone with a tank, radiator or oil cooler
+  (each aircraft's `systems`) adds those. A seeded random number generator per aircraft picks one, so a test repeats
+  exactly.
+- **Round strength:** rifle-calibre rounds count 1. The 20 mm HE shells count 5 and also strike a second component.
+- **Effects** (each through the existing models):
+  - engine: wear (D62), then power loss and seizure;
+  - coolant or oil hit: a leak. The heat model then overheats and seizes the engine (coolant), or the engine wears out
+    once the oil is low (about 30 s with none left);
+  - fuel tank: incendiaries can start a fire. The chance is 30% for a plain tank, 15% for Linatex and 5% for a
+    self-sealing tank. A fire burns for 30 s, then the aircraft breaks up (no extinguishers modelled);
+  - pilot: rear armour (RAF 8 mm, D61; Bf 109 8 mm, S38) stops rounds from within 60° of dead astern. Armour-piercing
+    rounds get through above 650 m/s (S37: the W Mark I pierces 10 mm at 100 yd), so at short range. Wounds add up to
+    death, which freezes the controls;
+  - cables: a cut takes that control away;
+  - aileron, elevator or rudder: each hit loses some of its effect;
+  - wing panel: it loses lift (up to 60%) and gains drag, so the aircraft rolls and yaws towards it. At full damage
+    the wing breaks;
+  - tail structure: failure destroys the aircraft;
+  - undercarriage or flaps: jammed where they are.
+- **An undamaged aircraft** flies exactly as before; `npm run validate` is unchanged.
+
+**Where the systems are:**
+- **Spitfire:** the tanks ahead of the cockpit, the radiator under the starboard wing, the oil cooler under the port
+  wing (S33).
+- **Hurricane:** Linatex wing tanks and an unprotected fuselage reserve tank (S38); ventral radiator.
+- **Bf 109:** the tank under and behind the pilot; wing radiators.
+- **Bf 110:** self-sealing wing tanks (S24, S25).
+- **He 111:** self-sealing wing tanks (S38: German bombers' tanks were good).
+
+**Flagged:**
+- **Spitfire tank:** modelled as plain, since it was not found to be self-sealing in 1940.
+- **Bf 109 tank:** self-sealing assumed.
+- **Armour:** the Bf 110 C-4 and He 111 carry none (no data; the RAF-tested Bf 110 had none, S25).
+- **Estimates:** all hit-zone sizes, system positions, weights and damage amounts.
+
+**Test key 9:** a 20 mm HE hit on the player's own aircraft. It hits, in turn, the coolant, the engine, the oil, an
+outer wing, the tail, the cables and the pilot, and a notice names each one. Rounds can hit the player's aircraft too,
+ready for the Phase 6 gunners.
+
+**F3:**
+- the target's type, range and bearing from the nose (for example "12° left 3° up"), hits taken, damage and last hit;
+- the player's own damage.
+
+**Checked in Chrome:** from 250 m dead astern, about 2 s of the Spitfire's fire hit a Hurricane target 56 times. The
+hits took away its elevator and rudder, damaged its tail by 60%, and wore its engine. The coolant then drained, and
+with no elevator it climbed away out of control. Key 9 hits the coolant, engine, oil and wing in turn. 75 fps, no
+console errors. With the product owner's joystick plugged in, the joystick's axes take over the keyboard's stick and
+rudder, as designed.

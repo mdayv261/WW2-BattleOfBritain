@@ -56,4 +56,57 @@ export const common = {
   },
   // Engines at a ground start are warm, as after a run-up (estimate): the Merlin's minimum take-off coolant temperature.
   groundStartHeat: { coolant: 60, oil: 40 },
+  // The target aircraft's autopilot (Phase 5, D68): tuning gains of a test aid, not aircraft data.
+  autopilot: {
+    headingToBank: 1.0, // rad of bank per rad of heading error
+    maxBank: 0.26, // rad: about 15°
+    bankGain: 2.5, // stick per rad of bank error
+    rollDamping: 0.8, // stick per rad/s of roll rate
+    altitudeToClimb: 0.08, // m/s of climb per m of height error
+    maxClimb: 5, // m/s
+    climbGain: 0.08, // stick per m/s of climb error
+    pitchDamping: 0.6, // stick per rad/s of pitch rate
+    slipGain: 1.5, // rudder per rad of sideslip
+    yawDamping: 0.6, // rudder per rad/s of yaw rate
+    speedGain: 0.01, // throttle per second per m/s of speed error
+  },
+  // Hit zones and damage from hits (Phase 5, D68; src/weapons). Estimates: no measured vulnerability data found.
+  hitZones: {
+    innerShare: 0.45, // the wing's inner hit zone runs out to this share of the semispan
+  },
+  damage: {
+    // Components in each kind of zone, by weight; a zone holding a tank, radiator or oil cooler adds systemWeights.
+    weights: {
+      engine: { engine: 0.45, coolant: 0.25, oil: 0.15, nothing: 0.15 },
+      nose: { cables: 0.2, nothing: 0.8 },
+      cockpit: { pilot: 0.3, cables: 0.15, nothing: 0.3 },
+      fuselage: { cables: 0.3, nothing: 0.7 },
+      tail: { elevator: 0.35, rudder: 0.35, tailStructure: 0.3 },
+      wingInner: { wing: 0.4, flap: 0.1, gear: 0.1, nothing: 0.2 },
+      wingOuter: { wing: 0.6, aileron: 0.3, nothing: 0.1 },
+    },
+    systemWeights: { fuel: 0.25, coolant: 0.15, oil: 0.1 },
+    engineWear: 0.06, // engine wear per unit of hit strength (seizure at 1)
+    engineFireChance: 0.05, // chance an incendiary hit on the engine starts a fire
+    leakRate: 0.004, // fraction of the coolant or oil lost per second per unit of hit strength
+    oilStarve: 0.3, // with less oil than this left, the engine wears out
+    oilWearLife: 30, // s: an engine with no oil left seizes in about this time
+    fireChance: { plain: 0.3, linatex: 0.15, selfSealing: 0.05 }, // chance an incendiary hit on a tank starts a fire
+    fireTime: 30, // s: a fire burns this long before the aircraft breaks up
+    armourArc: 1.05, // rad: rounds from within this angle of dead astern meet the pilot's rear armour
+    apPenetrationSpeed: 650, // m/s: armour-piercing rifle rounds faster than this get through (S37: 10 mm at 100 yd)
+    pilotWound: 0.35, // pilot's health lost per wound (x the square root of the hit strength)
+    cableCut: 0.3, // chance per unit of hit strength that a hit on the cables cuts one
+    surfaceLoss: 0.1, // control effect lost per unit of hit strength on an aileron, elevator or rudder
+    wingDamage: 0.04, // wing panel damage per unit of hit strength (the wing breaks at 1)
+    wingLiftLoss: 0.6, // lift a fully damaged panel loses
+    wingDrag: 0.05, // drag coefficient a fully damaged panel adds (on its share of the wing)
+    tailDamage: 0.05, // tail structure damage per unit of hit strength (it breaks away at 1)
+  },
+  // The target aircraft (Phase 5, D68): a test aid.
+  target: {
+    distance: 400, // m ahead of the player when it appears
+    throttle: 0.6, // it cruises at its level speed at this throttle
+    minHeight: 300, // m above the ground, at least
+  },
 };

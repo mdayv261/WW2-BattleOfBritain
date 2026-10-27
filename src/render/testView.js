@@ -36,6 +36,25 @@ export class TestView {
     if (!this.rig.cockpitAllowed && this.rig.inCockpit) this.rig.mode = this.rig.outside;
   }
 
+  /** Draws the target aircraft (D68), if there is one, blended between its last two physics steps. */
+  updateTarget(sim, alpha, dt) {
+    const t = sim.target;
+    if (this.targetFor && this.targetFor !== t) {
+      this.scene.remove(this.targetModel.group);
+      this.targetFor = null;
+    }
+    if (!t) return;
+    if (this.targetFor !== t) {
+      this.targetModel = buildAircraftModel(t.ac, DESIGNS[t.ac.id]);
+      this.scene.add(this.targetModel.group);
+      this.targetFor = t;
+    }
+    const g = this.targetModel.group;
+    g.position.lerpVectors(t.previous.position, t.plane.body.position, alpha);
+    g.quaternion.slerpQuaternions(t.previous.quaternion, t.plane.body.quaternion, alpha);
+    this.targetModel.update(t.plane, dt);
+  }
+
   /** Places the model (blended between the last two physics steps) and moves the camera. */
   update(sim, alpha, dt) {
     const body = sim.plane.body;
@@ -54,6 +73,7 @@ export class TestView {
       this.flashesFor = sim.armament;
     }
     this.flashes.update(sim.plane.time);
+    this.updateTarget(sim, alpha, dt);
 
     this.rig.update(sim.ac, { position: this._pos, quaternion: this._quat }, body.velocity, dt);
     const cam = this.rig.camera.position;

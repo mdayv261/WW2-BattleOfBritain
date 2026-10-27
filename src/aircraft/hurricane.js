@@ -89,6 +89,22 @@ export const hurricane = {
     g: { damage: 9, fail: 13 },
     diveEas: 174.3, // m/s: 390 mph IAS (estimate, D61); past it, flutter damages the control surfaces
   },
+  // Hit zones (Phase 5, D68): fuselage sections [front, back] x, fuselage size, the wing's chord band and height, the
+  // tail surfaces (estimates from the aircraft model, m in body axes).
+  hitZones: {
+    sections: { engine: [2.62, 0.3], cockpit: [0.3, -2.2], fuselage: [-2.2, -5.3], tail: [-5.3, -6.96] },
+    halfWidth: 0.5, top: 0.8, bottom: -0.9,
+    wing: { front: 0.86, back: -1.76, y: -0.64, halfThickness: 0.25 },
+    tailSpan: 3.2, finTop: 1.8,
+  },
+  // Wing tanks covered with Linatex, the fuselage reserve tank uncovered (S38); the ventral radiator and oil cooler under
+  // the cockpit; 8 mm rear armour (D61).
+  systems: {
+    fuel: { wingInnerLeft: 'linatex', wingInnerRight: 'linatex', cockpit: 'plain' },
+    coolant: { cockpit: 0 },
+    oil: { cockpit: 0 },
+    armour: 0.008,
+  },
   contacts: {
     leftTip: { x: -0.3, y: -0.26, z: -6.1 },
     rightTip: { x: -0.3, y: -0.26, z: 6.1 },

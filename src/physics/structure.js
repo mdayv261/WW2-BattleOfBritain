@@ -9,9 +9,24 @@
 import { common } from '../aircraft/common.js';
 import { clamp } from './interp.js';
 
-/** A fresh damage state: airframe and flutter from 0 (none) to 1 (failed); `failed` is { cause } once it breaks up. */
+/**
+ * A fresh damage state. Structural: airframe and flutter from 0 (none) to 1 (failed). From hits (src/weapons/damage.js):
+ * each wing half's [inner, outer] panel damage (left first), the controls' remaining effect, the tail structure, the
+ * pilot's health, a fire, jammed flaps or undercarriage, and a log of recent hits. `failed` is { cause } once the
+ * aircraft breaks up or its pilot is killed.
+ */
 export function createDamage() {
-  return { airframe: 0, flutter: 0, failed: null };
+  return {
+    airframe: 0, flutter: 0, failed: null,
+    hits: 0, log: [], wing: [[0, 0], [0, 0]], controls: { aileron: 1, elevator: 1, rudder: 1 }, tail: 0, pilot: 1,
+    fire: null, gearJammed: false, flapsJammed: false,
+  };
+}
+
+/** True when nothing has changed the control surfaces or the wing panels (the flight model is then untouched). */
+function surfacesIntact(d) {
+  return !d.flutter && d.controls.aileron === 1 && d.controls.elevator === 1 && d.controls.rudder === 1
+    && d.wing[0][0] === 0 && d.wing[0][1] === 0 && d.wing[1][0] === 0 && d.wing[1][1] === 0;
 }
 
 /** Advances the structural damage for the loads of this step (loadFactor in g, eas in m/s). */
@@ -32,12 +47,21 @@ export function stepStructure(plane, { loadFactor, eas }, dt) {
   }
 }
 
-/** The control surfaces as they act after flutter damage: the same object when there is none. */
+/**
+ * The control surfaces as they act after damage: flutter, and hits on the controls (their remaining effect), with the
+ * wing panels' damage passed on to the aerodynamics. The same object when nothing is damaged.
+ */
 export function damagedSurfaces(surfaces, damage) {
-  if (!damage?.flutter) return surfaces;
-  const left = 1 - common.structure.flutterLoss * damage.flutter;
-  const torn = damage.flutter >= 1 ? 0 : left;
-  return { ...surfaces, aileron: surfaces.aileron * torn, elevator: surfaces.elevator * torn, rudder: surfaces.rudder * torn };
+  if (!damage || surfacesIntact(damage)) return surfaces;
+  const fluttered = damage.flutter >= 1 ? 0 : 1 - common.structure.flutterLoss * damage.flutter;
+  const c = damage.controls;
+  return {
+    ...surfaces,
+    aileron: surfaces.aileron * fluttered * c.aileron,
+    elevator: surfaces.elevator * fluttered * c.elevator,
+    rudder: surfaces.rudder * fluttered * c.rudder,
+    wingDamage: damage.wing,
+  };
 }
 
 /** Extra drag coefficient of a damaged airframe (wrinkled skin; torn-away control surfaces). */

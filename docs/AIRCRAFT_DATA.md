@@ -323,6 +323,25 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Gun rightOuter muzzle z (`guns.rightOuter.z`) | 2.66 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
 | Gun rightOuter rounds (`guns.rightOuter.rounds`) | 334 | rounds | 334 | S1 | medium | Rds/Gun 334. |
 
+### Hit zones and systems (Phase 5, D68)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Hit zone: fuselage half-width (`hitZones.halfWidth`) | 0.5 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: fuselage top (`hitZones.top`) | 0.8 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: fuselage bottom (`hitZones.bottom`) | -0.9 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing leading edge at the root (`hitZones.wing.front`) | 0.86 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing trailing edge at the root (`hitZones.wing.back`) | -1.76 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing chord-line height at the root (`hitZones.wing.y`) | -0.64 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing half-thickness (`hitZones.wing.halfThickness`) | 0.25 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: tailplane span (`hitZones.tailSpan`) | 3.2 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: top of the fin (`hitZones.finTop`) | 1.8 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Fuselage sections, front to back (`hitZones.sections`) | engine 2.62 to 0.3; cockpit 0.3 to -2.2; fuselage -2.2 to -5.3; tail -5.3 to -6.96 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Radiator in hit zone cockpit: engine (`systems.coolant.cockpit`) | 0 | index | — | ASSUMPTION | estimate | Where the radiator is (D68): placed from the airframe layout. |
+| Oil cooler in hit zone cockpit: engine (`systems.oil.cockpit`) | 0 | index | — | ASSUMPTION | estimate | Where the oil cooler is (D68): placed from the airframe layout. |
+| Pilot's rear armour (`systems.armour`) | 0.008 | m | — | ASSUMPTION | estimate | RAF rear armour taken as 8 mm (D61); S38: armour directly behind the pilot. |
+| Fuel tanks by hit zone (`systems.fuel`) | wingInnerLeft: linatex; wingInnerRight: linatex; cockpit: plain | — | — | S38 | medium | Linatex wing tanks; uncovered reserve tank (S38). |
+
 ## Supermarine Spitfire Mk I (Merlin III)
 
 S4 is the key test: a production Spitfire I with the Merlin III and a Rotol constant-speed airscrew. It was flown at
@@ -550,6 +569,25 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Gun rightOuter muzzle y (`guns.rightOuter.y`) | -0.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
 | Gun rightOuter muzzle z (`guns.rightOuter.z`) | 3.35 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
 | Gun rightOuter rounds (`guns.rightOuter.rounds`) | 334 | rounds | — | ASSUMPTION | estimate | The Hurricane's 334 (D61): no Spitfire I figure found. |
+
+### Hit zones and systems (Phase 5, D68)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Hit zone: fuselage half-width (`hitZones.halfWidth`) | 0.42 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: fuselage top (`hitZones.top`) | 0.6 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: fuselage bottom (`hitZones.bottom`) | -0.75 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing leading edge at the root (`hitZones.wing.front`) | 0.78 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing trailing edge at the root (`hitZones.wing.back`) | -1.76 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing chord-line height at the root (`hitZones.wing.y`) | -0.55 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing half-thickness (`hitZones.wing.halfThickness`) | 0.17 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: tailplane span (`hitZones.tailSpan`) | 3.3 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: top of the fin (`hitZones.finTop`) | 1.5 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Fuselage sections, front to back (`hitZones.sections`) | engine 2.55 to 0.3; cockpit 0.3 to -2.3; fuselage -2.3 to -5.2; tail -5.2 to -6.57 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Radiator in hit zone wingInnerRight: engine (`systems.coolant.wingInnerRight`) | 0 | index | — | ASSUMPTION | estimate | Where the radiator is (D68): S33 (radiator under the starboard wing, oil coolers under the port wing). |
+| Oil cooler in hit zone wingInnerLeft: engine (`systems.oil.wingInnerLeft`) | 0 | index | — | ASSUMPTION | estimate | Where the oil cooler is (D68): S33 (radiator under the starboard wing, oil coolers under the port wing). |
+| Pilot's rear armour (`systems.armour`) | 0.008 | m | — | ASSUMPTION | estimate | RAF rear armour taken as 8 mm (D61); S38: armour directly behind the pilot. |
+| Fuel tanks by hit zone (`systems.fuel`) | cockpit: plain | — | — | S33, ASSUMPTION | estimate | Tanks ahead of the cockpit (S33); not known to be self-sealing. |
 
 ## Rolls-Royce Merlin III (Hurricane I and Spitfire I)
 
@@ -809,6 +847,26 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Gun cannonRight muzzle y (`guns.cannonRight.y`) | -0.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
 | Gun cannonRight muzzle z (`guns.cannonRight.z`) | 1.95 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
 | Gun cannonRight rounds (`guns.cannonRight.rounds`) | 60 | rounds | Drum—60 rd. capacity | S16, S27 | high | One drum per cannon. |
+
+### Hit zones and systems (Phase 5, D68)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Hit zone: fuselage half-width (`hitZones.halfWidth`) | 0.42 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: fuselage top (`hitZones.top`) | 0.6 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: fuselage bottom (`hitZones.bottom`) | -0.62 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing leading edge at the root (`hitZones.wing.front`) | 0.9 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing trailing edge at the root (`hitZones.wing.back`) | -1.3 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing chord-line height at the root (`hitZones.wing.y`) | -0.4 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing half-thickness (`hitZones.wing.halfThickness`) | 0.16 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: tailplane span (`hitZones.tailSpan`) | 3.1 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: top of the fin (`hitZones.finTop`) | 1.4 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Fuselage sections, front to back (`hitZones.sections`) | engine 2.76 to 0.2; cockpit 0.2 to -1.9; fuselage -1.9 to -4.6; tail -4.6 to -6 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Radiator in hit zone wingInnerLeft: engine (`systems.coolant.wingInnerLeft`) | 0 | index | — | ASSUMPTION | estimate | Where the radiator is (D68): placed from the airframe layout. |
+| Radiator in hit zone wingInnerRight: engine (`systems.coolant.wingInnerRight`) | 0 | index | — | ASSUMPTION | estimate | Where the radiator is (D68): placed from the airframe layout. |
+| Oil cooler in hit zone engine: engine (`systems.oil.engine`) | 0 | index | — | ASSUMPTION | estimate | Where the oil cooler is (D68): placed from the airframe layout. |
+| Pilot's rear armour (`systems.armour`) | 0.008 | m | the 8-mm. armour carried in the M.E. 109 | S38 | medium | Behind the pilot (position assumed). |
+| Fuel tanks by hit zone (`systems.fuel`) | cockpit: selfSealing | — | — | S33, ASSUMPTION | estimate | Tank under and behind the pilot; self-sealing assumed. |
 
 ## Daimler-Benz DB 601A (Bf 109 E-4 and Bf 110 C-4)
 
@@ -1076,6 +1134,30 @@ Bf 109's (same designer, engine and airscrew).
 | Gun cannonRight muzzle z (`guns.cannonRight.z`) | 0.15 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
 | Gun cannonRight rounds (`guns.cannonRight.rounds`) | 60 | rounds | Drum—60 rd. capacity | S16, S27 | high | One drum per cannon. |
 
+### Hit zones and systems (Phase 5, D68)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Hit zone: fuselage half-width (`hitZones.halfWidth`) | 0.5 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: fuselage top (`hitZones.top`) | 1 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: fuselage bottom (`hitZones.bottom`) | -0.95 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing leading edge at the root (`hitZones.wing.front`) | 1.23 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing trailing edge at the root (`hitZones.wing.back`) | -1.87 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing chord-line height at the root (`hitZones.wing.y`) | -0.4 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing half-thickness (`hitZones.wing.halfThickness`) | 0.28 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: tailplane span (`hitZones.tailSpan`) | 4.8 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: top of the fin (`hitZones.finTop`) | 1.25 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: engine nacelle halfWidth (`hitZones.nacelle.halfWidth`) | 0.5 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: engine nacelle halfHeight (`hitZones.nacelle.halfHeight`) | 0.6 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: engine nacelle length (`hitZones.nacelle.length`) | 4 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Fuselage sections, front to back (`hitZones.sections`) | nose 4.45 to 2; cockpit 2 to -1.5; fuselage -1.5 to -6.3; tail -6.3 to -7.55 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Radiator in hit zone wingInnerLeft: engine (`systems.coolant.wingInnerLeft`) | 0 | index | — | ASSUMPTION | estimate | Where the radiator is (D68): placed from the airframe layout. |
+| Radiator in hit zone wingInnerRight: engine (`systems.coolant.wingInnerRight`) | 1 | index | — | ASSUMPTION | estimate | Where the radiator is (D68): placed from the airframe layout. |
+| Oil cooler in hit zone engineLeft: engine (`systems.oil.engineLeft`) | 0 | index | — | ASSUMPTION | estimate | Where the oil cooler is (D68): placed from the airframe layout. |
+| Oil cooler in hit zone engineRight: engine (`systems.oil.engineRight`) | 1 | index | — | ASSUMPTION | estimate | Where the oil cooler is (D68): placed from the airframe layout. |
+| Pilot's rear armour (`systems.armour`) | 0 | m | — | ASSUMPTION | estimate | The C-4's armour is a gap; the RAF-tested aircraft carried none (S25). None modelled. |
+| Fuel tanks by hit zone (`systems.fuel`) | wingInnerLeft: selfSealing; wingInnerRight: selfSealing | — | — | S24, S25 | medium | All tanks self-sealing (S24, S25). |
+
 ## Heinkel He 111 H (AI only)
 
 Two period documents were found on 24 Oct 2026:
@@ -1224,6 +1306,30 @@ positions are estimates from the overall dimensions.
 | g at which the airframe starts to be damaged (`limits.g.damage`) | 4.5 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no limit load found. Past it the skin wrinkles (more drag). |
 | g at which the wings fail (`limits.g.fail`) | 7 | g | — | ASSUMPTION | estimate | Product owner's choice (D61): no ultimate load found. |
 
+### Hit zones and systems (Phase 5, D68)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Hit zone: fuselage half-width (`hitZones.halfWidth`) | 0.88 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: fuselage top (`hitZones.top`) | 1 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: fuselage bottom (`hitZones.bottom`) | -1.35 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing leading edge at the root (`hitZones.wing.front`) | 2.1 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing trailing edge at the root (`hitZones.wing.back`) | -2.8 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing chord-line height at the root (`hitZones.wing.y`) | -0.8 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: wing half-thickness (`hitZones.wing.halfThickness`) | 0.42 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: tailplane span (`hitZones.tailSpan`) | 7.8 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: top of the fin (`hitZones.finTop`) | 2.95 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: engine nacelle halfWidth (`hitZones.nacelle.halfWidth`) | 0.62 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: engine nacelle halfHeight (`hitZones.nacelle.halfHeight`) | 0.72 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Hit zone: engine nacelle length (`hitZones.nacelle.length`) | 4.5 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Fuselage sections, front to back (`hitZones.sections`) | cockpit 6.45 to 4; fuselage 4 to -7.5; tail -7.5 to -9.95 | m | — | ASSUMPTION | estimate | Hit-zone size taken from the aircraft model (D54, D68); no structural drawings used. |
+| Radiator in hit zone engineLeft: engine (`systems.coolant.engineLeft`) | 0 | index | — | ASSUMPTION | estimate | Where the radiator is (D68): placed from the airframe layout. |
+| Radiator in hit zone engineRight: engine (`systems.coolant.engineRight`) | 1 | index | — | ASSUMPTION | estimate | Where the radiator is (D68): placed from the airframe layout. |
+| Oil cooler in hit zone engineLeft: engine (`systems.oil.engineLeft`) | 0 | index | — | ASSUMPTION | estimate | Where the oil cooler is (D68): placed from the airframe layout. |
+| Oil cooler in hit zone engineRight: engine (`systems.oil.engineRight`) | 1 | index | — | ASSUMPTION | estimate | Where the oil cooler is (D68): placed from the airframe layout. |
+| Pilot's rear armour (`systems.armour`) | 0 | m | — | ASSUMPTION | estimate | No He 111 armour data found; none modelled. |
+| Fuel tanks by hit zone (`systems.fuel`) | wingInnerLeft: selfSealing; wingInnerRight: selfSealing | — | — | S38, ASSUMPTION | estimate | German bombers had good self-sealing tanks (S38); positions assumed. |
+
 ## Junkers Jumo 211F-1 (He 111 H-6/H-11)
 
 Close variant for the H-3's Jumo 211 (D40). No power curve was found: S29 gives the take-off power and the rated and
@@ -1313,6 +1419,68 @@ Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or es
 | Coolant temperature at a ground start (`groundStartHeat.coolant`) | 60 | °C | 60°C (minimum coolant for take-off) | S33, ASSUMPTION | estimate | Engines at a ground start are as after a run-up. |
 | Oil temperature at a ground start (`groundStartHeat.oil`) | 40 | °C | — | ASSUMPTION | estimate | As after a run-up: above the Merlin's 15 °C minimum (S33) and the DB 601's 30 °C (S24). |
 
+### Hit zones, damage and the target aircraft (Phase 5, D68)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Wing inner hit zone, share of the semispan (`hitZones.innerShare`) | 0.45 | fraction | — | ASSUMPTION | estimate | Splits each wing half into inner (tanks, radiators, flaps, undercarriage) and outer (ailerons) zones (D68). |
+| Damage weight: engine in a engine zone (`damage.weights.engine.engine`) | 0.45 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: coolant in a engine zone (`damage.weights.engine.coolant`) | 0.25 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: oil in a engine zone (`damage.weights.engine.oil`) | 0.15 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: nothing in a engine zone (`damage.weights.engine.nothing`) | 0.15 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: cables in a nose zone (`damage.weights.nose.cables`) | 0.2 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: nothing in a nose zone (`damage.weights.nose.nothing`) | 0.8 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: pilot in a cockpit zone (`damage.weights.cockpit.pilot`) | 0.3 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: cables in a cockpit zone (`damage.weights.cockpit.cables`) | 0.15 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: nothing in a cockpit zone (`damage.weights.cockpit.nothing`) | 0.3 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: cables in a fuselage zone (`damage.weights.fuselage.cables`) | 0.3 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: nothing in a fuselage zone (`damage.weights.fuselage.nothing`) | 0.7 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: elevator in a tail zone (`damage.weights.tail.elevator`) | 0.35 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: rudder in a tail zone (`damage.weights.tail.rudder`) | 0.35 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: tailStructure in a tail zone (`damage.weights.tail.tailStructure`) | 0.3 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: wing in a wingInner zone (`damage.weights.wingInner.wing`) | 0.4 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: flap in a wingInner zone (`damage.weights.wingInner.flap`) | 0.1 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: gear in a wingInner zone (`damage.weights.wingInner.gear`) | 0.1 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: nothing in a wingInner zone (`damage.weights.wingInner.nothing`) | 0.2 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: wing in a wingOuter zone (`damage.weights.wingOuter.wing`) | 0.6 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: aileron in a wingOuter zone (`damage.weights.wingOuter.aileron`) | 0.3 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight: nothing in a wingOuter zone (`damage.weights.wingOuter.nothing`) | 0.1 | weight | — | ASSUMPTION | estimate | How likely a hit in this zone strikes this component (D68); no vulnerability data found. |
+| Damage weight added by a fuel system in a zone (`damage.systemWeights.fuel`) | 0.25 | weight | — | ASSUMPTION | estimate | A tank, radiator or oil cooler in a zone adds this weight (D68). |
+| Damage weight added by a coolant system in a zone (`damage.systemWeights.coolant`) | 0.15 | weight | — | ASSUMPTION | estimate | A tank, radiator or oil cooler in a zone adds this weight (D68). |
+| Damage weight added by a oil system in a zone (`damage.systemWeights.oil`) | 0.1 | weight | — | ASSUMPTION | estimate | A tank, radiator or oil cooler in a zone adds this weight (D68). |
+| Engine wear per unit of hit strength (`damage.engineWear`) | 0.06 | per unit | — | ASSUMPTION | estimate | About 17 rifle-calibre hits or 3-4 cannon shells seize an engine. |
+| Chance an incendiary engine hit starts a fire (`damage.engineFireChance`) | 0.05 | fraction | — | ASSUMPTION | estimate | Engine fires were less common than fuel fires. |
+| Coolant or oil lost per second per unit of hit strength (`damage.leakRate`) | 0.004 | fraction/s | — | ASSUMPTION | estimate | One rifle-calibre hole drains the system in about four minutes; a cannon shell in under a minute. |
+| Oil left below which the engine wears out (`damage.oilStarve`) | 0.3 | fraction | — | ASSUMPTION | estimate | Low oil pressure and starved bearings. |
+| Seconds to seize with no oil left (`damage.oilWearLife`) | 30 | s | — | ASSUMPTION | estimate | Engines without oil lasted well under a minute. |
+| Seconds a fire burns before the aircraft breaks up (`damage.fireTime`) | 30 | s | — | ASSUMPTION | estimate | No extinguishers in these fighters; burning aircraft were usually lost within a minute. |
+| Angle from dead astern within which rounds meet the rear armour (`damage.armourArc`) | 1.05 | rad | — | ASSUMPTION | estimate | About 60°: the plate covers the pilot from behind. |
+| Speed above which armour-piercing rifle rounds pierce the armour (`damage.apPenetrationSpeed`) | 650 | m/s | — | ASSUMPTION | estimate | S37: the .303 AP "should penetrate a 10 millimetre armour plate ... at 100 yards" (about 680 m/s); a little lower allowed. |
+| Pilot health lost per wound (x the square root of the hit strength) (`damage.pilotWound`) | 0.35 | fraction | — | ASSUMPTION | estimate | Three rifle-calibre wounds, or about two cannon splinters, kill. |
+| Chance per unit of hit strength that a hit on the cables cuts one (`damage.cableCut`) | 0.3 | fraction | — | ASSUMPTION | estimate | Cables are thin: most hits nearby miss them. |
+| Control effect lost per unit of hit strength on a control surface (`damage.surfaceLoss`) | 0.1 | fraction | — | ASSUMPTION | estimate | Fabric-covered surfaces kept working with holes in them. |
+| Wing panel damage per unit of hit strength (`damage.wingDamage`) | 0.04 | per unit | — | ASSUMPTION | estimate | About 25 rifle-calibre hits or 5 cannon shells break a wing panel. |
+| Lift a fully damaged panel loses (`damage.wingLiftLoss`) | 0.6 | fraction | — | ASSUMPTION | estimate | Holed and torn skin spoils the flow over the panel. |
+| Drag coefficient a fully damaged panel adds (`damage.wingDrag`) | 0.05 | — | — | ASSUMPTION | estimate | Torn skin and gaps. |
+| Tail structure damage per unit of hit strength (`damage.tailDamage`) | 0.05 | per unit | — | ASSUMPTION | estimate | About 20 rifle-calibre hits or 4 cannon shells break the tail. |
+| Chance an incendiary hit on a plain tank starts a fire (`damage.fireChance.plain`) | 0.3 | fraction | — | ASSUMPTION | estimate | Self-sealing and Linatex-covered tanks resisted fire (S38); the values are estimates. |
+| Chance an incendiary hit on a linatex tank starts a fire (`damage.fireChance.linatex`) | 0.15 | fraction | — | ASSUMPTION | estimate | Self-sealing and Linatex-covered tanks resisted fire (S38); the values are estimates. |
+| Chance an incendiary hit on a selfSealing tank starts a fire (`damage.fireChance.selfSealing`) | 0.05 | fraction | — | ASSUMPTION | estimate | Self-sealing and Linatex-covered tanks resisted fire (S38); the values are estimates. |
+| Target autopilot: headingToBank (`autopilot.headingToBank`) | 1 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target autopilot: maxBank (`autopilot.maxBank`) | 0.26 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target autopilot: bankGain (`autopilot.bankGain`) | 2.5 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target autopilot: rollDamping (`autopilot.rollDamping`) | 0.8 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target autopilot: altitudeToClimb (`autopilot.altitudeToClimb`) | 0.08 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target autopilot: maxClimb (`autopilot.maxClimb`) | 5 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target autopilot: climbGain (`autopilot.climbGain`) | 0.08 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target autopilot: pitchDamping (`autopilot.pitchDamping`) | 0.6 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target autopilot: slipGain (`autopilot.slipGain`) | 1.5 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target autopilot: yawDamping (`autopilot.yawDamping`) | 0.6 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target autopilot: speedGain (`autopilot.speedGain`) | 0.01 | — | — | ASSUMPTION | estimate | Tuning of the target aircraft's autopilot, a test aid (D68), not aircraft data. |
+| Target aircraft: distance (`target.distance`) | 400 | m | — | ASSUMPTION | estimate | Where the target aircraft appears and how fast it cruises (D68), a test aid. |
+| Target aircraft: throttle (`target.throttle`) | 0.6 | fraction | — | ASSUMPTION | estimate | Where the target aircraft appears and how fast it cruises (D68), a test aid. |
+| Target aircraft: minHeight (`target.minHeight`) | 300 | m | — | ASSUMPTION | estimate | Where the target aircraft appears and how fast it cruises (D68), a test aid. |
+
 ## Propeller data: NACA Report 640
 
 All three fighters use the full-scale coefficients of NACA Report 640's 3-blade Clark Y propeller 5868-9 (`src/aircraft/naca640.js`), scaled to each propeller's diameter. The Rotol and VDM blades were of different shape and width, so this is an approximation: it is the best measured full-scale data found for 3-blade propellers of the period. Blade angles beyond the measured 15-45° reuse the nearest curve, stretched in J so that its zero-thrust point moves on at the measured rate. The power coefficient is computed as CT J / efficiency, so thrust, power and efficiency stay consistent.
@@ -1363,6 +1531,20 @@ kind of round (each aircraft's `guns`).
 | Old-type .303 incendiary: smoke trail lasts (`roundTypes.incendiary303.burn`) | 1.0 | s | a distinct smoke-tracer effect | S38, ASSUMPTION | estimate | S38 describes the trail but not its length; about the tracer's 600-800 yd (S37). Display only. |
 | 20 mm tracer burn time (`roundTypes.heTracer20.burn`) | 1.8 | s | Brilliant white 1.8 | S40 | medium | Display only. |
 
+| ball303: hit strength (`roundTypes.ball303.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
+| ap303: hit strength (`roundTypes.ap303.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
+| incendiary303: hit strength (`roundTypes.incendiary303.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
+| incendiary303: incendiary effect (`roundTypes.incendiary303.incendiary`) | 0.5 | fraction | — | ASSUMPTION | estimate | How readily it sets fuel alight (D68). |
+| deWilde303: hit strength (`roundTypes.deWilde303.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
+| deWilde303: incendiary effect (`roundTypes.deWilde303.incendiary`) | 1 | fraction | — | ASSUMPTION | estimate | De Wilde: pilots "attributed to it almost magical properties" (S38); full incendiary effect. |
+| ap792: hit strength (`roundTypes.ap792.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
+| incendiary792: hit strength (`roundTypes.incendiary792.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
+| incendiary792: incendiary effect (`roundTypes.incendiary792.incendiary`) | 1 | fraction | — | ASSUMPTION | estimate | How readily it sets fuel alight (D68). |
+| observing792: hit strength (`roundTypes.observing792.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
+| observing792: incendiary effect (`roundTypes.observing792.incendiary`) | 0.5 | fraction | — | ASSUMPTION | estimate | How readily it sets fuel alight (D68). |
+| heIncendiary20: hit strength (`roundTypes.heIncendiary20.strength`) | 5 | units | — | ASSUMPTION | estimate | A 20 mm HE shell does about five times a rifle-calibre round's damage, and also hits a second component (D68). |
+| heIncendiary20: incendiary effect (`roundTypes.heIncendiary20.incendiary`) | 1 | fraction | — | ASSUMPTION | estimate | How readily it sets fuel alight (D68). |
+| heTracer20: hit strength (`roundTypes.heTracer20.strength`) | 5 | units | — | ASSUMPTION | estimate | A 20 mm HE shell does about five times a rifle-calibre round's damage, and also hits a second component (D68). |
 ---
 
 ## Guns (Phase 5)

@@ -59,7 +59,7 @@ export function coolingConstants(ac, engine) {
 
 /** Fresh heat state for one engine at temperatures (°C). */
 export function createHeat(coolant = 60, oil = 40) {
-  return { coolant, oil, coolantLeft: 1, wear: 0, seized: false };
+  return { coolant, oil, coolantLeft: 1, coolantLeak: 0, oilLeft: 1, oilLeak: 0, wear: 0, seized: false };
 }
 
 /** Conductances (W/K) of an engine's coolant radiator and oil cooler in the current flow. */
@@ -106,8 +106,14 @@ export function stepHeat(ac, engine, e, { altitude, q, radiator, power }, dt) {
   h.coolant += ((heat - cond.coolant * (h.coolant - tAir)) / coolantMass) * dt;
   h.oil += ((heat - cond.oil * (h.oil - tAir)) / k.oilCapacity) * dt;
 
+  // Leaks from hits (src/weapons/damage.js, D68): fractions of the coolant or oil lost per second.
+  h.coolantLeft = Math.max(0, h.coolantLeft - h.coolantLeak * dt);
+  h.oilLeft = Math.max(0, h.oilLeft - h.oilLeak * dt);
   const w = common.engineWear;
   const limit = coolantLimit(engine, altitude);
+  // Short of oil, the bearings wear out (D68).
+  const starved = Math.max(0, common.damage.oilStarve - h.oilLeft) / common.damage.oilStarve;
+  h.wear += (starved / common.damage.oilWearLife) * dt;
   const over = (t, lim) => Math.max(0, t - lim) / w.overheatSpan;
   const rpm = e.omega / UNIT.RPM;
   const overRev = Math.max(0, rpm - engine.heat.overRev / UNIT.RPM) / w.overRevSpan;

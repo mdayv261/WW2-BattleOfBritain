@@ -19,6 +19,7 @@ import { engineFor } from '../aircraft/index.js';
 import { clamp, lerp } from './interp.js';
 import { stepHeat, equilibrium, createHeat } from './cooling.js';
 import { createDamage, stepStructure, damagedSurfaces, damageDrag } from './structure.js';
+import { stepDamage } from '../weapons/damage.js';
 
 const _vb = new Vector3();
 const _f = new Vector3();
@@ -132,7 +133,11 @@ export function stepAircraft(plane, input, dt) {
   const qBar = 0.5 * air.density * flow.airspeed * flow.airspeed;
   const slipTail = plane.engines.reduce((a, e) => a + e.slipQ, 0) / plane.engines.length;
   const tailQ = qBar + slipTail * 0.5;
-  updateSurfaces(ac, surfaces, input, { q: qBar, tailQ }, dt);
+  // Jammed flaps or undercarriage (hits, D68) stay where they are, whatever the pilot selects.
+  const jam = plane.damage;
+  const selected = jam.gearJammed || jam.flapsJammed
+    ? { ...input, ...(jam.gearJammed && { gear: surfaces.gear }), ...(jam.flapsJammed && { flaps: surfaces.flaps }) } : input;
+  updateSurfaces(ac, surfaces, selected, { q: qBar, tailQ }, dt);
 
   const loads = computeLoads(plane, input);
   updateSlats(ac, surfaces, loads.diag.slatAlphaLeft, loads.diag.slatAlphaRight, dt);
@@ -141,6 +146,7 @@ export function stepAircraft(plane, input, dt) {
     altitude: body.position.y, q: qBar, radiator: surfaces.radiator, power: loads.powerplant.engines[i].power,
   }, dt));
   stepStructure(plane, loads.diag, dt);
+  stepDamage(plane, dt);
 
   stepRigidBody(body, {
     force: loads.force, moment: loads.moment, momentum: loads.momentum, mass: ac.mass.flying,

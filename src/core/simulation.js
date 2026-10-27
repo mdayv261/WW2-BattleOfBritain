@@ -18,6 +18,8 @@ import { createTwinLevers, applyTwinLevers, selectNextEngine, toggleRunning, tog
 import { common } from '../aircraft/common.js';
 import { createArmament, stepGuns, counters } from '../weapons/guns.js';
 import { Projectiles } from '../weapons/projectiles.js';
+import { seededRandom } from '../weapons/random.js';
+import { nextTarget, hittable, resolveHit, stepTarget, testHit } from './combat.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 export const START_MODES = ['ground', 'approach', 'air'];
@@ -91,6 +93,9 @@ export class Simulation {
     this.armament = createArmament(ac); // the fixed guns (Phase 5, D67)
     this.projectiles ??= new Projectiles();
     this.projectiles.clear();
+    this.random = seededRandom(1); // the player's damage dice (D68)
+    this.target = null; // the target aircraft (Y, D68)
+    this.targetIndex = -1;
     this.notice = null; // a short message for the pilot: { text, until } (simulation time)
     this.crashed = false;
     this.crashCause = null;
@@ -133,6 +138,16 @@ export class Simulation {
     this.notice = { text, until: this.plane.time + 3 };
   }
 
+  /** Y: the next target aircraft ahead (D68). */
+  nextTarget() {
+    this.notice = { text: nextTarget(this), until: this.plane.time + 3 };
+  }
+
+  /** 9: a test 20 mm hit on the player's own aircraft (D68). */
+  testHit() {
+    this.notice = { text: testHit(this), until: this.plane.time + 3 };
+  }
+
   /** The ammunition counter's columns as { rounds, capacity } (the Bf 109's: D64, D65). */
   get guns() {
     return counters(this.armament);
@@ -150,7 +165,8 @@ export class Simulation {
     const recoil = stepGuns(this.armament, this.plane, this.input, dt, this.plane.time, (round) => this.projectiles.spawn(round, this));
     this.plane.recoil = recoil.force.lengthSq() > 0 ? recoil : null;
     stepAircraft(this.plane, this.input, dt);
-    this.projectiles.step(dt, this.world.terrain);
+    stepTarget(this, dt);
+    this.projectiles.step(dt, this.world.terrain, hittable(this), (struck, hit) => resolveHit(this, struck, hit));
     const { ground, damage } = this.plane;
     if (ground.crash || damage.failed) {
       this.crashed = true;

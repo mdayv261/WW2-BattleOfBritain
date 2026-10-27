@@ -40,19 +40,21 @@ export const weapons = {
 };
 
 /**
- * Kinds of round: how each shows in flight ('smoke' trail, 'tracer' streak, or nothing in daylight) and for how long (s).
- * The kinds matter for hits in checkpoint 4.
+ * Kinds of round: how each shows in flight ('smoke' trail, 'tracer' streak, or nothing in daylight) and for how long
+ * (s); and what it does on a hit (D68): its strength (rifle-calibre 1), whether it pierces armour (ap) or explodes (he,
+ * damaging a second component), and how readily it sets things alight (incendiary, 0-1). Strengths and incendiary
+ * values are estimates.
  */
 export const roundTypes = {
-  ball303: { shows: null },
-  ap303: { shows: null }, // W Mark I (S37)
-  incendiary303: { shows: 'smoke', burn: 1.0 }, // old-type incendiary: "a distinct smoke-tracer effect" (S38)
-  deWilde303: { shows: null }, // "without any flame or smoke trace" (S38)
-  ap792: { shows: null },
-  incendiary792: { shows: null },
-  observing792: { shows: null }, // B-Patrone: a flash where it strikes
-  heIncendiary20: { shows: null },
-  heTracer20: { shows: 'tracer', burn: 1.8 }, // 20 mm tracer burns about 1.8 s (S40)
+  ball303: { shows: null, strength: 1 },
+  ap303: { shows: null, strength: 1, ap: true }, // W Mark I (S37)
+  incendiary303: { shows: 'smoke', burn: 1.0, strength: 1, incendiary: 0.5 }, // old-type incendiary (S38)
+  deWilde303: { shows: null, strength: 1, incendiary: 1 }, // "almost magical properties" (S38)
+  ap792: { shows: null, strength: 1, ap: true },
+  incendiary792: { shows: null, strength: 1, incendiary: 1 },
+  observing792: { shows: null, strength: 1, incendiary: 0.5 }, // B-Patrone: a flash where it strikes
+  heIncendiary20: { shows: null, strength: 5, he: true, incendiary: 1 },
+  heTracer20: { shows: 'tracer', burn: 1.8, strength: 5, he: true }, // 20 mm tracer burns about 1.8 s (S40)
 };
 
 /** Belts that repeat a sequence of rounds (D61). RAF guns each carry one kind of round, set per gun (S38). */
