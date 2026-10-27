@@ -1457,3 +1457,6 @@ Measured in Chrome while firing: 75 fps (the screen's limit), 3.5 ms of work per
   coaming.
 - **Harmonisation:** the guns are re-harmonised on the sight line at 200 m from their new positions.
 
+**Muzzle flash colour** (27 Oct 2026, product owner): yellow (0xffcc00), drawn with normal blending so the sky no
+longer washes it white. The tracers keep their warm white (S40).
+

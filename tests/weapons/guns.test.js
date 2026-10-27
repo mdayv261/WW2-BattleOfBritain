@@ -190,3 +190,17 @@ describe('Bf 109 cowling-gun flashes (D67)', () => {
     }
   });
 });
+
+describe('muzzle flash colour (D67)', () => {
+  it('is yellow and not added onto the sky (which would wash it white)', async () => {
+    const THREE = await import('three');
+    const { buildMuzzleFlashes } = await import('../../src/render/projectiles.js');
+    const { material } = buildMuzzleFlashes(createArmament(aircraftById.spitfire));
+    const c = material.color.clone().convertLinearToSRGB();
+    expect(c.r).toBeGreaterThan(0.9);
+    expect(c.g).toBeGreaterThan(0.7);
+    expect(c.b).toBeLessThan(0.2);
+    expect(material.blending).toBe(THREE.NormalBlending);
+  });
+});
+
