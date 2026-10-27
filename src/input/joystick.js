@@ -14,12 +14,17 @@
 // Sensitivity (D71): roll, pitch and rudder each have a response curve, output = sign(x)·|x|^k after the dead zone.
 // A lower sensitivity softens small stick movements; full stick always gives full control, so no aircraft loses any
 // control travel.
+//
+// Dead zone (D72): each flight axis has its own band around neutral that gives no input (5% unless chosen), for a
+// stick that does not settle in the same place each time it is let go (the product owner's twist rests anywhere from
+// 0.00 to 0.17). Outside the band the travel is stretched, so full stick still gives full control.
 
 import { clamp } from '../physics/interp.js';
 import { stepFlaps } from './keyboard.js';
 
 const STORAGE_KEY = 'bob1940.joystick';
-const DEADZONE = 0.05;
+const DEADZONE = 0.05; // the default dead zone
+export const DEADZONES = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3]; // dead zone choices for the flight axes (D72)
 export const CALIBRATED_AXES = [0, 1, 2, 3, 4, 5]; // the stick, twist and spare axes; not the slider (6) or hat (9)
 // Sensitivity choices for the flight-control axes: the curve's exponent k (feel choices, not aircraft data).
 export const SENSITIVITIES = [['Very high', 0.6], ['High', 0.8], ['Normal', 1], ['Low', 1.5], ['Lower', 2], ['Lowest', 2.5]];
@@ -33,9 +38,9 @@ export const FLIGHT_AXES = ['roll', 'pitch', 'yaw'];
 export const MAPPING_VERSION = 3;
 export const DEFAULT_MAPPING = {
   version: MAPPING_VERSION,
-  roll: { axis: 0, invert: false, curve: 1 },
-  pitch: { axis: 1, invert: false, curve: 1 }, // pulling back gives +1 on this axis
-  yaw: { axis: 5, invert: false, curve: 1 },
+  roll: { axis: 0, invert: false, curve: 1, deadzone: DEADZONE },
+  pitch: { axis: 1, invert: false, curve: 1, deadzone: DEADZONE }, // pulling back gives +1 on this axis
+  yaw: { axis: 5, invert: false, curve: 1, deadzone: DEADZONE },
   throttle: { axis: 6, invert: true },
   hat: { axis: 9 },
   buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1 },
@@ -83,7 +88,8 @@ function loadMapping() {
   return structuredClone(DEFAULT_MAPPING);
 }
 
-const shape = (v) => (Math.abs(v) < DEADZONE ? 0 : Math.sign(v) * ((Math.abs(v) - DEADZONE) / (1 - DEADZONE)));
+/** An axis reading with a dead zone of `dz` about its neutral: 0 inside, the rest of the travel stretched to ±1. */
+export const shape = (v, dz = DEADZONE) => (Math.abs(v) < dz ? 0 : Math.sign(v) * ((Math.abs(v) - dz) / (1 - dz)));
 
 /** A flight-control input (-1 to 1, after the dead zone) through the sensitivity curve of exponent k. */
 export const sensitivity = (v, k = 1) => Math.sign(v) * Math.abs(v) ** k;
@@ -95,6 +101,7 @@ export class Joystick {
     this.throttleLive = false;
     this.throttleStart = null;
     this.wasPressed = {};
+    this.output = { roll: 0, pitch: 0, yaw: 0 }; // what the flight controls last received, for the panel
   }
 
   saveMapping() {
@@ -167,7 +174,9 @@ export class Joystick {
   update(input, ac, dt = 0) {
     if (!this.poll()) return null;
     for (const name of FLIGHT_AXES) {
-      input[name] = sensitivity(clamp(shape(this.read(name)), -1, 1), this.mapping[name].curve ?? 1);
+      const m = this.mapping[name];
+      input[name] = sensitivity(clamp(shape(this.read(name), m.deadzone ?? DEADZONE), -1, 1), m.curve ?? 1);
+      this.output[name] = input[name];
     }
     const slider = this.read('throttle');
     if (this.throttleStart === null) this.throttleStart = slider;

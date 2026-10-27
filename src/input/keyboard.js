@@ -7,7 +7,7 @@
 //   W / S                throttle up / down
 //   E / D                RAF: propeller rpm lever up / down.  Bf 109: pitch finer (rpm up) / coarser
 //   T / G                elevator trim nose up / nose down (at each aircraft's own trim speed)
-//   , / .                rudder trim left / right (Spitfire only)
+//   , / .                rudder trim left / right (Spitfire, Bf 110, He 111)
 //   B (hold)             brakes; with rudder, the brake on that side (D28)
 //   F / Shift+F          flaps down / up one stop (the Spitfire's go straight down or up)
 //   U  undercarriage   O  radiator   Q  +12 lb boost cut-out (RAF)   A  engine assist (Bf 109)

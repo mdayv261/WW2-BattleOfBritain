@@ -2,9 +2,10 @@
 // axis drives roll, pitch, rudder, throttle and the hat (and whether each is reversed), and which button
 // works the elevator trim, brakes, flaps, undercarriage and view. Kept in browser storage. Axes 0-5 each have a
 // "Set neutral" button that takes the hands-off reading as 0.00 (D70); their bars show the calibrated reading. Roll,
-// pitch and rudder each have a sensitivity choice (D71).
+// pitch and rudder each have a sensitivity choice (D71) and a dead zone choice (D72), and show what the aircraft now
+// receives from them.
 
-import { DEFAULT_MAPPING, CALIBRATED_AXES, SENSITIVITIES, FLIGHT_AXES, hatDirection } from '../input/joystick.js';
+import { DEFAULT_MAPPING, CALIBRATED_AXES, SENSITIVITIES, DEADZONES, FLIGHT_AXES, hatDirection } from '../input/joystick.js';
 
 const FUNCTIONS = [['roll', 'Roll'], ['pitch', 'Pitch (pull back = +)'], ['yaw', 'Rudder (twist)'], ['throttle', 'Throttle slider']];
 const BUTTONS = [
@@ -13,6 +14,8 @@ const BUTTONS = [
 ];
 // Sensitivity choices, each with what half stick gives.
 const sensitivityOptions = SENSITIVITIES.map(([name, k]) => `<option value="${k}">${name} (half stick ${Math.round(100 * 0.5 ** k)}%)</option>`).join('');
+const deadzoneOptions = DEADZONES.map((d) => `<option value="${d}">${Math.round(d * 100)}%</option>`).join('');
+const OUTPUT_NAMES = { roll: 'roll', pitch: 'pitch', yaw: 'rudder' };
 const AXES = 10; // axis rows drawn (those the joystick lacks are hidden)
 const HAT_NAMES = ['up', 'up-right', 'right', 'down-right', 'down', 'down-left', 'left', 'up-left'];
 
@@ -39,11 +42,14 @@ export class JoystickPanel {
       <table>${FUNCTIONS.map(([key, label]) => `<tr><td>${label}</td>
         <td>axis <select data-fn="${key}">${options(10)}</select></td>
         <td><label><input type="checkbox" data-inv="${key}"> reverse</label></td>
-        <td>${FLIGHT_AXES.includes(key) ? `sensitivity <select data-curve="${key}">${sensitivityOptions}</select>` : ''}</td></tr>`).join('')}
+        <td>${FLIGHT_AXES.includes(key) ? `sensitivity <select data-curve="${key}">${sensitivityOptions}</select>` : ''}</td>
+        <td>${FLIGHT_AXES.includes(key) ? `dead zone <select data-deadzone="${key}">${deadzoneOptions}</select>` : ''}</td>
+        <td>${FLIGHT_AXES.includes(key) ? `<span data-output="${key}" style="white-space:pre"></span>` : ''}</td></tr>`).join('')}
         <tr><td>Hat (look around)</td><td>axis <select data-hat="1">${options(10)}</select></td><td></td></tr>
         ${BUTTONS.map(([key, label]) => `<tr><td>${label}</td><td>button <select data-btn="${key}">${buttonOptions(12)}</select></td><td></td></tr>`).join('')}
       </table>
       <div style="margin-top:6px;opacity:0.8">Sensitivity: lower softens small stick movements; full stick always gives full control.</div>
+      <div style="opacity:0.8">Dead zone: if the stick doesn't settle in the same place each time, widen its dead zone until it reads 0% hands-off.</div>
       <div style="opacity:0.8">Buttons are numbered as printed on the stick (the trigger is 1, the thumb button 2).</div>
       <button id="joy-reset" style="margin-top:8px">Reset to default</button>`;
     const save = () => this.joystick.saveMapping();
@@ -57,6 +63,10 @@ export class JoystickPanel {
     }));
     this.el.querySelectorAll('select[data-curve]').forEach((s) => s.addEventListener('change', () => {
       this.joystick.mapping[s.dataset.curve].curve = Number(s.value);
+      save();
+    }));
+    this.el.querySelectorAll('select[data-deadzone]').forEach((s) => s.addEventListener('change', () => {
+      this.joystick.mapping[s.dataset.deadzone].deadzone = Number(s.value);
       save();
     }));
     this.el.querySelector('select[data-hat]').addEventListener('change', (e) => {
@@ -89,7 +99,10 @@ export class JoystickPanel {
       this.el.querySelector(`select[data-fn="${key}"]`).value = String(m[key].axis);
       this.el.querySelector(`input[data-inv="${key}"]`).checked = m[key].invert;
     }
-    for (const key of FLIGHT_AXES) this.el.querySelector(`select[data-curve="${key}"]`).value = String(m[key].curve ?? 1);
+    for (const key of FLIGHT_AXES) {
+      this.el.querySelector(`select[data-curve="${key}"]`).value = String(m[key].curve ?? 1);
+      this.el.querySelector(`select[data-deadzone="${key}"]`).value = String(m[key].deadzone ?? DEFAULT_MAPPING[key].deadzone);
+    }
     this.el.querySelector('select[data-hat]').value = String(m.hat.axis);
     for (const [key] of BUTTONS) this.el.querySelector(`select[data-btn="${key}"]`).value = String(m.buttons[key]);
   }
@@ -117,6 +130,10 @@ export class JoystickPanel {
       if (shown) shown.textContent = c ? `centre ${c.toFixed(2)}` : '';
     }
     this.el.querySelector('#joy-buttons').textContent = `buttons pressed: ${pad.buttons.map((b, i) => (b.pressed ? i + 1 : null)).filter((i) => i !== null).join(' ') || 'none'}`;
+    for (const key of FLIGHT_AXES) {
+      const pct = Math.round(this.joystick.output[key] * 100);
+      this.el.querySelector(`[data-output="${key}"]`).textContent = `${OUTPUT_NAMES[key]} now ${String(pct).padStart(4)}%`;
+    }
     const dir = hatDirection(pad.axes[this.joystick.mapping.hat.axis]);
     this.el.querySelector('#joy-hat').textContent = `hat: ${dir === null ? 'centred' : HAT_NAMES[dir]}`;
   }

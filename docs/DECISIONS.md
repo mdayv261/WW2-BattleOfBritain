@@ -1680,3 +1680,26 @@ and the flight model is untouched. Lower settings soften small movements, for fi
 
 **Status:** these are feel choices, not aircraft data. Checked in Chrome: the dropdowns work and are kept after a
 reload. The product owner's saved settings, including their axis 5 neutral, were restored afterwards.
+
+## D72. Joystick dead zone for each flight axis (27 Oct 2026, product owner)
+
+**Problem:** the aircraft still yawed right hands-off, the twins included. The product owner's saved neutral for axis
+5 was 0.004, set while the twist happened to rest near 0.00. The twist also rests at 0.15 or 0.17 at other times: it
+doesn't settle in the same place each time it's let go. A single neutral (D70) can't cover that, and the fixed 5% dead
+zone let about 10% right rudder through.
+
+**The fix:**
+- **Dead zone choice:** the Roll, Pitch and Rudder rows of the joystick panel (J) each have a dead zone choice of 5%
+  (the default, as before), 10%, 15%, 20%, 25% or 30%. It's the band about neutral that gives no input.
+- **Full travel kept:** outside the band the travel is stretched, so full stick still gives full control.
+- **Order:** neutral (D70), then dead zone, then the sensitivity curve (D71).
+- **Live readout:** each row shows what the aircraft receives now ("rudder now 0%").
+- **Stored:** saved with the mapping. Older saved mappings read 5%.
+
+**Checked in Chrome** with the product owner's stick:
+- with the twist resting at 0.15, "rudder now" read 10% at 5% and 0% at 20%;
+- in the Bf 110, 10 s hands-off then gave 0% rudder, 0.0° sideslip and heading 359° from 0°.
+
+The product owner's saved settings were restored afterwards.
+
+**Help text:** it now says rudder trim (, and .) is on the Spitfire, Bf 110 and He 111. It said Spitfire only.

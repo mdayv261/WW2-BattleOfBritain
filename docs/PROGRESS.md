@@ -15,6 +15,12 @@ Read this at the start of every session.
   (D69). Next: the product owner's Phase 5 acceptance test (proposed in D69).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026.
 
+## Joystick dead zone (27 Oct 2026)
+
+**Done** (D72): a dead zone choice (5-30%) for Roll, Pitch and Rudder in the joystick panel (J), with a live readout of
+what the aircraft receives. This fixes the right yaw from a twist that rests anywhere from 0.00 to 0.17. The help
+text now names all three aircraft with rudder trim. Tests are in `tests/ui/phase2Controls.test.js`.
+
 ## Joystick sensitivity (27 Oct 2026)
 
 **Done** (D71): a sensitivity choice for Roll, Pitch and Rudder in the joystick panel (J), from Very high to Lowest.

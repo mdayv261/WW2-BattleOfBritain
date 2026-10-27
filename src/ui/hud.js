@@ -57,7 +57,7 @@ const HELP = `
 <tr><td>B (hold)</td><td>brakes; with rudder, the brake on that side</td></tr>
 <tr><td>W / S</td><td>throttle up / down</td></tr>
 <tr><td>E / D</td><td>RAF: rpm lever up / down — Bf 109: pitch finer / coarser</td></tr>
-<tr><td>T / G &nbsp; , / .</td><td>elevator trim nose up / down; rudder trim (Spitfire)</td></tr>
+<tr><td>T / G &nbsp; , / .</td><td>elevator trim nose up / down; rudder trim (Spitfire, Bf 110, He 111)</td></tr>
 <tr><td>F / Shift+F</td><td>flaps down / up a stop (Spitfire: down or up)</td></tr>
 <tr><td>U &nbsp; O</td><td>undercarriage, radiator</td></tr>
 <tr><td>Q &nbsp; A</td><td>+12 lb boost cut-out (RAF); engine assist (Bf 109)</td></tr>

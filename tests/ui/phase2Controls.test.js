@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { Vector3, Quaternion, Euler } from 'three';
 import { Keyboard, stepFlaps } from '../../src/input/keyboard.js';
-import { Joystick, hatDirection, DEFAULT_MAPPING, centred, sensitivity, SENSITIVITIES } from '../../src/input/joystick.js';
+import { Joystick, hatDirection, DEFAULT_MAPPING, centred, sensitivity, SENSITIVITIES, shape, DEADZONES } from '../../src/input/joystick.js';
 import { cockpitQuaternion, eyePosition, CameraRig, HAT_LOOKS } from '../../src/render/cameras.js';
 import { instrumentReadings } from '../../src/ui/instruments.js';
 import { rafAirspeedAngle } from '../../src/ui/airspeed.js';
@@ -370,5 +370,58 @@ describe('joystick sensitivity (D71)', () => {
     older.poll = () => (older.pad = { axes, buttons: [] });
     older.update(input, hurricane);
     expect(input.pitch).toBeCloseTo(input.roll, 9); // Normal
+  });
+});
+
+describe('joystick dead zone (D72)', () => {
+  function stick(axes) {
+    const store = {};
+    globalThis.localStorage = { getItem: (k) => store[k] ?? null, setItem: (k, v) => { store[k] = v; } };
+    const joy = new Joystick();
+    joy.poll = () => (joy.pad = { axes, buttons: Array.from({ length: 12 }, () => ({ pressed: false })) });
+    return { joy, axes, store, input: { flaps: 0, gear: 1, throttle: 0.5 } };
+  }
+
+  it('is 5% unless chosen, as before', () => {
+    const { joy, axes, input } = stick([0.04, 0, 0, 0, 0, 0.15, -1, 0, 0, 1.2857]);
+    joy.update(input, hurricane);
+    expect(input.roll).toBe(0);
+    expect(input.yaw).toBeCloseTo((0.15 - 0.05) / 0.95, 9); // the product owner's twist: right rudder
+    expect(joy.output.yaw).toBe(input.yaw);
+    expect(axes[5]).toBe(0.15);
+  });
+
+  it('a 20% rudder dead zone gives no rudder for a twist resting anywhere from 0.00 to 0.17, and full rudder at full twist', () => {
+    const { joy, axes, input } = stick([0, 0, 0, 0, 0, 0.15, -1, 0, 0, 1.2857]);
+    joy.mapping.yaw.deadzone = 0.2;
+    for (const rest of [0, 0.004, 0.15, 0.17, -0.1]) {
+      axes[5] = rest;
+      joy.update(input, hurricane);
+      expect(input.yaw).toBe(0);
+    }
+    axes[5] = 1;
+    joy.update(input, hurricane);
+    expect(input.yaw).toBeCloseTo(1, 9);
+    axes[5] = -1;
+    joy.update(input, hurricane);
+    expect(input.yaw).toBeCloseTo(-1, 9);
+    for (const d of DEADZONES) expect(shape(1, d)).toBeCloseTo(1, 9);
+  });
+
+  it('each axis keeps its own, saved and reloaded; an older saved mapping reads 5%', () => {
+    const { joy, store } = stick([0, 0, 0, 0, 0, 0, -1, 0, 0, 1.2857]);
+    joy.mapping.yaw.deadzone = 0.2;
+    joy.saveMapping();
+    const again = new Joystick();
+    expect(again.mapping.yaw.deadzone).toBe(0.2);
+    expect(again.mapping.roll.deadzone).toBe(0.05);
+    const old = JSON.parse(store['bob1940.joystick']);
+    delete old.yaw.deadzone;
+    store['bob1940.joystick'] = JSON.stringify(old);
+    const older = new Joystick();
+    older.poll = () => (older.pad = { axes: [0, 0, 0, 0, 0, 0.15, -1, 0, 0, 1.2857], buttons: [] });
+    const input = { flaps: 0, gear: 1, throttle: 0.5 };
+    older.update(input, hurricane);
+    expect(input.yaw).toBeCloseTo((0.15 - 0.05) / 0.95, 9);
   });
 });
