@@ -1158,6 +1158,17 @@ Bf 109's (same designer, engine and airscrew).
 | Pilot's rear armour (`systems.armour`) | 0 | m | — | ASSUMPTION | estimate | The C-4's armour is a gap; the RAF-tested aircraft carried none (S25). None modelled. |
 | Fuel tanks by hit zone (`systems.fuel`) | wingInnerLeft: selfSealing; wingInnerRight: selfSealing | — | — | S24, S25 | medium | All tanks self-sealing (S24, S25). |
 
+### Rear gun (Phase 6, D77-D78)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Rear MG 15: pivot x (`mounts.rear.x`) | -1.2 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Rear MG 15: pivot y (`mounts.rear.y`) | 0.9 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Rear MG 15: pivot z (`mounts.rear.z`) | 0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Rear MG 15: azimuth arc (`mounts.rear.azimuth`) | 150 to 210 | deg | — | S25 | medium | "about 30° on either side of the centre line ... maximum elevation is 60° ... not possible to fire below the horizontal" (S25 para. 17). Canopy taken as open (D78). |
+| Rear MG 15: elevation arc (`mounts.rear.elevation`) | 0 to 60 | deg | — | S25 | medium | "about 30° on either side of the centre line ... maximum elevation is 60° ... not possible to fire below the horizontal" (S25 para. 17). Canopy taken as open (D78). |
+| Rear MG 15: drums carried (`mounts.rear.drums`) | 11 | drums | stowage for 10 spare magazines | S25 | medium | One on the gun and 10 spares (D77). |
+
 ## Heinkel He 111 H (AI only)
 
 Two period documents were found on 24 Oct 2026:
@@ -1330,6 +1341,49 @@ positions are estimates from the overall dimensions.
 | Pilot's rear armour (`systems.armour`) | 0 | m | — | ASSUMPTION | estimate | No He 111 armour data found; none modelled. |
 | Fuel tanks by hit zone (`systems.fuel`) | wingInnerLeft: selfSealing; wingInnerRight: selfSealing | — | — | S38, ASSUMPTION | estimate | German bombers had good self-sealing tanks (S38); positions assumed. |
 
+### Gun positions and formation speed (Phase 6, D77-D78)
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| Nose (A-Stand) MG 15: pivot x (`mounts.nose.x`) | 6.3 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Nose (A-Stand) MG 15: pivot y (`mounts.nose.y`) | 0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Nose (A-Stand) MG 15: pivot z (`mounts.nose.z`) | 0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Nose (A-Stand) MG 15: azimuth arc (`mounts.nose.azimuth`) | -35 to 15 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 nose): down to 40°, nothing above the axis, 15° right, 35° left; applied to the H-3 (D78). |
+| Nose (A-Stand) MG 15: elevation arc (`mounts.nose.elevation`) | -40 to 0 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 nose): down to 40°, nothing above the axis, 15° right, 35° left; applied to the H-3 (D78). |
+| Nose (A-Stand) MG 15: drums carried (`mounts.nose.drums`) | 13 | drums | 13 Doppeltrommeln | S28 | medium | S28: 2 + 4 + 7 drums stowed. |
+| Dorsal (B-Stand) MG 15: pivot x (`mounts.dorsal.x`) | -3 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Dorsal (B-Stand) MG 15: pivot y (`mounts.dorsal.y`) | 1.0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Dorsal (B-Stand) MG 15: pivot z (`mounts.dorsal.z`) | 0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Dorsal (B-Stand) MG 15: azimuth arc (`mounts.dorsal.azimuth`) | -180 to 180 | deg | — | S29, ASSUMPTION | estimate | S29 (H-6 turret): all round; aft from the horizon to 90°; forward only from 30° up (D78). |
+| Dorsal (B-Stand) MG 15: elevation arc (`mounts.dorsal.elevation`) | 0 to 90 | deg | — | S29, ASSUMPTION | estimate | S29 (H-6 turret): all round; aft from the horizon to 90°; forward only from 30° up (D78). |
+| Dorsal (B-Stand) MG 15: drums carried (`mounts.dorsal.drums`) | 14 | drums | 14 Doppeltrommeln | S28 | medium | S28: 10 on the drum rail and 4 on a carrier. |
+| Dorsal (B-Stand) MG 15: lowest elevation when pointing forward (`mounts.dorsal.forwardMinElevation`) | 30 | deg | — | S29, ASSUMPTION | estimate | S29 (H-6): forward and upward from 30° to 90°. |
+| Ventral (C-Stand) MG 15: pivot x (`mounts.ventral.x`) | -2 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Ventral (C-Stand) MG 15: pivot y (`mounts.ventral.y`) | -1.6 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Ventral (C-Stand) MG 15: pivot z (`mounts.ventral.z`) | 0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Ventral (C-Stand) MG 15: azimuth arc (`mounts.ventral.azimuth`) | 140 to 215 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 rear hatch, twin MG 81): 6° to 70° below, 40° right and 35° left of aft; applied to the H-3 MG 15 (D78). |
+| Ventral (C-Stand) MG 15: elevation arc (`mounts.ventral.elevation`) | -70 to -6 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 rear hatch, twin MG 81): 6° to 70° below, 40° right and 35° left of aft; applied to the H-3 MG 15 (D78). |
+| Ventral (C-Stand) MG 15: drums carried (`mounts.ventral.drums`) | 15 | drums | 3 Trommelkästen 5fach | S28 | medium | S28: three five-drum boxes. |
+| Left beam MG 15: pivot x (`mounts.beamLeft.x`) | -4 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Left beam MG 15: pivot y (`mounts.beamLeft.y`) | 0.4 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Left beam MG 15: pivot z (`mounts.beamLeft.z`) | -0.88 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Left beam MG 15: azimuth arc (`mounts.beamLeft.azimuth`) | -145 to -67 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 side guns): 23° forward to 55° aft of the beam, 30° below to 45° above the horizon (D78). |
+| Left beam MG 15: elevation arc (`mounts.beamLeft.elevation`) | -30 to 45 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 side guns): 23° forward to 55° aft of the beam, 30° below to 45° above the horizon (D78). |
+| Left beam MG 15: drums carried (`mounts.beamLeft.drums`) | 5 | drums | 10 drums above the exit hatch for both side guns | S28, ASSUMPTION | estimate | Half of the side guns' 10 drums each (D78). |
+| Right beam MG 15: pivot x (`mounts.beamRight.x`) | -4 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Right beam MG 15: pivot y (`mounts.beamRight.y`) | 0.4 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Right beam MG 15: pivot z (`mounts.beamRight.z`) | 0.88 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Right beam MG 15: azimuth arc (`mounts.beamRight.azimuth`) | 67 to 145 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 side guns): 23° forward to 55° aft of the beam, 30° below to 45° above the horizon (D78). |
+| Right beam MG 15: elevation arc (`mounts.beamRight.elevation`) | -30 to 45 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 side guns): 23° forward to 55° aft of the beam, 30° below to 45° above the horizon (D78). |
+| Right beam MG 15: drums carried (`mounts.beamRight.drums`) | 5 | drums | 10 drums above the exit hatch for both side guns | S28, ASSUMPTION | estimate | Half of the side guns' 10 drums each (D78). |
+| Tail MG 17 (fixed, rearward): pivot x (`mounts.tail.x`) | -9.9 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Tail MG 17 (fixed, rearward): pivot y (`mounts.tail.y`) | 0.3 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Tail MG 17 (fixed, rearward): pivot z (`mounts.tail.z`) | 0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
+| Tail MG 17 (fixed, rearward): azimuth arc (`mounts.tail.azimuth`) | 180 | deg | — | S28 | medium | Fixed parallel to the fuselage axis, firing aft (S28: "parallel zur Rumpflängsachse"). |
+| Tail MG 17 (fixed, rearward): elevation arc (`mounts.tail.elevation`) | 0 | deg | — | S28 | medium | Fixed parallel to the fuselage axis, firing aft (S28: "parallel zur Rumpflängsachse"). |
+| Tail MG 17 rounds (`mounts.tail.rounds`) | 500 | rounds | Vollgurtkasten (500 Schuß) | S28, S29 | high | Fired from the B- or C-Stand. |
+| Formation cruising speed (`formationSpeed`) | 93.6 | m/s | 330-345 km/h (range-table speed) | S29, ASSUMPTION | estimate | The middle, 337 km/h; no formation speed found (D78). |
+
 ## Junkers Jumo 211F-1 (He 111 H-6/H-11)
 
 Close variant for the H-3's Jumo 211 (D40). No power curve was found: S29 gives the take-off power and the rated and
@@ -1487,6 +1541,19 @@ Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or es
 | Wreck: pitch rate after losing the tail (`wreck.tailSpin`) | 2.5 | rad/s | — | ASSUMPTION | estimate | A destroyed aircraft falling (D69): no measurements of falling wrecks found; chosen so wrecks fall and turn plausibly. |
 | Wreck: tumble rate in one piece (`wreck.fallSpin`) | 0.6 | rad/s | — | ASSUMPTION | estimate | A destroyed aircraft falling (D69): no measurements of falling wrecks found; chosen so wrecks fall and turn plausibly. |
 | Wreck: broken-off part's tumble rate (`wreck.debrisSpin`) | 4 | rad/s | — | ASSUMPTION | estimate | A destroyed aircraft falling (D69): no measurements of falling wrecks found; chosen so wrecks fall and turn plausibly. |
+| Gunners: drum change time (`gunners.drumChange`) | 10 | s | An experienced gunner should be able to change a magazine in about 10 seconds | S25 | medium | For an experienced (Ace) gunner; slower skills take longer (D78). |
+| Gunners: g above which they cannot aim (`gunners.gLimit`) | 2 | g | — | ASSUMPTION | estimate | S25: under g it was impossible to shoot with any accuracy; no figure (D78). |
+| Gunners: traverse rate (`gunners.traverseRate`) | 60 | deg/s | — | ASSUMPTION | estimate | No figure found (D78). |
+| RAF vic: wingman out to the side (`formations.vic.side`) | 20 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
+| RAF vic: wingman back from the leader (`formations.vic.back`) | 15 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
+| RAF line astern: distance between aircraft (`formations.lineAstern.back`) | 40 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
+| Rotte: wingman abreast (`formations.rotte.side`) | 200 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
+| Rotte: wingman back (`formations.rotte.back`) | 30 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
+| Schwarm: second Rotte out to the side (`formations.schwarm.side`) | 300 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
+| He 111 Kette: wingman out to the side (`formations.kette.side`) | 40 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
+| He 111 Kette: wingman back (`formations.kette.back`) | 30 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
+| Escort: distance behind the bombers (`formations.escort.behind`) | 1609 | m | a mile or so behind and above the Bombers | S38 | medium | Dowding's despatch, para. 126 (D77). |
+| Escort: height above the bombers (`formations.escort.above`) | 500 | m | — | ASSUMPTION | estimate | S38 gives no figure (D78). |
 
 ## Propeller data: NACA Report 640
 
@@ -1552,6 +1619,8 @@ kind of round (each aircraft's `guns`).
 | heIncendiary20: hit strength (`roundTypes.heIncendiary20.strength`) | 5 | units | — | ASSUMPTION | estimate | A 20 mm HE shell does about five times a rifle-calibre round's damage, and also hits a second component (D68). |
 | heIncendiary20: incendiary effect (`roundTypes.heIncendiary20.incendiary`) | 1 | fraction | — | ASSUMPTION | estimate | How readily it sets fuel alight (D68). |
 | heTracer20: hit strength (`roundTypes.heTracer20.strength`) | 5 | units | — | ASSUMPTION | estimate | A 20 mm HE shell does about five times a rifle-calibre round's damage, and also hits a second component (D68). |
+| MG 15 rate of fire (`weapons.mg15.rate`) | 17.5 | rounds/s | 1,000–1,100 rds./min. | S27, ASSUMPTION | estimate | The middle, 1,050 rounds/min (D78). |
+| MG 15 drum capacity (`weapons.mg15.drum`) | 75 | rounds | Saddle-type drum (75-rd. capacity) | S27, S25, S28 | high | S25: "each magazine holding 75 rounds"; S28: 150 rounds = 2 Doppeltrommeln. |
 ---
 
 ## Guns (Phase 5)

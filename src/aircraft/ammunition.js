@@ -37,6 +37,9 @@ export const weapons = {
   browning: { rate: 1100 * ROUNDS_PER_MINUTE, ballistics: 'mk7' }, // Browning .303 Mk II (S39)
   mg17: { rate: 1100 * ROUNDS_PER_MINUTE, syncRate: 1000 * ROUNDS_PER_MINUTE, ballistics: 'mg17' }, // S27
   mgffm: { rate: 475 * ROUNDS_PER_MINUTE, ballistics: 'mgffm' }, // MG FF/M, middle of 450-500 (S27, D61)
+  // MG 15 flexible gun (Phase 6, D77-D78): the middle of 1,000-1,100 rounds/min (S27); 75-round double drums (S27, S25,
+  // S28); the MG 17's 7.92 mm rounds and their flight.
+  mg15: { rate: 1050 * ROUNDS_PER_MINUTE, ballistics: 'mg17', drum: 75 },
 };
 
 /**
@@ -60,5 +63,6 @@ export const roundTypes = {
 /** Belts that repeat a sequence of rounds (D61). RAF guns each carry one kind of round, set per gun (S38). */
 export const belts = {
   mg17: ['ap792', 'incendiary792', 'observing792'],
+  mg15: ['ap792', 'incendiary792', 'observing792'], // the MG 17's mix in each drum (D78)
   mgffm: ['heIncendiary20', 'heTracer20'],
 };

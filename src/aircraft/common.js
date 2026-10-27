@@ -109,6 +109,23 @@ export const common = {
     throttle: 0.6, // it cruises at its level speed at this throttle
     minHeight: 300, // m above the ground, at least
   },
+  // Air gunners (Phase 6, D77-D78). S25: an experienced gunner changes a magazine in about 10 s; under g accurate shooting
+  // is impossible. The g limit and traverse rate are estimates (no figures found).
+  gunners: {
+    drumChange: 10, // s, for an experienced gunner (S25); slower gunners take longer (src/ai/skill.js)
+    gLimit: 2, // g: above this the gunner cannot aim
+    traverseRate: 60 * Math.PI / 180, // rad/s: how fast a gunner swings his gun
+  },
+  // Formations (Phase 6, D78), m. The escort's distance behind is S38's "a mile or so behind and above the Bombers"; all
+  // other spacings are estimates (no 1940 figures found).
+  formations: {
+    vic: { side: 20, back: 15 }, // RAF vic of three: each wingman out to the side and back from the leader
+    lineAstern: { back: 40 }, // RAF line astern: each aircraft behind the one ahead
+    rotte: { side: 200, back: 30 }, // Luftwaffe Rotte: the wingman abreast of the leader
+    schwarm: { side: 300 }, // Luftwaffe Schwarm: the second Rotte out to the side of the first
+    kette: { side: 40, back: 30 }, // He 111 Kette: a vic of three bombers
+    escort: { behind: 1609, above: 500 }, // escort fighters behind and above the bombers
+  },
   // A destroyed aircraft falling, and the parts that broke off it (Phase 5, D69): a simple body under gravity and drag,
   // turning at a set rate, since a broken airframe no longer flies. Estimates: no measurements of falling wrecks found.
   wreck: {

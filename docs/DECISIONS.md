@@ -1911,3 +1911,33 @@ as the formation cruise.
 - gun traverse rates, gunners' aim error and reaction, and the g at which a gunner can't aim;
 - the Bf 110 defensive circle: no allowed source was found, so it isn't modelled;
 - the H-3's own firing sectors (S29's H-6/H-11 are used, flagged).
+
+## D78. Phase 6 estimates accepted (27 Oct 2026, product owner)
+
+The product owner accepted the checkpoint 1 estimates (D77). They are in the data files with keyed rows in
+AIRCRAFT_DATA:
+- **MG 15:**
+  - rate of fire 1,050 rounds/min, the middle of S27's 1,000-1,100;
+  - its rounds fly like the MG 17's;
+  - its drums carry the MG 17's mix of armour-piercing, incendiary and observing rounds.
+- **He 111 firing sectors:** S29's H-6/H-11 figures, applied to the H-3 (flagged).
+  - The beam sector is read as measured from the beam.
+  - The ventral sector is read as 40° right and 35° left of dead aft.
+  - The two beam guns share S28's 10 drums, 5 each.
+- **He 111 formation cruise:** 337 km/h (93.6 m/s), the middle of S29's range-table speed.
+- **Escort:** 1,609 m behind the bombers (S38's "a mile or so") and 500 m above (estimate).
+- **Formation spacing** (estimates):
+  - RAF vic: wingmen 20 m out and 15 m back;
+  - RAF line astern: 40 m apart;
+  - Rotte: the wingman 200 m abreast and 30 m back;
+  - Schwarm: the two Rotten 300 m apart;
+  - He 111 Kette: 40 m out and 30 m back.
+- **Gunners:**
+  - they can't aim above 2 g;
+  - guns swing at up to 60°/s;
+  - a drum change takes 10 s for an Ace (S25's experienced gunner), 14 s for a Regular and 20 s for a Novice (the
+    skill factors go in `src/ai/skill.js`).
+- **Bf 110 rear gun:** the canopy is taken as open in combat.
+- **Bf 110 defensive circle:** not modelled (no source).
+
+Gun pivot positions are estimates placed on the aircraft models.
