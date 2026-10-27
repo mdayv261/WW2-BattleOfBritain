@@ -6,12 +6,17 @@
 // (J) and kept in this browser's storage. The stick and rudder are used as soon as a joystick is
 // connected; the throttle slider only after it is first moved, so a parked slider does not snap the
 // throttle away from the keyboard setting.
+//
+// Neutral calibration (D70): a stick whose axis does not read 0 when centred (the product owner's twist read 0.15
+// hands off) can have its centre set in the panel, for axes 0-5. The axis then reads 0 there and still reaches ±1 at
+// full travel each way.
 
 import { clamp } from '../physics/interp.js';
 import { stepFlaps } from './keyboard.js';
 
 const STORAGE_KEY = 'bob1940.joystick';
 const DEADZONE = 0.05;
+export const CALIBRATED_AXES = [0, 1, 2, 3, 4, 5]; // the stick, twist and spare axes; not the slider (6) or hat (9)
 
 // Mapping of the product owner's Extreme 3D Pro in Chrome on macOS, as set in the joystick panel
 // (25 Oct 2026): stick X axis 0, stick Y axis 1, twist axis 5, throttle slider axis 6 (reversed), hat axis 9.
@@ -27,7 +32,17 @@ export const DEFAULT_MAPPING = {
   throttle: { axis: 6, invert: true },
   hat: { axis: 9 },
   buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1 },
+  centres: {}, // the reading of each calibrated axis at its neutral, by axis number (D70)
 };
+
+/**
+ * A raw axis reading made to read 0 at its centre c: each side is stretched separately, so full travel still reaches
+ * -1 and +1.
+ */
+export function centred(v, c = 0) {
+  if (!c) return v;
+  return v >= c ? (v - c) / (1 - c) : (v - c) / (1 + c);
+}
 
 /**
  * Direction of a hat reported as one axis: -1 is up, then each step of 2/7 turns 45 degrees clockwise;
@@ -94,10 +109,31 @@ export class Joystick {
     return pad;
   }
 
+  /** A raw axis's reading, calibrated to its stored neutral. */
+  axis(i) {
+    const v = this.pad?.axes[i] ?? 0;
+    return CALIBRATED_AXES.includes(i) ? centred(v, this.mapping.centres?.[i]) : v;
+  }
+
   read(name) {
     const m = this.mapping[name];
-    const v = this.pad?.axes[m.axis] ?? 0;
+    const v = this.axis(m.axis);
     return m.invert ? -v : v;
+  }
+
+  /** Takes an axis's present reading (hands off) as its neutral, and saves it (kept within ±0.9, so each side keeps
+   * some travel to stretch). */
+  setCentre(i) {
+    const v = this.pad?.axes[i];
+    if (v === undefined || !CALIBRATED_AXES.includes(i)) return;
+    this.mapping.centres = { ...this.mapping.centres, [i]: Math.max(-0.9, Math.min(0.9, v)) };
+    this.saveMapping();
+  }
+
+  /** Removes every stored neutral, and saves. */
+  clearCentres() {
+    this.mapping.centres = {};
+    this.saveMapping();
   }
 
   /** True while a mapped button is held. */

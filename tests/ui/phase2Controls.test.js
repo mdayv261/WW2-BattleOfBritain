@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { Vector3, Quaternion, Euler } from 'three';
 import { Keyboard, stepFlaps } from '../../src/input/keyboard.js';
-import { Joystick, hatDirection, DEFAULT_MAPPING } from '../../src/input/joystick.js';
+import { Joystick, hatDirection, DEFAULT_MAPPING, centred } from '../../src/input/joystick.js';
 import { cockpitQuaternion, eyePosition, CameraRig, HAT_LOOKS } from '../../src/render/cameras.js';
 import { instrumentReadings } from '../../src/ui/instruments.js';
 import { rafAirspeedAngle } from '../../src/ui/airspeed.js';
@@ -267,5 +267,59 @@ describe('instruments', () => {
     expect(instrumentReadings(sim).turnRate).toBeGreaterThan(0);
     expect(instrumentReadings(sim).gearUp).toBe(true);
     expect(instrumentReadings(new Simulation(spitfire)).gearDown).toBe(true);
+  });
+});
+
+describe('joystick neutral calibration (D70)', () => {
+  /** A joystick reading the given axes, with storage kept in a plain object for the test. */
+  function stick(axes) {
+    const store = {};
+    globalThis.localStorage = { getItem: (k) => store[k] ?? null, setItem: (k, v) => { store[k] = v; } };
+    const joy = new Joystick();
+    const buttons = Array.from({ length: 12 }, () => ({ pressed: false }));
+    joy.poll = () => (joy.pad = { axes, buttons });
+    joy.poll();
+    return { joy, axes, input: { flaps: 0, gear: 1, throttle: 0.5 } };
+  }
+
+  it('a twist reading 0.15 hands off gives right rudder until its neutral is set, then none', () => {
+    const { joy, input } = stick([0, 0, 0, 0, 0, 0.15, -1, 0, 0, 1.2857]);
+    joy.update(input, hurricane);
+    expect(input.yaw).toBeGreaterThan(0.1); // the fault the product owner found
+    joy.setCentre(5);
+    joy.update(input, hurricane);
+    expect(input.yaw).toBe(0);
+  });
+
+  it('full twist still gives full rudder each way', () => {
+    const { joy, axes, input } = stick([0, 0, 0, 0, 0, 0.15, -1, 0, 0, 1.2857]);
+    joy.setCentre(5);
+    axes[5] = 1;
+    joy.update(input, hurricane);
+    expect(input.yaw).toBeCloseTo(1, 6);
+    axes[5] = -1;
+    joy.update(input, hurricane);
+    expect(input.yaw).toBeCloseTo(-1, 6);
+    expect(centred(0.575, 0.15)).toBeCloseTo(0.5, 6); // half way to full right
+  });
+
+  it('is saved with the mapping and kept on reload; clearing restores the raw reading', () => {
+    const { joy } = stick([0, 0, 0, 0, 0, 0.15, -1, 0, 0, 1.2857]);
+    joy.setCentre(5);
+    const again = new Joystick(); // reads the same storage
+    expect(again.mapping.centres[5]).toBeCloseTo(0.15, 6);
+    expect(again.mapping.buttons).toEqual(DEFAULT_MAPPING.buttons);
+    joy.clearCentres();
+    expect(joy.axis(5)).toBeCloseTo(0.15, 6);
+    expect(new Joystick().mapping.centres).toEqual({});
+  });
+
+  it('sets only axes 0-5: the throttle slider and hat are left as they read', () => {
+    const { joy } = stick([0.02, -0.03, 0, 0, 0, 0.15, -0.4, 0, 0, 1.2857]);
+    for (let i = 0; i < 10; i += 1) joy.setCentre(i);
+    expect(Object.keys(joy.mapping.centres).map(Number)).toEqual([0, 1, 2, 3, 4, 5]);
+    expect(joy.axis(6)).toBe(-0.4);
+    expect(joy.axis(0)).toBe(0);
+    expect(joy.axis(1)).toBe(0);
   });
 });

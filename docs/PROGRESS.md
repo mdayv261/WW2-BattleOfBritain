@@ -15,6 +15,11 @@ Read this at the start of every session.
   (D69). Next: the product owner's Phase 5 acceptance test (proposed in D69).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026.
 
+## Joystick neutral calibration (27 Oct 2026)
+
+**Done** (D70): Set neutral buttons for axes 0-5 in the joystick panel (J), plus Set all neutral and Clear. The axis
+reads 0.00 at its stored centre and still reaches full travel. Tests are in `tests/ui/phase2Controls.test.js`.
+
 ## Phase 5 checkpoint 5: visible damage and wrecks (27 Oct 2026)
 
 **Done** (D69):
@@ -31,8 +36,8 @@ Read this at the start of every session.
 - wreck motion constants and all effect looks are estimates or display choices;
 - an outer-panel failure takes the whole wing half off;
 - a burst from dead astern can break a tail off quickly (D68's tail-damage estimate, for the product owner to judge);
-- with the product owner's joystick plugged in, its twist grip gave 15% rudder in testing (the aircraft turns
-  hands-off); a dead zone or calibration may be needed (Phase 8 handles rebinding).
+- the joystick's twist reading 0.15 hands-off (the aircraft yawed right): fixed by the neutral calibration in the J
+  panel (D70).
 
 ## Phase 5 checkpoint 4: target aircraft, hit zones and damage (27 Oct 2026)
 

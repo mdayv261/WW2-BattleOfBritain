@@ -1635,3 +1635,24 @@ lowered if that is too quick.
    - wing: the aircraft rolls;
    - cables: a control goes dead.
 7. 60 fps or more while firing with trails showing, and no console errors.
+
+## D70. Joystick neutral calibration (27 Oct 2026, product owner)
+
+**Problem:** the product owner's Extreme 3D Pro reads 0.15 on axis 5 (the twist rudder) when hands-off and centred.
+That is outside the 0.05 dead zone, so every aircraft got about 15% right rudder and yawed right in hands-off flight.
+
+**The fix:** the joystick panel (J) has a **Set neutral** button for each of axes 0-5, plus **Set all neutral (hands
+off)** and **Clear neutral settings**.
+- **What it stores:** the axis's present reading, as its centre, saved with the mapping in browser storage.
+- **How it reads:** the axis then reads 0 at that centre. Each side is stretched separately, so full travel still
+  gives ±1 (full rudder both ways).
+- **Display:** the panel's bars show the calibrated reading and the stored centre.
+- **What's left alone:** the throttle slider (axis 6) and the hat (axis 9) aren't calibrated.
+- **Limit:** a centre is limited to ±0.9.
+- **Reset to default** clears the centres too.
+
+**Checked in Chrome** with the product owner's stick, which read 0.17 on axis 5 at the time:
+- Set neutral made it read 0.00;
+- 8 s of hands-off flight then gave 0% rudder and no change of heading.
+
+The product owner's saved settings were then restored as they were, for them to set their own neutral.
