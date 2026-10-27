@@ -68,8 +68,10 @@ export const bf109e4 = {
   // rounds. MG 17s synchronised through the airscrew; belts as D61. The counter column each feeds (D64).
   harmonisation: 200, // m: range at which the guns' rounds cross the sight line
   guns: {
-    mg17Left: { type: 'mg17', x: 1.2, y: 0.42, z: -0.13, rounds: 1000, synchronised: true, counter: 'mg17Left' },
-    mg17Right: { type: 'mg17', x: 1.2, y: 0.42, z: 0.13, rounds: 1000, synchronised: true, counter: 'mg17Right' },
+    // MG 17 muzzles at the front of the cowling, spread either side so their flashes show left and right of the Revi's
+    // glass from the cockpit (product owner's choice, D67; the real guns sat closer together).
+    mg17Left: { type: 'mg17', x: 2.1, y: 0.4, z: -0.37, rounds: 1000, synchronised: true, counter: 'mg17Left' },
+    mg17Right: { type: 'mg17', x: 2.1, y: 0.4, z: 0.37, rounds: 1000, synchronised: true, counter: 'mg17Right' },
     cannonLeft: { type: 'mgffm', x: 0.85, y: -0.2, z: -1.95, rounds: 60, counter: 'cannon' },
     cannonRight: { type: 'mgffm', x: 0.85, y: -0.2, z: 1.95, rounds: 60, counter: 'cannon' },
   },

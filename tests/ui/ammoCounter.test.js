@@ -1,7 +1,7 @@
 // The Bf 109's ammunition counter (D65): each tape shows its gun's share of its load, and the round window above it
 // turns with every round fired, so it spins while the gun fires and stands still otherwise.
 import { describe, it, expect } from 'vitest';
-import { counterState } from '../../src/ui/ammoCounter.js';
+import { counterState, columnLayout } from '../../src/ui/ammoCounter.js';
 import { instrumentReadings } from '../../src/ui/instruments.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
@@ -58,5 +58,14 @@ describe('ammunition counter', () => {
     const sim = new Simulation(aircraftById.bf109e4, 'air');
     setRounds(sim, { mg17Left: 12, cannonLeft: 0, cannonRight: 0 });
     expect(instrumentReadings(sim).ammoCounters.map((c) => c.empty)).toEqual([false, true, false]);
+  });
+
+  it('runs each full tape down to just above its light, without touching it', () => {
+    for (const [w, h] of [[14, 45], [20, 60], [30, 90]]) {
+      const { bottom, light } = columnLayout(w, h);
+      const gap = light.y - light.r - bottom;
+      expect(gap, `${w}x${h}`).toBeGreaterThan(0);
+      expect(gap, `${w}x${h}`).toBeLessThanOrEqual(0.1 * w);
+    }
   });
 });

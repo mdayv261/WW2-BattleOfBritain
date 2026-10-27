@@ -1379,6 +1379,7 @@ Placed as the product owner asked:
   `mg17Right`). Checkpoint 3 adds the guns that fill it; until then it reads full and still. Tested in
   `tests/ui/ammoCounter.test.js`.
 - **Empty lights:** the round light under each tape turns red when that gun is empty (product owner, 27 Oct 2026).
+- **Tape length:** each tape runs down to just above its light, a thin gap clear of it (product owner, 27 Oct 2026).
 
 ## D66. OBEN / UNTEN and "GEAR" on the Luftwaffe undercarriage indicators (27 Oct 2026, product owner)
 
@@ -1444,4 +1445,13 @@ Placed as the product owner asked:
 - **Ammunition counter:** the Bf 109's counter (D64, D65) now follows its guns.
 
 Measured in Chrome while firing: 75 fps (the screen's limit), 3.5 ms of work per frame.
+
+**Bf 109 cowling guns moved** (27 Oct 2026, product owner):
+- **Problem:** their muzzle flashes showed inside the Revi's glass. Moved below it, they were hidden by the coaming.
+- **Product owner's choice:** show them either side of the glass. The MG 17 muzzles are at the front of the cowling,
+  spread to x 2.1, y 0.40, z ±0.37 m (estimates; the real guns sat closer together, flagged).
+- **Flashes:** drawn 0.1 m ahead of every muzzle, the machine guns' smaller than before (0.06 m; cannon 0.25 m).
+- **Result:** from the cockpit each flash shows just outside the glass's sides (it covers about ±5.7°), above the
+  coaming.
+- **Harmonisation:** the guns are re-harmonised on the sight line at 200 m from their new positions.
 

@@ -53,8 +53,20 @@ function gunSwitch(g, x, y, w, h) {
   disc(g, x + w / 2, y + h * 0.32, w * 0.1, '#8a8072');
 }
 
+const TAPE_CLEAR = 0.06; // column widths left between the bottom of the tape and the light below it (D65)
+
+/**
+ * A column's layout, in pixels from its top-left corner for a column w wide and h tall: the scale window's top and
+ * bottom (the full tape fills it, reaching down to just above the light) and the light's centre and radius.
+ */
+export function columnLayout(w, h) {
+  const light = { y: h - w * 0.36, r: w * 0.24 };
+  return { top: w * 0.85, bottom: light.y - light.r - w * TAPE_CLEAR, light };
+}
+
 /** One counter column: round window, scale window with the white tape (fraction left, from the bottom), light. */
 function column(g, x, y, w, h, { fraction, angle, empty }) {
+  const layout = columnLayout(w, h);
   rect(g, x, y, w, h, FRAME);
   disc(g, x + w / 2, y + w * 0.42, w * 0.3, '#6c6f70'); // the round window
   g.strokeStyle = WHITE;
@@ -66,8 +78,8 @@ function column(g, x, y, w, h, { fraction, angle, empty }) {
     g.lineTo(x + w / 2 + Math.cos(a) * w * 0.24, y + w * 0.42 + Math.sin(a) * w * 0.24);
     g.stroke();
   }
-  const top = y + w * 0.85;
-  const bottom = y + h - w * 0.75;
+  const top = y + layout.top;
+  const bottom = y + layout.bottom;
   rect(g, x + w * 0.38, top, w * 0.42, bottom - top, '#26292a'); // the scale window
   const tape = (bottom - top) * Math.max(0, Math.min(1, fraction));
   rect(g, x + w * 0.44, bottom - tape, w * 0.3, tape, WHITE);
@@ -85,7 +97,7 @@ function column(g, x, y, w, h, { fraction, angle, empty }) {
   g.rotate(-Math.PI / 2);
   text(g, '500', 0, 0, w * 0.22);
   g.restore();
-  disc(g, x + w / 2, y + h - w * 0.36, w * 0.24, empty ? EMPTY_RED : '#050505'); // the light: red when empty
+  disc(g, x + w / 2, y + layout.light.y, layout.light.r, empty ? EMPTY_RED : '#050505'); // the light: red when empty
 }
 
 /**

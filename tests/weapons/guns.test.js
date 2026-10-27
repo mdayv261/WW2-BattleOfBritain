@@ -170,3 +170,23 @@ describe('counters and readouts', () => {
     expect(sim.projectiles.live.length).toBe(0);
   });
 });
+
+describe('Bf 109 cowling-gun flashes (D67)', () => {
+  it('lie outside the Revi glass, seen from the pilot\'s eye', async () => {
+    const { SIGHT_GLASS } = await import('../../src/render/gunsight.js');
+    const { FLASH_AHEAD, FLASH_SIZE } = await import('../../src/render/projectiles.js');
+    const ac = aircraftById.bf109e4;
+    const glass = SIGHT_GLASS.revi;
+    // The glass leans back 45°: its height seen from the eye is height x sin 45°.
+    const halfUp = Math.atan((glass.height * Math.SQRT1_2) / 2 / SIGHT_GLASS.ahead);
+    const halfSide = Math.atan(glass.width / 2 / SIGHT_GLASS.ahead);
+    for (const gun of createArmament(ac).filter((g) => g.spec.type === 'mg17')) {
+      const flash = gun.position.clone().addScaledVector(gun.bore, FLASH_AHEAD);
+      const ahead = flash.x - ac.eye.x;
+      const radius = Math.atan(FLASH_SIZE.mg / ahead); // the flash ball's own angular size
+      const up = Math.atan2(flash.y - ac.eye.y, ahead) + radius; // its top edge
+      const side = Math.atan2(Math.abs(flash.z), ahead) - radius; // its inner edge
+      expect(up < -halfUp || side > halfSide, `${gun.id}: ${(up * 57.3).toFixed(1)}° up, ${(side * 57.3).toFixed(1)}° aside`).toBe(true);
+    }
+  });
+});

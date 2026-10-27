@@ -793,13 +793,13 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
 |---|---|---|---|---|---|---|
 | Harmonisation range (`harmonisation`) | 200 | m | — | ASSUMPTION | estimate | Product owner's choice (D61): no Luftwaffe harmonisation found. |
-| Gun mg17Left muzzle x (`guns.mg17Left.x`) | 1.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
-| Gun mg17Left muzzle y (`guns.mg17Left.y`) | 0.42 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
-| Gun mg17Left muzzle z (`guns.mg17Left.z`) | -0.13 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Left muzzle x (`guns.mg17Left.x`) | 2.1 | m | — | ASSUMPTION | estimate | At the front of the cowling, spread either side (product owner's choice, D67) so the flashes show left and right of the Revi glass from the cockpit; the real guns sat closer together. No drawing found. |
+| Gun mg17Left muzzle y (`guns.mg17Left.y`) | 0.4 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Left muzzle z (`guns.mg17Left.z`) | -0.37 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
 | Gun mg17Left rounds (`guns.mg17Left.rounds`) | 1000 | rounds | Munition für R.-MG 17 (2000 Schuß) | S16 | medium | 1,000 per gun (E-3). |
-| Gun mg17Right muzzle x (`guns.mg17Right.x`) | 1.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
-| Gun mg17Right muzzle y (`guns.mg17Right.y`) | 0.42 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
-| Gun mg17Right muzzle z (`guns.mg17Right.z`) | 0.13 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Right muzzle x (`guns.mg17Right.x`) | 2.1 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Right muzzle y (`guns.mg17Right.y`) | 0.4 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
+| Gun mg17Right muzzle z (`guns.mg17Right.z`) | 0.37 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
 | Gun mg17Right rounds (`guns.mg17Right.rounds`) | 1000 | rounds | Munition für R.-MG 17 (2000 Schuß) | S16 | medium | 1,000 per gun (E-3). |
 | Gun cannonLeft muzzle x (`guns.cannonLeft.x`) | 0.85 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |
 | Gun cannonLeft muzzle y (`guns.cannonLeft.y`) | -0.2 | m | — | ASSUMPTION | estimate | Placed on the model's airframe (D67): no drawing of the gun positions found. |

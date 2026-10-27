@@ -53,14 +53,17 @@ export class ProjectileView {
   }
 }
 
+export const FLASH_AHEAD = 0.1; // m: a muzzle flash is drawn this far ahead of its muzzle, along the bore
+export const FLASH_SIZE = { mg: 0.06, cannon: 0.25 }; // m: radius of the flash ball (display choice)
+
 /** Muzzle flashes for an aircraft's guns: small glowing balls at the muzzles, shown just after each round (D67). */
 export function buildMuzzleFlashes(armament) {
   const group = new THREE.Group();
   const material = new THREE.MeshBasicMaterial({ color: 0xffd27a, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
   const flashes = armament.map((gun) => {
-    const size = gun.group === 'cannon' ? 0.35 : 0.2;
+    const size = FLASH_SIZE[gun.group];
     const mesh = new THREE.Mesh(new THREE.SphereGeometry(size, 8, 6), material);
-    mesh.position.copy(gun.position).addScaledVector(gun.bore, 0.3);
+    mesh.position.copy(gun.position).addScaledVector(gun.bore, FLASH_AHEAD);
     mesh.visible = false;
     group.add(mesh);
     return { gun, mesh };

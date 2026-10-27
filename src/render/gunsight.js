@@ -70,6 +70,9 @@ export function buildReticle(ac) {
   return reticle;
 }
 
+/** The reflector glass: its distance ahead of the eye and its size (m), for each sight; the glass leans back 45°. */
+export const SIGHT_GLASS = { ahead: 0.55, revi: { width: 0.11, height: 0.12 }, raf: { width: 0.1, height: 0.09 } };
+
 /**
  * The sight body on the coaming just ahead of the pilot, with its tilted reflector glass. The glass is centred on the
  * line of sight from the pilot's eye, so the reticle (collimated, straight ahead) shows in the middle of the glass
@@ -88,13 +91,13 @@ export function buildSightBody(ac) {
     group.add(pad);
   }
   // The glass faces the pilot, leaning back 45 degrees, its centre on the line of sight.
-  const [w, h] = revi ? [0.11, 0.12] : [0.1, 0.09];
+  const { width: w, height: h } = SIGHT_GLASS[revi ? 'revi' : 'raf'];
   const plate = new THREE.PlaneGeometry(w, h).rotateY(-Math.PI / 2).rotateZ(Math.PI / 4);
   const glass = new THREE.Mesh(
     plate,
     new THREE.MeshBasicMaterial({ color: 0xa9c4c8, transparent: true, opacity: 0.16, side: THREE.DoubleSide, depthWrite: false }),
   );
-  glass.position.set(eye.x + 0.55, eye.y, 0);
+  glass.position.set(eye.x + SIGHT_GLASS.ahead, eye.y, 0);
   group.add(glass);
   return group;
 }
