@@ -1378,8 +1378,10 @@ Placed as the product owner asked:
 - **Wiring:** the counter reads each gun's `{ rounds, capacity }` from the simulation (`sim.guns.mg17Left`, `cannon`,
   `mg17Right`). Checkpoint 3 adds the guns that fill it; until then it reads full and still. Tested in
   `tests/ui/ammoCounter.test.js`.
-- **Empty lights:** the round light under each tape turns red when that gun is empty (product owner, 27 Oct 2026).
-- **Tape length:** each tape runs down to just above its light, a thin gap clear of it (product owner, 27 Oct 2026).
+- **Lights:** the plates at the foot of the columns are the lights: white while the gun has rounds, red when it is empty
+  (product owner, 27 Oct 2026). The round lights first drawn under the tapes were black on black at the counter's size,
+  so they are removed.
+- **Tape length:** each full tape runs down to just above its plate, a thin gap clear of it (product owner, 27 Oct 2026).
 
 ## D66. OBEN / UNTEN and "GEAR" on the Luftwaffe undercarriage indicators (27 Oct 2026, product owner)
 

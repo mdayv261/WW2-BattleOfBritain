@@ -1,7 +1,7 @@
 // The Bf 109's ammunition counter (D65): each tape shows its gun's share of its load, and the round window above it
 // turns with every round fired, so it spins while the gun fires and stands still otherwise.
 import { describe, it, expect } from 'vitest';
-import { counterState, columnLayout } from '../../src/ui/ammoCounter.js';
+import { counterState, counterLayout } from '../../src/ui/ammoCounter.js';
 import { instrumentReadings } from '../../src/ui/instruments.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
@@ -60,12 +60,19 @@ describe('ammunition counter', () => {
     expect(instrumentReadings(sim).ammoCounters.map((c) => c.empty)).toEqual([false, true, false]);
   });
 
-  it('runs each full tape down to just above its light, without touching it', () => {
-    for (const [w, h] of [[14, 45], [20, 60], [30, 90]]) {
-      const { bottom, light } = columnLayout(w, h);
-      const gap = light.y - light.r - bottom;
-      expect(gap, `${w}x${h}`).toBeGreaterThan(0);
-      expect(gap, `${w}x${h}`).toBeLessThanOrEqual(0.1 * w);
+  it('runs each full tape down to just above its plate (the light), without touching it', () => {
+    for (const box of [{ x: 100, y: 100, w: 78, h: 50 }, { x: 0, y: 0, w: 120, h: 77 }, { x: 50, y: 50, w: 260, h: 166 }]) {
+      const { columns } = counterLayout(box);
+      for (const c of columns) {
+        const gap = c.plate.y - c.tape.bottom;
+        expect(gap, `${box.w}: gap`).toBeGreaterThan(0);
+        expect(gap, `${box.w}: gap`).toBeLessThanOrEqual(0.1 * c.frame.w);
+        expect(c.tape.top, `${box.w}: below the window`).toBeGreaterThan(c.window.y + c.window.r);
+        expect(c.frame.y + c.frame.h, `${box.w}: frame reaches the plate`).toBeLessThanOrEqual(c.plate.y);
+        expect(c.tape.bottom, `${box.w}: tape inside its frame`).toBeLessThanOrEqual(c.frame.y + c.frame.h);
+      }
+      // The plates sit side by side, each under its own column.
+      for (let i = 1; i < 3; i += 1) expect(columns[i].plate.x).toBeGreaterThan(columns[i - 1].plate.x + columns[i - 1].plate.w);
     }
   });
 });

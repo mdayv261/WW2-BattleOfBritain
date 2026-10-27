@@ -1,15 +1,16 @@
 // The Bf 109's gun ammunition counter, drawn after the product owner's photograph (D64): a dark plate with the guns'
 // EIN/AUS switch on the left, then three counter columns, each with a round window at the top, a vertical scale marked
-// 500 with a white tape showing the rounds left, a push button below, and white label plates along the bottom.
+// 500 with a white tape showing the rounds left, and a plate at its foot that is the gun's light.
 // The columns show the left MG 17, the cannon and the right MG 17 (the product owner's choice; not confirmed from a
 // source). Each tape shows its gun's share of its own load (product owner, D65): full at 1,000 rounds for an MG 17
 // (S16), at 60 for the cannon drum, shortening as rounds are fired; the 500 marking is kept from the photograph. The
 // round window above it turns with every round counted, so it spins while the gun fires and stands still otherwise.
-// The light below each tape turns red when that gun is empty (product owner, D65).
+// The plates at the foot of the columns are the lights (product owner, D65): white while the gun has rounds, red when it
+// is empty. Each tape runs down to just above its plate, without touching it.
 
 const SPIN_PER_ROUND = 0.21; // rad the window turns per round counted (display choice: about 3.5 rad/s for an MG 17)
 
-const EMPTY_RED = '#d8402e'; // the undercarriage lamps' red
+const EMPTY_RED = '#d8402e'; // the undercarriage lamps' red, for an empty gun's plate
 
 /**
  * A column's state for `rounds` left of `capacity`: { fraction of the tape shown, angle of the window (rad), empty (the
@@ -53,70 +54,78 @@ function gunSwitch(g, x, y, w, h) {
   disc(g, x + w / 2, y + h * 0.32, w * 0.1, '#8a8072');
 }
 
-const TAPE_CLEAR = 0.06; // column widths left between the bottom of the tape and the light below it (D65)
+const TAPE_CLEAR = 0.06; // column widths left clear between the bottom of a full tape and its plate (D65)
 
 /**
- * A column's layout, in pixels from its top-left corner for a column w wide and h tall: the scale window's top and
- * bottom (the full tape fills it, reaching down to just above the light) and the light's centre and radius.
+ * The counter's layout for its box { x, y, w, h } (screen pixels, centre and size): the switch's area, and for each of
+ * the three columns its frame, round window, tape (top and bottom of the full tape) and plate, all in screen pixels.
  */
-export function columnLayout(w, h) {
-  const light = { y: h - w * 0.36, r: w * 0.24 };
-  return { top: w * 0.85, bottom: light.y - light.r - w * TAPE_CLEAR, light };
+export function counterLayout({ x, y, w, h }) {
+  const left = x - w / 2;
+  const top = y - h / 2;
+  const strip = h * 0.16; // the strip along the bottom where the plates sit
+  const colW = (w * 0.7) / 3;
+  const columns = [0, 1, 2].map((i) => {
+    const cx = left + w * 0.28 + i * colW;
+    const plate = { x: cx + colW * 0.12, y: top + h - strip * 0.85, w: colW * 0.76, h: strip * 0.6 };
+    const fw = colW * 0.92;
+    const frame = { x: cx + colW * 0.04, y: top + h * 0.04, w: fw };
+    frame.h = plate.y - (fw * TAPE_CLEAR) / 2 - frame.y; // the frame runs down to the plate
+    return {
+      frame, plate,
+      window: { x: frame.x + fw / 2, y: frame.y + fw * 0.42, r: fw * 0.3 },
+      tape: { x: frame.x + fw * 0.38, w: fw * 0.42, top: frame.y + fw * 0.85, bottom: plate.y - fw * TAPE_CLEAR },
+    };
+  });
+  return { left, top, switchArea: { x: left, y: top, w: w * 0.27, h: h - strip }, columns };
 }
 
-/** One counter column: round window, scale window with the white tape (fraction left, from the bottom), light. */
-function column(g, x, y, w, h, { fraction, angle, empty }) {
-  const layout = columnLayout(w, h);
-  rect(g, x, y, w, h, FRAME);
-  disc(g, x + w / 2, y + w * 0.42, w * 0.3, '#6c6f70'); // the round window
+/** One counter column: round window, scale window with the white tape (fraction left, from the bottom), and its plate. */
+function column(g, c, { fraction, angle, empty }) {
+  const { frame, window: win, tape, plate } = c;
+  rect(g, frame.x, frame.y, frame.w, frame.h, FRAME);
+  disc(g, win.x, win.y, win.r, '#6c6f70'); // the round window
   g.strokeStyle = WHITE;
-  g.lineWidth = Math.max(0.8, w * 0.05);
+  g.lineWidth = Math.max(0.8, frame.w * 0.05);
   for (let k = 0; k < 3; k += 1) {
     const a = (k * 2 * Math.PI) / 3 - Math.PI / 2 + angle;
     g.beginPath();
-    g.moveTo(x + w / 2, y + w * 0.42);
-    g.lineTo(x + w / 2 + Math.cos(a) * w * 0.24, y + w * 0.42 + Math.sin(a) * w * 0.24);
+    g.moveTo(win.x, win.y);
+    g.lineTo(win.x + Math.cos(a) * win.r * 0.8, win.y + Math.sin(a) * win.r * 0.8);
     g.stroke();
   }
-  const top = y + layout.top;
-  const bottom = y + layout.bottom;
-  rect(g, x + w * 0.38, top, w * 0.42, bottom - top, '#26292a'); // the scale window
-  const tape = (bottom - top) * Math.max(0, Math.min(1, fraction));
-  rect(g, x + w * 0.44, bottom - tape, w * 0.3, tape, WHITE);
+  const length = tape.bottom - tape.top;
+  rect(g, tape.x, tape.top, tape.w, length, '#26292a'); // the scale window
+  const left = length * Math.max(0, Math.min(1, fraction));
+  rect(g, tape.x + tape.w * 0.14, tape.bottom - left, tape.w * 0.72, left, WHITE);
   g.strokeStyle = '#9b968a';
   g.lineWidth = 0.8;
   for (let k = 1; k < 6; k += 1) {
-    const ty = top + ((bottom - top) * k) / 6;
+    const ty = tape.top + (length * k) / 6;
     g.beginPath();
-    g.moveTo(x + w * 0.38, ty);
-    g.lineTo(x + w * 0.5, ty);
+    g.moveTo(tape.x, ty);
+    g.lineTo(tape.x + tape.w * 0.3, ty);
     g.stroke();
   }
   g.save();
-  g.translate(x + w * 0.2, top + w * 0.35);
+  g.translate(frame.x + frame.w * 0.2, tape.top + frame.w * 0.35);
   g.rotate(-Math.PI / 2);
-  text(g, '500', 0, 0, w * 0.22);
+  text(g, '500', 0, 0, frame.w * 0.22);
   g.restore();
-  disc(g, x + w / 2, y + layout.light.y, layout.light.r, empty ? EMPTY_RED : '#050505'); // the light: red when empty
+  rect(g, plate.x, plate.y, plate.w, plate.h, empty ? EMPTY_RED : WHITE); // the plate: the gun's light
 }
 
 /**
  * Draws the counter in its box { x, y, w, h } (screen pixels, centre and size). `counters` are counterState()s in the
  * order left MG 17, cannon, right MG 17; missing ones are drawn full and still.
  */
-export function ammoCounter(g, { x, y, w, h }, r, counters = []) {
-  const left = x - w / 2;
-  const top = y - h / 2;
-  rect(g, left, top, w, h, PLATE);
+export function ammoCounter(g, box, r, counters = []) {
+  const layout = counterLayout(box);
+  rect(g, layout.left, layout.top, box.w, box.h, PLATE);
   g.strokeStyle = '#3a3c3e';
   g.lineWidth = 1;
-  g.strokeRect(left, top, w, h);
-  const labels = h * 0.16; // the strip of label plates
-  gunSwitch(g, left, top, w * 0.27, h - labels);
-  const colW = (w * 0.7) / 3;
-  for (let i = 0; i < 3; i += 1) {
-    const cx = left + w * 0.28 + i * colW;
-    column(g, cx + colW * 0.04, top + h * 0.04, colW * 0.92, h - labels - h * 0.06, counters[i] ?? { fraction: 1, angle: 0, empty: false });
-    rect(g, cx + colW * 0.12, top + h - labels * 0.85, colW * 0.76, labels * 0.6, WHITE);
-  }
+  g.strokeRect(layout.left, layout.top, box.w, box.h);
+  const sw = layout.switchArea;
+  gunSwitch(g, sw.x, sw.y, sw.w, sw.h);
+  layout.columns.forEach((c, i) => column(g, c, counters[i] ?? { fraction: 1, angle: 0, empty: false }));
 }
