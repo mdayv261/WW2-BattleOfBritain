@@ -19,7 +19,9 @@ import { common } from '../aircraft/common.js';
 import { createArmament, stepGuns, counters } from '../weapons/guns.js';
 import { Projectiles } from '../weapons/projectiles.js';
 import { seededRandom } from '../weapons/random.js';
-import { nextTarget, hittable, resolveHit, stepTarget, testHit } from './combat.js';
+import { nextTarget, hittable, resolveHit, stepOthers, testHit } from './combat.js';
+import { Craft } from './craft.js';
+import { recordTrack } from '../ai/perception.js';
 import { clearLosses, losePlayer, stepPlayerLoss, stepFalling } from './losses.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
@@ -95,7 +97,14 @@ export class Simulation {
     this.projectiles ??= new Projectiles();
     this.projectiles.clear();
     this.random = seededRandom(1); // the player's damage dice (D68)
-    this.target = null; // the target aircraft (Y, D68)
+    // The player's aircraft as one of the simulation's aircraft (D79): no pilot, its input set by the keyboard and stick.
+    this.player = new Craft(ac, { plane: this.plane, input: this.input, role: 'player', label: 'You' });
+    this.player.armament = this.armament;
+    this.player.random = this.random;
+    this.others = []; // the AI aircraft, the target (Y) among them (D79)
+    this.clock = 0; // s since the flight began: the time every pilot sees by (D79)
+    this.skill ??= 'regular'; // the AI's skill (key 8), kept across restarts
+    this.scenario = null; // the scenario on (keys 6 and 7)
     this.targetIndex = -1;
     this.notice = null; // a short message for the pilot: { text, until } (simulation time)
     this.crashed = false;
@@ -140,6 +149,21 @@ export class Simulation {
     this.notice = { text, until: this.plane.time + 3 };
   }
 
+  /** The target aircraft (Y, D68), or null: one of the AI aircraft. Setting it replaces the old one. */
+  get target() {
+    return this.others.find((c) => c.role === 'target') ?? null;
+  }
+
+  set target(craft) {
+    this.others = this.others.filter((c) => c.role !== 'target');
+    if (craft) this.others.push(craft);
+  }
+
+  /** Every aircraft in the air: the player's and the AI's. */
+  crafts() {
+    return [this.player, ...this.others];
+  }
+
   /** Y: the next target aircraft ahead (D68). */
   nextTarget() {
     this.notice = { text: nextTarget(this), until: this.plane.time + 3 };
@@ -163,25 +187,28 @@ export class Simulation {
   step(dt) {
     if (this.paused) return;
     if (this.crashed) {
-      // The flight has ended, but the wreck still falls and the target and rounds fly on.
+      // The flight has ended, but the wreck still falls and the other aircraft and rounds fly on.
+      this.clock += dt;
       stepPlayerLoss(this, dt);
       this.stepWorld(dt);
       return;
     }
+    this.clock += dt;
     this.copyPose(this.previous);
     // Guns first: their rounds leave from where the aircraft is now, and their recoil acts in this step.
     const recoil = stepGuns(this.armament, this.plane, this.input, dt, this.plane.time, (round) => this.projectiles.spawn(round, this));
     this.plane.recoil = recoil.force.lengthSq() > 0 ? recoil : null;
     stepAircraft(this.plane, this.input, dt);
+    recordTrack(this.player, this.clock);
     this.stepWorld(dt);
     const { ground, damage } = this.plane;
     if (ground.crash || damage.failed) losePlayer(this);
     this.reportDamage();
   }
 
-  /** Steps everything besides the player's aircraft: the target, the rounds in flight, and falling wrecks. */
+  /** Steps everything besides the player's aircraft: the AI aircraft, the rounds in flight, and falling wrecks. */
   stepWorld(dt) {
-    stepTarget(this, dt);
+    stepOthers(this, dt);
     this.projectiles.step(dt, this.world.terrain, hittable(this), (struck, hit) => resolveHit(this, struck, hit));
     stepFalling(this, dt);
   }

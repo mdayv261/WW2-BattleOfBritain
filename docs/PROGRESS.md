@@ -11,9 +11,27 @@ Read this at the start of every session.
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
 - **Phase 4** (world and visuals): signed off (26 Oct 2026, D57).
 - **Phase 5** (weapons and damage): signed off (27 Oct 2026, D75).
-- **Phase 6** (AI pilots and gunners): in progress (plan approved 27 Oct 2026, D76). Checkpoint 1 (research) findings
-  recorded (D77); the estimates await the product owner's acceptance.
+- **Phase 6** (AI pilots and gunners): in progress (plan approved 27 Oct 2026, D76). Checkpoint 1 (research) done (D77,
+  D78); checkpoint 2 (many aircraft, the AI pilot's hands, scenario keys) done (D79); next checkpoint 3 (fighter
+  tactics and formations).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
+
+## Phase 6 checkpoint 2: many aircraft and the AI pilot's hands (27 Oct 2026)
+
+**Done** (D79):
+- every aircraft is a craft in one simulation, the player's and the AI's alike, on the same flight model;
+- the AI pilot's hands: steering, pulling, throttle, engine management, gunnery with lead, ground avoidance, formation
+  places;
+- simple behaviours: fighters pursue and fire, escorts keep station until enemies come near, bombers fly in a Kette;
+- the skill table: Novice, Regular, Ace;
+- scenario keys 6, 7, 8, 0;
+- F3 lines;
+- tests in `tests/ai/pilot.test.js` and `tests/core/scenarios.test.js`.
+
+**Known issues:**
+- the fighters' tactics are simple pursuit until checkpoint 3;
+- the bombers have no gunners until checkpoint 4;
+- draw calls grow about 75 per aircraft, to measure at 12.
 
 ## Phase 6 checkpoint 1: research (27 Oct 2026)
 

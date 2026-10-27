@@ -60,10 +60,10 @@ export class EffectsView {
     }
   }
 
-  /** The aircraft that can give off trails, with their poses: the player, the target and falling airframes. */
+  /** The aircraft that can give off trails, with their poses: the player, the AI aircraft and falling airframes. */
   aircraftOf(sim) {
     const list = [{ plane: sim.plane, ...sim.plane.body }];
-    if (sim.target) list.push({ plane: sim.target.plane, ...sim.target.plane.body });
+    for (const c of sim.others) list.push({ plane: c.plane, ...c.plane.body });
     for (const f of sim.falling) if (f.plane && f.plane !== sim.plane) list.push({ plane: f.plane, ...f.wreck.body });
     return list;
   }

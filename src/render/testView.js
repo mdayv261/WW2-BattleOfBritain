@@ -37,23 +37,35 @@ export class TestView {
     if (!this.rig.cockpitAllowed && this.rig.inCockpit) this.rig.mode = this.rig.outside;
   }
 
-  /** Draws the target aircraft (D68), if there is one, blended between its last two physics steps. */
-  updateTarget(sim, alpha, dt) {
-    const t = sim.target;
-    if (this.targetFor && this.targetFor !== t) {
-      this.scene.remove(this.targetModel.group);
-      this.targetFor = null;
+  /**
+   * Draws every AI aircraft (D68, D79), each blended between its last two physics steps, with its muzzle flashes. Models
+   * are built once per aircraft and dropped when it has gone (a wreck is drawn by src/render/wrecks.js).
+   */
+  updateOthers(sim, alpha, dt) {
+    this.others ??= new Map();
+    const live = new Set(sim.others);
+    for (const [craft, drawn] of this.others) {
+      if (!live.has(craft)) {
+        this.scene.remove(drawn.model.group);
+        this.others.delete(craft);
+      }
     }
-    if (!t) return;
-    if (this.targetFor !== t) {
-      this.targetModel = buildAircraftModel(t.ac, DESIGNS[t.ac.id]);
-      this.scene.add(this.targetModel.group);
-      this.targetFor = t;
+    for (const craft of sim.others) {
+      let drawn = this.others.get(craft);
+      if (!drawn) {
+        const model = buildAircraftModel(craft.ac, DESIGNS[craft.ac.id]);
+        const flashes = buildMuzzleFlashes(craft.armament);
+        model.group.add(flashes.group);
+        this.scene.add(model.group);
+        drawn = { model, flashes };
+        this.others.set(craft, drawn);
+      }
+      const g = drawn.model.group;
+      g.position.lerpVectors(craft.previous.position, craft.plane.body.position, alpha);
+      g.quaternion.slerpQuaternions(craft.previous.quaternion, craft.plane.body.quaternion, alpha);
+      drawn.model.update(craft.plane, dt);
+      drawn.flashes.update(craft.plane.time);
     }
-    const g = this.targetModel.group;
-    g.position.lerpVectors(t.previous.position, t.plane.body.position, alpha);
-    g.quaternion.slerpQuaternions(t.previous.quaternion, t.plane.body.quaternion, alpha);
-    this.targetModel.update(t.plane, dt);
   }
 
   /**
@@ -86,7 +98,7 @@ export class TestView {
       this.flashesFor = sim.armament;
     }
     this.flashes.update(sim.plane.time);
-    this.updateTarget(sim, alpha, dt);
+    this.updateOthers(sim, alpha, dt);
 
     this.rig.update(sim.ac, { position: this._pos, quaternion: this._quat }, body.velocity, dt);
     const cam = this.rig.camera.position;

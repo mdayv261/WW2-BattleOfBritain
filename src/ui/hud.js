@@ -8,17 +8,25 @@ import { coolantLimit } from '../physics/cooling.js';
 import { groupRounds } from '../weapons/guns.js';
 import { damageSummary } from '../weapons/damage.js';
 import { targetBearing } from '../core/combat.js';
+import { SKILLS } from '../ai/skill.js';
 
-/** The target's line for F3: type, range, hits and damage, and the last hit's result (D68). */
+/** The nearest AI aircraft's line for F3 (D68, D79): type, range, where it is, hits and damage, and the last hit. */
 function targetLine(sim) {
-  const t = sim.target;
-  if (!t) return 'Target    none (Y)';
+  const here = sim.plane.body.position;
+  const t = sim.others.reduce((a, c) => (!a || c.plane.body.position.distanceTo(here) < a.plane.body.position.distanceTo(here) ? c : a), null);
+  if (!t) return 'Target    none (Y, or 6 / 7 for AI)';
   const range = t.plane.body.position.distanceTo(sim.plane.body.position);
-  const last = sim.lastTargetHit && sim.plane.time - sim.lastTargetHit.time < 3 ? `  last hit: ${sim.lastTargetHit.text}` : '';
-  const { right, up } = targetBearing(sim);
+  const last = t.lastHit && sim.plane.time - t.lastHit.time < 3 ? `  last hit: ${t.lastHit.text}` : '';
+  const { right, up } = targetBearing(sim, t);
   const deg = (a, plus, minus) => `${Math.abs(a * 180 / Math.PI).toFixed(0)}° ${a >= 0 ? plus : minus}`;
   const where = `${deg(right, 'right', 'left')} ${deg(up, 'up', 'down')}`;
-  return `Target    ${t.ac.name}  ${range.toFixed(0)} m  ${where}  hits ${t.plane.damage.hits}  ${damageSummary(t.plane) || 'undamaged'}${last}`;
+  return `Target    ${t.label} (${t.side})  ${range.toFixed(0)} m  ${where}  hits ${t.plane.damage.hits}  ${damageSummary(t.plane) || 'undamaged'}${last}`;
+}
+
+/** The AI's line for F3 (D79): how many aircraft on each side, the skill and the scenario. */
+function aiLine(sim) {
+  const count = (side) => sim.others.filter((c) => c.side === side).length;
+  return `AI        RAF ${count('RAF')}  Luftwaffe ${count('Luftwaffe')}  skill ${SKILLS[sim.skill].name}  ${sim.scenario ?? 'no scenario (6, 7)'}`;
 }
 
 /** Rounds left per firing group, e.g. "Rounds MG 2648/2672  cannon 120/120"; null for an unarmed aircraft. */
@@ -70,6 +78,7 @@ const HELP = `
 <tr><td>I &nbsp; F2 &nbsp; F3</td><td>instruments, text readout, debug overlay</td></tr>
 <tr><td>Space &nbsp; Enter</td><td>fire the machine guns (RAF: all eight) / the cannon</td></tr>
 <tr><td>Y &nbsp; 9</td><td>target aircraft ahead (each press: the next type, then none) / a test 20 mm hit on your own aircraft</td></tr>
+<tr><td>6 &nbsp; 7 &nbsp; 8 &nbsp; 0</td><td>AI: enemy fighters (each press: the next group) / a bomber formation / AI skill / clear the AI</td></tr>
 <tr><td>Joystick</td><td>trigger: machine guns; thumb button: cannon; hat: look around (the panel hides while you look away); 5 / 3 trim nose up / down; 4 / 6 flaps up / down; 12 brakes; 10 cockpit view; 11 undercarriage</td></tr>
 <tr><td>J &nbsp; H</td><td>joystick panel (change the buttons there), this help</td></tr>
 </table>
@@ -209,6 +218,7 @@ export class Hud {
       ...plane.engines.map((e, i) => `Heat ${plane.engines.length > 1 ? ['L', 'R'][i] : ''}     coolant ${e.heat.coolant.toFixed(0)} °C (limit ${coolantLimit(plane.engine, d.altitude).toFixed(0)})  oil ${e.heat.oil.toFixed(0)} °C (limit ${plane.engine.heat.oilLimit})  wear ${(e.heat.wear * 100).toFixed(0)}%  coolant left ${(e.heat.coolantLeft * 100).toFixed(0)}%${e.heat.seized ? '  SEIZED' : ''}`),
       roundsLine(sim) ?? 'Rounds    unarmed',
       targetLine(sim),
+      aiLine(sim),
       `Damage    ${damageSummary(plane) || 'none'}`,
       `Airframe  overstress ${(plane.damage.airframe * 100).toFixed(0)}%  flutter ${(plane.damage.flutter * 100).toFixed(0)}%  radiator ${sim.input.radiator ? 'open' : 'closed'}`,
     ].join('\n');

@@ -1941,3 +1941,81 @@ AIRCRAFT_DATA:
 - **Bf 110 defensive circle:** not modelled (no source).
 
 Gun pivot positions are estimates placed on the aircraft models.
+
+## D79. Many aircraft, and the AI pilot's hands (27 Oct 2026, Phase 6 checkpoint 2)
+
+**Aircraft in the simulation** (`src/core/craft.js`):
+- **The craft:** every aircraft is now a craft: its type, side, flight-model state, control input, guns, damage dice
+  and pilot.
+- **The AI aircraft:** each step, its pilot sets the input, its guns fire into the shared pool of rounds, and the same
+  flight model as the player's moves it.
+- **The player:** a craft with no pilot. The panels, readouts and tests are unchanged.
+- **The target (Y):** an AI craft flown by its autopilot.
+- **Hits:** rounds can hit any aircraft but the one that fired them.
+- **Losses:** each AI aircraft that breaks up, loses its pilot or crashes is handled as the target was (D69) and
+  reported by name.
+- **The clock:** the simulation keeps one clock that every pilot sees by.
+
+**The AI pilot's hands** (`src/ai/pilot.js`):
+- **What it moves:** only the stick, rudder, throttle, rpm lever, radiator and triggers, within their travel and no
+  faster than the skill's hand. The AI can do nothing to the aircraft that the player can't.
+- **What it sees** (`src/ai/perception.js`): the others as they were one reaction time ago. Formation pilots carry the
+  leader forward by his seen velocity.
+- **How it steers:**
+  - it works out the lift a turn towards its goal needs, plus the lift that holds the aircraft up;
+  - it rolls that lift into place (with damping), never banking past the goal's limit;
+  - it pulls for the g it needs, within the goal's g limits, easing off at the stall buffet its skill feels;
+  - its rudder keeps the ball in the middle.
+- **Throttle:** proportional and gradual, to hold a speed.
+- **Engine:**
+  - the radiator is opened 15°C before the coolant limit and closed 30°C below it;
+  - full rpm in a fight, cruising rpm (lever 0.8) otherwise;
+  - the Bf 109 and Bf 110 use the engine-management assist for the airscrew pitch, as a player may.
+- **Gunnery** (`src/ai/gunnery.js`):
+  - aims ahead by the rounds' time of flight and above by their drop, from the same ballistics as the rounds;
+  - points the nose, where the guns lie, not the flight path, onto the aim;
+  - fires within the skill's range when the nose is within its aim cone.
+- **The ground:** a pilot won't point the nose down below 300 m plus 6 s of his descent rate; he pulls out instead.
+- **Tuning:** the gains are values of the AI's handling, not aircraft data. Formation flying uses gentle steering:
+  banks up to 20°, a turn gain of 0.4.
+
+**Behaviours for now** (`src/ai/basic.js`, replaced by checkpoints 3 and 4):
+- **Fighter:** pursues and fires at the nearest enemy.
+- **Escort:** keeps its place behind and above the bombers until an enemy is within 2.5 km.
+- **Bomber:** the leader holds heading, height and formation speed; the others keep their Kette places.
+
+**Skill table** (`src/ai/skill.js`, game design, not aircraft data):
+
+| Setting | Novice | Regular | Ace |
+|---|---|---|---|
+| Reaction time | 0.6 s | 0.35 s | 0.2 s |
+| Aim error | 12 mrad | 6 mrad | 2.5 mrad |
+| Full stick travel | 0.45 s | 0.3 s | 0.2 s |
+| Share of the g limit used | 0.7 | 0.85 | 1.0 |
+| Buffet felt (eases off at this stall share) | 0.05 | 0.12 | 0.25 |
+| Firing range | 250 m | 350 m | 400 m |
+| Drum-change factor | 2.0 | 1.4 | 1.0 |
+
+**Scenario keys** (`src/core/scenarios.js`):
+- **6:** Luftwaffe fighters for an RAF player (one Bf 109, a Rotte, a Schwarm, two Bf 110s), or RAF fighters for a
+  Luftwaffe player (one Spitfire, a Hurricane vic, four Spitfires in line astern). They start 2.5 km ahead and 500 m
+  higher, flying towards the player.
+- **7:** an He 111 Kette crossing 3 km ahead with a Rotte of Bf 109 escorts behind and above (RAF player), or a
+  friendly Kette with three Hurricanes coming to attack it (Luftwaffe player).
+- **8:** skill. **0:** clear.
+- Never more than 12 aircraft. F3 shows the nearest AI aircraft and an AI line.
+
+**Flagged:**
+- **Bomber speed:** a formation flies at the lower of 337 km/h (D78) and its 60%-throttle level speed at its height.
+  At 1,800 m, 337 km/h is close to the He 111's top speed and overheated its engines, so it flies 278 km/h there.
+- **Start temperature:** AI aircraft that would start hotter than their radiator rule allows start with the radiator
+  open, 20°C under the coolant limit. A crew arriving from its own approach would have managed it.
+
+**Measured:**
+- the flight model costs 5 µs per aircraft step;
+- ten aircraft fighting cost 15 ms per simulated second in Node;
+- in Chrome, 75 fps with the bomber scenario, 3.3 ms of work per frame;
+- draw calls grow by about 75 per aircraft model, to watch at 12 aircraft;
+- an Ace Spitfire closes on a Bf 109 and hits it;
+- a Regular Bf 109 shot down a hands-off Spitfire;
+- the Kette holds its places within 7 m for 3 minutes.

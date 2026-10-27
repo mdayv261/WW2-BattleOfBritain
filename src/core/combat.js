@@ -21,10 +21,10 @@ export function nextTarget(sim) {
   return `Target: ${ac.name}, ${Math.round(sim.target.plane.body.position.distanceTo(sim.plane.body.position))} m ahead`;
 }
 
-/** The aircraft rounds can hit this step: the player (until the flight ends) and any target. */
+/** The aircraft rounds can hit this step: the player (until the flight ends) and every AI aircraft (D79). */
 export function hittable(sim) {
   const list = sim.crashed ? [] : [{ who: sim, plane: sim.plane, random: sim.random }];
-  if (sim.target) list.push({ who: sim.target, plane: sim.target.plane, random: sim.target.random });
+  for (const c of sim.others) list.push({ who: c, plane: c.plane, random: c.random });
   return list;
 }
 
@@ -34,42 +34,50 @@ export function resolveHit(sim, struck, hit) {
   noteHit(sim, struck.plane, hit);
   const time = sim.plane.time;
   if (struck.who === sim) sim.notice = { text: `Hit: ${text}`, until: time + 2 };
-  else sim.lastTargetHit = { text, time };
+  else {
+    struck.who.lastHit = { text, time };
+    if (struck.who.role === 'target') sim.lastTargetHit = { text, time };
+  }
 }
 
 /**
- * Where the target is seen from the player's nose: angles (rad) right of and above the nose (the body x axis), so the
+ * Where the target (or another aircraft) is seen from the player's nose: angles (rad) right of and above the nose, so the
  * pilot can steer onto it. Body axes: x forward, y up, z right.
  */
-export function targetBearing(sim) {
+export function targetBearing(sim, craft = sim.target) {
   const body = sim.plane.body;
-  const rel = sim.target.plane.body.position.clone().sub(body.position).applyQuaternion(body.quaternion.clone().invert());
+  const rel = craft.plane.body.position.clone().sub(body.position).applyQuaternion(body.quaternion.clone().invert());
   return { right: Math.atan2(rel.z, rel.x), up: Math.atan2(rel.y, Math.hypot(rel.x, rel.z)) };
 }
 
 /**
- * Steps the target and follows its fate (D69): with its pilot killed it flies on uncontrolled; broken up, it becomes a
- * falling wreck and debris; on the ground it is gone, leaving a crash site. Each is reported to the pilot.
+ * Steps every AI aircraft and follows its fate (D69, D79): with its pilot killed it flies on uncontrolled; broken up, it
+ * becomes a falling wreck and debris; on the ground it is gone, leaving a crash site. Each is reported to the pilot (the
+ * target in the words of D68-D69).
  */
-export function stepTarget(sim, dt) {
-  const t = sim.target;
-  if (!t) return;
-  t.step(dt);
+export function stepOthers(sim, dt) {
+  for (const c of sim.others) c.step(dt, sim);
   const say = (text) => { sim.notice = { text, until: sim.plane.time + 5 }; };
-  const { failed } = t.plane.damage;
-  const crash = t.plane.ground.crash;
-  if (crash) {
-    noteCrash(sim, t.plane.body.position, crash.speed);
-    say('Target crashed');
-    sim.target = null;
-  } else if (failed && !failed.pilotKilled) {
-    fall(sim, t.plane);
-    say(`Target destroyed: ${failed.cause}`);
-    sim.target = null;
-  } else if (failed?.pilotKilled && !t.pilotReported) {
-    t.pilotReported = true;
-    say("Target's pilot killed");
-  }
+  const name = (c) => (c.role === 'target' ? 'Target' : c.label);
+  sim.others = sim.others.filter((c) => {
+    const { failed } = c.plane.damage;
+    const crash = c.plane.ground.crash;
+    if (crash) {
+      noteCrash(sim, c.plane.body.position, crash.speed);
+      say(`${name(c)} crashed`);
+      return false;
+    }
+    if (failed && !failed.pilotKilled) {
+      fall(sim, c.plane);
+      say(`${name(c)} destroyed: ${failed.cause}`);
+      return false;
+    }
+    if (failed?.pilotKilled && !c.pilotReported) {
+      c.pilotReported = true;
+      say(`${name(c)}'s pilot killed`);
+    }
+    return true;
+  });
 }
 
 // The test hits of key 9, in turn: [zone kind, component].

@@ -7,6 +7,7 @@ import { EffectsView } from './render/effects.js';
 import { WreckView } from './render/wrecks.js';
 import { HAT_LOOKS } from './render/cameras.js';
 import { Simulation } from './core/simulation.js';
+import { nextFighterScenario, bomberScenario, cycleSkill, clearAI } from './core/scenarios.js';
 import { Keyboard } from './input/keyboard.js';
 import { Joystick } from './input/joystick.js';
 import { MouseLook } from './input/mouse.js';
@@ -59,6 +60,12 @@ function gameKeys() {
   if (keyboard.took('KeyP')) sim.paused = !sim.paused;
   if (keyboard.took('KeyY')) sim.nextTarget(); // target aircraft (D68)
   if (keyboard.took('Digit9')) sim.testHit(); // a 20 mm hit on your own aircraft (D68)
+  // AI scenarios (D76, D79): 6 fighters in turn, 7 a bomber formation, 8 the AI's skill, 0 clear.
+  const say = (text) => { sim.notice = { text, until: sim.plane.time + 4 }; };
+  if (keyboard.took('Digit6')) say(nextFighterScenario(sim));
+  if (keyboard.took('Digit7')) say(bomberScenario(sim));
+  if (keyboard.took('Digit8')) say(cycleSkill(sim));
+  if (keyboard.took('Digit0')) say(clearAI(sim));
   if (keyboard.took('KeyC')) view.rig.toggleCockpit();
   if (keyboard.took('KeyV')) view.rig.nextOutside();
   if (keyboard.took('KeyI')) instruments.toggle();

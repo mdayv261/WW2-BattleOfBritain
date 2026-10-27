@@ -2,15 +2,15 @@
 // same height and heading, cruising at its level speed for common.target.throttle, and flies straight and level on its
 // autopilot (src/core/autopilot.js) with its own full flight model. It doesn't fight or dodge. Hits damage it like any
 // aircraft (src/weapons/damage.js); a killed pilot leaves its controls where they were, and it flies on until the ground
-// (D69).
+// (D69). It is one of the simulation's AI aircraft (src/core/craft.js, D79), flown by the autopilot.
 
 import { Vector3 } from 'three';
-import { createAircraft, stepAircraft } from '../physics/flightModel.js';
+import { createAircraft } from '../physics/flightModel.js';
 import { topSpeed } from '../physics/performance.js';
 import { engineFor } from '../aircraft/index.js';
 import { common } from '../aircraft/common.js';
 import { createAutopilot, flyAutopilot, attitude } from './autopilot.js';
-import { seededRandom } from '../weapons/random.js';
+import { Craft } from './craft.js';
 
 /** The target's cruising speed (m/s, true): its level speed at the target throttle, at that height. */
 export function cruiseSpeed(ac, altitude) {
@@ -19,7 +19,7 @@ export function cruiseSpeed(ac, altitude) {
   return topSpeed(ac, { speed, throttle: common.target.throttle }, altitude) || 90;
 }
 
-export class TargetAircraft {
+export class TargetAircraft extends Craft {
   /** A target of type `ac` ahead of the `player` plane, in `world`; `seed` sets its damage dice. */
   constructor(ac, player, world, seed = 1) {
     const { heading } = attitude(player);
@@ -28,25 +28,13 @@ export class TargetAircraft {
     const ground = world.terrain.surfaceAt(at.x, at.z).height;
     const altitude = Math.max(player.body.position.y, ground + common.target.minHeight);
     const speed = cruiseSpeed(ac, altitude);
-    this.ac = ac;
-    this.plane = createAircraft(ac, { altitude, speed, heading, throttle: common.target.throttle, x: at.x, z: at.z, terrain: world.terrain });
-    this.input = {
-      throttle: common.target.throttle, rpm: 0.8, pitch: 0, roll: 0, yaw: 0, trim: this.plane.trim,
+    const plane = createAircraft(ac, { altitude, speed, heading, throttle: common.target.throttle, x: at.x, z: at.z, terrain: world.terrain });
+    const input = {
+      throttle: common.target.throttle, rpm: 0.8, pitch: 0, roll: 0, yaw: 0, trim: plane.trim,
       engines: ac.engines ? [{}, {}] : [{}],
     };
+    // Its pilot is the autopilot: it holds its height, heading and speed, and never fights or fires (D68).
+    super(ac, { plane, input, seed, role: 'target', label: `Target ${ac.name}`, pilot: { fly: (craft, sim, dt) => flyAutopilot(craft.autopilot, craft.plane, craft.input, dt) } });
     this.autopilot = createAutopilot({ altitude, heading, speed });
-    this.random = seededRandom(seed);
-    this.previous = { position: this.plane.body.position.clone(), quaternion: this.plane.body.quaternion.clone() };
-  }
-
-  /**
-   * Advances the target by dt: the autopilot flies it while its pilot lives; after that its controls stay where they
-   * were (src/core/combat.js follows what becomes of it).
-   */
-  step(dt) {
-    this.previous.position.copy(this.plane.body.position);
-    this.previous.quaternion.copy(this.plane.body.quaternion);
-    if (this.plane.damage.pilot > 0) flyAutopilot(this.autopilot, this.plane, this.input, dt);
-    stepAircraft(this.plane, this.input, dt);
   }
 }
