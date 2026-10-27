@@ -1791,3 +1791,19 @@ magneto switch and placard and both Luftwaffe trim plates are now in the panel s
 
 **Checked in Chrome:** all four panels, readable and clear of their neighbours. Holding T moves the pointer towards
 NOSE UP. No console errors.
+
+## D75. Phase 5 signed off (27 Oct 2026, product owner)
+
+**The product owner's verdict:** Phase 5 (weapons and damage) passes its acceptance test, and they asked for it to be
+pushed and Phase 6 started.
+
+**Their remarks:**
+- The flight controls are "mostly good. Could be better but good enough".
+- Hands-off flight still needs some pilot input to keep straight and level. That's expected away from the rigged
+  condition (D73): other throttle settings, speeds and heights.
+
+**Kept as it is:**
+- the tail-damage estimate (D68): a 2-second burst from 200 m dead astern can break a Bf 109's tail off;
+- the D68 and D69 estimates and display choices.
+
+Phase 5 was pushed to GitHub with the product owner's permission (27 Oct 2026).

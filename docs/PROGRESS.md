@@ -2,7 +2,7 @@
 
 Read this at the start of every session.
 
-## Current status (26 Oct 2026)
+## Current status (27 Oct 2026)
 
 - **Phase 0** (foundations and research): signed off (24 Oct 2026, D14). The game is live at
   https://mdayv261.github.io/WW2-BattleOfBritain/ (repository https://github.com/mdayv261/WW2-BattleOfBritain).
@@ -10,10 +10,9 @@ Read this at the start of every session.
 - **Phase 2** (controls, cameras, ground): signed off (25 Oct 2026, D35).
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
 - **Phase 4** (world and visuals): signed off (26 Oct 2026, D57).
-- **Phase 5** (weapons and damage): in progress (plan approved 26 Oct 2026, D59). Checkpoint 1 (research) done (D60); estimates accepted (D61). Checkpoint 2 (engine heat and structural limits) done (D62); checkpoint 3 (guns and ballistics) done (D67);
-  checkpoint 4 (target aircraft, hit zones and damage) done (D68); checkpoint 5 (visible damage and wrecks) done
-  (D69). Next: the product owner's Phase 5 acceptance test (proposed in D69).
-- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026.
+- **Phase 5** (weapons and damage): signed off (27 Oct 2026, D75).
+- **Phase 6** (AI pilots and gunners): next; plan to be approved.
+- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
 
 ## Elevator trim display (27 Oct 2026)
 
