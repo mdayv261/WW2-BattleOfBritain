@@ -8,11 +8,12 @@
 //   bank and the rev counter, with the two undercarriage lamps below it. Rearranged by the product owner (D63, D64): the
 //   fuel and oil pressure gauge beside the manifold pressure gauge; the airscrew pitch indicator, small, beside the rev
 //   counter; the oil and coolant thermometers, the same small size, side by side under the rev counter; and the gun
-//   ammunition counter (src/ui/ammoCounter.js) above the altimeter.
+//   ammunition counter (src/ui/ammoCounter.js) above the altimeter. The elevator trim display (D74) stands at the left
+//   edge, left of the magneto switch, where a red push button was.
 
 import { lamp } from './dials.js';
 import { ammoCounter } from './ammoCounter.js';
-import { flapDisplay } from './panelControls.js';
+import { flapDisplay, trimDisplay } from './panelControls.js';
 import { millibarWindow } from './altimeters.js';
 import {
   mount, lwAirspeed, lwRpm, lwAta, lwStripCompass, lwTurnBank, lwFineAltimeter, lwClock, lwPitchIndicator, placard,
@@ -54,7 +55,9 @@ export const BF109_LAYOUT = {
   // Gun ammunition counter (D64): the altimeter's width, above it.
   ammo: { from: [256.5, 419], to: [313.5, 455.5] },
   magneto: { from: [221.5, 476], to: [251.5, 555] },
-  button: [207, 528],
+  // Elevator trim display (product owner, D74), in place of the push button: the panel's left edge to the magneto
+  // switch, the usual gap from it.
+  trim: { from: [194, 470], to: [216.5, 586] },
   placard: { from: [221.5, 560], to: [251.5, 574] },
 };
 
@@ -131,14 +134,9 @@ export function bf109Panel(g, x0, y0, r, v) {
   // Gun ammunition counter: left MG 17, cannon, right MG 17 (product owner, D64).
   ammoCounter(g, box(L.ammo), r, v.ammoCounters);
 
-  // Magneto switch (shown for accuracy only), the push button and a placard.
+  // Elevator trim (D74), the magneto switch (shown for accuracy only) and a placard.
+  trimDisplay(g, box(L.trim), r, v);
   magnetoSwitch(g, box(L.magneto), r);
-  const [bx, by] = xy(L.button);
-  g.fillStyle = '#0c0c0c';
-  g.beginPath();
-  g.roundRect(bx - r * 0.42, by - r * 0.42, r * 0.84, r * 0.84, r * 0.12);
-  g.fill();
-  disc(g, bx, by, r * 0.28, '#d8382c');
   const pl = box(L.placard);
   placard(g, pl.x, pl.y, pl.w, pl.h, { scribbles: 2, plate: '#4a2a1c' });
 }

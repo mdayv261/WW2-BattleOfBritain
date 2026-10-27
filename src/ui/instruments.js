@@ -15,7 +15,7 @@ import { rafAirspeed } from './airspeed.js';
 import { rafTachometer } from './engineGauges.js';
 import { rafHorizon, rafClimb, rafTurnSlip } from './rafBlindFlying.js';
 import { BF109_LAYOUT, bf109Panel } from './bf109Panel.js';
-import { undercarriageDisplay, flapDisplay } from './panelControls.js';
+import { undercarriageDisplay, flapDisplay, trimDisplay, TRIM_SCALE } from './panelControls.js';
 import { BF110_LAYOUT, bf110Panel } from './bf110Panel.js';
 import { counterState } from './ammoCounter.js';
 
@@ -94,6 +94,8 @@ export function instrumentReadings(sim) {
     flapTravel: ac.controls.flapTravel * DEG,
     flapTakeoff: ac.controls.flapTakeoff,
     flapLanding: ac.controls.flapLanding,
+    // Elevator trim on the display's ±15° scale (D74): the trim setting runs from -1 (full nose down) to +1 (nose up).
+    trimDegrees: plane.surfaces.trim * TRIM_SCALE,
   };
 }
 
@@ -121,7 +123,8 @@ const ARC = { start: -Math.PI * 0.75, end: Math.PI * 0.75 };
 // RAF panel layout, after a Spitfire I panel (D32): the blind-flying panel in the middle, two rows of three
 // (airspeed, artificial horizon, rate of climb above; altimeter, direction indicator, turn and slip below),
 // the engine instruments to its right (rpm above, boost below), the oil temperature right of the rev counter with the
-// radiator (coolant) temperature below it (product owner, D63), and the undercarriage indicator to its left.
+// radiator (coolant) temperature below it (product owner, D63), the undercarriage and flap displays to its left, and the
+// elevator trim display left of those (D74).
 // Positions are in dial radii from the top centre of the panel. No captions: the real panel has none.
 export const RAF_LAYOUT = {
   width: 17.4, height: 4.9,
@@ -130,6 +133,8 @@ export const RAF_LAYOUT = {
   rpm: [5.2, 1.3], boost: [5.2, 3.6], oilTemp: [7.5, 1.3], radTemp: [7.5, 3.6],
   // Undercarriage and flap displays as on the Luftwaffe panels (product owner, D47): plates [left, top, right, bottom].
   gear: [-6.45, 0.1, -3.8, 2.4], flaps: [-6.45, 2.55, -3.8, 4.8],
+  // Elevator trim display left of the undercarriage and flaps, their full height (product owner, D74).
+  trim: [-7.85, 0.1, -6.6, 4.8],
   blindFlying: { left: -3.55, right: 3.55, top: 0.1, bottom: 4.8 },
 };
 
@@ -165,6 +170,7 @@ function rafPanel(g, x0, y0, r, v) {
   });
   undercarriageDisplay(g, plateBox(L.gear), r, v, 'UNDERCARRIAGE');
   flapDisplay(g, plateBox(L.flaps), r, v, 'FLAPS');
+  trimDisplay(g, plateBox(L.trim), r, v);
 }
 
 /** The fitted dial radius for a panel layout on a screen: as large as fits, capped. */

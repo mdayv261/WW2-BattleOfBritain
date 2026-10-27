@@ -15,6 +15,15 @@ Read this at the start of every session.
   (D69). Next: the product owner's Phase 5 acceptance test (proposed in D69).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026.
 
+## Elevator trim display (27 Oct 2026)
+
+**Done** (D74): an upright elevator trim display (±15°, 1° graduations, NOSE UP / NOSE DOWN) on all four flyable panels:
+- Hurricane and Spitfire: left of the undercarriage and flaps;
+- Bf 109: in place of the red button, left of the magneto switch;
+- Bf 110: right of the turn and bank.
+
+**Known issue:** the ±15° scale is a display scale for the full trim range, not a measured tab or tailplane angle.
+
 ## Hands-off rigging solved (27 Oct 2026)
 
 **Done** (D73): the roll and yaw rigging of all five aircraft is solved with the flight model (`npm run fit:rig`), so

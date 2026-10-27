@@ -1763,3 +1763,31 @@ as in the real aircraft.
 
 **Checked in Chrome:** the Bf 109 hands-off from the air start for 30 s held heading 360°, 1,500 m and wings level, with
 0% stick.
+
+## D74. Elevator trim display on the four flyable panels (27 Oct 2026, product owner)
+
+**The display:** an upright plate, like the flaps display.
+- "ELEVATOR TRIM" at the top, "NOSE UP" above the scale and "NOSE DOWN" below it, in English on every panel as the
+  product owner asked. On narrow plates each phrase goes on two lines.
+- A scale from 15° nose up at the top to 15° nose down at the bottom, a tick every 1°, figures every 5°, and a bold 0
+  at neutral.
+- A white pointer at the present trim.
+
+**Placement** (the product owner's choice):
+- **Hurricane and Spitfire:** on the left, beside the undercarriage and flaps displays, their full height.
+- **Bf 109:** on the left edge, in place of the red push button, beside the magneto switch, with the panel's usual
+  5-pixel gap (D44).
+- **Bf 110:** right of the turn and bank indicator, from its top to near the panel's foot, with the usual 6-pixel gap
+  to it and to the engine instruments.
+
+**Flagged:** ±15° is a display scale for the full trim range (trim setting × 15), as asked. It isn't a measured angle
+of any aircraft's trim tab or tailplane: none was found.
+- The Bf 109 and Bf 110 trim by moving the tailplane.
+- The RAF fighters trim by an elevator tab.
+- At the air start the pointer shows the solved trim, about 2° nose down.
+
+**Tests:** `tests/ui/trimDisplay.test.js` checks the reading, scale and pointer, and each placement. The Bf 109's
+magneto switch and placard and both Luftwaffe trim plates are now in the panel spacing check.
+
+**Checked in Chrome:** all four panels, readable and clear of their neighbours. Holding T moves the pointer towards
+NOSE UP. No console errors.

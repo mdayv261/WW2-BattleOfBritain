@@ -7,9 +7,10 @@
 //   (product owner, D46): rev counter, manifold pressure, airscrew pitch indicator (the C-4's pitch is set by hand,
 //   S24), the fuel quantity in that wing's tanks (D45) and a combined oil and coolant temperature gauge, oil on the left
 //   and coolant on the right, the normal ranges in green (product owner, D63).
-//   Bottom left: the undercarriage display and the upright flap position indicator (D34, D44).
+//   Bottom left: the undercarriage display and the upright flap position indicator (D34, D44). Right of the turn and
+//   bank: the elevator trim display (product owner, D74).
 
-import { undercarriageDisplay, flapDisplay } from './panelControls.js';
+import { undercarriageDisplay, flapDisplay, trimDisplay } from './panelControls.js';
 
 export { gearLampState } from './panelControls.js';
 import { millibarWindow } from './altimeters.js';
@@ -45,6 +46,9 @@ export const BF110_LAYOUT = {
   plates: [],
   gear: { from: [33, 505], to: [107, 579] },
   flaps: { from: [113, 505], to: [187, 579] },
+  // Elevator trim display (D74): right of the turn and bank, from its top to near the panel's foot, the usual gap from
+  // it and from the engine instruments.
+  trim: { from: [273, 505], to: [329.5, 614] },
 };
 
 /** The undercarriage display's words (product owner, D66): OBEN (up) and UNTEN (down), titled GEAR. */
@@ -124,6 +128,7 @@ export function bf110Panel(g, x0, y0, r, v) {
   // Undercarriage display and flap position.
   undercarriageDisplay(g, box(L.gear), r, v, GEAR_LABELS.title, GEAR_LABELS);
   flapDisplay(g, box(L.flaps), r, v, 'KLAPPEN');
+  trimDisplay(g, box(L.trim), r, v);
 }
 
 function disc(g, x, y, radius) {
