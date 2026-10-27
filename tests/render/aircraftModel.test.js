@@ -152,5 +152,28 @@ describe('aircraft models', () => {
         expect(yellow.every((c) => c.x > noseFrom - 0.01 || Math.abs(c.z) > tipsFrom - 0.01 || c.x < -4.3)).toBe(true);
       });
     });
+
+    it(`${ac.id}: each wing half and the tail are groups that can break away whole (D69)`, () => {
+      const model = buildAircraftModel(ac, DESIGNS[ac.id]);
+      const left = model.group.getObjectByName('wingLeft');
+      const right = model.group.getObjectByName('wingRight');
+      const tail = model.group.getObjectByName('tail');
+      for (const part of [left, right, tail]) expect(part).toBeDefined();
+      // Everything in a wing half is on its side; the halves carry their ailerons and wing markings.
+      const centreZ = (o) => { o.updateMatrixWorld(true); return new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3()).z; };
+      expect(centreZ(left)).toBeLessThan(-1);
+      expect(centreZ(right)).toBeGreaterThan(1);
+      const aileronIn = (g, side) => model.movers.some((m) => m.name === 'aileron' && m.side === side && m.pivot.parent === g);
+      expect(aileronIn(right, 1) && aileronIn(left, -1)).toBe(true);
+      expect(model.movers.filter((m) => m.name === 'rudder').every((m) => m.pivot.parent === tail)).toBe(true);
+      // A twin's nacelles and airscrews go with their wings.
+      if (ac.engines) {
+        expect(model.screws[0].group.parent).toBe(left);
+        expect(model.screws[1].group.parent).toBe(right);
+      }
+      // The tail sits at the back.
+      tail.updateMatrixWorld(true);
+      expect(new THREE.Box3().setFromObject(tail).max.x).toBeLessThan(-2);
+    });
   }
 });

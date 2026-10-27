@@ -90,7 +90,7 @@ function rafMarkings(design, { roundelAt = 0.62, wingRoundel, fuselageAt, flash 
     return [1, -1].flatMap((side) => [
       { kind: 'roundelB', size: [wingRoundel], at: [...onWing(wing, s), side * s], turn: UP(side, ac.aero.dihedral), on: 'wing' },
       { kind: 'roundelA1', size: [f.h * 1.4], at: [fx, f.y, side * (f.w + 0.012)], turn: SIDE(side) },
-      { kind: 'finFlash', size: flash, at: [finX, fin.at.y + h, side * finSide(fin, h)], turn: SIDE(side) },
+      { kind: 'finFlash', size: flash, at: [finX, fin.at.y + h, side * finSide(fin, h)], turn: SIDE(side), on: 'fin' },
     ]);
   };
 }
@@ -111,7 +111,7 @@ function lwMarkings(design, { crossAt = 0.68, wingCross, fuselageAt }) {
       const h = fin.spec.semi * 0.55;
       const x = fin.spec.le(h) - 0.3 * fin.spec.chord(h);
       for (const side of [1, -1]) {
-        list.push({ kind: 'swastika', size: [fin.spec.chord(h) * 0.42], at: [x, fin.at.y + h, fin.at.z + side * finSide(fin, h)], turn: SIDE(side) });
+        list.push({ kind: 'swastika', size: [fin.spec.chord(h) * 0.42], at: [x, fin.at.y + h, fin.at.z + side * finSide(fin, h)], turn: SIDE(side), on: 'fin' });
       }
     }
     return list;

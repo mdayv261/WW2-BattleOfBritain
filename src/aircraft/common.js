@@ -109,4 +109,15 @@ export const common = {
     throttle: 0.6, // it cruises at its level speed at this throttle
     minHeight: 300, // m above the ground, at least
   },
+  // A destroyed aircraft falling, and the parts that broke off it (Phase 5, D69): a simple body under gravity and drag,
+  // turning at a set rate, since a broken airframe no longer flies. Estimates: no measurements of falling wrecks found.
+  wreck: {
+    terminalSpeed: 90, // m/s at sea level: a tumbling airframe, about a fighter's speed in a spin's steep descent
+    debrisTerminalSpeed: 35, // m/s at sea level: a wing or tail falling flat and fluttering
+    spinUp: 1.5, // s: how quickly the wreck takes up its spin
+    wingSpin: 3.5, // rad/s: roll towards the side that lost its wing
+    tailSpin: 2.5, // rad/s: nose-down pitch of an airframe that lost its tail
+    fallSpin: 0.6, // rad/s: slow nose-down tumble of a wreck still in one piece (a burnt-out engine, both wings gone)
+    debrisSpin: 4, // rad/s: tumbling of a broken-off part
+  },
 };

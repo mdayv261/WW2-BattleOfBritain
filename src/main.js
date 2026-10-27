@@ -3,6 +3,8 @@
 import { createScene } from './render/scene.js';
 import { TestView } from './render/testView.js';
 import { ProjectileView } from './render/projectiles.js';
+import { EffectsView } from './render/effects.js';
+import { WreckView } from './render/wrecks.js';
 import { HAT_LOOKS } from './render/cameras.js';
 import { Simulation } from './core/simulation.js';
 import { Keyboard } from './input/keyboard.js';
@@ -22,6 +24,8 @@ const world = realWorld(terrain);
 const { renderer, scene, camera, sea, update: updateScene } = createScene(document.getElementById('app'), terrain);
 const view = new TestView(scene, camera, sea);
 const shots = new ProjectileView(scene); // tracers and smoke trails (D67)
+const effects = new EffectsView(scene); // glycol, smoke, fire, strikes and crashes (D69)
+const wrecks = new WreckView(scene); // falling wrecks and broken-off parts (D69)
 const sim = new Simulation(aircraftList[1], 'ground', world); // start in the Spitfire, on the ground at Hawkinge
 view.setAircraft(sim.ac);
 
@@ -36,6 +40,7 @@ const joyPanel = new JoystickPanel(joystick);
 function select(ac) {
   sim.reset(ac);
   view.setAircraft(ac);
+  effects.clear();
 }
 
 /** Keys that act on the game rather than the aircraft. */
@@ -49,6 +54,7 @@ function gameKeys() {
   if (keyboard.took('KeyN')) {
     sim.nextStart();
     view.setAircraft(sim.ac);
+    effects.clear();
   }
   if (keyboard.took('KeyP')) sim.paused = !sim.paused;
   if (keyboard.took('KeyY')) sim.nextTarget(); // target aircraft (D68)
@@ -83,6 +89,8 @@ renderer.setAnimationLoop((now) => {
   sim.advance(dt);
   view.update(sim, sim.loop.alpha, dt);
   shots.update(sim.projectiles);
+  wrecks.update(sim, sim.loop.alpha);
+  effects.update(sim, dt, camera, renderer.domElement.height);
   updateScene(camera);
   hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
   instruments.update(sim, { hidden: view.rig.lookingAway });

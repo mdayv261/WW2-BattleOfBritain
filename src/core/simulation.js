@@ -20,6 +20,7 @@ import { createArmament, stepGuns, counters } from '../weapons/guns.js';
 import { Projectiles } from '../weapons/projectiles.js';
 import { seededRandom } from '../weapons/random.js';
 import { nextTarget, hittable, resolveHit, stepTarget, testHit } from './combat.js';
+import { clearLosses, losePlayer, stepPlayerLoss, stepFalling } from './losses.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 export const START_MODES = ['ground', 'approach', 'air'];
@@ -99,6 +100,7 @@ export class Simulation {
     this.notice = null; // a short message for the pilot: { text, until } (simulation time)
     this.crashed = false;
     this.crashCause = null;
+    clearLosses(this); // wrecks, debris, crash sites and hits for the effects (D69)
     this.seen = { seized: this.plane.engines.map(() => false), airframe: 0, flutter: false }; // damage already reported
     this.previous = { position: new Vector3(), quaternion: new Quaternion() };
     this.copyPose(this.previous);
@@ -159,20 +161,29 @@ export class Simulation {
   }
 
   step(dt) {
-    if (this.paused || this.crashed) return;
+    if (this.paused) return;
+    if (this.crashed) {
+      // The flight has ended, but the wreck still falls and the target and rounds fly on.
+      stepPlayerLoss(this, dt);
+      this.stepWorld(dt);
+      return;
+    }
     this.copyPose(this.previous);
     // Guns first: their rounds leave from where the aircraft is now, and their recoil acts in this step.
     const recoil = stepGuns(this.armament, this.plane, this.input, dt, this.plane.time, (round) => this.projectiles.spawn(round, this));
     this.plane.recoil = recoil.force.lengthSq() > 0 ? recoil : null;
     stepAircraft(this.plane, this.input, dt);
+    this.stepWorld(dt);
+    const { ground, damage } = this.plane;
+    if (ground.crash || damage.failed) losePlayer(this);
+    this.reportDamage();
+  }
+
+  /** Steps everything besides the player's aircraft: the target, the rounds in flight, and falling wrecks. */
+  stepWorld(dt) {
     stepTarget(this, dt);
     this.projectiles.step(dt, this.world.terrain, hittable(this), (struck, hit) => resolveHit(this, struck, hit));
-    const { ground, damage } = this.plane;
-    if (ground.crash || damage.failed) {
-      this.crashed = true;
-      this.crashCause = (ground.crash ?? damage.failed).cause;
-    }
-    this.reportDamage();
+    stepFalling(this, dt);
   }
 
   /** Tells the pilot once about each new kind of damage from heat or overstress (Phase 5). */

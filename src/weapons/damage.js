@@ -67,7 +67,7 @@ export function hurt(plane, zone, component, round, strength, dir, speed, random
     case 'engine': {
       const e = plane.engines[engineOf(plane.ac, zone, component)];
       if (e) e.heat.wear += d.engineWear * strength;
-      if (e && round.incendiary && random() < d.engineFireChance * round.incendiary) startFire(dmg, 'engine fire');
+      if (e && round.incendiary && random() < d.engineFireChance * round.incendiary) startFire(dmg, 'engine fire', zone);
       return 'engine';
     }
     case 'coolant': {
@@ -82,7 +82,7 @@ export function hurt(plane, zone, component, round, strength, dir, speed, random
     }
     case 'fuel': {
       const tank = plane.ac.systems.fuel[zone.name];
-      if (round.incendiary && random() < d.fireChance[tank] * round.incendiary) startFire(dmg, 'fuel fire');
+      if (round.incendiary && random() < d.fireChance[tank] * round.incendiary) startFire(dmg, 'fuel fire', zone);
       return `fuel tank (${tank})`;
     }
     case 'pilot': {
@@ -90,7 +90,7 @@ export function hurt(plane, zone, component, round, strength, dir, speed, random
       const fromBehind = dir.x > Math.cos(d.armourArc);
       if (armour > 0 && fromBehind && !(round.ap && speed > d.apPenetrationSpeed)) return 'armour';
       dmg.pilot -= d.pilotWound * Math.sqrt(strength);
-      if (dmg.pilot <= 0) dmg.failed ??= { cause: 'The pilot was killed', pilotKilled: true };
+      if (dmg.pilot <= 0) dmg.failed ??= { cause: 'The pilot was killed', pilotKilled: true, parts: [] };
       return dmg.pilot <= 0 ? 'pilot killed' : 'pilot wounded';
     }
     case 'cables': {
@@ -107,12 +107,12 @@ export function hurt(plane, zone, component, round, strength, dir, speed, random
       const panel = zone.kind === 'wingOuter' ? 1 : 0;
       const side = zone.side < 0 ? 0 : 1;
       dmg.wing[side][panel] = Math.min(1, dmg.wing[side][panel] + d.wingDamage * strength);
-      if (dmg.wing[side][panel] >= 1) dmg.failed ??= { cause: `The ${side ? 'right' : 'left'} wing broke` };
+      if (dmg.wing[side][panel] >= 1) fail(dmg, { cause: `The ${side ? 'right' : 'left'} wing broke`, parts: [side ? 'wingRight' : 'wingLeft'] });
       return `${side ? 'right' : 'left'} wing`;
     }
     case 'tailStructure':
       dmg.tail = Math.min(1, dmg.tail + d.tailDamage * strength);
-      if (dmg.tail >= 1) dmg.failed ??= { cause: 'The tail broke away' };
+      if (dmg.tail >= 1) fail(dmg, { cause: 'The tail broke away', parts: ['tail'] });
       return 'tail';
     case 'flap':
       dmg.flapsJammed = true;
@@ -125,8 +125,17 @@ export function hurt(plane, zone, component, round, strength, dir, speed, random
   }
 }
 
-function startFire(dmg, kind) {
-  dmg.fire ??= { kind, time: 0 };
+/**
+ * Records the aircraft's loss, unless it is already lost; an aircraft whose pilot was killed (still flying, uncontrolled)
+ * can still break up.
+ */
+function fail(dmg, failure) {
+  if (!dmg.failed || dmg.failed.pilotKilled) dmg.failed = failure;
+}
+
+/** Starts a fire (if none is burning) in a zone; the zone is kept for the flames and smoke (D69). */
+function startFire(dmg, kind, zone) {
+  dmg.fire ??= { kind, time: 0, zone: zone.name };
 }
 
 /** Advances the damage that grows by itself: a fire burns until the aircraft breaks up. */
@@ -134,8 +143,20 @@ export function stepDamage(plane, dt) {
   const dmg = plane.damage;
   if (dmg.fire) {
     dmg.fire.time += dt;
-    if (dmg.fire.time > common.damage.fireTime) dmg.failed ??= { cause: `Destroyed by an ${dmg.fire.kind === 'engine fire' ? 'engine' : 'fuel'} fire` };
+    if (dmg.fire.time > common.damage.fireTime) {
+      fail(dmg, { cause: `Destroyed by an ${dmg.fire.kind === 'engine fire' ? 'engine' : 'fuel'} fire`, parts: burntAway(dmg.fire.zone) });
+    }
   }
+}
+
+/**
+ * The part a fire burns away when the aircraft breaks up (D69): a wing (or a twin's nacelle) takes its wing half off,
+ * the fuselage its tail; a fire in a single's engine leaves the airframe whole.
+ */
+export function burntAway(zone = '') {
+  if (/Left$/.test(zone)) return ['wingLeft'];
+  if (/Right$/.test(zone)) return ['wingRight'];
+  return zone === 'engine' ? [] : ['tail'];
 }
 
 /** A one-line summary of an aircraft's damage for the readouts ("" when undamaged). */

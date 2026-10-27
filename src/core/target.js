@@ -1,7 +1,8 @@
 // The target aircraft (Phase 5, D68): a test aid the product owner asked for (D59). It appears ahead of the player at the
 // same height and heading, cruising at its level speed for common.target.throttle, and flies straight and level on its
 // autopilot (src/core/autopilot.js) with its own full flight model. It doesn't fight or dodge. Hits damage it like any
-// aircraft (src/weapons/damage.js); a killed pilot leaves its controls where they were.
+// aircraft (src/weapons/damage.js); a killed pilot leaves its controls where they were, and it flies on until the ground
+// (D69).
 
 import { Vector3 } from 'three';
 import { createAircraft, stepAircraft } from '../physics/flightModel.js';
@@ -36,18 +37,16 @@ export class TargetAircraft {
     this.autopilot = createAutopilot({ altitude, heading, speed });
     this.random = seededRandom(seed);
     this.previous = { position: this.plane.body.position.clone(), quaternion: this.plane.body.quaternion.clone() };
-    this.destroyed = null; // { cause } once it breaks up, its pilot is killed or it reaches the ground
   }
 
-  /** Advances the target by dt: the autopilot flies it while its pilot lives. */
+  /**
+   * Advances the target by dt: the autopilot flies it while its pilot lives; after that its controls stay where they
+   * were (src/core/combat.js follows what becomes of it).
+   */
   step(dt) {
-    if (this.destroyed) return;
     this.previous.position.copy(this.plane.body.position);
     this.previous.quaternion.copy(this.plane.body.quaternion);
     if (this.plane.damage.pilot > 0) flyAutopilot(this.autopilot, this.plane, this.input, dt);
     stepAircraft(this.plane, this.input, dt);
-    const { failed } = this.plane.damage;
-    const crash = this.plane.ground.crash;
-    if (failed || crash) this.destroyed = { cause: failed?.cause ?? crash.cause };
   }
 }

@@ -9,6 +9,7 @@ import { buildReticle, buildSightBody } from './gunsight.js';
 import { buildAircraftModel } from './models/aircraftModel.js';
 import { DESIGNS } from './models/designs.js';
 import { buildMuzzleFlashes } from './projectiles.js';
+import { hideLost } from './wrecks.js';
 
 export class TestView {
   constructor(scene, camera, sea) {
@@ -55,6 +56,17 @@ export class TestView {
     this.targetModel.update(t.plane, dt);
   }
 
+  /**
+   * Once the player's aircraft breaks up or its pilot is killed (D69): the parts that broke off are hidden (they fall as
+   * debris, src/render/wrecks.js), and the view moves outside to watch it go down.
+   */
+  followLoss(sim) {
+    if (!(sim.wreck || sim.uncontrolled) || this.lossFor === sim.plane) return;
+    this.lossFor = sim.plane;
+    hideLost(this.model, sim.plane.damage.failed?.parts);
+    if (this.rig.inCockpit) this.rig.mode = this.rig.outside;
+  }
+
   /** Places the model (blended between the last two physics steps) and moves the camera. */
   update(sim, alpha, dt) {
     const body = sim.plane.body;
@@ -66,6 +78,7 @@ export class TestView {
     this.model.getObjectByName('fuselage').visible = !inside;
     this.cockpit.visible = inside;
     this.aircraft.update(sim.plane, dt, { inside });
+    this.followLoss(sim);
     // Muzzle flashes for this flight's guns (rebuilt when the aircraft or its armament changes).
     if (this.flashesFor !== sim.armament) {
       this.flashes = buildMuzzleFlashes(sim.armament);

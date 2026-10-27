@@ -12,8 +12,8 @@ import { clamp } from './interp.js';
 /**
  * A fresh damage state. Structural: airframe and flutter from 0 (none) to 1 (failed). From hits (src/weapons/damage.js):
  * each wing half's [inner, outer] panel damage (left first), the controls' remaining effect, the tail structure, the
- * pilot's health, a fire, jammed flaps or undercarriage, and a log of recent hits. `failed` is { cause } once the
- * aircraft breaks up or its pilot is killed.
+ * pilot's health, a fire, jammed flaps or undercarriage, and a log of recent hits. `failed` is { cause, parts } once
+ * the aircraft breaks up or its pilot is killed, `parts` naming those that broke off (D69).
  */
 export function createDamage() {
   return {
@@ -39,7 +39,7 @@ export function stepStructure(plane, { loadFactor, eas }, dt) {
   const from = limits.g.damage * share;
   const to = limits.g.fail * share;
   if (n > from) d.airframe = Math.max(d.airframe, clamp((n - from) / (to - from), 0, 1));
-  if (n >= to) d.failed = { cause: `The wings failed at ${loadFactor.toFixed(1)} g` };
+  if (n >= to) d.failed = { cause: `The wings failed at ${loadFactor.toFixed(1)} g`, parts: ['wingLeft', 'wingRight'] };
 
   if (limits.diveEas && eas > limits.diveEas) {
     const s = common.structure;

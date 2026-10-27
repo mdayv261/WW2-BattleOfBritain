@@ -1480,6 +1480,13 @@ Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or es
 | Target aircraft: distance (`target.distance`) | 400 | m | — | ASSUMPTION | estimate | Where the target aircraft appears and how fast it cruises (D68), a test aid. |
 | Target aircraft: throttle (`target.throttle`) | 0.6 | fraction | — | ASSUMPTION | estimate | Where the target aircraft appears and how fast it cruises (D68), a test aid. |
 | Target aircraft: minHeight (`target.minHeight`) | 300 | m | — | ASSUMPTION | estimate | Where the target aircraft appears and how fast it cruises (D68), a test aid. |
+| Wreck: terminal speed (`wreck.terminalSpeed`) | 90 | m/s | — | ASSUMPTION | estimate | A destroyed aircraft falling (D69): no measurements of falling wrecks found; chosen so wrecks fall and turn plausibly. |
+| Wreck: broken-off part's terminal speed (`wreck.debrisTerminalSpeed`) | 35 | m/s | — | ASSUMPTION | estimate | A destroyed aircraft falling (D69): no measurements of falling wrecks found; chosen so wrecks fall and turn plausibly. |
+| Wreck: time to take up its spin (`wreck.spinUp`) | 1.5 | s | — | ASSUMPTION | estimate | A destroyed aircraft falling (D69): no measurements of falling wrecks found; chosen so wrecks fall and turn plausibly. |
+| Wreck: roll rate after losing a wing (`wreck.wingSpin`) | 3.5 | rad/s | — | ASSUMPTION | estimate | A destroyed aircraft falling (D69): no measurements of falling wrecks found; chosen so wrecks fall and turn plausibly. |
+| Wreck: pitch rate after losing the tail (`wreck.tailSpin`) | 2.5 | rad/s | — | ASSUMPTION | estimate | A destroyed aircraft falling (D69): no measurements of falling wrecks found; chosen so wrecks fall and turn plausibly. |
+| Wreck: tumble rate in one piece (`wreck.fallSpin`) | 0.6 | rad/s | — | ASSUMPTION | estimate | A destroyed aircraft falling (D69): no measurements of falling wrecks found; chosen so wrecks fall and turn plausibly. |
+| Wreck: broken-off part's tumble rate (`wreck.debrisSpin`) | 4 | rad/s | — | ASSUMPTION | estimate | A destroyed aircraft falling (D69): no measurements of falling wrecks found; chosen so wrecks fall and turn plausibly. |
 
 ## Propeller data: NACA Report 640
 

@@ -11,9 +11,28 @@ Read this at the start of every session.
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
 - **Phase 4** (world and visuals): signed off (26 Oct 2026, D57).
 - **Phase 5** (weapons and damage): in progress (plan approved 26 Oct 2026, D59). Checkpoint 1 (research) done (D60); estimates accepted (D61). Checkpoint 2 (engine heat and structural limits) done (D62); checkpoint 3 (guns and ballistics) done (D67);
-  checkpoint 4 (target aircraft, hit zones and damage) done (D68); next checkpoint 5 (visible effects: hit flashes,
-  smoke, glycol, fire, parts breaking off) and the phase acceptance test.
+  checkpoint 4 (target aircraft, hit zones and damage) done (D68); checkpoint 5 (visible damage and wrecks) done
+  (D69). Next: the product owner's Phase 5 acceptance test (proposed in D69).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026.
+
+## Phase 5 checkpoint 5: visible damage and wrecks (27 Oct 2026)
+
+**Done** (D69):
+- glycol vapour, oil, engine smoke, flames and fire smoke trailing from where the damage is;
+- flashes and puffs where rounds strike;
+- crash fireballs and smoke columns;
+- wings and tails breaking off, and wrecks falling and turning, for the target and the player;
+- a target whose pilot is killed flies on, uncontrolled, to the ground;
+- after a break-up, the view moves outside;
+- tests: `tests/weapons/effects.test.js`, `tests/core/wreck.test.js`, `tests/render/particles.test.js`, plus model
+  groups (1456 tests pass; `npm run validate` unchanged; 75 fps with every effect).
+
+**Known issues:**
+- wreck motion constants and all effect looks are estimates or display choices;
+- an outer-panel failure takes the whole wing half off;
+- a burst from dead astern can break a tail off quickly (D68's tail-damage estimate, for the product owner to judge);
+- with the product owner's joystick plugged in, its twist grip gave 15% rudder in testing (the aircraft turns
+  hands-off); a dead zone or calibration may be needed (Phase 8 handles rebinding).
 
 ## Phase 5 checkpoint 4: target aircraft, hit zones and damage (27 Oct 2026)
 

@@ -1537,3 +1537,101 @@ hits took away its elevator and rudder, damaged its tail by 60%, and wore its en
 with no elevator it climbed away out of control. Key 9 hits the coolant, engine, oil and wing in turn. 75 fps, no
 console errors. With the product owner's joystick plugged in, the joystick's axes take over the keyboard's stick and
 rudder, as designed.
+
+**Product owner's answers** (27 Oct 2026):
+- the D68 estimates are accepted;
+- the Spitfire's plain tank, the Bf 109's assumed self-sealing tank, and no armour in the Bf 110 and He 111 are
+  accepted;
+- the target keeps its own cruising speed.
+
+## D69. Visible damage, wrecks and the Phase 5 acceptance test (27 Oct 2026, Phase 5 checkpoint 5)
+
+**What a damaged aircraft gives off** (`src/weapons/effects.js`, from its damage state, placed in its hit zones so a
+trail starts where the hits went in):
+- **Glycol:** white vapour, from under the radiator's zone, while the coolant leaks:
+  - Spitfire: under the starboard wing;
+  - Hurricane: under the belly;
+  - Bf 109: both wing radiators;
+  - twins: the radiators of the engine that was hit.
+
+  Coolant boiling off past its limit (the heat model's `boilMargin`) vents the same vapour. Overheating shows this way,
+  not as smoke.
+- **Oil:** a thin dark trail, from under the oil cooler's zone.
+- **Engine smoke:** from the engine or nacelle once it is badly worn (from 30% wear), black at seizure.
+- **Fire:** flames and thick black smoke, from under the zone where it started. The zone is now kept with the fire.
+
+**Drawn as particles** (`src/render/particles.js`, `src/render/effects.js`):
+- **Pools:** two, one for smoke and vapour and one for glowing flames and flashes, with 7,000 particles in all and 2
+  draw calls.
+- **How they move:** particles are laid in the air along the emitter's path, nearly still, so the aircraft leaves a
+  trail behind it.
+- **Strikes:**
+  - 20 mm shells: an orange-white flash and a dark puff;
+  - incendiary and observing rounds: a small yellow flash;
+  - ball and AP: a small grey puff.
+- **Crashes:** a crash faster than 30 m/s gives a fireball and a column of black smoke that rises for 45 s.
+- **Looks:** all colours, sizes, rates and lifetimes are display choices, labelled as such in the code.
+
+**Fixed while checking:** the renderer's logarithmic depth buffer needs its depth chunks (and Three.js's `common`
+chunk) in the particle shader. Without them, every particle with land behind it was hidden. A test now checks that
+the chunks are there.
+
+**Wrecks and parts breaking off** (`src/core/wreck.js`, `src/core/losses.js`, `src/render/wrecks.js`):
+- **Model:** each aircraft model now has its wing halves (`wingLeft`, `wingRight`, with their ailerons, flaps,
+  markings, legs and, on the twins, nacelles and airscrews) and its tail (`tail`, with the fin markings) as separate
+  groups. It looks the same.
+- **What comes off:** each failure now records the parts it takes off:
+  - a broken wing: that wing half;
+  - the tail;
+  - over-g: both wings;
+  - a fire: the wing half it burned in, the tail if it was in the fuselage, nothing if it was in a single's engine.
+- **The wreck:** a broken aircraft is no longer flown on the flight model. It becomes a wreck that falls under gravity
+  and air drag, turning the way the loss would turn it:
+  - a lost wing rolls it towards that side;
+  - a lost tail pitches it nose down;
+  - otherwise it tumbles slowly.
+- **The debris:** each lost part falls on its own, slower and tumbling, from where it was on the aircraft.
+- **Constants:** in `common.wreck`, all estimates with no source, recorded in AIRCRAFT_DATA:
+  - wreck terminal speed 90 m/s;
+  - part 35 m/s;
+  - roll 3.5 rad/s;
+  - pitch 2.5 rad/s;
+  - tumble 0.6 rad/s;
+  - parts 4 rad/s.
+- **Flagged simplification:** an outer-panel failure takes the whole wing half off.
+- **The target:**
+  - broken up, it becomes a wreck and debris ("Target destroyed: ...");
+  - with its pilot killed, it flies on, on its own flight model with frozen controls, until the ground ("Target's
+    pilot killed", then "Target crashed");
+  - a dead pilot's aircraft can still break up.
+- **The player:** the flight ends as before, with "... — press R to restart".
+  - A broken aircraft falls as a wreck, with its lost parts tumbling away, and the view moves from the cockpit to the
+    outside view.
+  - With the pilot killed, the aircraft flies on, uncontrolled, to the ground.
+  - The target and the rounds in flight carry on meanwhile.
+
+**Checked in Chrome** (with the joystick switched off in the test tab only, as its twist grip gave 15% rudder):
+- glycol, oil, engine smoke, flames and fire smoke trail from the right places, seen against both sky and land;
+- 20 mm strikes leave dark puffs;
+- a target's wing comes off and the pieces fall away;
+- the player's wreck rolls down without its left wing, in the outside view;
+- crash fireballs and smoke columns show;
+- 75 fps (the screen's limit) with every effect showing, 1.9 ms of work per frame, and no console errors after the
+  shader fix.
+
+**For the product owner to judge in the acceptance test:** a 2-second burst of a Spitfire's eight Brownings from 200
+m dead astern broke a Bf 109's tail off. The tail-damage rate (`damage.tailDamage`, D68) is an estimate and can be
+lowered if that is too quick.
+
+**Proposed Phase 5 acceptance test:**
+1. `npm test` passes, including bullet drop and time of flight against the sourced tables (D67).
+2. In each fighter, from the air start, shoot a target (Y): hits are counted in F3, and strikes show.
+3. A coolant hit gives a glycol trail, then the engine overheats and seizes, and the target goes down.
+4. Wing hits roll the target. With enough hits the wing breaks off and the wreck spins down to a crash and a smoke
+   column.
+5. Incendiaries into a tank start a fire, then break-up.
+6. Key 9 on your own aircraft:
+   - coolant: glycol visible from outside (V), the temperature climbs, then the engine seizes;
+   - wing: the aircraft rolls;
+   - cables: a control goes dead.
+7. 60 fps or more while firing with trails showing, and no console errors.
