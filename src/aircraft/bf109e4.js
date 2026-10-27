@@ -38,8 +38,8 @@ export const bf109e4 = {
     rudderCn: 0.06,
     cyBeta: -0.6,
     swirl: 0.15,
-    rollRig: -0.0021,
-    yawRig: -0.00146,
+    rollRig: -0.002231, // solved by npm run fit:rig (D73)
+    yawRig: -0.001464, // solved by npm run fit:rig (D73)
     stallBias: -0.02, // left wing drops at the stall
   },
   controls: {

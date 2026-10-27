@@ -11,6 +11,7 @@
     "validate": "node scripts/validate.mjs",
     "calibrate": "node scripts/calibrate.mjs",
     "fit:ballistics": "node scripts/fitBallistics.mjs",
+    "fit:rig": "node scripts/fitRig.mjs",
     "handling": "node scripts/handling.mjs",
     "build:terrain": "node scripts/buildTerrain.mjs",
     "build:features": "node scripts/buildFeatures.mjs"

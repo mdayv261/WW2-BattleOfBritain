@@ -1703,3 +1703,63 @@ zone let about 10% right rudder through.
 The product owner's saved settings were restored afterwards.
 
 **Help text:** it now says rudder trim (, and .) is on the Spitfire, Bf 110 and He 111. It said Spitfire only.
+
+## D73. Rigging solved so every aircraft flies straight hands-off at the air start (27 Oct 2026)
+
+**Problem:** the product owner found every aircraft rolling gently hands-off, whatever joystick neutral was set. The
+joystick was clean (axes 0 and 1 read 0.001, F3 showed 0% stick). The roll came from the aircraft. With no joystick at
+all, from the air start (1,500 m, 110 m/s, level-flight throttle), the bank after 30 s was:
+
+| Aircraft | Bank after 30 s |
+|---|---|
+| Hurricane | 1.2° left |
+| Spitfire | 1.6° right |
+| Bf 109 | 11.0° right, turning 50° in a minute |
+| Bf 110 | 6.4° left |
+| He 111 | 8.8° left |
+
+**Cause:** the fixed rigging against engine torque (`aero.rollRig`) and the fin offset or ground-set tab against
+slipstream swirl (`aero.yawRig`) are meant to cancel exactly at the air start (D25, D26: under 2° in 30 s).
+- The values were rounded estimates.
+- Later recalibrations changed the torque and swirl: the Bf 109 from the RAE report (D30), and the twins' engines and
+  airscrews.
+- The slow spiral magnifies a small error: 6% on the Bf 109's roll rigging gave 11° in 30 s.
+- Measured at old commits, the drift has been the same since Phase 3 checkpoint 2.
+- No test checked it, so it went unnoticed.
+
+**The fix:**
+- **Solver:** `npm run fit:rig` (`scripts/fitRig.mjs`, `src/dev/rigging.js`) solves each aircraft's two rig values
+  with the full flight model, so no roll or yaw builds up from the air start. A rigger sets a real aircraft the same
+  way: wings level and the ball centred at cruise.
+- **New values** (estimates, solved):
+
+| Aircraft | rollRig | yawRig |
+|---|---|---|
+| Hurricane | 0.002119 (was 0.0021) | 0.001156 (was 0.00116) |
+| Spitfire | 0.001776 (was 0.0018) | 0.0009217 (was 0.00092) |
+| Bf 109 | −0.002231 (was −0.0021) | −0.001464 (was −0.00146) |
+| Bf 110 | −0.001402 (was −0.00153) | −0.0005885 (was −0.00059) |
+| He 111 | −0.0007952 (was −0.00105) | −0.0002062 (was −0.00037) |
+
+- **Result:** the hands-off bank after 30 s is now under 0.05° for the four fighters and 1.3° for the He 111. It flies
+  the air start's 110 m/s near its top speed and is still settling.
+- **Flagged:** the He 111 was rigged at 90 m/s. It is now rigged at the air start, like the others.
+- **Test:** `tests/physics/rigging.test.js` checks that each aircraft holds its bank within 2° and heading within 3°
+  for 30 s hands-off, and that its data matches a fresh solve within 2%. A later flight-model change that upsets the
+  balance now fails the tests.
+
+**Validation:** `npm run validate` moved only slightly, since rigging adds small constant moments:
+- Bf 109 roll pb/2V: −15.1% to −15.2%;
+- Bf 109 time to 45° bank: 1.24 s to 1.26 s;
+- Bf 109 landing distance: +6.3% to +6.2%;
+- RAF roll calibrations: by 0.1%.
+
+FLIGHT_VALIDATION.md is updated. In `npm run handling` every stall-drop and spin direction is unchanged.
+
+**What stays as it is (realistic):** away from the rigged speed and power, torque and swirl no longer cancel, so the
+aircraft wants to roll or yaw a little. At full throttle (once the joystick's throttle slider is moved, it takes over)
+or in climbs and dives, the pilot holds it with stick and rudder, or rudder trim on the Spitfire, Bf 110 and He 111,
+as in the real aircraft.
+
+**Checked in Chrome:** the Bf 109 hands-off from the air start for 30 s held heading 360°, 1,500 m and wings level, with
+0% stick.

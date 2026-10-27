@@ -15,6 +15,15 @@ Read this at the start of every session.
   (D69). Next: the product owner's Phase 5 acceptance test (proposed in D69).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026.
 
+## Hands-off rigging solved (27 Oct 2026)
+
+**Done** (D73): the roll and yaw rigging of all five aircraft is solved with the flight model (`npm run fit:rig`), so
+each flies straight hands-off at the air start (under 0.05° of bank in 30 s for the fighters, 1.3° for the He 111). A
+new test (`tests/physics/rigging.test.js`) guards it.
+
+**Known issue:** away from the air start's speed and power (for example at full throttle), the aircraft still want to
+roll or yaw a little, as the real ones did; the pilot corrects.
+
 ## Joystick dead zone (27 Oct 2026)
 
 **Done** (D72): a dead zone choice (5-30%) for Roll, Pitch and Rudder in the joystick panel (J), with a live readout of

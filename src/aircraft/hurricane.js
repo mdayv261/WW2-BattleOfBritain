@@ -38,8 +38,8 @@ export const hurricane = {
     rudderCn: 0.06,
     cyBeta: -0.6,
     swirl: 0.15,
-    rollRig: 0.0021,
-    yawRig: 0.00116,
+    rollRig: 0.002119, // solved by npm run fit:rig (D73)
+    yawRig: 0.001156, // solved by npm run fit:rig (D73)
     stallBias: -0.01,
   },
   controls: {

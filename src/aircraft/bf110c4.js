@@ -38,8 +38,8 @@ export const bf110c4 = {
     rudderCn: 0.05,
     cyBeta: -0.7,
     swirl: 0.1,
-    rollRig: -0.00153,
-    yawRig: -0.00059,
+    rollRig: -0.001402, // solved by npm run fit:rig (D73)
+    yawRig: -0.0005885, // solved by npm run fit:rig (D73)
     stallBias: -0.01,
     rudderTrimCn: 0.015, // yaw moment of the rudder trim tabs at full travel
   },

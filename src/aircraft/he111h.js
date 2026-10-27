@@ -40,8 +40,8 @@ export const he111h = {
     rudderCn: 0.04,
     cyBeta: -0.6,
     swirl: 0.08,
-    rollRig: -0.00105,
-    yawRig: -0.00037,
+    rollRig: -0.0007952, // solved by npm run fit:rig (D73)
+    yawRig: -0.0002062, // solved by npm run fit:rig (D73)
     stallBias: -0.01,
     rudderTrimCn: 0.015,
   },

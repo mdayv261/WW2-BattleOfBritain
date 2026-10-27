@@ -79,7 +79,7 @@ The flight model compared with sourced performance figures. Generated from `npm 
 | S31 | Stall (IAS) | 4,921 ft | NACA Spitfire VA stalls (6184 lb), power off, flaps and undercarriage down | 80.0 mph | 80.4 mph | +0.5% |
 | S31 | Stall (IAS) | 4,921 ft | NACA Spitfire VA stall, cruising power (+3 3/4 lb, 2650 rpm) **(calibration point)** | 77.0 mph | 77.0 mph | -0.0% |
 | S13 | Roll pb/2V | 10,000 ft | NACA aileron tests, 30 lb stick force, rudder fixed **(calibration point)** | 0.050 | 0.050 | -0.1% |
-| S13 | Roll pb/2V | 10,000 ft | NACA aileron tests, full aileron, rudder fixed | 0.085 | 0.072 | -15.1% |
+| S13 | Roll pb/2V | 10,000 ft | NACA aileron tests, full aileron, rudder fixed | 0.085 | 0.072 | -15.2% |
 
 ### Bf 109 E-4
 
@@ -87,7 +87,7 @@ The flight model compared with sourced performance figures. Generated from `npm 
 |---|---|---|---|---|---|---|
 | S32 | Stall (IAS) | 1,500 m | RAE stalls, trailing-static airspeed, gliding (5,580 lb) | 154 km/h | 150 km/h | -2.5% |
 | S32 | Stall (IAS) | 1,500 m | RAE stalls, trailing-static airspeed, gliding (5,580 lb), flaps and undercarriage down | 130 km/h | 128 km/h | -1.8% |
-| S32 | Time to 45° bank, 400 mph IAS | 3,048 m | RAE: 45 degrees of bank at 400 mph IAS with one-fifth aileron (height not stated) | 4.0 s | 1.2 s | -69.0% |
+| S32 | Time to 45° bank, 400 mph IAS | 3,048 m | RAE: 45 degrees of bank at 400 mph IAS with one-fifth aileron (height not stated) | 4.0 s | 1.3 s | -68.5% |
 | S16 | Level speed | 0 m | Data sheet level speeds (1.30 ata, 2400 rpm) **(calibration point)** | 460 km/h | 460 km/h | -0.0% |
 | S16 | Level speed | 1,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 480 km/h | 477 km/h | -0.6% |
 | S16 | Level speed | 2,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 500 km/h | 501 km/h | +0.3% |
@@ -191,7 +191,7 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
 | Hurricane Mk I | S1 | Landing from 50 ft (light weight) | 540 yd | 518 yd | -4.1% |
 | Bf 109 E-4 | S15 | Take-off ground run (20° flap) | 260 m | 195 m | -25.0% |
 | Bf 109 E-4 | S15 | Take-off to clear 20 m | 470 m | 377 m | -19.7% |
-| Bf 109 E-4 | S15 | Landing from 20 m | 530 m | 563 m | +6.3% |
+| Bf 109 E-4 | S15 | Landing from 20 m | 530 m | 563 m | +6.2% |
 | Spitfire Mk I | S33 | Engine speed at full throttle on the ground | 2650-2700 rpm | 2700 rpm | within |
 
 **Ground behaviour already checked** (`tests/physics/ground.test.js`):
