@@ -2019,3 +2019,69 @@ Gun pivot positions are estimates placed on the aircraft models.
 - an Ace Spitfire closes on a Bf 109 and hits it;
 - a Regular Bf 109 shot down a hands-off Spitfire;
 - the Kette holds its places within 7 m for 3 minutes.
+
+## D80. Bailing out and parachutes (27 Oct 2026, Phase 6 checkpoint 2b, product owner)
+
+**Accepted from checkpoint 2:** the bomber formation speed rule, the skill table and the 2.5 km escort engage range
+(D79).
+
+**The product owner asked:** crews bailing out of battle-damaged aircraft, each man seen jumping, his parachute
+opening and him floating down; the player too, with the view following him.
+
+**Their choices:**
+- **The player:** bails out automatically when the aircraft is lost (broken up, on fire, or its elevator gone), and can
+  bail out any time by holding Backspace for 1 s, or a joystick button chosen in the J panel (default: button 8 as
+  printed on the stick; mapping version 4 keeps saved settings).
+- **AI crews:** bail out when their aircraft is lost, and also when badly damaged.
+- **Timing:** built before tactics.
+- **Source:** S42, a 1942 RCAF station publication, accepted though outside the usual source list.
+
+**Crew** (corrected with the product owner, who thought the He 111 carried 6):
+- He 111 H: 5. Pilot, observer, radio operator, flight engineer and the "5. Mann" for the side guns (S28).
+- Bf 110 as a fighter: 2 (S25).
+- Single-seat fighters: 1.
+- Seats are estimates on the models.
+- **Exit times** (estimates, from deciding to clear of the aircraft):
+  - fighters 4 s;
+  - Bf 110: 4 s and 6 s;
+  - He 111: 6, 8, 10, 12 and 14 s, one after another;
+  - from a broken-up aircraft, half these, from its falling wreck.
+
+**Parachutes** (S42, the RAF's 24 ft Irvin; no Luftwaffe figures were found, so both sides use these, flagged):
+- the canopy descends at 4.9 m/s at sea level ("approximately 16 feet per second"), faster in thinner air;
+- free fall settles at up to 58 m/s ("will not exceed 130 miles per hour");
+- the ripcord is pulled after 3 s ("a count of three");
+- the canopy is fully open 1.6 s later.
+- Drag in proportion to the square of the speed gives these limits; the canopy's drag grows smoothly as it opens.
+- A man who reaches the ground before his canopy is open is killed.
+- A landing is on the ground or in the sea.
+
+**When AI crews go** (game-design thresholds, `src/core/bailout.js`):
+- **Lost:** broken up, on fire, or the elevator gone.
+- **Badly damaged:** every engine seized or with its coolant or oil all but gone, any control surface gone, or a wing
+  panel or the tail at 50% damage.
+- **Decision:** after the crew's reaction time. The pilot's hands come off the controls and the aircraft flies on
+  pilotless.
+- **The pilot killed:** the rest of a crew (the Bf 110's gunner, the He 111's men) still bail out. A single-seater
+  with a dead pilot doesn't.
+- **Lost aboard:** men still aboard when the aircraft or its wreck reaches the ground.
+- **Cleared aircraft:** an aircraft cleared with key 0 (or replaced by a new scenario) takes its crew with it.
+- **Reported:** "Bf 109 E-4 #1: pilot bailed out", "He 111 H #1: 5 crew bailed out".
+
+**The player:**
+- "Bailing out!" while getting out (4 s, or 2 s from a broken-up aircraft); the controls still work until he leaves.
+- Then the flight ends ("You bailed out — press R to restart").
+- The aircraft flies on without him, or falls as a wreck.
+- The instrument panel goes and the orbit view follows him down.
+- When he lands: "Landed by parachute", "Came down in the Channel", or "Killed: the parachute had not opened".
+
+**Drawing** (`src/render/parachutes.js`, display choices):
+- a small figure in RAF brown or Luftwaffe grey-green, tumbling in free fall;
+- a white 7.3 m canopy with 12 rigging lines, swelling open and swaying, collapsing once he's down;
+- landed men are dropped after 60 s.
+
+**Checked in Chrome:**
+- holding Backspace bailed the player out of a Spitfire, which flew on without him; he tumbled, then hung under an
+  open canopy;
+- an He 111 set on fire put out all five crew under open canopies;
+- no console errors.

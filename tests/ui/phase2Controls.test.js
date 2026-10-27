@@ -425,3 +425,23 @@ describe('joystick dead zone (D72)', () => {
     expect(input.yaw).toBeCloseTo((0.15 - 0.05) / 0.95, 9);
   });
 });
+
+describe('joystick bail-out button (D80)', () => {
+  it('a mapping saved before it keeps its buttons and gains the bail-out button; holding it sets the input', () => {
+    const saved = {
+      version: 3, roll: { axis: 0, invert: false }, pitch: { axis: 1, invert: false }, yaw: { axis: 5, invert: false },
+      throttle: { axis: 6, invert: true }, hat: { axis: 9 },
+      buttons: { trimUp: 2, trimDown: 4, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1 },
+    };
+    globalThis.localStorage = { getItem: () => JSON.stringify(saved), setItem() {} };
+    const joy = new Joystick();
+    expect(joy.mapping.buttons.trimUp).toBe(2); // the owner's own choice kept
+    expect(joy.mapping.buttons.bailOut).toBe(DEFAULT_MAPPING.buttons.bailOut);
+    const buttons = Array.from({ length: 12 }, () => ({ pressed: false }));
+    buttons[joy.mapping.buttons.bailOut].pressed = true;
+    joy.poll = () => (joy.pad = { axes: [0, 0, 0, 0, 0, 0, -1, 0, 0, 1.2857], buttons });
+    const input = { flaps: 0, gear: 1, throttle: 0.5 };
+    joy.update(input, hurricane);
+    expect(input.bailOut).toBe(true);
+  });
+});

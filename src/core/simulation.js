@@ -23,6 +23,7 @@ import { nextTarget, hittable, resolveHit, stepOthers, testHit } from './combat.
 import { Craft } from './craft.js';
 import { recordTrack } from '../ai/perception.js';
 import { clearLosses, losePlayer, stepPlayerLoss, stepFalling } from './losses.js';
+import { stepBailouts, playerBailout, playerJumped, playerLanding } from './bailout.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 export const START_MODES = ['ground', 'approach', 'air'];
@@ -110,6 +111,12 @@ export class Simulation {
     this.crashed = false;
     this.crashCause = null;
     clearLosses(this); // wrecks, debris, crash sites and hits for the effects (D69)
+    this.bailouts = []; // crews bailing out, and the men under parachutes (D80)
+    this.jumpers = [];
+    this.bailout = null;
+    this.playerJumper = null;
+    this.landingReported = false;
+    this.bailHold = 0;
     this.seen = { seized: this.plane.engines.map(() => false), airframe: 0, flutter: false }; // damage already reported
     this.previous = { position: new Vector3(), quaternion: new Quaternion() };
     this.copyPose(this.previous);
@@ -159,6 +166,11 @@ export class Simulation {
     if (craft) this.others.push(craft);
   }
 
+  /** The player's pilot has left the aircraft (src/core/bailout.js). */
+  playerJumped(jumper) {
+    playerJumped(this, jumper);
+  }
+
   /** Every aircraft in the air: the player's and the AI's. */
   crafts() {
     return [this.player, ...this.others];
@@ -202,6 +214,7 @@ export class Simulation {
     recordTrack(this.player, this.clock);
     this.stepWorld(dt);
     const { ground, damage } = this.plane;
+    playerBailout(this, dt);
     if (ground.crash || damage.failed) losePlayer(this);
     this.reportDamage();
   }
@@ -211,6 +224,8 @@ export class Simulation {
     stepOthers(this, dt);
     this.projectiles.step(dt, this.world.terrain, hittable(this), (struck, hit) => resolveHit(this, struck, hit));
     stepFalling(this, dt);
+    stepBailouts(this, dt);
+    playerLanding(this);
   }
 
   /** Tells the pilot once about each new kind of damage from heat or overstress (Phase 5). */

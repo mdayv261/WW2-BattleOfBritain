@@ -7,6 +7,7 @@ import { zonesFor } from '../weapons/hitZones.js';
 import { applyHit, hurt } from '../weapons/damage.js';
 import { roundTypes } from '../aircraft/ammunition.js';
 import { noteHit, noteCrash, fall } from './losses.js';
+import { doomed, badlyDamaged, startBailout, decisionDelay, BREAK_UP_EXIT } from './bailout.js';
 
 /** Y: the next target type ahead of the player (the five in turn, then none). Returns the notice text. */
 export function nextTarget(sim) {
@@ -57,18 +58,37 @@ export function targetBearing(sim, craft = sim.target) {
  */
 export function stepOthers(sim, dt) {
   for (const c of sim.others) c.step(dt, sim);
+  // Crews abandon aircraft that are lost or badly damaged (D80): the pilot's hands come off the controls as they go.
+  // With the pilot killed, the rest of a crew abandon the aircraft; a single-seater's pilot is beyond deciding.
+  for (const c of sim.others) {
+    const d = c.plane.damage;
+    if (c.bailout || (d.failed && !d.failed.pilotKilled)) continue;
+    const pilotDead = d.pilot <= 0;
+    if (pilotDead ? c.ac.crew.length < 2 : !(doomed(c.plane) || badlyDamaged(c.plane))) continue;
+    c.bailout = startBailout(sim, {
+      ac: c.ac, side: c.side, label: c.label, body: () => (c.gone ? null : c.plane.body), delay: decisionDelay(c), pilotAlive: !pilotDead,
+    });
+    c.abandoned = true;
+  }
   const say = (text) => { sim.notice = { text, until: sim.plane.time + 5 }; };
   const name = (c) => (c.role === 'target' ? 'Target' : c.label);
   sim.others = sim.others.filter((c) => {
     const { failed } = c.plane.damage;
     const crash = c.plane.ground.crash;
     if (crash) {
+      c.gone = true; // anyone still aboard is lost
       noteCrash(sim, c.plane.body.position, crash.speed);
       say(`${name(c)} crashed`);
       return false;
     }
     if (failed && !failed.pilotKilled) {
-      fall(sim, c.plane);
+      const wreck = fall(sim, c.plane);
+      // The crew get out of the falling wreck if they can, in half their usual time.
+      const fromWreck = () => (wreck.landed ? null : wreck.body);
+      if (c.bailout) c.bailout.body = fromWreck;
+      else if (c.plane.damage.pilot > 0) {
+        c.bailout = startBailout(sim, { ac: c.ac, side: c.side, label: c.label, body: fromWreck, delay: decisionDelay(c), scale: BREAK_UP_EXIT });
+      }
       say(`${name(c)} destroyed: ${failed.cause}`);
       return false;
     }

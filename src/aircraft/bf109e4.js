@@ -115,6 +115,11 @@ export const bf109e4 = {
   // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
   sight: { type: 'Revi C/12C', ringMils: 100 },
   eye: { x: -0.89, y: 0.556 },
+  // Crew (Phase 6, D80): where each sits (m, body axes; estimates on the model) and how long after deciding to bail
+  // out he is clear of the aircraft (s, estimates: hood or hatch, harness, over the side; one after another).
+  crew: [
+    { role: 'pilot', x: -0.89, y: 0.15, z: 0, exit: 4 },
+  ],
   propeller: {
     type: 'manualPitch',
     diameter: 3.1,

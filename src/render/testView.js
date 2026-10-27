@@ -100,7 +100,14 @@ export class TestView {
     this.flashes.update(sim.plane.time);
     this.updateOthers(sim, alpha, dt);
 
-    this.rig.update(sim.ac, { position: this._pos, quaternion: this._quat }, body.velocity, dt);
+    // Once the player has bailed out, the orbit view follows him down under his parachute (D80).
+    const j = sim.playerJumper;
+    if (j && this.jumperFor !== j) {
+      this.jumperFor = j;
+      this.rig.mode = 'orbit';
+    }
+    if (j) this.rig.update(sim.ac, { position: j.position, quaternion: j.facing ?? this._quat }, j.velocity, dt);
+    else this.rig.update(sim.ac, { position: this._pos, quaternion: this._quat }, body.velocity, dt);
     const cam = this.rig.camera.position;
     this.scene.getObjectByName('sky')?.position.copy(cam);
     // Keep the sea under the camera, moved in whole texture tiles so its pattern stays put.

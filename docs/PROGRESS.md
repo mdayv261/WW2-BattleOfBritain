@@ -12,9 +12,24 @@ Read this at the start of every session.
 - **Phase 4** (world and visuals): signed off (26 Oct 2026, D57).
 - **Phase 5** (weapons and damage): signed off (27 Oct 2026, D75).
 - **Phase 6** (AI pilots and gunners): in progress (plan approved 27 Oct 2026, D76). Checkpoint 1 (research) done (D77,
-  D78); checkpoint 2 (many aircraft, the AI pilot's hands, scenario keys) done (D79); next checkpoint 3 (fighter
-  tactics and formations).
+  D78); checkpoint 2 (many aircraft, the AI pilot's hands, scenario keys) done (D79); checkpoint 2b (bailing out and
+  parachutes, the product owner's addition) done (D80); next checkpoint 3 (fighter tactics and formations).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
+
+## Phase 6 checkpoint 2b: bailing out and parachutes (27 Oct 2026)
+
+**Done** (D80):
+- crews bail out of lost or badly damaged aircraft, one man after another (He 111: 5, Bf 110: 2, fighters: 1);
+- parachutes: free fall, the canopy opening after a count of three, then coming down at about 4.9 m/s (S42);
+- the player bails out automatically when the aircraft is lost, or by holding Backspace (or joystick button 8) for
+  1 s;
+- the view follows the player down;
+- tests in `tests/core/parachute.test.js` and `tests/core/bailout.test.js`.
+
+**Known issues:**
+- the same parachute figures serve the Luftwaffe (no German figures found);
+- crew seats and exit times are estimates;
+- the gunners' own wounds come in checkpoint 4.
 
 ## Phase 6 checkpoint 2: many aircraft and the AI pilot's hands (27 Oct 2026)
 

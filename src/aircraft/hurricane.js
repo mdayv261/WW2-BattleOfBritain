@@ -116,6 +116,11 @@ export const hurricane = {
   // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
   sight: { type: 'Barr & Stroud GM 2', ringMils: 100 },
   eye: { x: -0.89, y: 0.65 },
+  // Crew (Phase 6, D80): where each sits (m, body axes; estimates on the model) and how long after deciding to bail
+  // out he is clear of the aircraft (s, estimates: hood or hatch, harness, over the side; one after another).
+  crew: [
+    { role: 'pilot', x: -0.89, y: 0.25, z: 0, exit: 4 },
+  ],
   propeller: {
     type: 'constantSpeed',
     diameter: 3.454,

@@ -106,12 +106,18 @@ function arriveCool(craft) {
 
 const otherSide = (side) => (side === 'RAF' ? 'Luftwaffe' : 'RAF');
 
+/** Takes every AI aircraft out of the sky (its crew with it: nobody bails out of an aircraft that has been cleared). */
+function dropAll(sim) {
+  for (const c of sim.others) c.gone = true;
+  sim.others = [];
+}
+
 /** 6: the next fighter scenario for the player's side. Returns its notice. */
 export function nextFighterScenario(sim) {
   const list = FIGHTER_SCENARIOS[sim.ac.side];
   sim.fighterIndex = ((sim.fighterIndex ?? -1) + 1) % list.length;
   const sc = list[sim.fighterIndex];
-  sim.others = [];
+  dropAll(sim);
   const { heading, fwd } = frame(sim);
   const origin = sim.plane.body.position.clone().addScaledVector(fwd, 2500).add(new Vector3(0, 500, 0));
   spawnGroup(sim, { id: sc.id, formation: sc.formation, origin, heading: heading + Math.PI, role: 'fighter', side: otherSide(sim.ac.side), speed: 110 });
@@ -121,7 +127,7 @@ export function nextFighterScenario(sim) {
 
 /** 7: a bomber formation with its escorts or attackers. Returns its notice. */
 export function bomberScenario(sim) {
-  sim.others = [];
+  dropAll(sim);
   const { heading, fwd, right } = frame(sim);
   const he111 = aircraftById.he111h;
   const p = sim.plane.body.position;
@@ -159,7 +165,7 @@ export function cycleSkill(sim) {
 
 /** 0: clears every AI aircraft (wrecks already falling go on falling). */
 export function clearAI(sim) {
-  sim.others = [];
+  dropAll(sim);
   sim.scenario = null;
   return 'AI aircraft cleared';
 }

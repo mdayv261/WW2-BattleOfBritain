@@ -11,6 +11,7 @@ const FUNCTIONS = [['roll', 'Roll'], ['pitch', 'Pitch (pull back = +)'], ['yaw',
 const BUTTONS = [
   ['trimUp', 'Elevator trim nose up (hold)'], ['trimDown', 'Elevator trim nose down (hold)'], ['brake', 'Brakes (hold)'],
   ['flapsUp', 'Flaps up a stop'], ['flapsDown', 'Flaps down a stop'], ['gear', 'Undercarriage'], ['view', 'Cockpit / outside'],
+  ['bailOut', 'Bail out (hold 1 s)'],
 ];
 // Sensitivity choices, each with what half stick gives.
 const sensitivityOptions = SENSITIVITIES.map(([name, k]) => `<option value="${k}">${name} (half stick ${Math.round(100 * 0.5 ** k)}%)</option>`).join('');

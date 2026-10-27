@@ -17,7 +17,7 @@ export function clearLosses(sim) {
   sim.crashSites = []; // [{ position, speed, time }]
   sim.hitEvents = []; // [{ point (world), kind, velocity (the aircraft's) }]
   sim.wreck = null; // the player's own wreck, once broken up
-  sim.uncontrolled = null; // the player's frozen controls, once the pilot is killed
+  sim.uncontrolled = null; // the player's frozen controls, once the pilot is killed or has bailed out
 }
 
 const keep = (list, item) => {
@@ -80,5 +80,10 @@ export function stepPlayerLoss(sim, dt) {
     sim.copyPose(sim.previous);
     stepAircraft(plane, sim.uncontrolled, dt);
     if (plane.ground.crash) noteCrash(sim, plane.body.position, plane.ground.crash.speed);
+    // An abandoned aircraft can still break up (its fire burns on): it falls as a wreck from then on.
+    else if (plane.damage.failed && !plane.damage.failed.pilotKilled) {
+      sim.wreck = fall(sim, plane);
+      sim.uncontrolled = null;
+    }
   }
 }

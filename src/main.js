@@ -5,6 +5,7 @@ import { TestView } from './render/testView.js';
 import { ProjectileView } from './render/projectiles.js';
 import { EffectsView } from './render/effects.js';
 import { WreckView } from './render/wrecks.js';
+import { ParachuteView } from './render/parachutes.js';
 import { HAT_LOOKS } from './render/cameras.js';
 import { Simulation } from './core/simulation.js';
 import { nextFighterScenario, bomberScenario, cycleSkill, clearAI } from './core/scenarios.js';
@@ -27,6 +28,7 @@ const view = new TestView(scene, camera, sea);
 const shots = new ProjectileView(scene); // tracers and smoke trails (D67)
 const effects = new EffectsView(scene); // glycol, smoke, fire, strikes and crashes (D69)
 const wrecks = new WreckView(scene); // falling wrecks and broken-off parts (D69)
+const parachutes = new ParachuteView(scene); // men bailing out and their parachutes (D80)
 const sim = new Simulation(aircraftList[1], 'ground', world); // start in the Spitfire, on the ground at Hawkinge
 view.setAircraft(sim.ac);
 
@@ -97,10 +99,11 @@ renderer.setAnimationLoop((now) => {
   view.update(sim, sim.loop.alpha, dt);
   shots.update(sim.projectiles);
   wrecks.update(sim, sim.loop.alpha);
+  parachutes.update(sim);
   effects.update(sim, dt, camera, renderer.domElement.height);
   updateScene(camera);
   hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
-  instruments.update(sim, { hidden: view.rig.lookingAway });
+  instruments.update(sim, { hidden: view.rig.lookingAway || !!sim.playerJumper }); // no panel once you have bailed out
   joyPanel.update();
   renderer.render(scene, camera);
   frameRate.work(performance.now() - now);

@@ -11,6 +11,7 @@
 //   B (hold)             brakes; with rudder, the brake on that side (D28)
 //   F / Shift+F          flaps down / up one stop (the Spitfire's go straight down or up)
 //   U  undercarriage   O  radiator   Q  +12 lb boost cut-out (RAF)   A  engine assist (Bf 109)
+//   Backspace (hold 1 s)  bail out (D80)
 
 import { clamp } from '../physics/interp.js';
 
@@ -38,7 +39,7 @@ export class Keyboard {
       if (e.repeat || e.metaKey || e.ctrlKey) return;
       this.down.add(e.code);
       this.pressed.add(e.code);
-      if (e.code.startsWith('Arrow') || e.code === 'Space' || e.code === 'Enter') e.preventDefault();
+      if (e.code.startsWith('Arrow') || e.code === 'Space' || e.code === 'Enter' || e.code === 'Backspace') e.preventDefault();
     });
     target.addEventListener('keyup', (e) => this.down.delete(e.code));
     target.addEventListener('blur', () => this.down.clear());
@@ -73,6 +74,7 @@ export class Keyboard {
     input.brake = this.down.has('KeyB') ? 1 : 0;
     // Guns (D67): Space fires the machine guns (all eight on the RAF fighters), Enter the cannon.
     input.fireMg = this.down.has('Space');
+    input.bailOut = this.down.has('Backspace'); // held for 1 s to bail out (src/core/bailout.js, D80)
     input.fireCannon = this.down.has('Enter') || this.down.has('NumpadEnter');
     const rpmKeys = this.axis('KeyD', 'KeyE');
     if (ac.propeller.type === 'constantSpeed') {

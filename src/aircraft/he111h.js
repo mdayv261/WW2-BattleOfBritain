@@ -120,6 +120,15 @@ export const he111h = {
     tail: { x: -9.5, y: -0.1, z: 0 },
   },
   eye: { x: 4.5, y: 0.8 },
+  // Crew (Phase 6, D80): where each sits (m, body axes; estimates on the model) and how long after deciding to bail
+  // out he is clear of the aircraft (s, estimates: hood or hatch, harness, over the side; one after another).
+  crew: [
+    { role: 'pilot', x: 4.5, y: 0.4, z: 0, exit: 10 },
+    { role: 'observer', x: 5.5, y: 0.0, z: 0, exit: 6 },
+    { role: 'radio operator', x: -3, y: 0.6, z: 0, exit: 8 },
+    { role: 'flight engineer', x: -2, y: -1.0, z: 0, exit: 12 },
+    { role: 'side gunner', x: -4, y: 0.2, z: 0, exit: 14 },
+  ],
   // Formation cruising speed (Phase 6, D78): the middle of S29's range-table speed, 330-345 km/h (no formation speed
   // found), m/s true.
   formationSpeed: 93.6,

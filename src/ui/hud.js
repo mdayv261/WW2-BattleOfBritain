@@ -78,6 +78,7 @@ const HELP = `
 <tr><td>I &nbsp; F2 &nbsp; F3</td><td>instruments, text readout, debug overlay</td></tr>
 <tr><td>Space &nbsp; Enter</td><td>fire the machine guns (RAF: all eight) / the cannon</td></tr>
 <tr><td>Y &nbsp; 9</td><td>target aircraft ahead (each press: the next type, then none) / a test 20 mm hit on your own aircraft</td></tr>
+<tr><td>Backspace</td><td>hold 1 s to bail out (you also bail out when the aircraft is lost)</td></tr>
 <tr><td>6 &nbsp; 7 &nbsp; 8 &nbsp; 0</td><td>AI: enemy fighters (each press: the next group) / a bomber formation / AI skill / clear the AI</td></tr>
 <tr><td>Joystick</td><td>trigger: machine guns; thumb button: cannon; hat: look around (the panel hides while you look away); 5 / 3 trim nose up / down; 4 / 6 flaps up / down; 12 brakes; 10 cockpit view; 11 undercarriage</td></tr>
 <tr><td>J &nbsp; H</td><td>joystick panel (change the buttons there), this help</td></tr>

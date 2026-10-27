@@ -126,6 +126,13 @@ export const common = {
     kette: { side: 40, back: 30 }, // He 111 Kette: a vic of three bombers
     escort: { behind: 1609, above: 500 }, // escort fighters behind and above the bombers
   },
+  // Parachutes (Phase 6, D80), the RAF's 24 ft Irvin (S42); no Luftwaffe figures found, so both sides use these.
+  parachute: {
+    canopyRate: 4.9, // m/s at sea level: "a rate of descent of approximately 16 feet per second"
+    freeFallMax: 58, // m/s: the falling speed "will not exceed 130 miles per hour" (a 150 lb man, U.S. Army test)
+    pullDelay: 3, // s from leaving the aircraft to pulling the ripcord: "a count of three will suffice"
+    openTime: 1.6, // s: "fully open ... approximately 1 3/5 seconds after the rip cord has been pulled"
+  },
   // A destroyed aircraft falling, and the parts that broke off it (Phase 5, D69): a simple body under gravity and drag,
   // turning at a set rate, since a broken airframe no longer flies. Estimates: no measurements of falling wrecks found.
   wreck: {

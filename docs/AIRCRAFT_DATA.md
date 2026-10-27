@@ -85,6 +85,7 @@ All values are stored in SI units. The original figure and unit from the source 
 | S39 | Ingenium (Canada Science and Technology Museum), artifact 1985.0079.001, "Gun, machine", Browning Mark II, B.S.A. 1938 | https://collection.ingenium.ca/en/id/1985.0079.001 | Museum record |
 | S40 | Department of the Army, TM 9-1985-3, "German Explosive Ordnance (Projectiles and Projectile Fuzes)", 1953: Table 4 (German cartridges, S.A.A., 7.92 mm) and Table 7 (German 20-mm Mauser and Oerlikon ammunition) | https://archive.org/details/TM9-1985-3 | Government technical manual (scan on archive site) |
 | S41 | E-Stelle Rechlin E 6 (Fl.-Bordwaffen-Munition), firing tables (Schußtafeln): "7,9 mm Panzergeschoss" (from measurements of 31 Mar 1943), "2 cm Sprgr.Patr. L'spur FFM m.Zerl." and related 117 g rounds (from the DWM table of 9 Sep 1940, recalculated May 1943) and "2 cm M-Gesch.Patr. FFM m.Zerl." (from the DWM table of 12 Dec 1941). Reproduced in "Handbuch der Flugzeug-Bordwaffenmunition 1936-1945", Teil 1 (Schußtafeln), pp. 7, 12, 13 of the scan | https://archive.org/details/HandbuchDerFlugzeugBordwaffenmunitionHandbookOfAirborneWeaponsAmmunition19361945German | Period test tables (Rechlin), in a retyped compilation whose compiler and date are not stated: see Notes on each row |
+| S42 | F/Lt H. J. Martin, "Jump! But Look to Your Parachute", Aylmer Airman (No. 14 Service Flying Training School, RCAF Aylmer, Ontario), vol. 1 no. 7, 13 Feb 1942, on the Irvin parachute | https://publications.rcaf.info/ON/Aylmer/1942/Aylmer-Airman-1942-02-13.pdf | Period RCAF station publication: outside the usual source list, accepted by the product owner (D80) |
 
 **Archive sites used (D8):**
 - wwiiaircraftperformance.org;
@@ -341,6 +342,8 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Oil cooler in hit zone cockpit: engine (`systems.oil.cockpit`) | 0 | index | — | ASSUMPTION | estimate | Where the oil cooler is (D68): placed from the airframe layout. |
 | Pilot's rear armour (`systems.armour`) | 0.008 | m | — | ASSUMPTION | estimate | RAF rear armour taken as 8 mm (D61); S38: armour directly behind the pilot. |
 | Fuel tanks by hit zone (`systems.fuel`) | wingInnerLeft: linatex; wingInnerRight: linatex; cockpit: plain | — | — | S38 | medium | Linatex wing tanks; uncovered reserve tank (S38). |
+| Crew (`crew`) | 1 | men | one pilot | S1 | medium | pilot. Seat positions are estimates on the model (D80). |
+| Crew: time from deciding to bail out to clear of the aircraft (`crew.exit`) | 4 | s | — | ASSUMPTION | estimate | Hood or hatch, harness, over the side; the crew one after another. No figures found (D80). |
 
 ## Supermarine Spitfire Mk I (Merlin III)
 
@@ -588,6 +591,8 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Oil cooler in hit zone wingInnerLeft: engine (`systems.oil.wingInnerLeft`) | 0 | index | — | ASSUMPTION | estimate | Where the oil cooler is (D68): S33 (radiator under the starboard wing, oil coolers under the port wing). |
 | Pilot's rear armour (`systems.armour`) | 0.008 | m | — | ASSUMPTION | estimate | RAF rear armour taken as 8 mm (D61); S38: armour directly behind the pilot. |
 | Fuel tanks by hit zone (`systems.fuel`) | cockpit: plain | — | — | S33, ASSUMPTION | estimate | Tanks ahead of the cockpit (S33); not known to be self-sealing. |
+| Crew (`crew`) | 1 | men | one pilot | S33 | medium | pilot. Seat positions are estimates on the model (D80). |
+| Crew: time from deciding to bail out to clear of the aircraft (`crew.exit`) | 4 | s | — | ASSUMPTION | estimate | Hood or hatch, harness, over the side; the crew one after another. No figures found (D80). |
 
 ## Rolls-Royce Merlin III (Hurricane I and Spitfire I)
 
@@ -867,6 +872,8 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Oil cooler in hit zone engine: engine (`systems.oil.engine`) | 0 | index | — | ASSUMPTION | estimate | Where the oil cooler is (D68): placed from the airframe layout. |
 | Pilot's rear armour (`systems.armour`) | 0.008 | m | the 8-mm. armour carried in the M.E. 109 | S38 | medium | Behind the pilot (position assumed). |
 | Fuel tanks by hit zone (`systems.fuel`) | cockpit: selfSealing | — | — | S33, ASSUMPTION | estimate | Tank under and behind the pilot; self-sealing assumed. |
+| Crew (`crew`) | 1 | men | one pilot | S16 | medium | pilot. Seat positions are estimates on the model (D80). |
+| Crew: time from deciding to bail out to clear of the aircraft (`crew.exit`) | 4 | s | — | ASSUMPTION | estimate | Hood or hatch, harness, over the side; the crew one after another. No figures found (D80). |
 
 ## Daimler-Benz DB 601A (Bf 109 E-4 and Bf 110 C-4)
 
@@ -1168,6 +1175,8 @@ Bf 109's (same designer, engine and airscrew).
 | Rear MG 15: azimuth arc (`mounts.rear.azimuth`) | 150 to 210 | deg | — | S25 | medium | "about 30° on either side of the centre line ... maximum elevation is 60° ... not possible to fire below the horizontal" (S25 para. 17). Canopy taken as open (D78). |
 | Rear MG 15: elevation arc (`mounts.rear.elevation`) | 0 to 60 | deg | — | S25 | medium | "about 30° on either side of the centre line ... maximum elevation is 60° ... not possible to fire below the horizontal" (S25 para. 17). Canopy taken as open (D78). |
 | Rear MG 15: drums carried (`mounts.rear.drums`) | 11 | drums | stowage for 10 spare magazines | S25 | medium | One on the gun and 10 spares (D77). |
+| Crew (`crew`) | 2 | men | When used as a fighter the crew is usually two | S25 | medium | pilot, radio operator and gunner. Seat positions are estimates on the model (D80). |
+| Crew: time from deciding to bail out to clear of the aircraft (`crew.exit`) | 4, 6 | s | — | ASSUMPTION | estimate | Hood or hatch, harness, over the side; the crew one after another. No figures found (D80). |
 
 ## Heinkel He 111 H (AI only)
 
@@ -1383,6 +1392,8 @@ positions are estimates from the overall dimensions.
 | Tail MG 17 (fixed, rearward): elevation arc (`mounts.tail.elevation`) | 0 | deg | — | S28 | medium | Fixed parallel to the fuselage axis, firing aft (S28: "parallel zur Rumpflängsachse"). |
 | Tail MG 17 rounds (`mounts.tail.rounds`) | 500 | rounds | Vollgurtkasten (500 Schuß) | S28, S29 | high | Fired from the B- or C-Stand. |
 | Formation cruising speed (`formationSpeed`) | 93.6 | m/s | 330-345 km/h (range-table speed) | S29, ASSUMPTION | estimate | The middle, 337 km/h; no formation speed found (D78). |
+| Crew (`crew`) | 5 | men | the "5. Mann" who serves the side guns | S28 | medium | pilot, observer, radio operator, flight engineer, side gunner. Seat positions are estimates on the model (D80). |
+| Crew: time from deciding to bail out to clear of the aircraft (`crew.exit`) | 10, 6, 8, 12, 14 | s | — | ASSUMPTION | estimate | Hood or hatch, harness, over the side; the crew one after another. No figures found (D80). |
 
 ## Junkers Jumo 211F-1 (He 111 H-6/H-11)
 
@@ -1554,6 +1565,10 @@ Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or es
 | He 111 Kette: wingman back (`formations.kette.back`) | 30 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
 | Escort: distance behind the bombers (`formations.escort.behind`) | 1609 | m | a mile or so behind and above the Bombers | S38 | medium | Dowding's despatch, para. 126 (D77). |
 | Escort: height above the bombers (`formations.escort.above`) | 500 | m | — | ASSUMPTION | estimate | S38 gives no figure (D78). |
+| Parachute: canopy descent rate (`parachute.canopyRate`) | 4.9 | m/s | approximately 16 feet per second (24 ft canopy) | S42 | medium | Sea level; faster in thinner air. Used for both sides (D80). |
+| Parachute: free-fall speed limit (`parachute.freeFallMax`) | 58 | m/s | will not exceed 130 miles per hour | S42 | medium | A 150 lb man, from a U.S. Army test as S42 reports. |
+| Parachute: delay before pulling the ripcord (`parachute.pullDelay`) | 3 | s | Normally, a count of three will suffice | S42 | medium | |
+| Parachute: time to open (`parachute.openTime`) | 1.6 | s | fully open ... approximately 1 3/5 seconds after the rip cord has been pulled | S42 | medium | |
 
 ## Propeller data: NACA Report 640
 

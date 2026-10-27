@@ -50,8 +50,8 @@ export class Craft {
     const { plane, input } = this;
     this.previous.position.copy(plane.body.position);
     this.previous.quaternion.copy(plane.body.quaternion);
-    if (this.pilot && plane.damage.pilot > 0) this.pilot.fly(this, sim, dt);
-    else input.fireMg = input.fireCannon = false; // a dead pilot's hand is off the trigger
+    if (this.pilot && plane.damage.pilot > 0 && !this.abandoned) this.pilot.fly(this, sim, dt);
+    else input.fireMg = input.fireCannon = false; // a dead or departing pilot's hand is off the trigger
     const recoil = stepGuns(this.armament, plane, input, dt, plane.time, (round) => sim.projectiles.spawn(round, this));
     plane.recoil = recoil.force.lengthSq() > 0 ? recoil : null;
     stepAircraft(plane, input, dt);
