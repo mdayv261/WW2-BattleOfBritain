@@ -1807,3 +1807,26 @@ pushed and Phase 6 started.
 - the D68 and D69 estimates and display choices.
 
 Phase 5 was pushed to GitHub with the product owner's permission (27 Oct 2026).
+
+## D76. Phase 6 plan and the product owner's choices (27 Oct 2026)
+
+The Phase 6 plan (AI pilots and gunners) was approved in five checkpoints:
+1. research and data (MG 15, gun arcs, drums, crew positions, formations, tactics);
+2. many aircraft in the simulation, and the AI pilot's flying skills;
+3. fighter behaviour, tactics and formations;
+4. bombers and air gunners;
+5. skill levels and the acceptance test.
+
+**The product owner chose:**
+- **Testing before Phase 7's menus:** scenario keys in the test flight: 6 for fighter scenarios, 7 for a bomber
+  formation with escorts (or, for a Luftwaffe player, RAF fighters attacking He 111s), 8 for the skill level, 0 to
+  clear.
+- **Skill levels:** three, Novice, Regular and Ace. Each sets reaction time, aim error, energy management, aggression
+  and willingness to disengage.
+- **Enemies only** in Phase 6. Friendly wingmen come with the missions in Phase 7.
+- **Fight size:** up to about 12 aircraft at 60 fps, every one on the full flight model.
+
+**Fixed by the spec and earlier decisions:**
+- The AI writes the same control input as the player and flies the same flight model (D2, D3).
+- The Bf 110's rear gun is always AI-manned (D14).
+- The He 111 is AI only.
