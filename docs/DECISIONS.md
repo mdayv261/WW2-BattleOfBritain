@@ -1830,3 +1830,84 @@ The Phase 6 plan (AI pilots and gunners) was approved in five checkpoints:
 - The AI writes the same control input as the player and flies the same flight model (D2, D3).
 - The Bf 110's rear gun is always AI-manned (D14).
 - The He 111 is AI only.
+
+## D77. Phase 6 checkpoint 1: gunners, formations and tactics research (27 Oct 2026)
+
+**MG 15** (the flexible gun of the Bf 110 and He 111):
+- **Rate of fire:** "1,000–1,100 rds./min." (S27). The middle, 1,050, is proposed.
+- **Feed:** "Saddle-type drum (75-rd. capacity)" (S27). S25 agrees ("each magazine holding 75 rounds"), and so does
+  S28 ("150 Schuß oder 2 Doppeltrommeln Dt 15"). High confidence.
+- **Muzzle velocity:** not stated. It fires the same 7.92 mm rounds as the MG 17, so it uses the MG 17's ballistics
+  (S41, D61). This is an estimate.
+
+**Bf 110 rear gun** (S25, AFDU Report No. 38, from flying a Bf 110 captured in July 1940):
+- **Field of fire:** "greatly restricted, extending about 30° on either side of the centre line of the aircraft. The
+  maximum elevation is 60° and it is not possible to fire below the horizontal" (para. 17).
+- **Canopy:** with the rear canopy closed, "the field of fire is very limited" (para. 8). The game takes it as open in
+  combat.
+- **Drums:** "each magazine holding 75 rounds and there is stowage for 10 spare magazines. An experienced gunner
+  should be able to change a magazine in about 10 seconds" (para. 16).
+- **g:** the gunner can work the gun easily "except under the influence of 'G', when it was found impossible to
+  shoot with any degree of accuracy" (para. 8).
+- **Sight:** a ring and bead (para. 20).
+- **Return fire:** effective "only when the fighter is between 30° and astern", from level to 60° above. An attacker
+  below the tailplane is safe. Under evasive action and g, accurate shooting is "extremely difficult" (paras. 38-39).
+
+**He 111 H gun positions** (S28, L.Dv.T. 583/3, October 1940, for the H, P and D):
+
+| Position | Gun | Mount | Drums |
+|---|---|---|---|
+| A-Stand, nose (bomb aimer) | MG 15 | Kuppellafette GD-A 1114 | 13 |
+| B-Stand, dorsal (radio operator) | MG 15 | Drehkranz D 30 | 14 |
+| C-Stand, ventral rear (gunner) | MG 15 | small lens mount LL-K or L 15/1 | 15 |
+| Two fuselage-side MG 15s (a fifth man) | MG 15 | MG-Lagerungen | 10 between them |
+| Tail | MG 17, fixed | — | a 500-round belt |
+
+- In all, 52 drums for the MG 15s.
+- The tail MG 17 fires "ungesteuert" along the fuselage axis against attackers using the blind space behind the tail
+  surfaces. It is fired from the B- or C-Stand.
+- **Not given:** S28 gives no angles.
+
+**He 111 firing sectors** (S29, the 1943 Soviet test report on captured H-6 and H-11 aircraft): a close variant, the
+only figures found, flagged.
+
+| Position | Sector |
+|---|---|
+| Dorsal MG 15 (H-6 turret) | all round; aft from the horizon to 90° up; forward only from 30° up |
+| Beam MG 15s (H-11) | 23° forward to 55° aft of the beam; 30° below to 45° above the horizon |
+| Ventral rear (H-11, twin MG 81s in the same hatch) | 6° to 70° below, aft; 40° right and 35° left |
+| Nose (H-11, MG FF) | down to 40°, nothing above the axis; 15° right, 35° left |
+
+- **Where the guns can't reach:** "from above and ahead" within about 30° of the flight path, and "from below and to
+  the side" more than about 40° off it. S29 calls these the safest attacks, with the pilot and dorsal gunner the
+  priority targets.
+
+**He 111 cruising speed:** S29's range-table speed is 330-345 km/h. No formation speed was found. 337 km/h is proposed
+as the formation cruise.
+
+**Luftwaffe doctrine** (S22, the Rechlin comparison flights, August 1940, sent to all fighter and Zerstörer units):
+- **Turning:** the Spitfire, Hurricane and Curtiss "have significantly smaller turning circles and turning times".
+  Attacking and breaking off should rely only on the German fighters' superior performance.
+- **Climbing away:** at a shallow angle and 280-300 km/h, never steeply, and never behind an enemy at its own angle.
+- **Evading:** "on sudden push forward on stick", the enemy's carburettor cuts out. This is recommended.
+- **Roll:** the enemy fighters roll worse than the Bf 109 at high speed.
+
+**The Bf 110 in combat** (S25):
+- Single-seaters "could easily out-turn the Me.110 at low altitude"; the advantage is smaller at 20,000 ft.
+- To evade, it can pull "up to its steepest climbing position", making the attacker overshoot (para. 43).
+- If an attacker is seen early at "about 1,000 yards", "a quick turn through 180°" gives it a head-on attack (para. 44).
+- Head-on, an attacker meets its forward armament (para. 40).
+
+**RAF fighters against raids** (S38, Dowding's despatch):
+- **The escort:** "A strong Fighter formation would fly a mile or so behind and above the Bombers."
+- **The RAF attack:** fighters attacked the bombers "before the Fighters could intervene", "from ahead or below". The
+  escort then moved inside, below and stepped up to 30,000 ft (para. 126).
+- **Numbers:** about four German fighters to each bomber (para. 123).
+
+**Turning:** S21's turning-circle trials, already in the model, show the RAF fighters out-turning the Bf 109.
+
+**Not found** (proposed as estimates, or left as gaps):
+- the spacing of the RAF vic and line astern, the Luftwaffe Rotte and Schwarm, and the He 111 Kette;
+- gun traverse rates, gunners' aim error and reaction, and the g at which a gunner can't aim;
+- the Bf 110 defensive circle: no allowed source was found, so it isn't modelled;
+- the H-3's own firing sectors (S29's H-6/H-11 are used, flagged).

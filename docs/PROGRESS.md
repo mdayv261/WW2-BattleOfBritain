@@ -11,8 +11,23 @@ Read this at the start of every session.
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
 - **Phase 4** (world and visuals): signed off (26 Oct 2026, D57).
 - **Phase 5** (weapons and damage): signed off (27 Oct 2026, D75).
-- **Phase 6** (AI pilots and gunners): next; plan to be approved.
+- **Phase 6** (AI pilots and gunners): in progress (plan approved 27 Oct 2026, D76). Checkpoint 1 (research) findings
+  recorded (D77); the estimates await the product owner's acceptance.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
+
+## Phase 6 checkpoint 1: research (27 Oct 2026)
+
+**Found** (D77):
+- MG 15: 1,000-1,100 rounds/min and 75-round drums (S27, S25, S28);
+- the Bf 110's rear gun: ±30° by 0-60°, 10 spare drums, about 10 s to change one, no aiming under g (S25);
+- the He 111's five MG 15 positions, their mounts and drums (52 in all), and the fixed tail MG 17 (S28);
+- the He 111 firing sectors and blind spots from the H-6/H-11 (S29, a close variant);
+- Luftwaffe doctrine against Spitfires and Hurricanes (S22);
+- Bf 110 tactics (S25);
+- escort placement and RAF attacks on raids (S38).
+
+**Left (open research gaps):** formation spacing; the H-3's own firing sectors; gun traverse rates and gunners' aim;
+the He 111's formation cruise speed; the Bf 110 defensive circle.
 
 ## Elevator trim display (27 Oct 2026)
 
