@@ -1,6 +1,6 @@
 // Coolant and oil temperature gauges on the panels (product owner's placements, D63), and the readings that drive them.
 import { describe, it, expect } from 'vitest';
-import { RAF_LAYOUT, instrumentReadings, panelRadius, rafEngineScales, gauge, BAND } from '../../src/ui/instruments.js';
+import { RAF_LAYOUT, instrumentReadings, panelRadius, rafEngineScales, gauge, BAND, captionLines } from '../../src/ui/instruments.js';
 import { BF109_LAYOUT } from '../../src/ui/bf109Panel.js';
 import { BF110_LAYOUT } from '../../src/ui/bf110Panel.js';
 import { Simulation } from '../../src/core/simulation.js';
@@ -51,6 +51,24 @@ describe('temperature gauges (D63)', () => {
     expect(v.mapInHg).toBeLessThan(full - 5);
     expect(v.mapInHg).toBeCloseTo(inHg(v.manifold), 6);
     expect(instrumentReadings(new Simulation(aircraftById.bf109e4, 'air')).mapInHg).toBeNull();
+  });
+
+  it('RAF: "in.Hg" above a larger "MAP", "PSI" above "BOOST", each under the hub and inside its dial (D85)', () => {
+    const r = 60;
+    const small = RAF_LAYOUT.small * r;
+    const lines = (name, size) => captionLines(name, size, r);
+    expect(lines('manifold', r).map((l) => l.text)).toEqual(['in.Hg', 'MAP']);
+    expect(lines('boost', small).map((l) => l.text)).toEqual(['PSI', 'BOOST']);
+    expect(lines('oilTemp', small).map((l) => l.text)).toEqual(['OIL °C']);
+    expect(lines('radTemp', small).map((l) => l.text)).toEqual(['RADIATOR °C']);
+    expect(lines('manifold', r)[1].size).toBeGreaterThan(lines('boost', small)[1].size);
+    for (const [name, size] of [['manifold', r], ['boost', small]]) {
+      const [unit, caption] = lines(name, size);
+      expect(unit.dy).toBeLessThan(caption.dy); // above it
+      expect(unit.dy - 0.08 * unit.size).toBeGreaterThan(0.12 * size); // clear of the hub
+      expect(caption.dy + 0.08 * caption.size).toBeLessThan(0.9 * size); // inside the scale's ring
+      expect(caption.dy - unit.dy).toBeGreaterThan(0.08 * (unit.size + caption.size)); // the lines don't overlap
+    }
   });
 
   it('draws every band of a gauge on its scale', () => {

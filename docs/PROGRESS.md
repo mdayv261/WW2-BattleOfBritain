@@ -21,7 +21,7 @@ Read this at the start of every session.
 ## RAF engine gauges (28 Oct 2026)
 
 **Done** (D85):
-- a MAP gauge (in. Hg) below the rev counter, the same size;
+- a MAP gauge (in. Hg) below the rev counter, the same size; "in.Hg" above a larger MAP caption, "PSI" above BOOST;
 - oil, radiator and boost gauges small, in a column right of them;
 - green normal bands from the Spitfire I Pilot's Notes (S33), orange over +12 lb;
 - tests in `tests/ui/tempGauges.test.js`.

@@ -202,7 +202,29 @@ export function rafEngineScales(v) {
   };
 }
 
-const CAPTIONS = { manifold: 'MAP', boost: 'BOOST', oilTemp: 'OIL °C', radTemp: 'RADIATOR °C' };
+// Each gauge's caption, its unit line above it where it has one, and the caption's size against the usual lettering
+// (product owner, D85: a larger MAP, "in.Hg" above it, "PSI" above BOOST).
+export const CAPTIONS = {
+  manifold: { text: 'MAP', unit: 'in.Hg', scale: 1.3 },
+  boost: { text: 'BOOST', unit: 'PSI' },
+  oilTemp: { text: 'OIL °C' },
+  radTemp: { text: 'RADIATOR °C' },
+};
+const LETTERING = 0.65; // label() size (in dial radii of the large dials) of the usual captions: about 0.1 r high
+
+/**
+ * A gauge's caption lines: [{ text, dy (below the dial's centre), size (label() size) }], the unit line above the
+ * caption. `size` is the dial's radius, `r` the large dials'.
+ */
+export function captionLines(name, size, r) {
+  const c = CAPTIONS[name];
+  const captionSize = r * LETTERING * (c.scale ?? 1);
+  const dy = size * 0.62;
+  const lines = [{ text: c.text, dy, size: captionSize }];
+  // The unit line one line-height above, half of each line's lettering apart (label() letters are 0.16 of its size).
+  if (c.unit) lines.unshift({ text: c.unit, dy: dy - 0.16 * 1.25 * (captionSize + r * LETTERING) / 2, size: r * LETTERING });
+  return lines;
+}
 
 function rafEngineGauges(g, at, r, v) {
   const L = RAF_LAYOUT;
@@ -213,7 +235,7 @@ function rafEngineGauges(g, at, r, v) {
     const [x, y] = at(L[name]);
     const size = name === 'manifold' ? r : s; // the MAP gauge as large as the rev counter (product owner, D85)
     gauge(g, x, y, size, values[name], { ...scales[name], ...ARC });
-    label(g, x, y + size * 0.62, r * 0.65, CAPTIONS[name]);
+    for (const line of captionLines(name, size, r)) label(g, x, y + line.dy, line.size, line.text);
   }
 }
 

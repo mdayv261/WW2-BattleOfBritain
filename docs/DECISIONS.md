@@ -2400,6 +2400,10 @@ The orange band over the +12 lb emergency boost (54.4 in. Hg) is on both pressur
 - the MAP reading equal to the boost converted, falling with the throttle;
 - every band drawn and clipped to its scale.
 
+**Captions** (product owner, after seeing the gauges): the MAP caption 1.3 times the usual lettering with "in.Hg" above
+it, and "PSI" above BOOST (lb/sq in, as the boost gauge reads). `captionLines` in `src/ui/instruments.js`; tested to
+sit under the needle's hub and inside the dial, the unit line above the caption.
+
 **Checked in Chrome** (Spitfire, air start):
 - MAP 42.6 in. Hg and boost +6¼ at full throttle;
 - throttle back with S: 24.0 in. Hg and −2.9 lb together;
