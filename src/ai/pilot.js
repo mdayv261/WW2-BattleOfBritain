@@ -29,7 +29,7 @@ const SLIP_GAIN = 1.5; // rudder per rad of sideslip
 const YAW_DAMPING = 0.6; // rudder per rad/s of yaw rate
 const SPEED_GAIN = 0.02; // throttle per second per m/s of speed error...
 const SPEED_P = 0.04; // ...and per m/s straight away
-const RADIATOR_OPEN = 15; // °C below the coolant limit at which the radiator is opened
+export const RADIATOR_OPEN = 15; // °C below the coolant limit at which the radiator is opened
 const RADIATOR_CLOSE = 30; // °C below it at which it is closed again
 const CRUISE_RPM = 0.8; // rpm lever away from a fight
 

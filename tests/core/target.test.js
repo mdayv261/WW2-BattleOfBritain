@@ -1,6 +1,7 @@
 // The target aircraft and combat in the test flight (D68): the autopilot holds height, heading and speed; Y brings each
 // type ahead in turn; firing at it registers hits and damage; the test key damages the player's own aircraft.
 import { describe, it, expect } from 'vitest';
+import { Vector3 } from 'three';
 import { aircraftList, aircraftById } from '../../src/aircraft/index.js';
 import { createAircraft, stepAircraft } from '../../src/physics/flightModel.js';
 import { createAutopilot, flyAutopilot, attitude } from '../../src/core/autopilot.js';
@@ -66,7 +67,8 @@ describe('target aircraft', () => {
     sim.nextTarget(); // a Hurricane
     // Close to 250 m: put the target 250 m ahead, flying the same speed, and fire for three seconds.
     const t = sim.target;
-    const ahead = t.plane.body.position.clone().sub(sim.plane.body.position).setLength(250);
+    // Dead ahead of the nose, along the guns' line (D84: the air start is faster, the nose lower).
+    const ahead = new Vector3(250, 0, 0).applyQuaternion(sim.plane.body.quaternion);
     t.plane.body.position.copy(sim.plane.body.position).add(ahead);
     t.plane.body.velocity.copy(sim.plane.body.velocity);
     t.autopilot.hold.speed = sim.plane.body.velocity.length();

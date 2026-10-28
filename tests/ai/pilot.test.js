@@ -4,6 +4,7 @@
 import { describe, it, expect } from 'vitest';
 import { Vector3 } from 'three';
 import { aircraftById } from '../../src/aircraft/index.js';
+import { attitude } from '../../src/core/autopilot.js';
 import { Simulation, levelThrottle } from '../../src/core/simulation.js';
 import { Craft } from '../../src/core/craft.js';
 import { createHands, fly } from '../../src/ai/pilot.js';
@@ -29,6 +30,12 @@ function aiCraft(sim, id, { ahead = 0, side = 0, up = 0, heading = 0, role = 'fi
   });
   sim.others.push(craft);
   return craft;
+}
+
+/** The player's hand on the stick: holds the wings level against any roll (D84). */
+function holdWingsLevel(sim) {
+  const { bank } = attitude(sim.plane);
+  sim.input.roll = Math.max(-1, Math.min(1, -3 * bank - sim.plane.body.angularVelocity.x));
 }
 
 describe('the AI pilot\'s hands', () => {
@@ -67,9 +74,12 @@ describe('the AI pilot\'s hands', () => {
 
   it('a Spitfire pursuing a Bf 109 flying straight closes within its firing range and hits it', () => {
     const sim = new Simulation(aircraftById.bf109e4, 'air'); // the player's Bf 109 flies straight, hands off
+    // Throttled back to cruise from the full-power start, the pilot holding the wings level (D84: rigged for full power).
+    sim.input.throttle = levelThrottle(sim.ac, 1500, 110, 1);
     const ai = aiCraft(sim, 'spitfire', { ahead: -1500, up: 200, skill: 'ace' });
     let closest = Infinity;
     for (let i = 0; i < 120 * 120 && sim.plane.damage.hits === 0; i += 1) {
+      holdWingsLevel(sim);
       sim.step(DT);
       closest = Math.min(closest, ai.plane.body.position.distanceTo(sim.plane.body.position));
     }

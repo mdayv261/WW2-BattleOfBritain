@@ -55,9 +55,14 @@ export function stallTest(ac) {
   });
   const onset = trace.find((s) => s.stalled > 0.5);
   const after = onset ? trace.filter((s) => s.t >= onset.t && s.t <= onset.t + 3) : [];
-  const bankAt = (s) => s.bank;
-  const minBank = Math.min(...after.map(bankAt));
-  const maxBank = Math.max(...after.map(bankAt));
+  // The bank followed continuously, so a drop that rolls on past 180° keeps its sign (D84).
+  let unwrapped = after[0]?.bank ?? 0;
+  const banks = after.map((s, i) => {
+    if (i > 0) unwrapped += Math.atan2(Math.sin(s.bank - after[i - 1].bank), Math.cos(s.bank - after[i - 1].bank));
+    return unwrapped;
+  });
+  const minBank = Math.min(...banks);
+  const maxBank = Math.max(...banks);
   const drop = Math.abs(minBank) > Math.abs(maxBank) ? minBank : maxBank;
   return { stalled: !!onset, onsetTime: onset?.t, wingDrop: drop / DEG, onsetEas: onset ? onset.eas : null };
 }

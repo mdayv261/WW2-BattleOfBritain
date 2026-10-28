@@ -31,15 +31,15 @@ export const spitfire = {
     elevatorCm: 0.17,
     trimCm: 0.03,
     flapCm: -0.02,
-    aileronCl: 0.0434,
+    aileronCl: 0.0428,
     adverseYaw: -0.008,
     cnBeta: 0.07,
     cnr: -0.1,
     rudderCn: 0.06,
     cyBeta: -0.6,
     swirl: 0.15,
-    rollRig: 0.001776, // solved by npm run fit:rig (D73)
-    yawRig: 0.0009217, // solved by npm run fit:rig (D73)
+    rollRig: 0.002156, // solved by npm run fit:rig at the full-power air start (D84)
+    yawRig: 0.001053, // solved by npm run fit:rig at the full-power air start (D84)
     stallBias: 0,
     rudderTrimCn: 0.02, // yaw moment of the rudder trim tab at full travel
   },

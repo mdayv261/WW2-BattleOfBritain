@@ -3,6 +3,7 @@
 // broken-up AI aircraft falls as a wreck; twelve aircraft run well within real time.
 import { describe, it, expect } from 'vitest';
 import { aircraftById } from '../../src/aircraft/index.js';
+import { attitude } from '../../src/core/autopilot.js';
 import { Simulation, levelThrottle } from '../../src/core/simulation.js';
 import { Craft } from '../../src/core/craft.js';
 import { createPilot } from '../../src/ai/pilots.js';
@@ -10,6 +11,12 @@ import { nextFighterScenario, bomberScenario, cycleSkill, clearAI, MAX_AI } from
 
 const DT = 1 / 120;
 const kinds = (sim) => sim.others.map((c) => `${c.ac.id}:${c.side}`);
+
+/** The player's hand on the stick: holds the wings level against any roll (D84). */
+function holdWingsLevel(sim) {
+  const { bank } = attitude(sim.plane);
+  sim.input.roll = Math.max(-1, Math.min(1, -3 * bank - sim.plane.body.angularVelocity.x));
+}
 
 describe('scenario keys', () => {
   it('6 brings Luftwaffe fighters in turn against an RAF player', () => {
@@ -87,8 +94,13 @@ function chaser(sim, id, behind) {
 describe('many aircraft', () => {
   it('an AI fighter\'s rounds hit the player', () => {
     const sim = new Simulation(aircraftById.spitfire, 'air');
+    // Throttled back to cruise from the full-power start, the pilot holding the wings level (D84: rigged for full power).
+    sim.input.throttle = levelThrottle(sim.ac, 1500, 110, 1);
     chaser(sim, 'bf109e4', 800);
-    for (let i = 0; i < 120 * 90 && sim.plane.damage.hits === 0; i += 1) sim.step(DT);
+    for (let i = 0; i < 120 * 150 && sim.plane.damage.hits === 0; i += 1) { // the start is faster (D84): more time to catch up
+      holdWingsLevel(sim);
+      sim.step(DT);
+    }
     expect(sim.plane.damage.hits).toBeGreaterThan(0);
   });
 

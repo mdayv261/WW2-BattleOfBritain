@@ -124,7 +124,8 @@ describe('losses in the simulation', () => {
     const sim = new Simulation(aircraftById.spitfire, 'air');
     sim.nextTarget();
     const t = sim.target;
-    const ahead = t.plane.body.position.clone().sub(sim.plane.body.position).setLength(250);
+    // Dead ahead of the nose, along the guns' line (D84: the air start is faster, the nose lower).
+    const ahead = new Vector3(250, 0, 0).applyQuaternion(sim.plane.body.quaternion);
     t.plane.body.position.copy(sim.plane.body.position).add(ahead);
     t.plane.body.velocity.copy(sim.plane.body.velocity);
     t.autopilot.hold.speed = sim.plane.body.velocity.length();

@@ -52,14 +52,14 @@ The flight model compared with sourced performance figures. Generated from `npm 
 | S1 | Service ceiling | — | Data sheet, mean weight ceiling | 33500 ft | 31635 ft | -5.6% |
 | S12 | Stall (IAS) | 4,921 ft | NACA Hurricane II stalls (7014 lb), gliding | 86.5 mph | 86.0 mph | -0.5% |
 | S12 | Stall (IAS) | 4,921 ft | NACA Hurricane II stalls (7014 lb), gliding, flaps and undercarriage down | 70.3 mph | 69.4 mph | -1.3% |
-| S13 | Roll pb/2V | 10,000 ft | NACA aileron tests, 30 lb stick force, rudder fixed **(calibration point)** | 0.057 | 0.057 | +0.1% |
+| S13 | Roll pb/2V | 10,000 ft | NACA aileron tests, 30 lb stick force, rudder fixed **(calibration point)** | 0.057 | 0.057 | -0.1% |
 | S13 | Roll pb/2V | 10,000 ft | NACA aileron tests, full aileron, rudder fixed | 0.082 | 0.075 | -8.5% |
 
 ### Spitfire Mk I
 
 | Source | Check | Height | Conditions | Source value | Model | Error |
 |---|---|---|---|---|---|---|
-| S32 | Time to 45° bank, 400 mph IAS | 10,000 ft | RAE: 45 degrees of bank at 400 mph IAS with one-fifth aileron (height not stated) | 4.0 s | 1.2 s | -69.0% |
+| S32 | Time to 45° bank, 400 mph IAS | 10,000 ft | RAE: 45 degrees of bank at 400 mph IAS with one-fifth aileron (height not stated) | 4.0 s | 1.2 s | -70.0% |
 | S4 | Level speed | 18,901 ft | N3171, 3000 rpm, +6 1/4 lb **(calibration point)** | 354.0 mph | 354.1 mph | +0.0% |
 | S4 | Level speed | 10,000 ft | N3171, 3000 rpm, +6 1/4 lb | 320.5 mph | 321.7 mph | +0.4% |
 | S4 | Level speed | 15,000 ft | N3171, 3000 rpm, +6 1/4 lb | 339.0 mph | 340.6 mph | +0.5% |
@@ -78,8 +78,8 @@ The flight model compared with sourced performance figures. Generated from `npm 
 | S31 | Stall (IAS) | 4,921 ft | NACA Spitfire VA stalls (6184 lb), power off | 90.0 mph | 91.2 mph | +1.4% |
 | S31 | Stall (IAS) | 4,921 ft | NACA Spitfire VA stalls (6184 lb), power off, flaps and undercarriage down | 80.0 mph | 80.4 mph | +0.5% |
 | S31 | Stall (IAS) | 4,921 ft | NACA Spitfire VA stall, cruising power (+3 3/4 lb, 2650 rpm) **(calibration point)** | 77.0 mph | 77.0 mph | -0.0% |
-| S13 | Roll pb/2V | 10,000 ft | NACA aileron tests, 30 lb stick force, rudder fixed **(calibration point)** | 0.050 | 0.050 | -0.1% |
-| S13 | Roll pb/2V | 10,000 ft | NACA aileron tests, full aileron, rudder fixed | 0.085 | 0.072 | -15.2% |
+| S13 | Roll pb/2V | 10,000 ft | NACA aileron tests, 30 lb stick force, rudder fixed **(calibration point)** | 0.050 | 0.050 | -0.0% |
+| S13 | Roll pb/2V | 10,000 ft | NACA aileron tests, full aileron, rudder fixed | 0.085 | 0.072 | -15.5% |
 
 ### Bf 109 E-4
 
@@ -87,7 +87,7 @@ The flight model compared with sourced performance figures. Generated from `npm 
 |---|---|---|---|---|---|---|
 | S32 | Stall (IAS) | 1,500 m | RAE stalls, trailing-static airspeed, gliding (5,580 lb) | 154 km/h | 150 km/h | -2.5% |
 | S32 | Stall (IAS) | 1,500 m | RAE stalls, trailing-static airspeed, gliding (5,580 lb), flaps and undercarriage down | 130 km/h | 128 km/h | -1.8% |
-| S32 | Time to 45° bank, 400 mph IAS | 3,048 m | RAE: 45 degrees of bank at 400 mph IAS with one-fifth aileron (height not stated) | 4.0 s | 1.3 s | -68.5% |
+| S32 | Time to 45° bank, 400 mph IAS | 3,048 m | RAE: 45 degrees of bank at 400 mph IAS with one-fifth aileron (height not stated) | 4.0 s | 1.2 s | -70.6% |
 | S16 | Level speed | 0 m | Data sheet level speeds (1.30 ata, 2400 rpm) **(calibration point)** | 460 km/h | 460 km/h | -0.0% |
 | S16 | Level speed | 1,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 480 km/h | 477 km/h | -0.6% |
 | S16 | Level speed | 2,000 m | Data sheet level speeds (1.30 ata, 2400 rpm) | 500 km/h | 501 km/h | +0.3% |
@@ -186,11 +186,11 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
 |---|---|---|---|---|---|
 | Spitfire Mk I | S4 | Take-off run (N3171, 2744 kg) | 225 yd | 254 yd | +12.7% |
 | Spitfire Mk I | S4 | Take-off to clear 50 ft | 370 yd | 451 yd | +22.0% |
-| Spitfire Mk I | S4 | Landing run with brakes | 310 yd | 458 yd | +48% |
+| Spitfire Mk I | S4 | Landing run with brakes | 310 yd | 457 yd | +48% |
 | Hurricane Mk I | S1 | Take-off to clear 50 ft (maximum weight) | 470 yd | 468 yd | -0.5% |
 | Hurricane Mk I | S1 | Landing from 50 ft (light weight) | 540 yd | 518 yd | -4.1% |
 | Bf 109 E-4 | S15 | Take-off ground run (20° flap) | 260 m | 195 m | -25.0% |
-| Bf 109 E-4 | S15 | Take-off to clear 20 m | 470 m | 377 m | -19.7% |
+| Bf 109 E-4 | S15 | Take-off to clear 20 m | 470 m | 376 m | -20.0% |
 | Bf 109 E-4 | S15 | Landing from 20 m | 530 m | 563 m | +6.2% |
 | Spitfire Mk I | S33 | Engine speed at full throttle on the ground | 2650-2700 rpm | 2700 rpm | within |
 
@@ -233,7 +233,8 @@ Tolerance: ±15% (proposed for Phase 2), since the pilot's technique changes the
    - The Luftwaffe's own Rechlin comparison flights (S22) agree within 4%.
 3. **Hurricane mean-weight ceiling 5.6% low.** The maximum-weight ceiling is within 5%.
 4. **Spitfire full-aileron roll 15% below NACA** (pb/2V 0.072 against 0.085), once the 30 lb roll at 230 mph is matched.
-   The two NACA figures cannot both be met with a single aileron power and the estimated roll damping.
+   The two NACA figures cannot both be met with a single aileron power and the estimated roll damping. −15.5% since
+   the rigging was re-solved for full power and the aileron power refitted (D84).
 5. **Bf 109 level speed above 4 km: 2-3.5% slow.**
    - Within tolerance. Consistent with the DB 601A curves being static (no ram) and the ram estimate being an average.
 6. **Hurricane level speed at sea level and at 30,000 ft: 4-5% slow.**

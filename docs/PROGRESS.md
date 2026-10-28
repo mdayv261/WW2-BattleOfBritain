@@ -18,6 +18,19 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
 
+## Air start rigged for full power (28 Oct 2026)
+
+**Done** (D84):
+- the air start is at full throttle and full rpm, radiator open, at the speed that holds level at 1,500 m;
+- every aircraft is rigged there, so it flies straight and level hands-off;
+- the joystick's throttle slider no longer takes over a new flight until it is moved;
+- aileron powers refitted to keep the sourced roll figures matched;
+- the stall test follows the bank continuously.
+
+**Known issues:**
+- at lower power the aircraft want a little opposite stick (about 1% at 90%, up to 5% at cruise);
+- rigging for full power is a playability deviation (flagged).
+
 ## Phase 6 checkpoint 4: bombers and air gunners (28 Oct 2026)
 
 **Done** (D83):

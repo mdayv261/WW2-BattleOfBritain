@@ -2270,3 +2270,93 @@ crewmen not bailing out); `tests/ai/bomber.test.js` (the route, closing up and o
 **Checked in Chrome:** a Spitfire placed 300-350 m behind the Kette was fired on (333 rounds, 17 hits, glycol trailing),
 the tracers showing and the Kette closed up; a Bf 110 with one Spitfire behind it: the rear gunner fired 54 rounds and
 hit 3 times, and the Spitfire, leaking coolant, broke off. No console errors.
+
+## D84. Straight and level hands-off from the air start, rigged for full power (28 Oct 2026, product owner)
+
+**Problem:** after an air start the aircraft at once rolled left, needing constant right stick, and kept rolling
+hands-off. The joystick's roll axis read 0.00.
+
+**Cause:** two things together.
+- **The throttle slider took over at once.** Once moved in a visit, the joystick's slider stayed in control for every
+  later flight, so a new air start jumped from its trimmed throttle (about 56% in the Spitfire) to wherever the slider
+  sat (about 90%).
+- **The rigging was set for cruise.** The fixed rigging against torque and swirl (D73) was solved for the air start's
+  cruise, so more power rolled the aircraft. Stick needed to hold the wings level at 90% / 100% throttle:
+  - Spitfire: 3.4% / 4.6% right;
+  - Hurricane: 0.2% / 1.0% right;
+  - Bf 109: 2.5% / 2.5% left;
+  - Bf 110: 1.2% / 1.1% left.
+  - The joystick's 10% dead zone made that a large hand movement.
+
+**The product owner's choice:** both fixes below. A fixed rigging can be exact at only one power and speed, and the
+air start must be at that point or the start itself rolls. So the air start moved to full power.
+
+**1. The air start at full power** (`src/core/simulation.js`, `fullPowerStart`):
+- 1,500 m, full throttle, rpm lever full, at the speed full power holds in level flight;
+- the radiator open if, closed, the engines would settle within 15 °C of their coolant limit (the AI's radiator rule,
+  D79). They all would: closed, the Spitfire would settle at 124 °C against its 120 °C limit. So every aircraft
+  starts with its radiator open, and the start speed allows for the flap's drag;
+- start speeds: Hurricane 113.4 m/s, Spitfire 125.3, Bf 109 129.4, Bf 110 123.8, He 111 93.1;
+- engines start at their settled temperatures (75-93 °C). `steadyFlight` and `createAircraft` take a radiator setting
+  for this.
+
+**2. Rigging re-solved there** (`npm run fit:rig`; estimates, solved):
+
+| Aircraft | rollRig (was, D73) | yawRig (was, D73) |
+|---|---|---|
+| Hurricane | 0.0023 (0.002119) | 0.001315 (0.001156) |
+| Spitfire | 0.002156 (0.001776) | 0.001053 (0.0009217) |
+| Bf 109 | −0.002991 (−0.002231) | −0.001566 (−0.001464) |
+| Bf 110 | −0.001739 (−0.001402) | −0.0006242 (−0.0005885) |
+| He 111 | −0.00116 (−0.0007952) | −0.0003983 (−0.0002062) |
+
+**Flagged deviation:** real RAF and Luftwaffe fighters were rigged for level flight at cruise. Rigging for full power
+is a playability choice at the product owner's request.
+
+**3. The joystick throttle per flight** (`src/input/joystick.js`): each new flight (restart, start mode or aircraft)
+keeps its own throttle until the slider is moved more than 5%. The slider then takes over as before.
+
+**Knock-on refits** (the documented procedure after a flight-model change; each keeps a sourced figure matched):
+- **Aileron power** (`npm run calibrate`), because the rolls are measured in one direction, with or against the
+  stronger rigging:
+  - Hurricane 0.0389 → 0.0387 and Spitfire 0.0434 → 0.0428 (NACA's 30 lb rolls, S13);
+  - Bf 109 0.0507 → 0.0579, so it still banks 45° at 400 mph as quickly as the model's Spitfire (S32, D30). With the
+    stronger rigging its roll is now noticeably quicker to the left than to the right at high speed.
+- **Validation** (`npm run validate`, FLIGHT_VALIDATION.md updated):
+  - roll calibration points −0.1% and −0.0%;
+  - Spitfire full-aileron roll −15.5% (was −15.2%, still the known deviation);
+  - Hurricane full-aileron −8.5%;
+  - 400 mph time to 45°: 1.200 s (Spitfire) and 1.175 s (Bf 109), against 1.242 and 1.258;
+  - Bf 109 take-off over 20 m −20.0% (was −19.7%);
+  - Spitfire landing run 457 yd (was 458).
+- **Stalls:** the wing-drop directions are unchanged (Hurricane left, S12; Spitfire right, S31; Bf 109 left, S20).
+  The Bf 109's drop now rolls past 180° within the 3 s measured. The stall test now follows the bank continuously, so
+  such a drop keeps its sign; with the old measure it read as a right drop. The Spitfire's drop is larger than
+  before (118° against 87°), still the mildest of the three.
+
+**Result:**
+- From the air start, all five aircraft hold bank and heading within 0.05° for 30 s hands-off.
+- **Checked in Chrome** with the product owner's joystick connected and the slider left where it was: the Spitfire,
+  Hurricane, Bf 109 and Bf 110 each held bank and heading within 0.01° for 9.5 s at full throttle, the radiator open,
+  1,500 m. No console errors.
+
+**What remains (realistic, recorded):** away from full power the aircraft now want a little opposite stick. Stick to
+hold the wings level:
+
+| Aircraft | 90% | 75% | 56% |
+|---|---|---|---|
+| Spitfire | 1.1% left | 2.7% | 4.8% |
+| Hurricane | 0.8% left | 1.9% | 3.2% |
+| Bf 109 | 1.2% right | 3.0% | 5.4% |
+| Bf 110 | 0.7% right | 1.9% | 3.4% |
+
+With the slider fully forward, all four are level hands-off.
+
+**Tests:**
+- `tests/physics/rigging.test.js`: the full-power start, with its speed held for 10 s, alongside the hands-off and
+  fresh-solve checks;
+- `tests/ui/phase2Controls.test.js`: the slider leaves a new flight's throttle alone until moved;
+- tests that assumed a 110 m/s player adjusted without loosening their checks:
+  - targets placed dead ahead of the nose;
+  - in two chase tests the player cruises at the old setting with a hand holding the wings level;
+  - the AI chaser given 150 s to catch the faster player.

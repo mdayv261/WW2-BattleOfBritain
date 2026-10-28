@@ -144,6 +144,26 @@ describe('joystick buttons and hat', () => {
     expect(input.trim).toBeCloseTo(0, 6);
   });
 
+  it('leaves each new flight\'s throttle alone until the slider is moved, then follows the slider (D84)', () => {
+    const joy = new Joystick();
+    const buttons = Array.from({ length: 12 }, () => ({ pressed: false }));
+    const axes = [0, 0, 0, 0, 0, 0, -0.8, 0, 0, 1.2857]; // the slider parked at 90% (axis 6 is reversed)
+    joy.poll = () => (joy.pad = { axes, buttons });
+    const first = { flaps: 0, gear: 0, throttle: 1, trim: 0 };
+    joy.update(first, hurricane, 0.01);
+    expect(first.throttle).toBe(1);
+    axes[6] = -0.9; // moved: the slider takes over
+    joy.update(first, hurricane, 0.01);
+    expect(first.throttle).toBeCloseTo(0.95, 6);
+    // A restart: a new flight's input keeps its own throttle, with the slider still where it was left...
+    const second = { flaps: 0, gear: 0, throttle: 1, trim: 0 };
+    joy.update(second, hurricane, 0.01);
+    expect(second.throttle).toBe(1);
+    axes[6] = -0.7; // ...until it is moved again
+    joy.update(second, hurricane, 0.01);
+    expect(second.throttle).toBeCloseTo(0.85, 6);
+  });
+
   it('works the brakes, flaps, undercarriage and view from the mapped buttons', () => {
     const joy = new Joystick();
     const buttons = Array.from({ length: 12 }, () => ({ pressed: false }));

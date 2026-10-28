@@ -31,15 +31,15 @@ export const hurricane = {
     elevatorCm: 0.2,
     trimCm: 0.03,
     flapCm: -0.02,
-    aileronCl: 0.0389,
+    aileronCl: 0.0387,
     adverseYaw: -0.008,
     cnBeta: 0.07,
     cnr: -0.1,
     rudderCn: 0.06,
     cyBeta: -0.6,
     swirl: 0.15,
-    rollRig: 0.002119, // solved by npm run fit:rig (D73)
-    yawRig: 0.001156, // solved by npm run fit:rig (D73)
+    rollRig: 0.0023, // solved by npm run fit:rig at the full-power air start (D84)
+    yawRig: 0.001315, // solved by npm run fit:rig at the full-power air start (D84)
     stallBias: -0.01,
   },
   controls: {

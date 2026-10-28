@@ -66,14 +66,14 @@ export function propulsion(ac, setting, altitude, speed, axial = speed) {
 
 /**
  * 1 g flight at a speed: the angle of attack that balances weight, and the spare force along the
- * flight path. Returns null if the wing cannot carry the weight at this speed.
+ * flight path. Returns null if the wing cannot carry the weight at this speed. `radiator` 0..1 (the flap's drag).
  */
-export function steadyFlight(ac, setting, altitude, speed, { flaps = 0, gear = 0, mass = ac.mass.flying } = {}) {
+export function steadyFlight(ac, setting, altitude, speed, { flaps = 0, gear = 0, mass = ac.mass.flying, radiator = 0 } = {}) {
   const air = atmosphere(altitude);
   const qBar = 0.5 * air.density * speed * speed;
   const S = ac.geometry.wingArea;
   const weight = mass * G;
-  const surfaces = surfacesFor(flaps, gear);
+  const surfaces = { ...surfacesFor(flaps, gear), radiator };
   const disc = (Math.PI * ac.propeller.diameter ** 2) / 4;
   const engines = engineMounts(ac).length;
   const forcesAt = (alpha) => {

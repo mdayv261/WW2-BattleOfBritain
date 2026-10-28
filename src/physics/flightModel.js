@@ -161,15 +161,16 @@ export function stepAircraft(plane, input, dt) {
 /**
  * Creates an aircraft in steady level flight.
  *   altitude m, speed m/s (true), heading rad (0 = north), throttle 0..1, rpm 0..1 (lever), x and z (m),
- *   terrain (what the ground under it is)
+ *   terrain (what the ground under it is), radiator 0..1 (the flap's setting: its drag, and the engines' temperatures)
  * The pitch attitude, blade angle and engine speed are set for steady flight; the returned `trim`
  * is the elevator-trim setting that holds it hands-off (clamped to the trim range).
  */
 export function createAircraft(ac, {
-  altitude = 3000, speed = 110, heading = 0, throttle = 0.8, rpm = 0.8, x = 0, z = 0, terrain = flatGrass,
+  altitude = 3000, speed = 110, heading = 0, throttle = 0.8, rpm = 0.8, x = 0, z = 0, terrain = flatGrass, radiator = 0,
 } = {}) {
   const plane = newPlane(ac, terrain);
-  const input = { throttle, rpm, pitch: 0, roll: 0, yaw: 0, trim: 0 };
+  const input = { throttle, rpm, pitch: 0, roll: 0, yaw: 0, trim: 0, radiator };
+  plane.surfaces.radiator = radiator;
   plane.omega = governedSpeed(plane, input);
   const air = atmosphere(altitude);
   const level = levelFlight(plane, input, altitude, speed);
@@ -185,9 +186,9 @@ export function createAircraft(ac, {
   });
   for (const e of plane.engines) e.slipQ = 0;
   refineTrim(plane, { ...input, trim: level.trim }, yaw, speed);
-  // Engines start at the temperatures they would settle at in this flight, radiators closed (as the input starts).
+  // Engines start at the temperatures they would settle at in this flight, with the radiators as set.
   for (const e of plane.engines) {
-    const t = equilibrium(ac, plane.engine, { altitude, q: 0.5 * air.density * speed * speed, power: eng.power, radiator: 0 });
+    const t = equilibrium(ac, plane.engine, { altitude, q: 0.5 * air.density * speed * speed, power: eng.power, radiator });
     e.heat = createHeat(t.coolant, t.oil);
   }
   return plane;

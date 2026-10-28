@@ -4,7 +4,7 @@ import { spitfire } from '../../src/aircraft/spitfire.js';
 import { hurricane } from '../../src/aircraft/hurricane.js';
 import { bf109e4 } from '../../src/aircraft/bf109e4.js';
 import { UNIT } from '../../src/core/constants.js';
-import { Simulation, START } from '../../src/core/simulation.js';
+import { Simulation, START, fullPowerSpeed } from '../../src/core/simulation.js';
 import { Euler } from 'three';
 
 const DT = 1 / 120;
@@ -17,14 +17,14 @@ const fly = (plane, input, seconds, each) => {
 };
 
 describe('flight model', () => {
-  it('flies 30 s hands-off from the test-flight start without diverging', () => {
+  it('flies 30 s hands-off from the test-flight start (full power, D84) without diverging', () => {
     for (const ac of [hurricane, spitfire, bf109e4]) {
       const sim = new Simulation(ac, 'air');
       for (let t = 0; t < 30; t += DT) sim.step(DT);
       const bank = new Euler().setFromQuaternion(sim.plane.body.quaternion, 'YZX').x;
       expect(Math.abs(sim.plane.body.position.y - START.altitude)).toBeLessThan(100);
       expect(Math.abs(bank) / UNIT.DEG).toBeLessThan(15);
-      expect(Math.abs(sim.plane.last.airspeed - START.speed)).toBeLessThan(10);
+      expect(Math.abs(sim.plane.body.velocity.length() - fullPowerSpeed(ac))).toBeLessThan(10);
     }
   });
 

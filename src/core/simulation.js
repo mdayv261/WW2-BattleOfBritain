@@ -3,15 +3,17 @@
 // Rendering reads `previous` and `current` poses and blends them with the loop's alpha (D4).
 //
 // Three starts: on the ground at the aerodrome with the engines off (the default; L starts them), on the approach at
-// 1,000 ft about 5 km out with wheels and flaps up, or in the air at 1,500 m (the Phase 1 start).
+// 1,000 ft about 5 km out with wheels and flaps up, or in the air at 1,500 m at full power (D84).
 // Twins get a lever per engine (src/input/twinLevers.js).
 
 import { Vector3, Quaternion } from 'three';
 import { FixedStepLoop } from './fixedStepLoop.js';
 import { createAircraft, createOnGround, stepAircraft } from '../physics/flightModel.js';
-import { steadyFlight, stallSpeed } from '../physics/performance.js';
+import { steadyFlight, stallSpeed, topSpeed } from '../physics/performance.js';
 import { flatWorld } from '../world/world.js';
 import { engineFor } from '../aircraft/index.js';
+import { coolantLimit } from '../physics/cooling.js';
+import { RADIATOR_OPEN } from '../ai/pilot.js';
 import { lerp } from '../physics/interp.js';
 import { engineMounts } from '../physics/powerplant.js';
 import { createTwinLevers, applyTwinLevers, selectNextEngine, toggleRunning, toggleFeather } from '../input/twinLevers.js';
@@ -32,8 +34,7 @@ export const START_MODES = ['ground', 'approach', 'air'];
 
 /** The throttle that holds a speed in level flight (rpm lever 0..1 for constant-speed propellers). */
 export function levelThrottle(ac, altitude = START.altitude, speed = START.speed, rpmLever = START.rpm) {
-  const pr = ac.propeller;
-  const crank = pr.type === 'constantSpeed' ? lerp(pr.rpmMin, pr.rpmMax, rpmLever) : engineFor(ac).refSpeed;
+  const crank = crankSpeed(ac, rpmLever);
   let lo = 0.0;
   let hi = 1;
   for (let i = 0; i < 30; i += 1) {
@@ -45,10 +46,39 @@ export function levelThrottle(ac, altitude = START.altitude, speed = START.speed
   return 0.5 * (lo + hi);
 }
 
+/** The crank speed (rad/s) a setting runs the engine at: the rpm lever's for a constant-speed airscrew, else its own. */
+const crankSpeed = (ac, rpmLever) => (ac.propeller.type === 'constantSpeed'
+  ? lerp(ac.propeller.rpmMin, ac.propeller.rpmMax, rpmLever) : engineFor(ac).refSpeed);
+
+const fullPower = new Map();
+
+/**
+ * The air start (D84): the aircraft's level speed at full throttle and full rpm at `altitude`, where its fixed rigging
+ * (aero.rollRig, aero.yawRig) is solved, so it flies hands-off straight and level at the power it is usually flown at;
+ * with its radiator open if, closed, the engines would settle within RADIATOR_OPEN °C of their limit (as the AI's rule,
+ * src/ai/pilot.js), the speed then allowing for the open flap's drag. { speed, radiator }, worked out once per aircraft
+ * and height (a costly solve).
+ */
+export function fullPowerStart(ac, altitude = START.altitude) {
+  const key = `${ac.id}@${altitude}`;
+  if (!fullPower.has(key)) {
+    const setting = { speed: crankSpeed(ac, 1), throttle: 1 };
+    let speed = topSpeed(ac, setting, altitude);
+    const closed = createAircraft(ac, { altitude, speed, throttle: 1, rpm: 1 });
+    const hot = Math.max(...closed.engines.map((e) => e.heat.coolant)) > coolantLimit(closed.engine, altitude) - RADIATOR_OPEN;
+    if (hot) speed = topSpeed(ac, setting, altitude, { radiator: 1 });
+    fullPower.set(key, { speed, radiator: hot ? 1 : 0 });
+  }
+  return fullPower.get(key);
+}
+
+/** The air start's speed (m/s, true): see fullPowerStart. */
+export const fullPowerSpeed = (ac, altitude = START.altitude) => fullPowerStart(ac, altitude).speed;
+
 /** Control inputs as the pilot sets them; the input modules write into this object. */
-export function createInput(plane, throttle) {
+export function createInput(plane, throttle, rpm = START.rpm) {
   return {
-    pitch: 0, roll: 0, yaw: 0, throttle, rpm: START.rpm, pitchSwitch: 0,
+    pitch: 0, roll: 0, yaw: 0, throttle, rpm, pitchSwitch: 0,
     trim: plane.trim, flaps: 0, gear: 0, radiator: 0, emergency: false, engineAssist: false,
   };
 }
@@ -68,10 +98,11 @@ function startPlane(ac, mode, world) {
     const plane = createAircraft(ac, { altitude, speed, heading, throttle, rpm: 1, x, z, terrain });
     return { plane, input: { ...createInput(plane, throttle), rpm: 1 } };
   }
+  // In the air: full throttle and full rpm, level at the speed that power holds, where the rigging is solved (D84).
   const { altitude, heading, x, z } = starts.air;
-  const throttle = levelThrottle(ac, altitude);
-  const plane = createAircraft(ac, { ...START, altitude, heading, x, z, throttle, terrain });
-  return { plane, input: createInput(plane, throttle) };
+  const { speed, radiator } = fullPowerStart(ac, altitude);
+  const plane = createAircraft(ac, { ...START, altitude, heading, x, z, speed, throttle: 1, rpm: 1, terrain, radiator });
+  return { plane, input: { ...createInput(plane, 1, 1), radiator } };
 }
 
 export class Simulation {

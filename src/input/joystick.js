@@ -4,8 +4,8 @@
 //
 // Axis numbers differ between browsers and systems, so the mapping is editable in the joystick panel
 // (J) and kept in this browser's storage. The stick and rudder are used as soon as a joystick is
-// connected; the throttle slider only after it is first moved, so a parked slider does not snap the
-// throttle away from the keyboard setting.
+// connected; the throttle slider only after it is first moved in each flight, so a parked slider does not snap the
+// throttle away from the keyboard setting or the start's (D84).
 //
 // Neutral calibration (D70): a stick whose axis does not read 0 when centred (the product owner's twist read 0.15
 // hands off) can have its centre set in the panel, for axes 0-5. The axis then reads 0 there and still reaches ±1 at
@@ -174,6 +174,13 @@ export class Joystick {
    */
   update(input, ac, dt = 0) {
     if (!this.poll()) return null;
+    // A new flight (a restart, start or aircraft makes a new input) keeps its own throttle until the slider is moved
+    // again (D84): a slider parked away from it does not snap the start out of trim.
+    if (input !== this.flight) {
+      this.flight = input;
+      this.throttleLive = false;
+      this.throttleStart = null;
+    }
     for (const name of FLIGHT_AXES) {
       const m = this.mapping[name];
       input[name] = sensitivity(clamp(shape(this.read(name), m.deadzone ?? DEADZONE), -1, 1), m.curve ?? 1);
