@@ -24,6 +24,7 @@ import { Craft } from './craft.js';
 import { recordTrack } from '../ai/perception.js';
 import { clearLosses, losePlayer, stepPlayerLoss, stepFalling } from './losses.js';
 import { stepBailouts, playerBailout, playerJumped, playerLanding } from './bailout.js';
+import { stepCollisions } from './collisions.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 export const START_MODES = ['ground', 'approach', 'air'];
@@ -224,6 +225,7 @@ export class Simulation {
     stepOthers(this, dt);
     this.projectiles.step(dt, this.world.terrain, hittable(this), (struck, hit) => resolveHit(this, struck, hit));
     stepFalling(this, dt);
+    stepCollisions(this); // mid-air collisions (D82)
     stepBailouts(this, dt);
     playerLanding(this);
   }

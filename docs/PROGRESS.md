@@ -17,6 +17,15 @@ Read this at the start of every session.
   checkpoint 4 (bombers' routes and air gunners).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
 
+## Mid-air collisions (28 Oct 2026)
+
+**Done** (D82):
+- aircraft that fly into each other, the player's included, collide;
+- both break up, losing the wing or tail struck, with the usual wreck, bail-out and messages;
+- tests in `tests/core/collisions.test.js`.
+
+**Known issue:** wrecks, falling parts and parachutists don't collide.
+
 ## Phase 6 checkpoint 3: fighter tactics and formations (28 Oct 2026)
 
 **Done** (D81):

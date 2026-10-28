@@ -2155,3 +2155,36 @@ see and flies through the same hands and controls as before (D79).
 - all thresholds, distances and times are game-design estimates built on the sources' qualitative advice;
 - the Bf 110 defensive circle is still not modelled (no source, D78);
 - two equal RAF fighters often decide it on the first head-on pass (eight guns at a combined 220 m/s).
+
+## D82. Mid-air collisions (28 Oct 2026, product owner)
+
+**Problem:** flying through another aircraft didn't register. Only rounds were tested against the hit zones.
+
+**The fix** (`src/core/collisions.js`, checked after every physics step):
+- **Pairs:** every pair of aircraft still flying, the player's included.
+- **Quick test:** their hit-zone bounding spheres must be within reach. Far-apart pairs cost one distance check.
+- **Close test:** each sample point of one aircraft (the corners and centre of each of its hit zones) is followed over
+  the step and tested against the other's zones. The path is seen in the other aircraft's body axes, using both
+  aircraft's previous and present poses, with the rounds' own box test.
+  - Testing the paths, not just where the points end up, catches a thin wing passed through at a couple of metres a
+    step.
+  - The test runs both ways.
+- **What a collision does** (game design): both aircraft are wrecked; at these speeds even a touch is fatal.
+  - **Each loses the part it was struck on:** a wing half, or the tail. A blow to the fuselage or engine leaves the
+    airframe whole to tumble.
+  - **Cause:** "Mid-air collision with Bf 110 C-4 #1" ("... with you" for the player's victim).
+  - **What follows** is the same as any other loss: the falling wreck and debris (D69), crews bailing out if they can
+    (D80), reports, and the player's flight ending.
+  - **Visible:** a flash and a puff at the point of contact.
+- **Not included:** collisions with wrecks, falling parts and parachutists.
+
+**Tests** (`tests/core/collisions.test.js`):
+- head-on, both break up with each other's name;
+- a 30 m near miss isn't a collision;
+- wing tips passing through each other at 300 m/s (2.5 m a step) are caught, each losing that wing, while the same
+  pass 3 m further out misses;
+- the player's flight ends and the AI is reported;
+- a Kette with escorts flies 30 s without touching, within the time budget.
+
+**Checked in Chrome:** a hands-off Spitfire ran into the target ahead. "Mid-air collision with Target Hurricane Mk I"
+appeared, the player bailed out, both pilots came down by parachute, and there were no console errors.
