@@ -22,6 +22,7 @@ import { seededRandom } from '../weapons/random.js';
 import { nextTarget, hittable, resolveHit, stepOthers, testHit } from './combat.js';
 import { Craft } from './craft.js';
 import { recordTrack } from '../ai/perception.js';
+import { stepGunners } from '../ai/gunner.js';
 import { clearLosses, losePlayer, stepPlayerLoss, stepFalling } from './losses.js';
 import { stepBailouts, playerBailout, playerJumped, playerLanding } from './bailout.js';
 import { stepCollisions } from './collisions.js';
@@ -211,6 +212,9 @@ export class Simulation {
     // Guns first: their rounds leave from where the aircraft is now, and their recoil acts in this step.
     const recoil = stepGuns(this.armament, this.plane, this.input, dt, this.plane.time, (round) => this.projectiles.spawn(round, this));
     this.plane.recoil = recoil.force.lengthSq() > 0 ? recoil : null;
+    // The Bf 110's rear gunner is always AI (D14, D83), at the AI's skill; his rounds are the player's.
+    this.player.skill = this.skill;
+    stepGunners(this.player, this, dt, this);
     stepAircraft(this.plane, this.input, dt);
     recordTrack(this.player, this.clock);
     this.stepWorld(dt);

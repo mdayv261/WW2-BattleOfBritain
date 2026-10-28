@@ -54,7 +54,7 @@ export class TestView {
       let drawn = this.others.get(craft);
       if (!drawn) {
         const model = buildAircraftModel(craft.ac, DESIGNS[craft.ac.id]);
-        const flashes = buildMuzzleFlashes(craft.armament);
+        const flashes = buildMuzzleFlashes([...craft.armament, ...(craft.gunnery?.mounts ?? [])]);
         model.group.add(flashes.group);
         this.scene.add(model.group);
         drawn = { model, flashes };
@@ -93,7 +93,7 @@ export class TestView {
     this.followLoss(sim);
     // Muzzle flashes for this flight's guns (rebuilt when the aircraft or its armament changes).
     if (this.flashesFor !== sim.armament) {
-      this.flashes = buildMuzzleFlashes(sim.armament);
+      this.flashes = buildMuzzleFlashes([...sim.armament, ...(sim.player.gunnery?.mounts ?? [])]);
       this.model.add(this.flashes.group);
       this.flashesFor = sim.armament;
     }

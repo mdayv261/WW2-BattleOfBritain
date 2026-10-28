@@ -56,6 +56,7 @@ export const roundTypes = {
   ap792: { shows: null, strength: 1, ap: true },
   incendiary792: { shows: null, strength: 1, incendiary: 1 },
   observing792: { shows: null, strength: 1, incendiary: 0.5 }, // B-Patrone: a flash where it strikes
+  tracer792: { shows: 'tracer', burn: 1.5, strength: 1 }, // 7.92 mm tracer (S40: L'spur); burn time an estimate (D83)
   heIncendiary20: { shows: null, strength: 5, he: true, incendiary: 1 },
   heTracer20: { shows: 'tracer', burn: 1.8, strength: 5, he: true }, // 20 mm tracer burns about 1.8 s (S40)
 };
@@ -63,6 +64,6 @@ export const roundTypes = {
 /** Belts that repeat a sequence of rounds (D61). RAF guns each carry one kind of round, set per gun (S38). */
 export const belts = {
   mg17: ['ap792', 'incendiary792', 'observing792'],
-  mg15: ['ap792', 'incendiary792', 'observing792'], // the MG 17's mix in each drum (D78)
+  mg15: ['ap792', 'incendiary792', 'tracer792'], // the MG 17's mix with a tracer in place of the observing round (D83)
   mgffm: ['heIncendiary20', 'heTracer20'],
 };

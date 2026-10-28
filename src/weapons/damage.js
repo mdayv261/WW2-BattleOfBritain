@@ -6,6 +6,7 @@
 //   fuel tank -> incendiaries may start a fire (less likely in self-sealing tanks); a fire burns until the aircraft
 //     breaks up
 //   pilot -> wounds, then death; rear armour stops rifle-calibre ball and incendiaries from behind, AP gets through fast
+//   crew -> one of the other crewmen seated in the zone (the gunners, D83) wounded, then killed
 //   control cables, aileron, elevator, rudder -> loss of control effect (src/physics/structure.js)
 //   wing panels -> lift lost and drag added on that panel (src/physics/aero.js): the aircraft rolls; full damage breaks
 //     the wing
@@ -26,7 +27,23 @@ export function componentsOf(ac, zone) {
   if (sys.fuel?.[zone.name]) weights.fuel = d.systemWeights.fuel;
   if (sys.coolant?.[zone.name] !== undefined) weights.coolant = (weights.coolant ?? 0) + d.systemWeights.coolant;
   if (sys.oil?.[zone.name] !== undefined) weights.oil = (weights.oil ?? 0) + d.systemWeights.oil;
+  const crew = seatsIn(ac, zone).length;
+  if (crew) weights.crew = d.systemWeights.crew * crew;
   return weights;
+}
+
+/** The crewmen other than the pilot (their indices in `ac.crew`) seated inside a zone (cached on the zone). */
+export function seatsIn(ac, zone) {
+  if (zone.seats) return zone.seats;
+  const inside = (m) => m.x >= zone.min.x && m.x <= zone.max.x && m.y >= zone.min.y && m.y <= zone.max.y && m.z >= zone.min.z && m.z <= zone.max.z;
+  zone.seats = (ac.crew ?? []).map((m, i) => (m.role !== 'pilot' && inside(m) ? i : -1)).filter((i) => i >= 0);
+  return zone.seats;
+}
+
+/** A crewman's health (1 well, 0 or less killed): the pilot's is `damage.pilot`, the others' `damage.crew[i]`. */
+export function crewHealth(plane, i) {
+  if (plane.ac.crew?.[i]?.role === 'pilot') return plane.damage.pilot;
+  return plane.damage.crew?.[i] ?? 1;
 }
 
 /** The engine a hit on `component` in `zone` belongs to (its index). */
@@ -92,6 +109,14 @@ export function hurt(plane, zone, component, round, strength, dir, speed, random
       dmg.pilot -= d.pilotWound * Math.sqrt(strength);
       if (dmg.pilot <= 0) dmg.failed ??= { cause: 'The pilot was killed', pilotKilled: true, parts: [] };
       return dmg.pilot <= 0 ? 'pilot killed' : 'pilot wounded';
+    }
+    case 'crew': {
+      const seats = seatsIn(plane.ac, zone).filter((i) => crewHealth(plane, i) > 0);
+      if (!seats.length) return 'nothing';
+      const i = seats[Math.floor(random() * seats.length)];
+      dmg.crew ??= {};
+      dmg.crew[i] = crewHealth(plane, i) - d.pilotWound * Math.sqrt(strength);
+      return `${plane.ac.crew[i].role} ${dmg.crew[i] <= 0 ? 'killed' : 'wounded'}`;
     }
     case 'cables': {
       const which = ['aileron', 'elevator', 'rudder'][Math.floor(random() * 3)];
@@ -176,6 +201,7 @@ export function damageSummary(plane) {
   for (const [c, v] of Object.entries(dmg.controls)) if (v < 1) parts.push(`${c} ${(v * 100).toFixed(0)}%`);
   if (dmg.tail > 0) parts.push(`tail ${(dmg.tail * 100).toFixed(0)}%`);
   if (dmg.pilot < 1) parts.push(dmg.pilot <= 0 ? 'pilot killed' : 'pilot wounded');
+  for (const [i, h] of Object.entries(dmg.crew ?? {})) parts.push(`${plane.ac.crew[i].role} ${h <= 0 ? 'killed' : 'wounded'}`);
   if (dmg.fire) parts.push(`ON FIRE (${dmg.fire.kind})`);
   if (dmg.gearJammed) parts.push('undercarriage jammed');
   if (dmg.flapsJammed) parts.push('flaps jammed');

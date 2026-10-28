@@ -86,14 +86,26 @@ export function fly(craft, hands, goal, dt) {
   // A push-over keeps the wings level and turns the flight path with the elevator alone, down as well as up.
   if (goal.push) rollToGo = -attitude(plane).bank;
   // Never bank past the goal's limit (when it sets one), measuring round the shorter way.
-  if (goal.maxBank !== undefined && goal.maxBank < Math.PI) {
+  let bankLimited = null;
+  if (goal.maxBank !== undefined && goal.maxBank < Math.PI && !goal.push) {
     const bank = attitude(plane).bank;
-    rollToGo = clamp(wrap(bank + rollToGo), -goal.maxBank, goal.maxBank) - bank;
+    const wanted = wrap(bank + rollToGo);
+    if (Math.abs(wanted) > goal.maxBank) bankLimited = Math.sign(wanted) * goal.maxBank;
+    rollToGo = clamp(wanted, -goal.maxBank, goal.maxBank) - bank;
   }
   const rollWanted = clamp(ROLL_GAIN * rollToGo - ROLL_DAMPING * rollRate, -1, 1);
 
-  // The g wanted, while the lift is roughly in place; eased off at the buffet.
-  const gNeeded = goal.push ? liftBody.y / G : (_lift.length() / G) * Math.max(0, Math.cos(rollToGo));
+  // The g wanted, while the lift is roughly in place; eased off at the buffet. Held at its bank limit, he pulls only
+  // what holds the climb or descent wanted at that bank, turning as fast as the bank allows (D83): the rest of the
+  // pull would only zoom him upwards and bleed his speed away.
+  let gNeeded = goal.push ? liftBody.y / G : (_lift.length() / G) * Math.max(0, Math.cos(rollToGo));
+  if (bankLimited !== null) {
+    const speed = Math.max(body.velocity.length(), 1);
+    const path = Math.asin(clamp(body.velocity.y / speed, -1, 1));
+    const climb = Math.asin(clamp(goal.direction.y, -1, 1));
+    const vertical = G * Math.cos(path) + speed * (goal.turnGain ?? TURN_GAIN) * (climb - path);
+    gNeeded = Math.min(gNeeded, Math.max(0, vertical) / (G * Math.cos(bankLimited)));
+  }
   let gWanted = clamp(gNeeded, goal.gMin ?? 0, goal.gMax ?? 4);
   const n = d.loadFactor ?? 1;
   const buffet = Math.max(d.stalledLeft ?? 0, d.stalledRight ?? 0);

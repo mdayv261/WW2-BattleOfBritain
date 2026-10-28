@@ -57,7 +57,10 @@ export const FLASH_AHEAD = 0.1; // m: a muzzle flash is drawn this far ahead of 
 export const FLASH_SIZE = { mg: 0.06, cannon: 0.25 }; // m: radius of the flash ball (display choice)
 export const FLASH_COLOUR = 0xffcc00; // yellow (product owner, D67), drawn opaque-ish so the sky does not wash it white
 
-/** Muzzle flashes for an aircraft's guns: small glowing balls at the muzzles, shown just after each round (D67). */
+/**
+ * Muzzle flashes for an aircraft's guns: small glowing balls at the muzzles, shown just after each round (D67). The
+ * flexible guns' (D83) follow their guns as they swing.
+ */
 export function buildMuzzleFlashes(armament) {
   const group = new THREE.Group();
   const material = new THREE.MeshBasicMaterial({ color: FLASH_COLOUR, transparent: true, opacity: 0.95, depthWrite: false });
@@ -71,7 +74,10 @@ export function buildMuzzleFlashes(armament) {
   });
   /** Shows each gun's flash for a moment after it fires, at simulation time `now`. */
   const update = (now) => {
-    for (const f of flashes) f.mesh.visible = now - f.gun.lastShot < 0.03;
+    for (const f of flashes) {
+      f.mesh.visible = now - f.gun.lastShot < 0.03;
+      if (f.mesh.visible) f.mesh.position.copy(f.gun.position).addScaledVector(f.gun.bore, FLASH_AHEAD);
+    }
   };
   return { group, update, material };
 }

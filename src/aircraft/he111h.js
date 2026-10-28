@@ -136,12 +136,13 @@ export const he111h = {
   // S29's H-6/H-11 sectors (a close variant, flagged). Pivots (m, body axes) are estimates on the model. Arcs (rad, written in degrees):
   // azimuth from the nose, + right, aft = 180; elevation + up. `forwardMinElevation`: the dorsal gun clears the cabin
   // only from 30° up when it points forward (S29). The tail MG 17 is fixed along the axis, fired by the B or C gunner.
+  // `gunner`: the crewman (index in `crew`) who mans it (D83); `gunnerAlt`: who fires it if he is out of action.
   mounts: {
-    nose: { type: 'mg15', x: 6.3, y: 0, z: 0, azimuth: [-35 * DEG, 15 * DEG], elevation: [-40 * DEG, 0 * DEG], drums: 13 },
-    dorsal: { type: 'mg15', x: -3, y: 1.0, z: 0, azimuth: [-180 * DEG, 180 * DEG], elevation: [0 * DEG, 90 * DEG], forwardMinElevation: 30 * DEG, drums: 14 },
-    ventral: { type: 'mg15', x: -2, y: -1.6, z: 0, azimuth: [140 * DEG, 215 * DEG], elevation: [-70 * DEG, -6 * DEG], drums: 15 },
-    beamLeft: { type: 'mg15', x: -4, y: 0.4, z: -0.88, azimuth: [-145 * DEG, -67 * DEG], elevation: [-30 * DEG, 45 * DEG], drums: 5 },
-    beamRight: { type: 'mg15', x: -4, y: 0.4, z: 0.88, azimuth: [67 * DEG, 145 * DEG], elevation: [-30 * DEG, 45 * DEG], drums: 5 },
-    tail: { type: 'mg17', x: -9.9, y: 0.3, z: 0, azimuth: [180 * DEG, 180 * DEG], elevation: [0 * DEG, 0 * DEG], rounds: 500, fixed: true },
+    nose: { type: 'mg15', gunner: 1, x: 6.3, y: 0, z: 0, azimuth: [-35 * DEG, 15 * DEG], elevation: [-40 * DEG, 0 * DEG], drums: 13 },
+    dorsal: { type: 'mg15', gunner: 2, x: -3, y: 1.0, z: 0, azimuth: [-180 * DEG, 180 * DEG], elevation: [0 * DEG, 90 * DEG], forwardMinElevation: 30 * DEG, drums: 14 },
+    ventral: { type: 'mg15', gunner: 3, x: -2, y: -1.6, z: 0, azimuth: [140 * DEG, 215 * DEG], elevation: [-70 * DEG, -6 * DEG], drums: 15 },
+    beamLeft: { type: 'mg15', gunner: 4, x: -4, y: 0.4, z: -0.88, azimuth: [-145 * DEG, -67 * DEG], elevation: [-30 * DEG, 45 * DEG], drums: 5 },
+    beamRight: { type: 'mg15', gunner: 4, x: -4, y: 0.4, z: 0.88, azimuth: [67 * DEG, 145 * DEG], elevation: [-30 * DEG, 45 * DEG], drums: 5 },
+    tail: { type: 'mg17', gunner: 2, gunnerAlt: 3, x: -9.9, y: 0.3, z: 0, azimuth: [180 * DEG, 180 * DEG], elevation: [0 * DEG, 0 * DEG], rounds: 500, fixed: true },
   },
 };

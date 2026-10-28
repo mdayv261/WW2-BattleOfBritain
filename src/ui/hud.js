@@ -9,6 +9,8 @@ import { groupRounds } from '../weapons/guns.js';
 import { damageSummary } from '../weapons/damage.js';
 import { targetBearing } from '../core/combat.js';
 import { SKILLS } from '../ai/skill.js';
+import { gunnersSummary } from '../ai/gunner.js';
+import { roundsLeft } from '../weapons/mounts.js';
 
 /** The nearest AI aircraft's line for F3 (D68, D79): type, range, where it is, hits and damage, and the last hit. */
 function targetLine(sim) {
@@ -21,13 +23,25 @@ function targetLine(sim) {
   const deg = (a, plus, minus) => `${Math.abs(a * 180 / Math.PI).toFixed(0)}° ${a >= 0 ? plus : minus}`;
   const where = `${deg(right, 'right', 'left')} ${deg(up, 'up', 'down')}`;
   const doing = t.pilot?.describe ? `  ${t.pilot.describe()}` : '';
-  return `Target    ${t.label} (${t.side})${doing}  ${range.toFixed(0)} m  ${where}  hits ${t.plane.damage.hits}  ${damageSummary(t.plane) || 'undamaged'}${last}`;
+  const gunners = t.gunnery ? `  ${gunnersSummary(t)}` : '';
+  return `Target    ${t.label} (${t.side})${doing}  ${range.toFixed(0)} m  ${where}${gunners}  hits ${t.plane.damage.hits}  ${damageSummary(t.plane) || 'undamaged'}${last}`;
 }
 
 /** The AI's line for F3 (D79): how many aircraft on each side, the skill and the scenario. */
 function aiLine(sim) {
   const count = (side) => sim.others.filter((c) => c.side === side).length;
   return `AI        RAF ${count('RAF')}  Luftwaffe ${count('Luftwaffe')}  skill ${SKILLS[sim.skill].name}  ${sim.scenario ?? 'no scenario (6, 7)'}`;
+}
+
+/** The player's own air gunner (the Bf 110's, D83): "Rear gun  firing  42 in the drum, 10 drums left"; null if none. */
+function gunnerLine(sim) {
+  const crew = sim.player.gunnery;
+  if (!crew) return null;
+  const parts = crew.mounts.map((m) => {
+    const state = m.changingUntil !== null ? 'changing drum' : m.firing ? 'firing' : roundsLeft(m) ? 'watching' : 'out of rounds';
+    return `${m.id} ${state}, ${m.rounds} in the drum, ${m.drums} drums left`;
+  });
+  return `Gunner    ${gunnersSummary(sim.player)}  ${parts.join('; ')}`;
 }
 
 /** Rounds left per firing group, e.g. "Rounds MG 2648/2672  cannon 120/120"; null for an unarmed aircraft. */
@@ -219,6 +233,7 @@ export class Hud {
       `Flaps ${(plane.surfaces.flaps * 100).toFixed(0)}%  gear ${(plane.surfaces.gear * 100).toFixed(0)}%  cut-out ${(d.cutout * 100).toFixed(0)}%`,
       ...plane.engines.map((e, i) => `Heat ${plane.engines.length > 1 ? ['L', 'R'][i] : ''}     coolant ${e.heat.coolant.toFixed(0)} °C (limit ${coolantLimit(plane.engine, d.altitude).toFixed(0)})  oil ${e.heat.oil.toFixed(0)} °C (limit ${plane.engine.heat.oilLimit})  wear ${(e.heat.wear * 100).toFixed(0)}%  coolant left ${(e.heat.coolantLeft * 100).toFixed(0)}%${e.heat.seized ? '  SEIZED' : ''}`),
       roundsLine(sim) ?? 'Rounds    unarmed',
+      ...(gunnerLine(sim) ? [gunnerLine(sim)] : []),
       targetLine(sim),
       aiLine(sim),
       `Damage    ${damageSummary(plane) || 'none'}`,

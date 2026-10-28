@@ -2188,3 +2188,85 @@ see and flies through the same hands and controls as before (D79).
 
 **Checked in Chrome:** a hands-off Spitfire ran into the target ahead. "Mid-air collision with Target Hurricane Mk I"
 appeared, the player bailed out, both pilots came down by parachute, and there were no console errors.
+
+## D83. Bombers and air gunners: Phase 6 checkpoint 4 (28 Oct 2026, plan approved by the product owner)
+
+**Flexible guns** (`src/weapons/mounts.js`):
+- One gun per entry in the aircraft's `mounts` data (D78): the Bf 110's rear MG 15 and the He 111's nose, dorsal,
+  ventral and two beam MG 15s, plus its fixed rearward MG 17 (a mount whose arc is one direction).
+- Each gun swings towards its gunner's aim at no more than 60°/s (D78, estimate) and never leaves its arc. Arcs that run
+  through dead astern (150° to 210°) are handled; a gun aimed outside its arc stops at the nearer edge and never swings
+  through the gap. The He 111's dorsal gun goes all the way round but clears the cabin only from 30° up when it points
+  forward (S29).
+- It fires at the MG 15's rate from 75-round drums. An empty drum is changed in 10 s × the skill's drum factor (S25:
+  "about 10 seconds" for an experienced gunner); no fire meanwhile; silent when no drums are left.
+- Rounds leave along the gun with the aircraft's velocity added, into the shared pool. The recoil of one hand-held gun
+  is left out of the flight model (small, and taken by the mount).
+
+**Drum loading** (product owner accepted; estimate): each MG 15 drum carries the MG 17's mix with a 7.92 mm tracer in
+place of the observing round (AP, incendiary, tracer), so the gunners' fire can be seen. Germany had 7.92 mm tracer
+(S40, "L'spur"); no 1940 drum loading and no burn time were found. The burn time, 1.5 s (about 900 m), is an estimate
+a little under the 20 mm tracer's 1.8 s (S40). **Deviation flagged.**
+
+**Who mans what** (S28): the He 111's nose gun by the observer (bomb-aimer), the dorsal by the radio operator, the
+ventral by the C-Stand gunner (the flight engineer in the game's crew of five), both beam guns by the fifth man (he
+fires one at a time). The tail MG 17 is fired by the radio operator, or by the C-Stand gunner if he is out of action,
+whenever its line is on the target he is shooting at with his own gun. The Bf 110's rear gun is manned by its radio
+operator (S25).
+
+**Air gunners** (`src/ai/gunner.js`; game-design values, estimates):
+- **Seeing:** enemies within his gun's arc and his skill's gun range (new skill value `gunRange`: Novice 450 m,
+  Regular 550 m, Ace 650 m), seen one reaction time ago and judged on to where they are now. He prefers one closing
+  on his aircraft, else the nearest.
+- **Aiming:** ahead by the rounds' time of flight, allowing for his own aircraft's motion, and above by their drop; plus
+  a wandering aim error of five times his skill's pilot aim error (a flexible gun on a moving aircraft), twice that
+  again when he is wounded. Measured headless: at a fighter sitting 300 m astern an Ace hits with about a third of his
+  rounds, a Regular about a tenth, a Novice almost none; at one crossing 300 m behind, about a tenth, a twentieth and
+  almost none.
+- **Firing:** bursts of 1.5 s with 0.6 s pauses while the gun is within 2° of his aim; never with a friendly aircraft
+  in the line of fire nearer than the target.
+- **Limits:** nobody fires above 2 g (S25, figure an estimate, D78); a killed gunner's gun falls silent; nobody fires
+  once the crew abandon the aircraft.
+- **The player's Bf 110:** the rear gunner is always AI (D14), at the AI's skill (key 8); his rounds count as the
+  player's.
+
+**Crew wounds** (`src/weapons/damage.js`): a zone that holds crewmen other than the pilot gets a "crew" component,
+weight 0.1 per man (estimate). The He 111's fuselage holds three (radio operator, flight engineer, side gunner); its
+cockpit the observer; the Bf 110's cockpit the gunner. A hit wounds one of them as a pilot is wounded (D68). Killed
+crewmen do not bail out (D80 extended). F3 lists wounded and killed crewmen with the damage.
+
+**Bombers** (`src/ai/bomber.js`, replacing the bombers' part of `basic.js`; distances are game design):
+- **Route:** the leader steers for each waypoint in turn at formation speed and height, in gentle turns (20° bank), then
+  holds his heading. A waypoint counts as reached within 1 km, or within 3 km once it is behind the wing line (a
+  20° turn at bomber speed is about 1.7 km in radius, so a waypoint just off to the side could otherwise be circled for
+  ever).
+- **Formation:** the others keep their places; with enemy fighters within 1.5 km of the leader they close up to 60% of
+  the spacing, so that their guns support each other, and open out again once all are beyond 2.5 km.
+- **Straggler:** a bomber badly damaged (D80) or with an engine out leaves the formation and turns for home, losing
+  height gently (about 3°) at 90% of the formation speed.
+- **Leader lost:** the next bomber still in formation takes the lead, the route and the escort. The others move up a
+  place, each staying on the side of the new leader he is already on (crossing over behind him caused a collision in
+  testing).
+- **Scenario 7:** the Kette flies 15 km on its course to its target, then turns for home (30 km on).
+
+**AI hands, two fixes found while testing** (`src/ai/pilot.js`, `src/ai/basic.js`):
+- **At its bank limit** (formation flying), a pilot pulled the full g meant for a tighter turn, so the extra lift went
+  into a zoom and the speed bled away (a bomber fell to 6 m/s in a 90° turn); and in a big turn the small climb or
+  descent wanted was scaled up with the turn, so the hands pushed to 0 g and dived. Now, when the bank limit holds
+  him, he pulls only the g that gives the climb or descent he wants at that bank, and turns as fast as the bank allows.
+- **Wingmen in gentle formation flight** may bank to 29° (was 20°, the leader's limit), so that a wingman on the
+  outside of a turn can hold his place.
+
+**F3:** the nearest AI aircraft's line shows its gunners ("gunners: 2 firing, 1 changing drum, 1 wounded"); a Bf 110
+player's line shows the rear gun's state, rounds in the drum and drums left. Muzzle flashes show at the flexible guns
+and follow them as they swing.
+
+**Tests:** `tests/weapons/mounts.test.js` (arcs through dead astern, the dorsal's forward limit, the traverse rate, the
+fixed tail gun, the rate of fire and tracer, drum changes, no drums left); `tests/ai/gunner.test.js` (Ace against Novice
+on a crossing fighter, no fire above 2 g, a killed gunner silent, the ventral not the dorsal against an attacker low
+astern, the player's Bf 110 gunner firing at an enemy and never at or past a friend, crew wounds in the fuselage, killed
+crewmen not bailing out); `tests/ai/bomber.test.js` (the route, closing up and opening out, a straggler, a new leader).
+
+**Checked in Chrome:** a Spitfire placed 300-350 m behind the Kette was fired on (333 rounds, 17 hits, glycol trailing),
+the tracers showing and the Kette closed up; a Bf 110 with one Spitfire behind it: the rear gunner fired 54 rounds and
+hit 3 times, and the Spitfire, leaking coolant, broke off. No console errors.

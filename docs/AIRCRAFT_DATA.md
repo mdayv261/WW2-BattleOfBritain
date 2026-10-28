@@ -1175,6 +1175,7 @@ Bf 109's (same designer, engine and airscrew).
 | Rear MG 15: azimuth arc (`mounts.rear.azimuth`) | 150 to 210 | deg | — | S25 | medium | "about 30° on either side of the centre line ... maximum elevation is 60° ... not possible to fire below the horizontal" (S25 para. 17). Canopy taken as open (D78). |
 | Rear MG 15: elevation arc (`mounts.rear.elevation`) | 0 to 60 | deg | — | S25 | medium | "about 30° on either side of the centre line ... maximum elevation is 60° ... not possible to fire below the horizontal" (S25 para. 17). Canopy taken as open (D78). |
 | Rear MG 15: drums carried (`mounts.rear.drums`) | 11 | drums | stowage for 10 spare magazines | S25 | medium | One on the gun and 10 spares (D77). |
+| Rear MG 15: manned by (`mounts.rear.gunner`) | 1 | crew index | — | S25 | medium | The radio operator, who also serves as gunner (crew 1, D83). |
 | Crew (`crew`) | 2 | men | When used as a fighter the crew is usually two | S25 | medium | pilot, radio operator and gunner. Seat positions are estimates on the model (D80). |
 | Crew: time from deciding to bail out to clear of the aircraft (`crew.exit`) | 4, 6 | s | — | ASSUMPTION | estimate | Hood or hatch, harness, over the side; the crew one after another. No figures found (D80). |
 
@@ -1360,6 +1361,7 @@ positions are estimates from the overall dimensions.
 | Nose (A-Stand) MG 15: azimuth arc (`mounts.nose.azimuth`) | -35 to 15 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 nose): down to 40°, nothing above the axis, 15° right, 35° left; applied to the H-3 (D78). |
 | Nose (A-Stand) MG 15: elevation arc (`mounts.nose.elevation`) | -40 to 0 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 nose): down to 40°, nothing above the axis, 15° right, 35° left; applied to the H-3 (D78). |
 | Nose (A-Stand) MG 15: drums carried (`mounts.nose.drums`) | 13 | drums | 13 Doppeltrommeln | S28 | medium | S28: 2 + 4 + 7 drums stowed. |
+| Nose (A-Stand) MG 15: manned by (`mounts.nose.gunner`) | 1 | crew index | A-Stand durch den Bombenschützen | S28 | medium | The observer and bomb-aimer (crew 1, D83). |
 | Dorsal (B-Stand) MG 15: pivot x (`mounts.dorsal.x`) | -3 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Dorsal (B-Stand) MG 15: pivot y (`mounts.dorsal.y`) | 1.0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Dorsal (B-Stand) MG 15: pivot z (`mounts.dorsal.z`) | 0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
@@ -1367,30 +1369,36 @@ positions are estimates from the overall dimensions.
 | Dorsal (B-Stand) MG 15: elevation arc (`mounts.dorsal.elevation`) | 0 to 90 | deg | — | S29, ASSUMPTION | estimate | S29 (H-6 turret): all round; aft from the horizon to 90°; forward only from 30° up (D78). |
 | Dorsal (B-Stand) MG 15: drums carried (`mounts.dorsal.drums`) | 14 | drums | 14 Doppeltrommeln | S28 | medium | S28: 10 on the drum rail and 4 on a carrier. |
 | Dorsal (B-Stand) MG 15: lowest elevation when pointing forward (`mounts.dorsal.forwardMinElevation`) | 30 | deg | — | S29, ASSUMPTION | estimate | S29 (H-6): forward and upward from 30° to 90°. |
+| Dorsal (B-Stand) MG 15: manned by (`mounts.dorsal.gunner`) | 2 | crew index | B-Stand durch den Funker | S28 | medium | The radio operator (crew 2, D83). |
 | Ventral (C-Stand) MG 15: pivot x (`mounts.ventral.x`) | -2 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Ventral (C-Stand) MG 15: pivot y (`mounts.ventral.y`) | -1.6 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Ventral (C-Stand) MG 15: pivot z (`mounts.ventral.z`) | 0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Ventral (C-Stand) MG 15: azimuth arc (`mounts.ventral.azimuth`) | 140 to 215 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 rear hatch, twin MG 81): 6° to 70° below, 40° right and 35° left of aft; applied to the H-3 MG 15 (D78). |
 | Ventral (C-Stand) MG 15: elevation arc (`mounts.ventral.elevation`) | -70 to -6 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 rear hatch, twin MG 81): 6° to 70° below, 40° right and 35° left of aft; applied to the H-3 MG 15 (D78). |
 | Ventral (C-Stand) MG 15: drums carried (`mounts.ventral.drums`) | 15 | drums | 3 Trommelkästen 5fach | S28 | medium | S28: three five-drum boxes. |
+| Ventral (C-Stand) MG 15: manned by (`mounts.ventral.gunner`) | 3 | crew index | C-Stand durch Schützen | S28 | medium | The C-Stand gunner, the flight engineer in the game's crew (crew 3, D83). |
 | Left beam MG 15: pivot x (`mounts.beamLeft.x`) | -4 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Left beam MG 15: pivot y (`mounts.beamLeft.y`) | 0.4 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Left beam MG 15: pivot z (`mounts.beamLeft.z`) | -0.88 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Left beam MG 15: azimuth arc (`mounts.beamLeft.azimuth`) | -145 to -67 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 side guns): 23° forward to 55° aft of the beam, 30° below to 45° above the horizon (D78). |
 | Left beam MG 15: elevation arc (`mounts.beamLeft.elevation`) | -30 to 45 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 side guns): 23° forward to 55° aft of the beam, 30° below to 45° above the horizon (D78). |
 | Left beam MG 15: drums carried (`mounts.beamLeft.drums`) | 5 | drums | 10 drums above the exit hatch for both side guns | S28, ASSUMPTION | estimate | Half of the side guns' 10 drums each (D78). |
+| Left beam MG 15: manned by (`mounts.beamLeft.gunner`) | 4 | crew index | the "5. Mann" who serves the side guns | S28 | medium | One man for both beam guns: he fires one at a time (crew 4, D83). |
 | Right beam MG 15: pivot x (`mounts.beamRight.x`) | -4 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Right beam MG 15: pivot y (`mounts.beamRight.y`) | 0.4 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Right beam MG 15: pivot z (`mounts.beamRight.z`) | 0.88 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Right beam MG 15: azimuth arc (`mounts.beamRight.azimuth`) | 67 to 145 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 side guns): 23° forward to 55° aft of the beam, 30° below to 45° above the horizon (D78). |
 | Right beam MG 15: elevation arc (`mounts.beamRight.elevation`) | -30 to 45 | deg | — | S29, ASSUMPTION | estimate | S29 (H-11 side guns): 23° forward to 55° aft of the beam, 30° below to 45° above the horizon (D78). |
 | Right beam MG 15: drums carried (`mounts.beamRight.drums`) | 5 | drums | 10 drums above the exit hatch for both side guns | S28, ASSUMPTION | estimate | Half of the side guns' 10 drums each (D78). |
+| Right beam MG 15: manned by (`mounts.beamRight.gunner`) | 4 | crew index | the "5. Mann" who serves the side guns | S28 | medium | One man for both beam guns: he fires one at a time (crew 4, D83). |
 | Tail MG 17 (fixed, rearward): pivot x (`mounts.tail.x`) | -9.9 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Tail MG 17 (fixed, rearward): pivot y (`mounts.tail.y`) | 0.3 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Tail MG 17 (fixed, rearward): pivot z (`mounts.tail.z`) | 0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Tail MG 17 (fixed, rearward): azimuth arc (`mounts.tail.azimuth`) | 180 | deg | — | S28 | medium | Fixed parallel to the fuselage axis, firing aft (S28: "parallel zur Rumpflängsachse"). |
 | Tail MG 17 (fixed, rearward): elevation arc (`mounts.tail.elevation`) | 0 | deg | — | S28 | medium | Fixed parallel to the fuselage axis, firing aft (S28: "parallel zur Rumpflängsachse"). |
 | Tail MG 17 rounds (`mounts.tail.rounds`) | 500 | rounds | Vollgurtkasten (500 Schuß) | S28, S29 | high | Fired from the B- or C-Stand. |
+| Tail MG 17: fired by (`mounts.tail.gunner`) | 2 | crew index | — | S28 | medium | The radio operator (crew 2), as well as his own gun when an enemy sits in its line (D83). |
+| Tail MG 17: fired, if he is out of action, by (`mounts.tail.gunnerAlt`) | 3 | crew index | — | S28 | medium | The C-Stand gunner (crew 3, D83). |
 | Formation cruising speed (`formationSpeed`) | 93.6 | m/s | 330-345 km/h (range-table speed) | S29, ASSUMPTION | estimate | The middle, 337 km/h; no formation speed found (D78). |
 | Crew (`crew`) | 5 | men | the "5. Mann" who serves the side guns | S28 | medium | pilot, observer, radio operator, flight engineer, side gunner. Seat positions are estimates on the model (D80). |
 | Crew: time from deciding to bail out to clear of the aircraft (`crew.exit`) | 10, 6, 8, 12, 14 | s | — | ASSUMPTION | estimate | Hood or hatch, harness, over the side; the crew one after another. No figures found (D80). |
@@ -1513,6 +1521,7 @@ Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or es
 | Damage weight added by a fuel system in a zone (`damage.systemWeights.fuel`) | 0.25 | weight | — | ASSUMPTION | estimate | A tank, radiator or oil cooler in a zone adds this weight (D68). |
 | Damage weight added by a coolant system in a zone (`damage.systemWeights.coolant`) | 0.15 | weight | — | ASSUMPTION | estimate | A tank, radiator or oil cooler in a zone adds this weight (D68). |
 | Damage weight added by a oil system in a zone (`damage.systemWeights.oil`) | 0.1 | weight | — | ASSUMPTION | estimate | A tank, radiator or oil cooler in a zone adds this weight (D68). |
+| Damage weight added by each crewman (not the pilot) seated in a zone (`damage.systemWeights.crew`) | 0.1 | weight | — | ASSUMPTION | estimate | A round into a zone holding gunners can wound one of them (D83). |
 | Engine wear per unit of hit strength (`damage.engineWear`) | 0.06 | per unit | — | ASSUMPTION | estimate | About 17 rifle-calibre hits or 3-4 cannon shells seize an engine. |
 | Chance an incendiary engine hit starts a fire (`damage.engineFireChance`) | 0.05 | fraction | — | ASSUMPTION | estimate | Engine fires were less common than fuel fires. |
 | Coolant or oil lost per second per unit of hit strength (`damage.leakRate`) | 0.004 | fraction/s | — | ASSUMPTION | estimate | One rifle-calibre hole drains the system in about four minutes; a cannon shell in under a minute. |
@@ -1619,6 +1628,7 @@ kind of round (each aircraft's `guns`).
 | MG FF/M rate of fire (`weapons.mgffm.rate`) | 7.9167 | rounds/s | 450 to 500 rds./min.—cyclic | S27, ASSUMPTION | estimate | The middle, 475 rounds/min (D61). |
 | Old-type .303 incendiary: smoke trail lasts (`roundTypes.incendiary303.burn`) | 1.0 | s | a distinct smoke-tracer effect | S38, ASSUMPTION | estimate | S38 describes the trail but not its length; about the tracer's 600-800 yd (S37). Display only. |
 | 20 mm tracer burn time (`roundTypes.heTracer20.burn`) | 1.8 | s | Brilliant white 1.8 | S40 | medium | Display only. |
+| 7.92 mm tracer burn time (`roundTypes.tracer792.burn`) | 1.5 | s | — | ASSUMPTION | estimate | Germany had 7.92 mm tracer (S40, L'spur) but no burn time was found; a little under the 20 mm tracer's 1.8 s (S40), about 900 m of flight. Display only (D83). |
 
 | ball303: hit strength (`roundTypes.ball303.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
 | ap303: hit strength (`roundTypes.ap303.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
@@ -1631,6 +1641,7 @@ kind of round (each aircraft's `guns`).
 | incendiary792: incendiary effect (`roundTypes.incendiary792.incendiary`) | 1 | fraction | — | ASSUMPTION | estimate | How readily it sets fuel alight (D68). |
 | observing792: hit strength (`roundTypes.observing792.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
 | observing792: incendiary effect (`roundTypes.observing792.incendiary`) | 0.5 | fraction | — | ASSUMPTION | estimate | How readily it sets fuel alight (D68). |
+| tracer792: hit strength (`roundTypes.tracer792.strength`) | 1 | units | — | ASSUMPTION | estimate | Rifle-calibre round: the unit of hit strength (D68). |
 | heIncendiary20: hit strength (`roundTypes.heIncendiary20.strength`) | 5 | units | — | ASSUMPTION | estimate | A 20 mm HE shell does about five times a rifle-calibre round's damage, and also hits a second component (D68). |
 | heIncendiary20: incendiary effect (`roundTypes.heIncendiary20.incendiary`) | 1 | fraction | — | ASSUMPTION | estimate | How readily it sets fuel alight (D68). |
 | heTracer20: hit strength (`roundTypes.heTracer20.strength`) | 5 | units | — | ASSUMPTION | estimate | A 20 mm HE shell does about five times a rifle-calibre round's damage, and also hits a second component (D68). |

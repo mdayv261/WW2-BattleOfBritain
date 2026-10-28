@@ -66,7 +66,7 @@ export function stepOthers(sim, dt) {
     const pilotDead = d.pilot <= 0;
     if (pilotDead ? c.ac.crew.length < 2 : !(doomed(c.plane) || badlyDamaged(c.plane))) continue;
     c.bailout = startBailout(sim, {
-      ac: c.ac, side: c.side, label: c.label, body: () => (c.gone ? null : c.plane.body), delay: decisionDelay(c), pilotAlive: !pilotDead,
+      ac: c.ac, side: c.side, label: c.label, body: () => (c.gone ? null : c.plane.body), delay: decisionDelay(c), pilotAlive: !pilotDead, plane: c.plane,
     });
     c.abandoned = true;
   }
@@ -87,7 +87,7 @@ export function stepOthers(sim, dt) {
       const fromWreck = () => (wreck.landed ? null : wreck.body);
       if (c.bailout) c.bailout.body = fromWreck;
       else if (c.plane.damage.pilot > 0) {
-        c.bailout = startBailout(sim, { ac: c.ac, side: c.side, label: c.label, body: fromWreck, delay: decisionDelay(c), scale: BREAK_UP_EXIT });
+        c.bailout = startBailout(sim, { ac: c.ac, side: c.side, label: c.label, body: fromWreck, delay: decisionDelay(c), scale: BREAK_UP_EXIT, plane: c.plane });
       }
       say(`${name(c)} destroyed: ${failed.cause}`);
       return false;

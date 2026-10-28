@@ -13,9 +13,29 @@ Read this at the start of every session.
 - **Phase 5** (weapons and damage): signed off (27 Oct 2026, D75).
 - **Phase 6** (AI pilots and gunners): in progress (plan approved 27 Oct 2026, D76). Checkpoint 1 (research) done (D77,
   D78); checkpoint 2 (many aircraft, the AI pilot's hands, scenario keys) done (D79); checkpoint 2b (bailing out and
-  parachutes, the product owner's addition) done (D80); checkpoint 3 (fighter tactics and formations) done (D81); next
-  checkpoint 4 (bombers' routes and air gunners).
+  parachutes, the product owner's addition) done (D80); checkpoint 3 (fighter tactics and formations) done (D81);
+  checkpoint 4 (bombers' routes and air gunners) done (D83); next checkpoint 5 (skill levels and the Phase 6 acceptance
+  test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
+
+## Phase 6 checkpoint 4: bombers and air gunners (28 Oct 2026)
+
+**Done** (D83):
+- flexible guns: the Bf 110's rear MG 15 and the He 111's five MG 15s and fixed tail MG 17, each within its arc,
+  swinging at 60°/s, with 75-round drums and drum changes;
+- AI air gunners: they aim with lead and error by skill, fire in bursts, hold fire with a friend in the line, can't
+  shoot above 2 g, and can be wounded or killed; the player's Bf 110 rear gunner is AI;
+- crewmen besides the pilot can be hit; killed ones don't bail out;
+- bombers fly a route, close up when fighters come near, straggle home when badly damaged, and hand on the lead;
+- tracers in the MG 15 drums (estimate); flashes at the flexible guns; F3 gunner lines;
+- two fixes to the AI's hands in gentle turns;
+- tests in `tests/weapons/mounts.test.js`, `tests/ai/gunner.test.js`, `tests/ai/bomber.test.js`.
+
+**Known issues:**
+- gunner ranges, aim error, bursts and the formation distances are estimates;
+- the tracer burn time and drum loading are estimates (flagged);
+- a single hand-held gun's recoil is left out;
+- scenario 7 is the only bomber route until Phase 7's missions.
 
 ## Mid-air collisions (28 Oct 2026)
 
@@ -43,7 +63,7 @@ Read this at the start of every session.
 - the thresholds are estimates;
 - no Bf 110 defensive circle;
 - head-on passes between RAF fighters are often decisive;
-- bombers have no gunners until checkpoint 4.
+- bombers had no gunners until checkpoint 4 (now done, D83).
 
 ## Phase 6 checkpoint 2b: bailing out and parachutes (27 Oct 2026)
 

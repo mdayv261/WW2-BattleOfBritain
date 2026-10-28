@@ -141,7 +141,7 @@ export const bf110c4 = {
   // the centre line, up to 60°, nothing below the horizontal; 10 spare 75-round magazines. Position an estimate; the
   // canopy is taken as open in combat.
   mounts: {
-    rear: { type: 'mg15', x: -1.2, y: 0.9, z: 0, azimuth: [150 * DEG, 210 * DEG], elevation: [0 * DEG, 60 * DEG], drums: 11 },
+    rear: { type: 'mg15', gunner: 1, x: -1.2, y: 0.9, z: 0, azimuth: [150 * DEG, 210 * DEG], elevation: [0 * DEG, 60 * DEG], drums: 11 },
   },
   // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
   sight: { type: 'Revi C/12C', ringMils: 100 },

@@ -85,7 +85,7 @@ export const common = {
       wingInner: { wing: 0.4, flap: 0.1, gear: 0.1, nothing: 0.2 },
       wingOuter: { wing: 0.6, aileron: 0.3, nothing: 0.1 },
     },
-    systemWeights: { fuel: 0.25, coolant: 0.15, oil: 0.1 },
+    systemWeights: { fuel: 0.25, coolant: 0.15, oil: 0.1, crew: 0.1 }, // crew: for each crewman (not the pilot) in the zone
     engineWear: 0.06, // engine wear per unit of hit strength (seizure at 1)
     engineFireChance: 0.05, // chance an incendiary hit on the engine starts a fire
     leakRate: 0.004, // fraction of the coolant or oil lost per second per unit of hit strength

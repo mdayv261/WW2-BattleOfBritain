@@ -4,7 +4,8 @@
 //   6: fighters in turn: one, a pair, a section of four, (RAF player) a pair of Bf 110s; about 2.5 km ahead and 500 m
 //      higher, flying towards the player.
 //   7: a bomber formation: an He 111 Kette crossing ahead with a Rotte of Bf 109s as escort (RAF player); or a friendly
-//      Kette ahead with three Hurricanes coming to attack it (Luftwaffe player).
+//      Kette ahead with three Hurricanes coming to attack it (Luftwaffe player). The Kette flies a route (D83): on its
+//      course for ROUTE_IN to its target, then a turn for home.
 //   8: the AI's skill in turn, for every AI aircraft now and next.
 //   0: clear every AI aircraft.
 
@@ -17,12 +18,16 @@ import { levelThrottle } from './simulation.js';
 import { coolantLimit } from '../physics/cooling.js';
 import { formationSpeed } from '../ai/basic.js';
 import { createPilot } from '../ai/pilots.js';
+import { createBomberGroup } from '../ai/bomber.js';
+import { homeDirection } from '../ai/tactics.js';
 import { FORMATIONS } from '../ai/formation.js';
 
 export { FORMATIONS };
 import { SKILLS, nextSkill } from '../ai/skill.js';
 
 export const MAX_AI = 11; // with the player, 12 aircraft (D76)
+const ROUTE_IN = 15000; // m: the bombers' run in to their target (game design, D83)
+const ROUTE_OUT = 30000; // m: and their way home from it
 
 const F = common.formations;
 
@@ -60,7 +65,7 @@ function place(origin, heading, { ahead = 0, side = 0, up = 0 }) {
  * Puts a group of aircraft of type `id` in the air in `formation` around `origin` (the leader's place), all on `heading`,
  * flown by AI pilots of `role`. `leader`: the craft its places are kept from (an escort's bombers), else its own first.
  */
-function spawnGroup(sim, { id, formation, origin, heading, role, side, speed, leader = null, offset = {} }) {
+function spawnGroup(sim, { id, formation, origin, heading, role, side, speed, leader = null, offset = {}, group = null }) {
   const ac = aircraftById[id];
   const out = [];
   FORMATIONS[formation].forEach((slot, i) => {
@@ -72,7 +77,7 @@ function spawnGroup(sim, { id, formation, origin, heading, role, side, speed, le
     const throttle = levelThrottle(ac, altitude, speed, 1);
     sim.aiSeed = (sim.aiSeed ?? 100) + 1;
     const keeper = leader ?? out[0] ?? null;
-    const pilot = createPilot({ role, skill: sim.skill, leader: i === 0 && !leader ? null : keeper, slot: s, seed: sim.aiSeed });
+    const pilot = createPilot({ role, skill: sim.skill, leader: i === 0 && !leader ? null : keeper, slot: s, seed: sim.aiSeed, group });
     const craft = new Craft(ac, {
       start: { altitude, speed, heading, throttle, rpm: 1, x: at.x, z: at.z, terrain: sim.world.terrain },
       pilot, side, skill: sim.skill, seed: sim.aiSeed, label: `${ac.name} #${sim.others.length + 1}`,
@@ -80,8 +85,16 @@ function spawnGroup(sim, { id, formation, origin, heading, role, side, speed, le
     arriveCool(craft);
     sim.others.push(craft);
     out.push(craft);
+    if (group) (role === 'bomber' ? group.bombers.push(craft) : group.escorts.push(pilot));
   });
   return out;
+}
+
+/** A bomber group flying from `origin` on `heading` for ROUTE_IN to its target, then home (D83). */
+function bomberGroup(origin, heading, side) {
+  const target = place(origin, heading, { ahead: ROUTE_IN });
+  const home = target.clone().addScaledVector(homeDirection(side).setY(0).normalize(), ROUTE_OUT);
+  return createBomberGroup('kette', [{ x: target.x, z: target.z }, { x: home.x, z: home.z }]);
 }
 
 /**
@@ -129,17 +142,19 @@ export function bomberScenario(sim) {
     // An He 111 Kette crossing from left to right 3 km ahead, a Rotte of Bf 109s behind and above it (S38, D78).
     const origin = p.clone().addScaledVector(fwd, 3000).addScaledVector(right, -1500).add(new Vector3(0, 300, 0));
     const speed = formationSpeed(he111, origin.y);
-    const kette = spawnGroup(sim, { id: 'he111h', formation: 'kette', origin, heading: heading + Math.PI / 2, role: 'bomber', side: 'Luftwaffe', speed });
+    const group = bomberGroup(origin, heading + Math.PI / 2, 'Luftwaffe');
+    const kette = spawnGroup(sim, { id: 'he111h', formation: 'kette', origin, heading: heading + Math.PI / 2, role: 'bomber', side: 'Luftwaffe', speed, group });
     // The escorts' places include their distance behind and above the bombers, so they are placed from the Kette's origin.
     spawnGroup(sim, {
       id: 'bf109e4', formation: 'rotte', origin, heading: heading + Math.PI / 2, role: 'escort', side: 'Luftwaffe',
-      speed, leader: kette[0], offset: { back: F.escort.behind, up: F.escort.above },
+      speed, leader: kette[0], offset: { back: F.escort.behind, up: F.escort.above }, group,
     });
     sim.scenario = 'He 111 Kette with Bf 109 escort';
   } else {
     // A friendly Kette 1 km ahead on the player's heading; three Hurricanes coming at it from 3 km beyond, 500 m higher.
     const origin = p.clone().addScaledVector(fwd, 1000);
-    spawnGroup(sim, { id: 'he111h', formation: 'kette', origin, heading, role: 'bomber', side: 'Luftwaffe', speed: formationSpeed(he111, origin.y) });
+    const group = bomberGroup(origin, heading, 'Luftwaffe');
+    spawnGroup(sim, { id: 'he111h', formation: 'kette', origin, heading, role: 'bomber', side: 'Luftwaffe', speed: formationSpeed(he111, origin.y), group });
     const raf = origin.clone().addScaledVector(fwd, 3000).add(new Vector3(0, 500, 0));
     spawnGroup(sim, { id: 'hurricane', formation: 'vic', origin: raf, heading: heading + Math.PI, role: 'fighter', side: 'RAF', speed: 110 });
     sim.scenario = 'Hurricanes attacking an He 111 Kette';

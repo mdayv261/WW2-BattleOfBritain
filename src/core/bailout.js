@@ -9,6 +9,7 @@
 
 import { createJumper, seatPosition, stepJumpers } from './parachute.js';
 import { SKILLS } from '../ai/skill.js';
+import { crewHealth } from '../weapons/damage.js';
 
 const HALF = 0.5; // the damage at which a wing panel or the tail counts as badly damaged
 const LOW = 0.05; // the coolant or oil left at which an engine is as good as dead
@@ -32,11 +33,13 @@ export function badlyDamaged(plane) {
 
 /**
  * Starts a crew bailing out of an aircraft of type `ac`: those still alive leave one after another, after `delay` s,
- * each at his exit time times `scale`. `body()` gives what they jump from (null once it is gone).
+ * each at his exit time times `scale`. `body()` gives what they jump from (null once it is gone); `plane`, when given,
+ * says which crewmen have been killed.
  */
-export function startBailout(sim, { ac, side, label, body, delay = 0, scale = 1, player = false, pilotAlive = true }) {
+export function startBailout(sim, { ac, side, label, body, delay = 0, scale = 1, player = false, pilotAlive = true, plane = null }) {
+  // A killed crewman (D83) doesn't jump.
   const men = ac.crew
-    .filter((m) => m.role !== 'pilot' || pilotAlive)
+    .filter((m, i) => (m.role === 'pilot' ? pilotAlive : !plane || crewHealth(plane, i) > 0))
     .map((m) => ({ seat: m, at: sim.clock + delay + m.exit * scale }));
   const b = { label, side, player, men, body, jumped: 0, lost: 0 };
   sim.bailouts.push(b);
@@ -94,7 +97,7 @@ export function playerBailout(sim, dt) {
   const broken = !!sim.plane.damage.failed && !sim.plane.damage.failed.pilotKilled;
   if (!doomed(sim.plane) && sim.bailHold < HOLD_TO_BAIL) return;
   sim.bailout = startBailout(sim, {
-    ac: sim.ac, side: sim.ac.side, label: 'You', body: playerBody(sim), player: true, scale: broken ? BREAK_UP_EXIT : 1,
+    ac: sim.ac, side: sim.ac.side, label: 'You', body: playerBody(sim), player: true, scale: broken ? BREAK_UP_EXIT : 1, plane: sim.plane,
   });
   sim.notice = { text: 'Bailing out!', until: sim.plane.time + 3 };
 }

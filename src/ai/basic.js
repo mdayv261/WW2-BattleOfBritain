@@ -1,9 +1,8 @@
-// The AI's first behaviours (Phase 6 checkpoint 2, D79), enough to see the hands at work; checkpoint 3 replaces the
-// fighter's with real tactics, checkpoint 4 the bombers' with their routes and gunners.
-//   Fighter: pursues the nearest enemy it can see, aiming ahead of it by the rounds' time of flight (and above it by
-//     their drop), and fires within its skill's range when the aim is close enough. With nobody to fight, or until an
-//     enemy comes near when it is flying escort, it keeps its place in its formation, or flies straight and level.
-//   Bomber: the leader holds its heading, height and formation speed; the others keep their places in the Kette.
+// The AI pilot's common behaviours (Phase 6 checkpoint 2, D79), which the fighters' tactics (src/ai/fighter.js, D81)
+// and the bombers' (src/ai/bomber.js, D83) build on:
+//   pursuit of the nearest enemy it can see, aiming ahead of it by the rounds' time of flight (and above it by their
+//     drop), firing within its skill's range when the aim is close enough; with nobody to fight, or until an enemy comes
+//     near when it is flying escort, it keeps its place in its formation, or flies straight and level.
 // Every pilot decides 20 times a second from what he could see one reaction time ago (src/ai/perception.js), and his
 // hands (src/ai/pilot.js) fly the aircraft between decisions.
 
@@ -92,7 +91,8 @@ export class Pilot {
     const ahead = place.clone().addScaledVector(leaderSeen.velocity, LOOKAHEAD).sub(craft.plane.body.position);
     const behind = place.clone().sub(craft.plane.body.position).dot(leaderSeen.velocity.clone().normalize());
     const speed = leaderSeen.velocity.length() + Math.max(-15, Math.min(15, behind * 0.05));
-    return { direction: ahead.normalize(), gMax: gentle ? 2 : 4, maxBank: gentle ? 0.35 : 1.2, turnGain: gentle ? 0.4 : 0.8, speed };
+    // Gently, he may bank a little more than a leader's 20° so that he can hold his place on the outside of a turn.
+    return { direction: ahead.normalize(), gMax: gentle ? 2 : 4, maxBank: gentle ? 0.5 : 1.2, turnGain: gentle ? 0.4 : 0.8, speed };
   }
 
   /** The nearest living enemy as this pilot sees it: { craft, position, velocity, range } or null. */
@@ -137,17 +137,9 @@ export class Pilot {
   }
 
   decide(craft, sim) {
-    let goal;
-    if (this.role === 'bomber') {
-      this.cruise ??= formationSpeed(craft.ac, craft.plane.body.position.y); // worked out once: a costly solve
-      goal = this.keepSlot(craft, sim, true) ?? this.level(craft, this.cruise);
-    }
-    else {
-      const enemy = this.nearestEnemy(craft, sim);
-      const engage = enemy && (this.role === 'fighter' || enemy.range < ENGAGE_RANGE);
-      if (engage) goal = this.pursue(craft, enemy, sim);
-      else goal = this.keepSlot(craft, sim, false) ?? this.level(craft, 110);
-    }
+    const enemy = this.nearestEnemy(craft, sim);
+    const engage = enemy && (this.role === 'fighter' || enemy.range < ENGAGE_RANGE);
+    const goal = engage ? this.pursue(craft, enemy, sim) : this.keepSlot(craft, sim, false) ?? this.level(craft, 110);
     return keepClear(craft, sim, goal);
   }
 }
@@ -175,5 +167,5 @@ export function keepClear(craft, sim, goal) {
   return { ...goal, direction: out, gMax: Math.max(goal.gMax ?? 2, gLimit * 0.8), maxBank: 1.05, push: false, fireMg: false, fireCannon: false };
 }
 
-/** A pilot of these first behaviours (the bombers'; fighters fly src/ai/fighter.js: see src/ai/pilots.js). */
+/** A pilot of these first behaviours alone (the game's pilots are made by src/ai/pilots.js). */
 export const createBasicPilot = (options) => new Pilot(options);
