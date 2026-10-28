@@ -202,10 +202,11 @@ export function rafEngineScales(v) {
   };
 }
 
-// Each gauge's caption, its unit line above it where it has one, and the caption's size against the usual lettering
-// (product owner, D85: a larger MAP, "in.Hg" above it, "PSI" above BOOST).
+// Each gauge's caption, its unit line above it where it has one, their sizes against the usual lettering and any extra
+// lift of the unit line (dial radii) (product owner, D85: a larger MAP with a larger "in.Hg" a little above it, "PSI"
+// above BOOST).
 export const CAPTIONS = {
-  manifold: { text: 'MAP', unit: 'in.Hg', scale: 1.3 },
+  manifold: { text: 'MAP', unit: 'in.Hg', scale: 1.3, unitScale: 1.25, unitLift: 0.06 },
   boost: { text: 'BOOST', unit: 'PSI' },
   oilTemp: { text: 'OIL °C' },
   radTemp: { text: 'RADIATOR °C' },
@@ -222,7 +223,9 @@ export function captionLines(name, size, r) {
   const dy = size * 0.62;
   const lines = [{ text: c.text, dy, size: captionSize }];
   // The unit line one line-height above, half of each line's lettering apart (label() letters are 0.16 of its size).
-  if (c.unit) lines.unshift({ text: c.unit, dy: dy - 0.16 * 1.25 * (captionSize + r * LETTERING) / 2, size: r * LETTERING });
+  const unitSize = r * LETTERING * (c.unitScale ?? 1);
+  const above = (0.16 * 1.25 * (captionSize + unitSize)) / 2 + (c.unitLift ?? 0) * size;
+  if (c.unit) lines.unshift({ text: c.unit, dy: dy - above, size: unitSize });
   return lines;
 }
 

@@ -2401,7 +2401,7 @@ The orange band over the +12 lb emergency boost (54.4 in. Hg) is on both pressur
 - every band drawn and clipped to its scale.
 
 **Captions** (product owner, after seeing the gauges): the MAP caption 1.3 times the usual lettering with "in.Hg" above
-it, and "PSI" above BOOST (lb/sq in, as the boost gauge reads). `captionLines` in `src/ui/instruments.js`; tested to
+it (1.25 times the usual lettering, raised a little further, at the product owner's next request), and "PSI" above BOOST (lb/sq in, as the boost gauge reads). `captionLines` in `src/ui/instruments.js`; tested to
 sit under the needle's hub and inside the dial, the unit line above the caption.
 
 **Checked in Chrome** (Spitfire, air start):

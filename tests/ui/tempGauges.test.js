@@ -62,6 +62,7 @@ describe('temperature gauges (D63)', () => {
     expect(lines('oilTemp', small).map((l) => l.text)).toEqual(['OIL °C']);
     expect(lines('radTemp', small).map((l) => l.text)).toEqual(['RADIATOR °C']);
     expect(lines('manifold', r)[1].size).toBeGreaterThan(lines('boost', small)[1].size);
+    expect(lines('manifold', r)[0].size).toBeGreaterThan(lines('boost', small)[0].size); // the larger in.Hg
     for (const [name, size] of [['manifold', r], ['boost', small]]) {
       const [unit, caption] = lines(name, size);
       expect(unit.dy).toBeLessThan(caption.dy); // above it
