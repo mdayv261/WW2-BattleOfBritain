@@ -32,5 +32,11 @@ export const merlin3 = {
     coolantLimit: 120, // climbing (½ hr) and all-out (5 min) limit, Pilot's Notes
     oilLimit: 95, // all-out (5 min) limit
     overRev: 3600 * UNIT.RPM, // diving limit (3,000 rpm may be exceeded for 20 s)
+    // Normal ranges, the gauges' green bands (D85): from the minimum for take-off to the cruising limit (S33).
+    oilNormal: { from: 15, to: 90 },
+    coolantNormal: { from: 60, to: 95 },
   },
+  // Normal boost range, the boost and manifold pressure gauges' green band (D85): +2¼ (cruising, weak mixture) to
+  // +6¼ lb/sq in (climbing and all-out), absolute, Pa (S33).
+  boostNormal: { from: 116838, to: 144417 },
 };

@@ -18,6 +18,16 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
 
+## RAF engine gauges (28 Oct 2026)
+
+**Done** (D85):
+- a MAP gauge (in. Hg) below the rev counter, the same size;
+- oil, radiator and boost gauges small, in a column right of them;
+- green normal bands from the Spitfire I Pilot's Notes (S33), orange over +12 lb;
+- tests in `tests/ui/tempGauges.test.js`.
+
+**Known issue:** the in. Hg MAP gauge is not period RAF equipment (flagged, product owner's request).
+
 ## Air start rigged for full power (28 Oct 2026)
 
 **Done** (D84):

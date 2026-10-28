@@ -63,6 +63,11 @@ export function instrumentReadings(sim) {
     coolant: plane.engines[0].heat.coolant, // °C, the first engine's (the single-engine panels)
     oil: plane.engines[0].heat.oil,
     manifold: raf ? (d.map - ISA.P0) / UNIT.PSI : d.map / UNIT.ATA,
+    // The RAF panel's manifold pressure gauge, inches of mercury absolute (product owner, D85).
+    mapInHg: raf ? d.map / UNIT.INHG : null,
+    // The normal boost range (lb/sq in) for the green bands of the boost and manifold pressure gauges (D85).
+    normalBoost: plane.engine.boostNormal ? [plane.engine.boostNormal.from, plane.engine.boostNormal.to]
+      .map((pa) => (pa - ISA.P0) / UNIT.PSI) : null,
     pitchClock: raf ? null : pitchClock(plane.beta, ac),
     // Each engine's own readings (the twins have a set of engine instruments per engine).
     engines: plane.engines.map((e, i) => ({
@@ -99,15 +104,23 @@ export function instrumentReadings(sim) {
   };
 }
 
-/** A dial with one needle over a scale. */
+/** The colours of the bands on the RAF engine gauges: the normal range (as the Luftwaffe gauges', D63) and emergency. */
+export const BAND = { normal: '#2f9e4a', emergency: '#e07a26' };
+
+/** The bands a gauge paints on its scale: `opts.bands` ([{ from, to, colour }]) and the older single `opts.band`. */
+export const bandsOf = (opts) => [...(opts.bands ?? []), ...(opts.band ? [opts.band] : [])];
+
 /**
- * A dial with one needle over a scale; `opts.band` ({ from, to, colour }) paints a coloured band on the scale.
+ * A dial with one needle over a scale; each band ({ from, to, colour }) paints a coloured arc on the scale, clipped to
+ * it.
  */
-function gauge(g, x, y, r, value, opts, title) {
+export function gauge(g, x, y, r, value, opts, title) {
   face(g, x, y, r, title);
-  if (opts.band) {
-    const { from, to, colour } = opts.band;
-    const a = (v) => opts.start + ((v - opts.min) / (opts.max - opts.min)) * (opts.end - opts.start) - Math.PI / 2;
+  const a = (v) => {
+    const t = Math.min(1, Math.max(0, (v - opts.min) / (opts.max - opts.min)));
+    return opts.start + t * (opts.end - opts.start) - Math.PI / 2;
+  };
+  for (const { from, to, colour } of bandsOf(opts)) {
     g.strokeStyle = colour;
     g.lineWidth = r * 0.09;
     g.beginPath();
@@ -122,15 +135,21 @@ const ARC = { start: -Math.PI * 0.75, end: Math.PI * 0.75 };
 
 // RAF panel layout, after a Spitfire I panel (D32): the blind-flying panel in the middle, two rows of three
 // (airspeed, artificial horizon, rate of climb above; altimeter, direction indicator, turn and slip below),
-// the engine instruments to its right (rpm above, boost below), the oil temperature right of the rev counter with the
-// radiator (coolant) temperature below it (product owner, D63), the undercarriage and flap displays to its left, and the
-// elevator trim display left of those (D74).
-// Positions are in dial radii from the top centre of the panel. No captions: the real panel has none.
+// the engine instruments to its right (product owner, D85): the rev counter, with the manifold pressure (MAP) gauge the
+// same size below it, and the oil temperature, radiator (coolant) temperature and boost gauges, small, one above another
+// right of them;
+// the undercarriage and flap displays to the blind-flying panel's left, and the elevator trim display left of those
+// (D74). Positions are in dial radii from the top centre of the panel.
+const SMALL = 19 / 30; // the small engine gauges' radius, in dial radii: the Bf 110's engine gauges' proportion (D85)
+const COLUMN_X = 5.2 + 1 + 0.3 + SMALL; // the small gauges' column: right of the rev counter, a 0.3-radius gap
+const COLUMN_GAP = (4.7 - 6 * SMALL) / 4; // three small gauges spread evenly over the panel's height (0.1 to 4.8)
+const row = (i) => 0.1 + COLUMN_GAP * (i + 1) + SMALL * (2 * i + 1);
 export const RAF_LAYOUT = {
   width: 17.4, height: 4.9,
   airspeed: [-2.3, 1.3], horizon: [0, 1.3], climb: [2.3, 1.3],
   altimeter: [-2.3, 3.6], direction: [0, 3.6], turn: [2.3, 3.6],
-  rpm: [5.2, 1.3], boost: [5.2, 3.6], oilTemp: [7.5, 1.3], radTemp: [7.5, 3.6],
+  rpm: [5.2, 1.3], manifold: [5.2, 3.6], oilTemp: [COLUMN_X, row(0)], radTemp: [COLUMN_X, row(1)], boost: [COLUMN_X, row(2)],
+  small: SMALL, // the radius of the temperature and boost gauges, in dial radii (the MAP gauge is full size)
   // Undercarriage and flap displays as on the Luftwaffe panels (product owner, D47): plates [left, top, right, bottom].
   gear: [-6.45, 0.1, -3.8, 2.4], flaps: [-6.45, 2.55, -3.8, 4.8],
   // Elevator trim display left of the undercarriage and flaps, their full height (product owner, D74).
@@ -155,22 +174,47 @@ function rafPanel(g, x0, y0, r, v) {
   headingDrum(g, ...at(L.direction), r, v.heading);
   rafTurnSlip(g, ...at(L.turn), r, v.turnRate, v.sideG);
   rafTachometer(g, ...at(L.rpm), r, v.rpm);
-  // Orange band over the +12 lb emergency boost (product owner's request).
-  gauge(g, ...at(L.boost), r, v.manifold, {
-    min: -6, max: 14, ...ARC, major: 2, minor: 1, label: (s) => (s > 0 ? `+${s}` : String(s)), band: { from: 12, to: 14, colour: '#e07a26' },
-  });
-  label(g, at(L.boost)[0], at(L.boost)[1] + r * 0.66, r * 0.65, 'BOOST');
-  // Temperatures, °C (D63; the scales are display choices).
-  gauge(g, ...at(L.oilTemp), r, v.oil, { min: 0, max: 100, ...ARC, major: 20, minor: 10, label: String });
-  label(g, at(L.oilTemp)[0], at(L.oilTemp)[1] + r * 0.66, r * 0.65, 'OIL °C');
-  gauge(g, ...at(L.radTemp), r, v.coolant, { min: 40, max: 140, ...ARC, major: 20, minor: 10, label: String });
-  label(g, at(L.radTemp)[0], at(L.radTemp)[1] + r * 0.66, r * 0.65, 'RADIATOR °C');
+  rafEngineGauges(g, at, r, v);
   const plateBox = ([left, top, right, bottom]) => ({
     x: x0 + ((left + right) / 2) * r, y: y0 + ((top + bottom) / 2) * r, w: (right - left) * r, h: (bottom - top) * r,
   });
   undercarriageDisplay(g, plateBox(L.gear), r, v, 'UNDERCARRIAGE');
   flapDisplay(g, plateBox(L.flaps), r, v, 'FLAPS');
   trimDisplay(g, plateBox(L.trim), r, v);
+}
+
+/**
+ * The RAF panel's MAP gauge and small engine gauges (D85): the scales are display choices; the green normal bands are the Merlin's
+ * (S33), the orange band the +12 lb emergency boost (product owner's request). Captions keep the large dials' size, so
+ * they stay legible.
+ */
+export function rafEngineScales(v) {
+  const boost = v.normalBoost ?? [];
+  const inHg = (psi) => (ISA.P0 + psi * UNIT.PSI) / UNIT.INHG;
+  const normal = (range) => (range?.length ? [{ from: range[0], to: range[1], colour: BAND.normal }] : []);
+  return {
+    manifold: { min: 10, max: 60, major: 10, minor: 2, label: String,
+      bands: [...normal(boost.map(inHg)), { from: inHg(12), to: 60, colour: BAND.emergency }] },
+    boost: { min: -6, max: 14, major: 2, minor: 1, label: (s) => (s > 0 ? `+${s}` : String(s)),
+      bands: [...normal(boost), { from: 12, to: 14, colour: BAND.emergency }] },
+    oilTemp: { min: 0, max: 100, major: 20, minor: 10, label: String, bands: normal(v.normalTemps?.oil) },
+    radTemp: { min: 40, max: 140, major: 20, minor: 10, label: String, bands: normal(v.normalTemps?.coolant) },
+  };
+}
+
+const CAPTIONS = { manifold: 'MAP', boost: 'BOOST', oilTemp: 'OIL °C', radTemp: 'RADIATOR °C' };
+
+function rafEngineGauges(g, at, r, v) {
+  const L = RAF_LAYOUT;
+  const s = L.small * r;
+  const scales = rafEngineScales(v);
+  const values = { manifold: v.mapInHg, boost: v.manifold, oilTemp: v.oil, radTemp: v.coolant };
+  for (const name of Object.keys(CAPTIONS)) {
+    const [x, y] = at(L[name]);
+    const size = name === 'manifold' ? r : s; // the MAP gauge as large as the rev counter (product owner, D85)
+    gauge(g, x, y, size, values[name], { ...scales[name], ...ARC });
+    label(g, x, y + size * 0.62, r * 0.65, CAPTIONS[name]);
+  }
 }
 
 /** The fitted dial radius for a panel layout on a screen: as large as fits, capped. */

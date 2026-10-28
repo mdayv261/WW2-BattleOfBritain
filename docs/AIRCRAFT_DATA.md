@@ -635,6 +635,12 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Coolant limit (`heat.coolantLimit`) | 120 | °C | 120 (climbing ½ hr; all-out 5 mins limit) | S33 | high | Museum record. Past it the engine wears (D62). |
 | Oil limit (`heat.oilLimit`) | 95 | °C | 95 (all-out 5 mins limit) | S33 | high | Museum record. |
 | Over-revving limit (`heat.overRev`) | 3600 | rpm | maximum 3,600 r.p.m. (diving) | S6 | medium | Past it the engine wears out within seconds (D62). |
+| Oil normal range, low end (`heat.oilNormal.from`) | 15 | °C | Minm. temp. for take-off: oil 15°C | S33 | medium | Green band of the oil temperature gauge (D85). |
+| Oil normal range, high end (`heat.oilNormal.to`) | 90 | °C | 90 (climbing ½ hr; cruising rich and weak) | S33 | medium | All-out (5 min) limit 95 °C. |
+| Coolant normal range, low end (`heat.coolantNormal.from`) | 60 | °C | Minm. temp. for take-off: coolant 60°C | S33 | medium | Green band of the radiator temperature gauge (D85). |
+| Coolant normal range, high end (`heat.coolantNormal.to`) | 95 | °C | 95 (cruising rich and weak) | S33 | medium | Climbing and all-out limit 120 °C. |
+| Normal boost range, low end (`boostNormal.from`) | 116.838 | kPa | +2¼ lb/sq in (cruising weak) | S33 | medium | Absolute. Green band of the boost and manifold pressure gauges, the product owner's choice of range (D85). |
+| Normal boost range, high end (`boostNormal.to`) | 144.417 | kPa | +6¼ lb/sq in (climbing ½ hr; all-out 5 mins) | S33 | medium | Absolute; the normal rating (`ratings.normal.map`). |
 
 ## Messerschmitt Bf 109 E-4 (DB 601A)
 

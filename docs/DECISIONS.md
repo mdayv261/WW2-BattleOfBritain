@@ -2360,3 +2360,48 @@ With the slider fully forward, all four are level hands-off.
   - targets placed dead ahead of the nose;
   - in two chase tests the player cruises at the old setting with a hand holding the wings level;
   - the AI chaser given 150 s to catch the faster player.
+
+## D85. RAF engine gauges: a MAP gauge, small gauges and green normal bands (28 Oct 2026, product owner)
+
+**Request:** a manifold pressure gauge on the RAF panel (Hurricane and Spitfire), since the throttle sets manifold
+pressure and the E and D keys the rpm; smaller oil, coolant and boost gauges; and green bands for the normal operating
+ranges.
+
+**Layout** (`RAF_LAYOUT`, `rafEngineGauges` in `src/ui/instruments.js`):
+- the rev counter where it was;
+- the MAP gauge below it, the same size (the product owner's later change: first planned small), captioned "MAP";
+- oil °C, radiator °C and boost, small, one above another in a column right of them, spread evenly over the panel's
+  height;
+- "small" is the Bf 110's proportion: its engine dials are 19/30 the size of its flying instruments. Copied in pixels
+  they would be about a third of the RAF flying instruments, too small to read;
+- captions keep the large dials' lettering size.
+
+**The MAP gauge:** inches of mercury, absolute, 10-60. It reads the same pressure as the boost gauge, which shows it as
+lb/sq in above standard sea-level pressure (+6¼ lb = 42.6 in. Hg). **Flagged deviation:** the RAF fighters of 1940 had
+no such gauge, and RAF pressures are otherwise shown in lb/sq in. It was added at the product owner's request.
+
+**Green normal bands** (S33, the Spitfire I Pilot's Notes engine limitations, museum record; the Hurricane has the same
+Merlin III data):
+
+| Gauge | Green band | Source |
+|---|---|---|
+| Oil | 15-90 °C | minimum for take-off to the climbing and cruising limit |
+| Radiator | 60-95 °C | minimum for take-off to the cruising limit |
+| Boost and MAP | +2¼ to +6¼ lb/sq in (34.5-42.6 in. Hg) | cruising (weak mixture) to climbing and all-out; the product owner chose the range |
+
+The orange band over the +12 lb emergency boost (54.4 in. Hg) is on both pressure gauges.
+
+**Data** (`src/aircraft/merlin3.js`, rows in AIRCRAFT_DATA.md): `heat.oilNormal`, `heat.coolantNormal`, `boostNormal`
+(Pa absolute). Constant `UNIT.INHG`. `gauge()` now takes any number of bands.
+
+**Tests** (`tests/ui/tempGauges.test.js`):
+- the layout (places, sizes, nothing overlapping, inside the panel);
+- the bands from the data;
+- the MAP reading equal to the boost converted, falling with the throttle;
+- every band drawn and clipped to its scale.
+
+**Checked in Chrome** (Spitfire, air start):
+- MAP 42.6 in. Hg and boost +6¼ at full throttle;
+- throttle back with S: 24.0 in. Hg and −2.9 lb together;
+- rpm lever down with D: rpm 2,993 to 2,275, MAP and boost unchanged;
+- no console errors.
