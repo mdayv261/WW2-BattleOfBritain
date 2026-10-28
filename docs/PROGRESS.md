@@ -13,8 +13,28 @@ Read this at the start of every session.
 - **Phase 5** (weapons and damage): signed off (27 Oct 2026, D75).
 - **Phase 6** (AI pilots and gunners): in progress (plan approved 27 Oct 2026, D76). Checkpoint 1 (research) done (D77,
   D78); checkpoint 2 (many aircraft, the AI pilot's hands, scenario keys) done (D79); checkpoint 2b (bailing out and
-  parachutes, the product owner's addition) done (D80); next checkpoint 3 (fighter tactics and formations).
+  parachutes, the product owner's addition) done (D80); checkpoint 3 (fighter tactics and formations) done (D81); next
+  checkpoint 4 (bombers' routes and air gunners).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
+
+## Phase 6 checkpoint 3: fighter tactics and formations (28 Oct 2026)
+
+**Done** (D81):
+- fighters patrol, engage, attack, evade and disengage;
+- the Bf 109 and Bf 110 boom-and-zoom by the Luftwaffe's doctrine (S22), and escape by climbing away, pushing over,
+  a split-S or extending;
+- the Bf 110 meets an attacker head-on when it sees him early (S25);
+- RAF fighters turn and break;
+- RAF fighters attack bombers from ahead or below (S29, S38);
+- wingmen cover their leaders; escorts guard their bombers;
+- F3 shows each AI's state;
+- tests in `tests/ai/tactics.test.js`.
+
+**Known issues:**
+- the thresholds are estimates;
+- no Bf 110 defensive circle;
+- head-on passes between RAF fighters are often decisive;
+- bombers have no gunners until checkpoint 4.
 
 ## Phase 6 checkpoint 2b: bailing out and parachutes (27 Oct 2026)
 

@@ -20,7 +20,8 @@ function targetLine(sim) {
   const { right, up } = targetBearing(sim, t);
   const deg = (a, plus, minus) => `${Math.abs(a * 180 / Math.PI).toFixed(0)}° ${a >= 0 ? plus : minus}`;
   const where = `${deg(right, 'right', 'left')} ${deg(up, 'up', 'down')}`;
-  return `Target    ${t.label} (${t.side})  ${range.toFixed(0)} m  ${where}  hits ${t.plane.damage.hits}  ${damageSummary(t.plane) || 'undamaged'}${last}`;
+  const doing = t.pilot?.describe ? `  ${t.pilot.describe()}` : '';
+  return `Target    ${t.label} (${t.side})${doing}  ${range.toFixed(0)} m  ${where}  hits ${t.plane.damage.hits}  ${damageSummary(t.plane) || 'undamaged'}${last}`;
 }
 
 /** The AI's line for F3 (D79): how many aircraft on each side, the skill and the scenario. */

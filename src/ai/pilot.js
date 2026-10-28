@@ -3,7 +3,8 @@
 // a hand can move them (the skill's stickTime), so the aircraft can do no more than it would for the player.
 //
 // A goal says where to go: { direction (world, unit), gMax, gMin, maxBank (rad), turnGain (rad/s of turn per rad off the
-// direction; gentle for formation flying), speed (m/s) or throttle, fireMg, fireCannon }. Every physics step the hands:
+// direction; gentle for formation flying), push (keep the wings level and push or pull for the turn, rather than rolling
+// the lift round: the push-over), speed (m/s) or throttle, fireMg, fireCannon }. Every physics step the hands:
 //   - work out the lift the turn needs: a pull towards the direction (turning faster the further off it is), plus the
 //     lift that holds the aircraft up against gravity;
 //   - roll that lift into place (aileron, with damping on the roll rate), never banking past maxBank;
@@ -82,6 +83,8 @@ export function fly(craft, hands, goal, dt) {
   const inv = body.quaternion.clone().invert();
   const liftBody = _lift.clone().applyQuaternion(inv);
   let rollToGo = liftBody.y ** 2 + liftBody.z ** 2 > 1e-6 ? Math.atan2(liftBody.z, liftBody.y) : 0;
+  // A push-over keeps the wings level and turns the flight path with the elevator alone, down as well as up.
+  if (goal.push) rollToGo = -attitude(plane).bank;
   // Never bank past the goal's limit (when it sets one), measuring round the shorter way.
   if (goal.maxBank !== undefined && goal.maxBank < Math.PI) {
     const bank = attitude(plane).bank;
@@ -90,8 +93,8 @@ export function fly(craft, hands, goal, dt) {
   const rollWanted = clamp(ROLL_GAIN * rollToGo - ROLL_DAMPING * rollRate, -1, 1);
 
   // The g wanted, while the lift is roughly in place; eased off at the buffet.
-  const gNeeded = _lift.length() / G;
-  let gWanted = clamp(gNeeded * Math.max(0, Math.cos(rollToGo)), goal.gMin ?? 0, goal.gMax ?? 4);
+  const gNeeded = goal.push ? liftBody.y / G : (_lift.length() / G) * Math.max(0, Math.cos(rollToGo));
+  let gWanted = clamp(gNeeded, goal.gMin ?? 0, goal.gMax ?? 4);
   const n = d.loadFactor ?? 1;
   const buffet = Math.max(d.stalledLeft ?? 0, d.stalledRight ?? 0);
   if (buffet > skill.buffet) gWanted = Math.min(gWanted, n - 0.5);

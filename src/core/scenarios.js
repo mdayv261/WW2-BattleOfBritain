@@ -15,22 +15,16 @@ import { attitude } from './autopilot.js';
 import { Craft } from './craft.js';
 import { levelThrottle } from './simulation.js';
 import { coolantLimit } from '../physics/cooling.js';
-import { createPilot, formationSpeed } from '../ai/basic.js';
+import { formationSpeed } from '../ai/basic.js';
+import { createPilot } from '../ai/pilots.js';
+import { FORMATIONS } from '../ai/formation.js';
+
+export { FORMATIONS };
 import { SKILLS, nextSkill } from '../ai/skill.js';
 
 export const MAX_AI = 11; // with the player, 12 aircraft (D76)
 
 const F = common.formations;
-// Places in each formation: { side (m, + right), back (m), up (m) } from the leader.
-export const FORMATIONS = {
-  single: [{}],
-  rotte: [{}, { side: F.rotte.side, back: F.rotte.back }],
-  schwarm: [{}, { side: F.rotte.side, back: F.rotte.back }, { side: -F.schwarm.side, back: F.rotte.back / 2 },
-    { side: -F.schwarm.side - F.rotte.side, back: F.rotte.back * 1.5 }],
-  vic: [{}, { side: -F.vic.side, back: F.vic.back }, { side: F.vic.side, back: F.vic.back }],
-  lineAstern: [{}, { back: F.lineAstern.back }, { back: 2 * F.lineAstern.back }, { back: 3 * F.lineAstern.back }],
-  kette: [{}, { side: -F.kette.side, back: F.kette.back }, { side: F.kette.side, back: F.kette.back }],
-};
 
 export const FIGHTER_SCENARIOS = {
   RAF: [ // the player flies an RAF fighter: Luftwaffe enemies

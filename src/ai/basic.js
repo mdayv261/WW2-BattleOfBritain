@@ -35,7 +35,7 @@ export function slotPoint(leader, slot, out = new Vector3()) {
     .add(new Vector3(0, slot.up ?? 0, 0));
 }
 
-class Pilot {
+export class Pilot {
   /** `role`: 'fighter', 'escort' or 'bomber'; `leader` and `slot` place a wingman in formation. */
   constructor({ role = 'fighter', skill = 'regular', leader = null, slot = null, seed = 1 } = {}) {
     this.role = role;
@@ -79,14 +79,16 @@ class Pilot {
     return { direction, gMax: 2, maxBank: 0.35, turnGain: 0.4, speed };
   }
 
-  /** Towards its place beside a living leader: where the place will be shortly, at the leader's speed. */
-  keepSlot(craft, sim, gentle) {
-    const lead = this.leader;
+  /**
+   * Towards its place (`slot`, its own unless another is given) beside a living leader (`lead`, its own unless given):
+   * where the place will be shortly, at the leader's speed.
+   */
+  keepSlot(craft, sim, gentle, slot = this.slot, lead = this.leader) {
     if (!lead?.alive) return null;
     // Where the leader is now, as the wingman judges it: where he was seen, carried on by his seen velocity.
     const leaderSeen = seen(lead, sim.clock, this.skill.reaction);
     leaderSeen.position.addScaledVector(leaderSeen.velocity, this.skill.reaction);
-    const place = slotPoint(lead, this.slot).add(leaderSeen.position).sub(lead.plane.body.position);
+    const place = slotPoint(lead, slot).add(leaderSeen.position).sub(lead.plane.body.position);
     const ahead = place.clone().addScaledVector(leaderSeen.velocity, LOOKAHEAD).sub(craft.plane.body.position);
     const behind = place.clone().sub(craft.plane.body.position).dot(leaderSeen.velocity.clone().normalize());
     const speed = leaderSeen.velocity.length() + Math.max(-15, Math.min(15, behind * 0.05));
@@ -125,7 +127,7 @@ class Pilot {
     const nose = new Vector3(1, 0, 0).applyQuaternion(body.quaternion);
     const path = body.velocity.clone().normalize();
     const direction = toAim.clone().add(path).sub(nose).normalize();
-    const cone = 0.02 + 2 * this.skill.aimError;
+    const cone = 0.03 + 2 * this.skill.aimError; // rad: a fighter's span at gun range, about (D81)
     const onTarget = enemy.range < this.skill.fireRange && nose.angleTo(toAim) < cone;
     const gLimit = craft.ac.limits?.g?.damage ?? 6;
     return {
@@ -159,18 +161,19 @@ export function formationSpeed(ac, altitude) {
 }
 
 /**
- * Never point the nose down near the ground: below FLOOR, plus FLOOR_TIME seconds of the present descent, climb away
- * instead, pulling as hard as the pilot will.
+ * Keep clear of the ground: below FLOOR, plus FLOOR_TIME seconds of the present descent, climb away (unless already
+ * climbing hard), pulling as hard as the pilot will.
  */
-function keepClear(craft, sim, goal) {
+export function keepClear(craft, sim, goal) {
   const { body } = craft.plane;
   const ground = sim.world.terrain.surfaceAt(body.position.x, body.position.z).height;
   const floor = FLOOR + FLOOR_TIME * Math.max(0, -body.velocity.y);
-  if (body.position.y - ground > floor || goal.direction.y > 0.05) return goal;
+  if (body.position.y - ground > floor || goal.direction.y > 0.3) return goal;
+  // Climb away, banking no more than 60° so that the lift holds him up, however he was turning.
   const out = body.velocity.clone().setY(0).normalize().setY(0.4).normalize();
   const gLimit = craft.ac.limits?.g?.damage ?? 4;
-  return { ...goal, direction: out, gMax: Math.max(goal.gMax ?? 2, gLimit * 0.8), maxBank: undefined, fireMg: false, fireCannon: false };
+  return { ...goal, direction: out, gMax: Math.max(goal.gMax ?? 2, gLimit * 0.8), maxBank: 1.05, push: false, fireMg: false, fireCannon: false };
 }
 
-/** An AI pilot: role 'fighter' (pursues), 'escort' (keeps station until an enemy is near) or 'bomber'. */
-export const createPilot = (options) => new Pilot(options);
+/** A pilot of these first behaviours (the bombers'; fighters fly src/ai/fighter.js: see src/ai/pilots.js). */
+export const createBasicPilot = (options) => new Pilot(options);

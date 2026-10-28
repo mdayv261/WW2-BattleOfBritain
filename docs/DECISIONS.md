@@ -2085,3 +2085,73 @@ opening and him floating down; the player too, with the view following him.
   open canopy;
 - an He 111 set on fire put out all five crew under open canopies;
 - no console errors.
+
+## D81. Fighter tactics and formations (28 Oct 2026, Phase 6 checkpoint 3)
+
+**What the fighter pilot does** (`src/ai/fighter.js`): a state machine. He decides 20 times a second from what he can
+see and flies through the same hands and controls as before (D79).
+- **Patrol:** he keeps his place in the formation (D78), or his heading. He spots an enemy within his sighting range,
+  except under his own tail.
+- **Engage and attack, by type:**
+  - **Bf 109 and Bf 110, boom-and-zoom (S22, S25):**
+    - with 200 m of energy height to spare, and never head-on, he dives on the target and fires in the pass, pulling
+      no more than 4 g;
+    - he breaks off within 150 m, when the target gets 45° off his nose, or below 72 m/s;
+    - he zooms away in a 12° climb at about 290 km/h (S22's 280-300 km/h) to build 450 m before the next pass, or
+      goes again after 15 s with any advantage;
+    - against a target coming head-on, he climbs out to its side to come round behind.
+  - **Hurricane and Spitfire, turning fight (S21):** pursuit with full turns. A Regular or Ace eases the turn below
+    75 or 90 m/s to keep his speed.
+  - **RAF against bombers (S29, S38):** he sets up outside the guns' reach, either ahead and 400 m above (inside 30° of
+    its path) or 500 m below and 50° off its path. He steers for where that point will be, makes the run, then breaks
+    away below.
+- **Evade,** when he notices an enemy nose-on behind him inside 800 m (a Bf 110 crew watch to 1,100 m):
+  - **RAF:** a hard break turn towards the attacker.
+  - **Bf 109:**
+    - attacker more than 400 m back: a shallow, fast climb away (S22);
+    - close behind: a push-over with negative g (S22) or a split-S, with 900 m or more beneath him;
+    - lower down: an extension at full power.
+  - **Bf 110 (S25):** an attacker seen at 900 m or more is met head-on; one closer is answered with a steep climb to
+    make him overshoot.
+- **Disengage:** under 10% of his rounds left, damaged (worn or leaking engine, holed wing or tail, a hurt control),
+  or out-matched longer than his skill's staying power. He goes home (RAF north-west, Luftwaffe south-east) in a
+  shallow dive, and still evades if caught.
+- **Wingmen:** a wingman keeps his slot on patrol, covers a fighting leader 200 m behind on his quarter and 50 m up,
+  and goes for anyone on the leader's tail.
+- **Escorts:** they keep station behind and above their bombers (S38), and engage only fighters within 2.5 km of them
+  or the bombers.
+- **The ground:** the ground check now steps in whenever he is below his safe height, unless already climbing hard,
+  and holds the bank to 60°.
+- **The hands:** they gained a push-over: wings level, pushing negative g.
+- **Firing cone:** 30 mrad (about a fighter's span at gun range) plus twice the aim error. It was 20 mrad, which was
+  too tight to fire much.
+
+**Skill additions** (game design):
+
+| Setting | Novice | Regular | Ace |
+|---|---|---|---|
+| Sighting range | 2.5 km | 4 km | 5.5 km |
+| Chance of noticing an enemy on his tail (each second) | 30% | 70% | 100% |
+| Lowest speed in a turning fight | none | 75 m/s | 90 m/s |
+| Fights on out-matched for | 10 s | 20 s | 40 s |
+
+**Measured in seeded fights** (`tests/ai/tactics.test.js`):
+- an Ace Spitfire beat a Novice Spitfire in 5 of 6;
+- a Bf 109 against a Hurricane (both Regular, the 109 starting 500 m higher) stayed above it 72-88% of the time and
+  never turned continuously for more than about 10 s;
+  - it broke off for home when it couldn't regain the advantage, as S22 advises;
+- an Ace breaks within a second of an enemy settling behind him; a Novice takes longer;
+- a Bf 110 meets an attacker seen at 1,050 m head-on, and zooms when he's seen at 600 m;
+- out of ammunition, a fighter heads home;
+- a Hurricane attacked an He 111 from ahead or below more than 80% of its attack time;
+- a Schwarm on patrol kept its places within 50 m.
+
+**In Chrome:** a Rotte of Bf 109s against a Spitfire:
+- the leader avoided the head-on pass and climbed out to the side while his wingman covered him;
+- he then came round behind and dived on the Spitfire's tail;
+- 75 fps, no console errors.
+
+**Flagged:**
+- all thresholds, distances and times are game-design estimates built on the sources' qualitative advice;
+- the Bf 110 defensive circle is still not modelled (no source, D78);
+- two equal RAF fighters often decide it on the first head-on pass (eight guns at a combined 220 m/s).

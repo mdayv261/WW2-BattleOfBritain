@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { aircraftById } from '../../src/aircraft/index.js';
 import { Simulation, levelThrottle } from '../../src/core/simulation.js';
 import { Craft } from '../../src/core/craft.js';
-import { createPilot } from '../../src/ai/basic.js';
+import { createPilot } from '../../src/ai/pilots.js';
 import { nextFighterScenario, bomberScenario, cycleSkill, clearAI, MAX_AI } from '../../src/core/scenarios.js';
 
 const DT = 1 / 120;
