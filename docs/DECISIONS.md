@@ -2469,8 +2469,8 @@ rendered as accurately as possible.
   reads full.
 - **Trim gauge:** its needle swings 30° each way over the full trim range.
 - **Recoloured:** the RAF faces' markings are now the picture's pale yellow, the direction indicator's drum and the
-  turn and slip's lettering and scales included (product owner, after first seeing them white); the turn and slip's
-  needles stay white, as the picture.
+  turn and slip's lettering, scales and needles included (product owner, after first seeing them white as in the
+  picture).
 - **Redrawn as the picture:** the climb indicator's figures (all one size, lettered CLIMB, THOUSANDS, FEET MIN.,
   DESCENT) and the turn and slip (numbered scales top and bottom, white needles with yellow diamond tips, grey centre).
 - **Indicator and lever:**

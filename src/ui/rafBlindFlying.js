@@ -148,8 +148,8 @@ export function rafClimb(g, x, y, r, climb, title) {
 /**
  * Turn and slip indicator, as the reference picture (D86): the slip needle points up over a scale numbered 20 10 5 | 5 10
  * 20, the turn needle down over one numbered 4 3 2 1 | 1 2 3 4 (rate-one marks, a rate one turn being 3 degrees a
- * second); white needles with yellow diamond tips, a grey centre, SIDE SLIP above and a large L and R lettered TURN.
- * The lettering and scales are the altimeter's yellow (product owner, D86).
+ * second); needles with diamond tips, a grey centre, SIDE SLIP above and a large L and R lettered TURN. The lettering,
+ * scales and needles are the altimeter's yellow (product owner, D86).
  * `turnRate` in deg/s (+ right), `sideG` (+ right).
  */
 export function rafTurnSlip(g, x, y, r, turnRate, sideG, title) {
@@ -247,7 +247,7 @@ export function rafTurnSlip(g, x, y, r, turnRate, sideG, title) {
     g.save();
     g.translate(x, y);
     g.rotate(angle);
-    g.fillStyle = '#f6f6f2';
+    g.fillStyle = LUMINOUS; // yellow, as the lettering (product owner)
     g.fillRect(-r * 0.035, -r * 0.56, r * 0.07, r * 0.42);
     g.fillStyle = LUMINOUS;
     g.beginPath();
