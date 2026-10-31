@@ -77,7 +77,10 @@ function spawnGroup(sim, { id, formation, origin, heading, role, side, speed, le
     const throttle = levelThrottle(ac, altitude, speed, 1);
     sim.aiSeed = (sim.aiSeed ?? 100) + 1;
     const keeper = leader ?? out[0] ?? null;
-    const pilot = createPilot({ role, skill: sim.skill, leader: i === 0 && !leader ? null : keeper, slot: s, seed: sim.aiSeed, group });
+    const pilot = createPilot({
+      role, skill: sim.skill, leader: i === 0 && !leader ? null : keeper, slot: s, seed: sim.aiSeed, group,
+      cruise: role === 'bomber' ? speed : undefined, // the formation speed, already solved (D88)
+    });
     const craft = new Craft(ac, {
       start: { altitude, speed, heading, throttle, rpm: 1, x: at.x, z: at.z, terrain: sim.world.terrain },
       pilot, side, skill: sim.skill, seed: sim.aiSeed, label: `${ac.name} #${sim.others.length + 1}`,

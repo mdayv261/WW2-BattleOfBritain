@@ -2562,3 +2562,32 @@ small look round moves it within the glass.
 - the sight square-on above the panel, the ring inside the glass;
 - hidden in the outside view and in the Bf 109;
 - no console errors.
+
+## D88. Faster twelve-aircraft simulation, after the failed deploy of 1 Nov 2026 (1 Nov 2026, product owner)
+
+**Problem:** the push of 1 Nov 2026 reached GitHub, but the deploy stopped at its test step. "Twelve aircraft, all
+flying and fighting, run in well under real time" measured 106.6 ms per simulated second against its 100 ms budget, so
+the live game was not updated.
+
+**Cause:** on the Mac the stepping alone took 23 ms per simulated second. The test runner runs many test files in
+parallel, and on GitHub's smaller machine they compete with the timed test. The profile of the stepping showed:
+- **35%, a one-off:** each bomber pilot solved its formation cruising speed on its first decision. That is a costly
+  solve, done three times over for three bombers at the same height, inside the timed loop. The scenario had already
+  solved it to place them.
+- **12%:** the stall angle re-solved by bisection (about 48,000 lift-curve evaluations) whenever a wing panel's
+  maximum lift took a new value. That happens every step while the Bf 109's slats or the flaps are part-way.
+
+**The product owner's choice:** speed the simulation up (rather than loosen the budget on GitHub's machine).
+
+**Fixes:**
+- **Cruising speed:** the scenario passes the speed it has already solved to its bombers' pilots, and `cruiseSpeed`
+  remembers its result for each aircraft and height (`src/ai/bomber.js`, `src/core/scenarios.js`, `src/core/target.js`).
+- **Stall angle:** while slats or flaps are part-way, the stall angle is read by a straight line between exact solutions
+  every 0.0005 of maximum lift, within about a millionth of a radian (`src/physics/aero.js`). Settled slats and flaps
+  keep the exact solve, so `npm run validate` is identical. A first version that read every value off the table moved
+  one ceiling by 1 ft and was changed.
+- **Timing tests:** they run a second of warm-up before the clock starts, so they time the steady running rather than
+  the JavaScript engine's start-up. The 100 ms budget is unchanged.
+
+**Result:** twelve aircraft now take 15.5 ms per simulated second on the Mac, against 23 before (a third less). All tests
+pass and the validation is unchanged.

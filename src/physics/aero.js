@@ -24,11 +24,26 @@ function liftCurve(alpha, clAlpha, alphaStall, width) {
   return { cl: (1 - f) * attached + f * plate, stalled: f };
 }
 
+const STALL_GRID = 0.0005; // maximum-lift spacing of the exact stall-angle solutions read between (D88)
+
 /**
- * The stall angle (measured from zero lift) at which the blended curve peaks at exactly clMax.
- * Found by bisection and cached, since the blend starts cutting lift a little before its centre.
+ * The stall angle (measured from zero lift) at which the blended curve peaks at exactly clMax, solved by bisection and
+ * cached. With `between` (the slats or flaps part-way, moving the maximum lift through new values every step, when an
+ * exact solve each time was a costly share of the simulation, D88) it is read by a straight line between exact
+ * solutions every STALL_GRID of maximum lift instead: the curve is nearly straight, so within about a millionth of a
+ * radian. Settled slats and flaps keep the exact solve.
  */
-export function stallAngle(clAlpha, clMax, width = common.stallWidth) {
+export function stallAngle(clAlpha, clMax, width = common.stallWidth, between = false) {
+  if (!between) return exactStallAngle(clAlpha, clMax, width);
+  const n = clMax / STALL_GRID;
+  const below = Math.floor(n + 1e-9);
+  if (Math.abs(n - below) < 1e-9) return exactStallAngle(clAlpha, below * STALL_GRID, width);
+  const f = n - below;
+  return (1 - f) * exactStallAngle(clAlpha, below * STALL_GRID, width) + f * exactStallAngle(clAlpha, (below + 1) * STALL_GRID, width);
+}
+
+/** The stall angle solved exactly by bisection, cached. */
+function exactStallAngle(clAlpha, clMax, width) {
   const key = `${clAlpha.toFixed(5)}|${clMax.toFixed(4)}|${width}`;
   const hit = stallCache.get(key);
   if (hit !== undefined) return hit;
@@ -181,7 +196,8 @@ export function aeroCoefficients(ac, flow, surfaces) {
     const alpha = steeper * (flow.alpha - alphaZero + twist + side * ((flow.p * def.arm * span) / (2 * V) + (a.dihedral + common.lowWingDihedral) * flow.beta));
     const speed = Math.max(0, 1 - (side * flow.r * def.arm * span) / (2 * V)); // local airspeed ratio
     const sectionMax = (def.outer ? pc.outerClosed + (pc.outerOpen - pc.outerClosed) * slat : pc.inner) + flaps * pc.flaps;
-    const lc = liftCurve(alpha, w.clAlpha, stallAngle(w.clAlpha, sectionMax), common.stallWidth);
+    const moving = (def.outer && slat > 0 && slat < 1) || (flaps > 0 && flaps < 1); // part-way: maximum lift in between
+    const lc = liftCurve(alpha, w.clAlpha, stallAngle(w.clAlpha, sectionMax, common.stallWidth, moving), common.stallWidth);
     const qRatio = speed * speed;
     // A panel damaged by hits (src/weapons/damage.js) loses lift and gains drag.
     const hurt = surfaces.wingDamage ? surfaces.wingDamage[side < 0 ? 0 : 1][def.outer ? 1 : 0] : 0;

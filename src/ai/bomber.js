@@ -38,6 +38,9 @@ export class BomberPilot extends Pilot {
   constructor(options) {
     super({ ...options, role: 'bomber' });
     this.group = options.group ?? null;
+    // The formation's cruising speed: given by the scenario, which has already solved it to place the bombers (D88),
+    // or worked out on the first decision.
+    this.cruise = options.cruise ?? null;
     this.straggler = false;
     this.closed = false;
     this.state = 'formation';

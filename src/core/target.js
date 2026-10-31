@@ -14,10 +14,18 @@ import { Craft } from './craft.js';
 
 /** The target's cruising speed (m/s, true): its level speed at the target throttle, at that height. */
 export function cruiseSpeed(ac, altitude) {
-  const pr = ac.propeller;
-  const speed = pr.type === 'constantSpeed' ? pr.rpmMax : engineFor(ac).refSpeed;
-  return topSpeed(ac, { speed, throttle: common.target.throttle }, altitude) || 90;
+  const key = `${ac.id}@${altitude}`;
+  if (!cruiseCache.has(key)) {
+    const pr = ac.propeller;
+    const speed = pr.type === 'constantSpeed' ? pr.rpmMax : engineFor(ac).refSpeed;
+    cruiseCache.set(key, topSpeed(ac, { speed, throttle: common.target.throttle }, altitude) || 90);
+  }
+  return cruiseCache.get(key);
 }
+
+// Cruising speeds already solved, by aircraft and exact height: the solve is costly and asked again for every bomber of
+// a formation (D88).
+const cruiseCache = new Map();
 
 export class TargetAircraft extends Craft {
   /** A target of type `ac` ahead of the `player` plane, in `world`; `seed` sets its damage dice. */

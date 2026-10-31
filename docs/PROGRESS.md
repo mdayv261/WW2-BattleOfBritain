@@ -18,6 +18,17 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
 
+## Faster twelve-aircraft simulation (1 Nov 2026)
+
+**Done** (D88):
+- the push of 1 Nov reached GitHub but the deploy's timing test failed, so the live game was not updated;
+- twelve aircraft now take 15.5 ms per simulated second, against 23 before;
+- the bombers' cruising speed is no longer re-solved, and the stall angle is read off exact solutions while slats or
+  flaps are part-way;
+- the validation is unchanged.
+
+**Left:** push again with permission, and check that the deploy succeeds.
+
 ## RAF reflector sight (1 Nov 2026)
 
 **Done** (D87):

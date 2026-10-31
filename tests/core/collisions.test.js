@@ -85,6 +85,7 @@ describe('mid-air collisions', () => {
     const sim = new Simulation(aircraftById.hurricane, 'air');
     bomberScenario(sim);
     sim.plane.body.position.x += 100000;
+    for (let i = 0; i < 120; i += 1) sim.step(DT); // a second of warm-up: time the steady running, not the start-up (D88)
     const t0 = performance.now();
     for (let i = 0; i < 120 * 30; i += 1) sim.step(DT);
     expect(sim.others).toHaveLength(5);
