@@ -46,7 +46,7 @@ export function drawRafDials(g, at, L, v, now) {
   mounted('horizon', (x, y, f) => rafHorizon(g, x, y, f, v.bank, v.pitch));
   mounted('climb', (x, y, f) => rafClimb(g, x, y, f, v.climb));
   mounted('altimeter', (x, y, f) => rafAltimeter(g, x, y, f, v.altitude, 1013));
-  mounted('direction', (x, y, f) => headingDrum(g, x, y, f, v.heading), { screws: false });
+  mounted('direction', (x, y, f) => headingDrum(g, x, y, f, v.heading, null, C.mark), { screws: false });
   mounted('turn', (x, y, f) => rafTurnSlip(g, x, y, f, v.turnRate, v.sideG));
   mounted('rpm', (x, y, f) => rafTachometer(g, x, y, f, v.rpm));
   mounted('boost', (x, y, f) => boostGauge(g, x, y, f, v), { ring: C.amber });

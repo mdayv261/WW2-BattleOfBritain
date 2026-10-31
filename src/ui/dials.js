@@ -125,9 +125,10 @@ export function horizon(g, x, y, r, bank, pitch, title) {
 
 /**
  * Heading drum seen through a window in the face, as on the 1940 directional gyro and the period magnetic
- * compasses: the scale slides past a fixed vertical lubber line. Heading in degrees.
+ * compasses: the scale slides past a fixed vertical lubber line. Heading in degrees; `ink` the markings' colour (the RAF
+ * panel's: the altimeter's yellow, D86).
  */
-export function headingDrum(g, x, y, r, heading, title) {
+export function headingDrum(g, x, y, r, heading, title, ink = INK) {
   face(g, x, y, r);
   const w = r * 1.5;
   const h = r * 0.55;
@@ -138,8 +139,8 @@ export function headingDrum(g, x, y, r, heading, title) {
   g.fillStyle = '#0a0a0a';
   g.fillRect(x - w / 2, y - h / 2, w, h);
   const perDeg = w / 70; // about 70 degrees of scale visible
-  g.strokeStyle = INK;
-  g.fillStyle = INK;
+  g.strokeStyle = ink;
+  g.fillStyle = ink;
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.font = `${Math.round(r * 0.2)}px ui-sans-serif, Helvetica, sans-serif`;
@@ -162,7 +163,7 @@ export function headingDrum(g, x, y, r, heading, title) {
   g.strokeStyle = RIM;
   g.lineWidth = 2;
   g.strokeRect(x - w / 2, y - h / 2, w, h);
-  g.strokeStyle = INK;
+  g.strokeStyle = ink;
   g.lineWidth = 2;
   g.beginPath();
   g.moveTo(x, y - h / 2 - 3);

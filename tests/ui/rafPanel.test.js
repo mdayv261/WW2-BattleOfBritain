@@ -125,6 +125,15 @@ describe('Spitfire I panel instruments (D86)', () => {
     expect(g.arcs.some((a) => a.colour === C.orange)).toBe(true);
   });
 
+  it('letters the direction indicator and the turn and slip in the altimeter\'s yellow', () => {
+    const g = draw({ ...instrumentReadings(new Simulation(aircraftById.spitfire, 'air')), heading: 0 });
+    const colours = (word) => g.texts.filter((t) => t.t === word).map((t) => t.colour);
+    for (const word of ['SIDE', 'SLIP', 'URN', '33']) { // the drum's 33 (330°) and the turn and slip's words
+      expect(colours(word).length, word).toBeGreaterThan(0);
+      expect(colours(word).every((c) => c === C.mark), word).toBe(true);
+    }
+  });
+
   it('lights UP red with the undercarriage up and DOWN green with it down; the flap lever follows the flaps', () => {
     const colourOf = (g, word, size) => g.texts.filter((t) => t.t === word).map((t) => t.colour);
     const up = draw({ ...instrumentReadings(new Simulation(aircraftById.spitfire, 'air')), gearUp: true, gearDown: false, flaps: 0 });
