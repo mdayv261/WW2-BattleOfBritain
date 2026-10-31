@@ -18,6 +18,19 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
 
+## RAF reflector sight (1 Nov 2026)
+
+**Done** (D87):
+- the Barr & Stroud GM 2 drawn square-on in front of the panel, after the product owner's reference picture, with its
+  reflector glass;
+- the reticle only on the glass, on the guns' line;
+- a simple GM 2 shape in 3D for looking round;
+- tests in `tests/ui/reflectorSight.test.js`.
+
+**Known issues:**
+- the reticle's 100-mil ring is still an estimate (D33);
+- the Luftwaffe sights are unchanged.
+
 ## Hurricane and Spitfire panel from the reference picture (1 Nov 2026)
 
 **Done** (D86):

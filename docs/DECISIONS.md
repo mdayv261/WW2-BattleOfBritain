@@ -744,6 +744,9 @@ match S12 and S20; the amount of rudder is for the product owner's flight test t
 
 ## D33. Reflector gunsights (25 Oct 2026, Phase 2)
 
+**Since D87 (1 Nov 2026):** the RAF's GM 2 is drawn square-on in front of the panel while the pilot looks ahead, the
+reticle seen only on its glass; the 3D sight shows when looking round.
+
 The product owner asked for the optical reflector gunsight in all aircraft. Each cockpit now has the sight body on the
 coaming, with its glass, and a glowing reticle collimated along the aircraft's line of sight. It is drawn at a
 distance so it stays fixed against the sky as the head turns.
@@ -2501,4 +2504,54 @@ rendered as accurately as possible.
 - the panel as the picture, below the sight;
 - with the undercarriage and flaps lowered: DOWN lit, UP dark, the flap paddle tilted to DOWN;
 - the trim gauge's needle up with nose-up trim;
+- no console errors.
+
+## D87. The RAF reflector sight: a Barr & Stroud GM 2 drawn square-on (1 Nov 2026, product owner)
+
+**Problem:** the sight's body was a plain 3D box on the coaming. Since D86 the 2D panel is drawn over the 3D view and
+hid it, leaving the glowing ring on the sky and a faint glass.
+
+**Request:** a realistic sight, replicating the product owner's reference picture of the GM 2 (a render, used only as
+the reference), shown square-on from the pilot's seat.
+
+**The sight** (`src/ui/reflectorSight.js`): drawn in code on its own canvas in front of the panel, as the real sight
+stands in front of the panel's top. From the foot up:
+- the mounting block with its bevelled foot;
+- the BASE ring (FEET 100-80-60-40-30) and the RANGE ring (YARDS 1.5-6), with label plates, figures and knurled thumb
+  wheels each side, and the side bracket;
+- the collar, the lamp housing's cone and deep top ring;
+- the two cranked arms.
+
+Proportions are the picture's; the finish is black anodised with soft highlights.
+
+**The glass:** the picture has none. The real sight's tinted reflector plate between the arms is drawn, a little wider
+than the arms' gap and as tall, so the 100-mil ring (D33 estimate) fits on it.
+
+**Placing:**
+- the glass centred on the middle of the view (the guns' line looking ahead);
+- the foot on the panel's plain top centre, just above the blind-flying instruments;
+- scaled to that space on every screen (about 120 px of glass on a 2560×1203 window), clear of the voltmeter.
+
+**The reticle:** the GM 2 pattern of D33 (now drawn by one function for the 3D and 2D sights, `src/ui/reticle.js`). It is
+seen only on the glass, clipped to it, at the point where the aircraft's nose direction falls on the screen (projected
+through the camera each frame); its ring is the sight's mils at the camera's field of view. As a collimated sight, a
+small look round moves it within the glass.
+
+**When it shows:**
+- in the Spitfire and Hurricane, in the cockpit view, while the pilot looks ahead (the panel's rule, D58);
+- the 3D body and reticle are hidden meanwhile;
+- looking round and in the outside views, the 3D sight shows, now with a simple GM 2 shape (block, rings, collar, cone,
+  top ring, arms; sizes estimated on the drawing's proportions);
+- the Bf 109 and Bf 110 keep their Revi C/12C (D33), unchanged.
+
+**Tests** (`tests/ui/reflectorSight.test.js`):
+- the glass on the middle of the view and the foot on the panel on five screen sizes, clear of the voltmeter;
+- the glass big enough for the ring;
+- the reticle at the projected guns' line with its ring from the mils and field of view, drawn inside the glass's clip;
+- the scale rings' lettering;
+- when it shows.
+
+**Checked in Chrome** (2560×1203, Spitfire and Hurricane, air start):
+- the sight square-on above the panel, the ring inside the glass;
+- hidden in the outside view and in the Bf 109;
 - no console errors.

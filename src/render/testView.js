@@ -23,12 +23,20 @@ export class TestView {
     this._quat = new THREE.Quaternion();
   }
 
+  /** While the 2D RAF sight shows (D87), the 3D sight body and reticle are hidden. */
+  showSight2D(on) {
+    for (const part of this.sight3D ?? []) part.visible = !on;
+  }
+
   setAircraft(ac) {
     if (this.model) this.scene.remove(this.model);
     this.aircraft = buildAircraftModel(ac, DESIGNS[ac.id]);
     this.model = this.aircraft.group;
     this.cockpit = buildCockpitFrame(ac);
-    if (ac.sight) this.cockpit.add(buildSightBody(ac), buildReticle(ac)); // the AI-only He 111 has no pilot's sight
+    // The AI-only He 111 has no pilot's sight. The RAF's is drawn square-on in front of the panel while the pilot looks
+    // ahead (src/ui/reflectorSight.js, D87): showSight2D hides these 3D parts meanwhile.
+    this.sight3D = ac.sight ? [buildSightBody(ac), buildReticle(ac)] : [];
+    if (this.sight3D.length) this.cockpit.add(...this.sight3D);
     this.model.add(this.cockpit);
     this.scene.add(this.model);
     this.rig.first = true;

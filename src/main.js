@@ -15,6 +15,7 @@ import { MouseLook } from './input/mouse.js';
 import { Hud } from './ui/hud.js';
 import { FrameRate } from './ui/frameRate.js';
 import { InstrumentPanel } from './ui/instruments.js';
+import { ReflectorSight, showSight, boresight } from './ui/reflectorSight.js';
 import { JoystickPanel } from './ui/joystickPanel.js';
 import { aircraftList } from './aircraft/index.js';
 import { loadTerrain } from './world/terrain.js';
@@ -38,6 +39,7 @@ new MouseLook(renderer.domElement, view.rig);
 const hud = new Hud();
 const frameRate = new FrameRate();
 const instruments = new InstrumentPanel();
+const sight = new ReflectorSight(); // the RAF's GM 2 drawn square-on in front of the panel (D87)
 const joyPanel = new JoystickPanel(joystick);
 
 function select(ac) {
@@ -104,6 +106,9 @@ renderer.setAnimationLoop((now) => {
   updateScene(camera);
   hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
   instruments.update(sim, { hidden: view.rig.lookingAway || !!sim.playerJumper }); // no panel once you have bailed out
+  const sight2D = showSight(sim, view.rig);
+  view.showSight2D(sight2D);
+  sight.update(sight2D, sight2D ? boresight(camera, view.model.quaternion, window.innerWidth, window.innerHeight, sim.ac.sight.ringMils) : null);
   joyPanel.update();
   renderer.render(scene, camera);
   frameRate.work(performance.now() - now);

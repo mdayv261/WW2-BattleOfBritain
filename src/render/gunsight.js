@@ -7,48 +7,17 @@
 // researched for Phase 5).
 
 import * as THREE from 'three';
+import { drawReticle } from '../ui/reticle.js';
 
 const DISTANCE = 60; // m: where the reticle plane is placed ahead of the eye (it reads as at infinity)
 const FIELD = 1.6; // the texture covers this many ring diameters
-const GLOW = '#ffb45a';
-
 /** Canvas texture of the reticle; the ring fills 1/FIELD of the width. */
 function reticleTexture(style) {
   const size = 512;
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
-  const g = canvas.getContext('2d');
-  const c = size / 2;
-  const ring = size / (2 * FIELD);
-  g.strokeStyle = GLOW;
-  g.fillStyle = GLOW;
-  g.lineWidth = 5;
-  g.shadowColor = GLOW;
-  g.shadowBlur = 8;
-  g.beginPath();
-  g.arc(c, c, ring, 0, Math.PI * 2);
-  g.stroke();
-  const line = (x0, y0, x1, y1) => {
-    g.beginPath();
-    g.moveTo(x0, y0);
-    g.lineTo(x1, y1);
-    g.stroke();
-  };
-  const gap = ring * 0.25;
-  if (style === 'Revi') {
-    line(c - ring * 1.25, c, c - gap * 0.5, c);
-    line(c + gap * 0.5, c, c + ring * 1.25, c);
-    line(c, c - ring * 1.25, c, c - gap * 0.5);
-    line(c, c + gap * 0.5, c, c + ring * 1.25);
-  } else {
-    line(c - ring, c, c - gap, c);
-    line(c + gap, c, c + ring, c);
-    line(c, c + ring, c, c + ring * 0.45);
-  }
-  g.beginPath();
-  g.arc(c, c, 6, 0, Math.PI * 2);
-  g.fill();
+  drawReticle(canvas.getContext('2d'), size / 2, size / 2, size / (2 * FIELD), style, 5);
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
@@ -82,9 +51,12 @@ export function buildSightBody(ac) {
   const group = new THREE.Group();
   const { eye } = ac;
   const revi = ac.side !== 'RAF';
-  const body = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.1, 0.09), new THREE.MeshLambertMaterial({ color: 0x1d1d1b }));
-  body.position.set(eye.x + 0.55, eye.y - 0.12, 0);
-  group.add(body);
+  if (!revi) gm2Body(group, eye);
+  else {
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.1, 0.09), new THREE.MeshLambertMaterial({ color: 0x1d1d1b }));
+    body.position.set(eye.x + 0.55, eye.y - 0.12, 0);
+    group.add(body);
+  }
   if (revi) {
     const pad = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.11, 0.07), new THREE.MeshLambertMaterial({ color: 0x7a4a26 }));
     pad.position.set(eye.x + 0.45, eye.y - 0.1, 0);
@@ -100,4 +72,31 @@ export function buildSightBody(ac) {
   glass.position.set(eye.x + SIGHT_GLASS.ahead, eye.y, 0);
   group.add(glass);
   return group;
+}
+
+/**
+ * The GM 2's body in 3D (D87), for looking round: the same parts as the square-on drawing (src/ui/reflectorSight.js),
+ * simply shaped: mounting block, scale rings, collar, cone, deep top ring and the two arms either side of the glass.
+ * Sizes are estimates on the drawing's proportions (no drawing of the sight was found).
+ */
+function gm2Body(group, eye) {
+  const black = new THREE.MeshLambertMaterial({ color: 0x151515 });
+  const x = eye.x + SIGHT_GLASS.ahead + 0.02;
+  const top = eye.y - SIGHT_GLASS.raf.height / 2 - 0.005; // the top ring's rim, just under the glass
+  const part = (geometry, y) => {
+    const mesh = new THREE.Mesh(geometry, black);
+    mesh.position.set(x, y, 0);
+    group.add(mesh);
+    return mesh;
+  };
+  part(new THREE.CylinderGeometry(0.05, 0.05, 0.034, 24), top - 0.017); // top ring
+  part(new THREE.CylinderGeometry(0.047, 0.026, 0.032, 24), top - 0.05); // cone
+  part(new THREE.CylinderGeometry(0.03, 0.03, 0.015, 24), top - 0.073); // collar
+  part(new THREE.CylinderGeometry(0.032, 0.032, 0.036, 24), top - 0.098); // RANGE and BASE rings
+  part(new THREE.BoxGeometry(0.075, 0.04, 0.075), top - 0.136); // mounting block
+  for (const z of [-0.042, 0.042]) {
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.008, SIGHT_GLASS.raf.height + 0.01, 0.008), black);
+    arm.position.set(eye.x + SIGHT_GLASS.ahead, eye.y, z);
+    group.add(arm);
+  }
 }
