@@ -2,7 +2,7 @@
 // NOSE DOWN at the bottom; left of the flaps on the RAF panels, in place of the push button left of the Bf 109's magneto
 // switch, and right of the Bf 110's turn and bank.
 import { describe, it, expect } from 'vitest';
-import { RAF_LAYOUT, instrumentReadings } from '../../src/ui/instruments.js';
+import { instrumentReadings } from '../../src/ui/instruments.js';
 import { BF109_LAYOUT, bf109Panel } from '../../src/ui/bf109Panel.js';
 import { BF110_LAYOUT, bf110Panel } from '../../src/ui/bf110Panel.js';
 import { trimDisplay, trimLayout, trimY, TRIM_SCALE, TRIM_WORDS } from '../../src/ui/panelControls.js';
@@ -81,15 +81,6 @@ describe('elevator trim display (D74)', () => {
     trimDisplay(g, box, R, { trimDegrees: 10 });
     const tip = g.points.filter((p) => p.fill === '#ffffff')[0];
     expect(tip.y).toBeCloseTo(trimY(L, 10), 9);
-  });
-
-  it('Hurricane and Spitfire: left of the undercarriage and flaps, their full height, inside the panel', () => {
-    const [left, top, right, bottom] = RAF_LAYOUT.trim;
-    expect(right).toBeLessThan(RAF_LAYOUT.flaps[0]);
-    expect(right).toBeLessThan(RAF_LAYOUT.gear[0]);
-    expect(top).toBe(RAF_LAYOUT.gear[1]);
-    expect(bottom).toBe(RAF_LAYOUT.flaps[3]);
-    expect(left).toBeGreaterThan(-RAF_LAYOUT.width / 2);
   });
 
   it('Bf 109: in place of the push button, left of the magneto switch; the button is gone', () => {

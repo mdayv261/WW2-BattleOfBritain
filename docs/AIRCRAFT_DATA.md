@@ -640,6 +640,8 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Coolant normal range, low end (`heat.coolantNormal.from`) | 60 | °C | Minm. temp. for take-off: coolant 60°C | S33 | medium | Green band of the radiator temperature gauge (D85). |
 | Coolant normal range, high end (`heat.coolantNormal.to`) | 95 | °C | 95 (cruising rich and weak) | S33 | medium | Climbing and all-out limit 120 °C. |
 | Normal boost range, low end (`boostNormal.from`) | 116.838 | kPa | +2¼ lb/sq in (cruising weak) | S33 | medium | Absolute. Green band of the boost and manifold pressure gauges, the product owner's choice of range (D85). |
+| Oil pressure, normal (`oilPressure.normal`) | 413.685 | kPa | OIL PRESSURE: NORMAL: 60 lb/sq.in. | S33 | medium | The oil pressure gauge's reading while the engine runs (D86). |
+| Oil pressure, emergency minimum (`oilPressure.emergencyMinimum`) | 310.264 | kPa | EMERGENCY MINM (5 MINS): 45 lb/sq.in. | S33 | medium | Not yet used: the pressure is not modelled physically. |
 | Normal boost range, high end (`boostNormal.to`) | 144.417 | kPa | +6¼ lb/sq in (climbing ½ hr; all-out 5 mins) | S33 | medium | Absolute; the normal rating (`ratings.normal.map`). |
 
 ## Messerschmitt Bf 109 E-4 (DB 601A)

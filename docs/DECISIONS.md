@@ -2363,6 +2363,9 @@ With the slider fully forward, all four are level hands-off.
 
 ## D85. RAF engine gauges: a MAP gauge, small gauges and green normal bands (28 Oct 2026, product owner)
 
+**Superseded in part by D86 (1 Nov 2026):** the RAF panel is now the reference picture's, without the MAP gauge; the
+green and orange bands are kept on its boost, oil and radiator gauges.
+
 **Request:** a manifold pressure gauge on the RAF panel (Hurricane and Spitfire), since the throttle sets manifold
 pressure and the E and D keys the rpm; smaller oil, coolant and boost gauges; and green bands for the normal operating
 ranges.
@@ -2408,4 +2411,94 @@ sit under the needle's hub and inside the dial, the unit line above the caption.
 - MAP 42.6 in. Hg and boost +6¼ at full throttle;
 - throttle back with S: 24.0 in. Hg and −2.9 lb together;
 - rpm lever down with D: rpm 2,993 to 2,275, MAP and boost unchanged;
+- no console errors.
+
+## D86. The Hurricane and Spitfire panel from the product owner's reference picture (1 Nov 2026, product owner)
+
+**Request:** replace the RAF panel with the Spitfire I panel in the product owner's reference picture (a 3D render),
+rendered as accurately as possible.
+- **Working:** the flight and engine instruments; a trim gauge in place of the elevator trim display; the undercarriage
+  UP/DOWN indicator and the flap lever.
+- **Normal operation:** the rest (oxygen, voltmeter, brake pressure, switches).
+- **Clock:** where the picture has it, left of the UP/DOWN indicator, showing the computer's local time.
+- **Airspeed:** in mph (the picture's reads knots).
+
+**The product owner's answers:**
+- redrawn in code, the picture used only as the layout reference (GAME_SPEC §2: no copyrighted assets; nothing of it is
+  in the game);
+- the D85 MAP gauge dropped (the picture has none), so that deviation is gone;
+- the panel as large as fits (as the Bf 110's);
+- the green normal bands and the orange +12 lb band kept;
+- the fuel gauge full and static until fuel use is modelled.
+
+**Layout** (`src/ui/rafPanel.js`):
+- **Positions:** measured on the 1920×1080 picture with a coordinate grid; the outline traced from its pixels. In picture
+  pixels, 82 to a dial radius (the airspeed indicator's face).
+- **Size:** as wide as fits and at most 45% of the screen height. The arched top stays below the reflector sight in the
+  middle of the view (as the Bf 109's panel, D41). Drawn at the Bf 110's 54% it would cover the sight.
+- **What that means on screen:** a 2560×1259 window gives a dial radius of 45 px against the old strip panel's 66. The
+  whole panel is now shown, so the instruments are smaller than before.
+
+**What it holds, as the picture:**
+- **Blind-flying plate:** airspeed, horizon, climb; altimeter, direction indicator, the large turn and slip.
+- **Right:** rev counter; F.S. gear warning box and the blank plate; boost (amber bezel); edgewise oil pressure gauge;
+  oil temperature (yellow bezel); radiator temperature; fuel contents with its placard; fuel pressure warning lamp.
+  The voltmeter at the top.
+- **Left:** navigation light switch, flap lever and placard, oxygen regulator Mark VIIIC with its delivery and supply
+  dials, clock, UP/DOWN indicator with its night blind, trim gauge, magneto switches, fuel-pump note, Dunlop brake
+  pressure gauge.
+- **Bottom:** two compass deviation cards, flood-light knobs, boost-coil and starter buttons, bottom-tank button.
+- **Everywhere:** mounting screws, the panel's holes and rivets.
+
+**The code:**
+- `src/ui/rafPanelFittings.js`: the panel and fittings;
+- `src/ui/rafPanelDials.js`: the dials;
+- `src/ui/panelParts.js`: bezels, screws, knobs, lenses, lettering and the picture's colours.
+
+**Instruments:**
+- **Scales read off the picture:** where they are uneven (rev counter, boost, oil and radiator temperatures, fuel), they
+  are tables of value against needle angle.
+- **Rev counter:** 1,000-5,000 rpm, 10 at seven o'clock, 30 at the top, 50 at five. Replaces the 10-40 face of D32.
+- **Boost:** −4 to +16 lb/sq in.
+- **Oil pressure:** reads the Merlin's normal 60 lb/sq in while it runs (S33, now in the data with the 45 lb emergency
+  minimum). It is not modelled physically, as the DB 601A's gauges (D63).
+- **Fuel:** the gauge face says "CAPACITY TANK 37 GALLONS" (S33: bottom tank 37 gallons, top tank 48 not gauged) and
+  reads full.
+- **Trim gauge:** its needle swings 30° each way over the full trim range.
+- **Recoloured:** the RAF faces' markings are now the picture's pale yellow.
+- **Redrawn as the picture:** the climb indicator's figures (all one size, lettered CLIMB, THOUSANDS, FEET MIN.,
+  DESCENT) and the turn and slip (numbered scales top and bottom, white needles with yellow diamond tips, grey centre).
+- **Indicator and lever:**
+  - the UP/DOWN indicator lights UP red (up and locked) or DOWN green-yellow (down and locked), and is dark while the
+    undercarriage moves;
+  - the flap lever's paddle reads UP, or tilts over reading DOWN with the flaps down. There is no room below its housing
+    for it to swing down: the oxygen regulator is there.
+- **Corrected from the picture:** the picture's spelling slip OXIGEN is written OXYGEN.
+  The F.S. gear lamp is shown out (normal operation), where the picture shows it lit.
+
+**Flagged:**
+- the Hurricane has the Spitfire's panel, though its own panel differed (the product owner's choice);
+- its fuel gauge shows the Spitfire's bottom tank;
+- the rev counter's scale follows the picture, replacing D32's.
+
+**Removed:**
+- the old RAF strip panel (`RAF_LAYOUT`) with its undercarriage, flap and elevator trim plates;
+- D85's MAP gauge (`mapInHg`, `UNIT.INHG`). The Luftwaffe panels are unchanged.
+
+**Tests:**
+- `tests/ui/rafPanel.test.js`:
+  - everything inside the outline;
+  - no dials overlapping;
+  - the clock left of the indicator;
+  - the panel below the sight on five screen sizes;
+  - oil pressure running and stopped;
+  - trim needle and clock hands;
+  - the picture's lettering and the bands drawn;
+  - the UP/DOWN lamps and the flap lever.
+- The rev counter's test updated; the old RAF layout tests removed.
+
+**Checked in Chrome** (2560×1259, Spitfire and Hurricane, air start):
+- the panel as the picture, below the sight;
+- with the undercarriage and flaps lowered: DOWN lit, UP dark, the flap paddle tilted to DOWN;
+- the trim gauge's needle up with nose-up trim;
 - no console errors.

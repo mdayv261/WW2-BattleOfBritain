@@ -266,11 +266,13 @@ describe('instruments', () => {
     expect(rafAirspeedAngle(20)).toBe(rafAirspeedAngle(50)); // resting on its stop
   });
 
-  it('spreads the RAF rev counter\'s 1,000 to 4,000 rpm over 300 degrees, 10 at seven o\'clock and 40 at five', () => {
-    expect(rafRpmAngle(1000) / UNIT.DEG).toBeCloseTo(-150, 6);
-    expect(rafRpmAngle(2500)).toBeCloseTo(0, 9);
-    expect(rafRpmAngle(4000) / UNIT.DEG).toBeCloseTo(150, 6);
-    expect(rafRpmAngle(5000)).toBe(rafRpmAngle(4000)); // held at the top of the scale
+  it('reads the RAF rev counter as the reference picture (D86): 10 at seven o\'clock, 30 at the top, 50 at five', () => {
+    expect(rafRpmAngle(1000) / UNIT.DEG).toBeCloseTo(-158, 6);
+    expect(rafRpmAngle(3000)).toBeCloseTo(0, 9);
+    expect(rafRpmAngle(5000) / UNIT.DEG).toBeCloseTo(158, 6);
+    expect(rafRpmAngle(2750) / UNIT.DEG).toBeCloseTo(-23.5, 6); // straight between the picture's marks
+    expect(rafRpmAngle(6000)).toBe(rafRpmAngle(5000)); // held at the top of the scale
+    expect(rafRpmAngle(500)).toBe(rafRpmAngle(1000));
   });
 
   it('shows the propeller pitch clock at twelve on the fine stop, ten minutes per degree (S32)', () => {

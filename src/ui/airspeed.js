@@ -3,7 +3,10 @@
 // the second, 240 to 400 mph (numbered 26 to 40, 36 at the top). Both rings share one scale of about
 // 1.8 degrees per mph.
 
-import { face, caption, LUMINOUS } from './dials.js';
+import { face, caption } from './dials.js';
+import { C } from './panelParts.js';
+
+const LUMINOUS = C.mark; // the pale yellow luminous markings of the reference picture (D86)
 
 const DEG_PER_MPH = 1.8;
 const TOP = 160; // mph at twelve o'clock on the first turn (and 360 on the second)

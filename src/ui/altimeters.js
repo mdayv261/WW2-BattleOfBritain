@@ -2,6 +2,9 @@
 // Luftwaffe's single-pointer Fl 22316, each drawn after a photograph of the instrument (D32).
 
 import { face, caption, LUMINOUS } from './dials.js';
+import { C } from './panelParts.js';
+
+const RAF_MARK = C.mark; // the RAF altimeter's pale yellow markings, as the reference picture (D86)
 
 /**
  * RAF altimeter Mk XIV, after a photograph of the instrument: plain cream numerals 0-9 with 0 at the top,
@@ -14,8 +17,8 @@ export function rafAltimeter(g, x, y, r, feet, millibar, title) {
   face(g, x, y, r);
   const turn = (per) => ((feet / per) % 1) * Math.PI * 2;
   const at = (a, d) => [x + Math.sin(a) * d, y - Math.cos(a) * d];
-  g.strokeStyle = LUMINOUS;
-  g.fillStyle = LUMINOUS;
+  g.strokeStyle = RAF_MARK;
+  g.fillStyle = RAF_MARK;
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   for (let i = 0; i < 50; i += 1) {
@@ -49,8 +52,8 @@ export function rafAltimeter(g, x, y, r, feet, millibar, title) {
   g.fillStyle = '#0a0a0a';
   g.fill();
   g.clip();
-  g.fillStyle = LUMINOUS;
-  g.strokeStyle = LUMINOUS;
+  g.fillStyle = RAF_MARK;
+  g.strokeStyle = RAF_MARK;
   g.font = `${Math.round(r * 0.075)}px ui-sans-serif, Helvetica, sans-serif`;
   const perMb = half / 22; // about 44 millibars visible
   for (let mb = Math.ceil((millibar - 30) / 2) * 2; mb <= millibar + 30; mb += 2) {
@@ -65,7 +68,7 @@ export function rafAltimeter(g, x, y, r, feet, millibar, title) {
     if (mb % 20 === 0) g.fillText(String(mb), ...at(a, inner + r * 0.06));
   }
   g.restore();
-  g.strokeStyle = LUMINOUS;
+  g.strokeStyle = RAF_MARK;
   g.lineWidth = 2;
   g.beginPath();
   g.moveTo(...at(Math.PI, outer + r * 0.02));
@@ -94,7 +97,7 @@ export function rafAltimeter(g, x, y, r, feet, millibar, title) {
   g.save();
   g.translate(x, y);
   g.rotate(turn(10000));
-  g.fillStyle = LUMINOUS;
+  g.fillStyle = RAF_MARK;
   g.beginPath();
   g.moveTo(0, -r * 0.48);
   g.lineTo(r * 0.075, -r * 0.24);
@@ -113,7 +116,7 @@ export function rafAltimeter(g, x, y, r, feet, millibar, title) {
   g.moveTo(0, r * 0.18);
   g.lineTo(0, 0);
   g.stroke();
-  g.strokeStyle = LUMINOUS;
+  g.strokeStyle = RAF_MARK;
   g.lineWidth = 3;
   g.lineCap = 'round';
   g.beginPath();

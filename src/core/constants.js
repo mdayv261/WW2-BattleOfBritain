@@ -30,6 +30,5 @@ export const UNIT = {
   DEG: Math.PI / 180, // rad
   PSI: 6894.757293168, // Pa (lb/sq in, as in RAF boost)
   ATA: 98066.5, // Pa (technische Atmosphäre, as on Luftwaffe boost gauges)
-  INHG: 3386.389, // Pa (inch of mercury at 0 °C: the RAF manifold pressure gauge the product owner asked for, D85)
   GALLON: 4.54609e-3, // m^3 (Imperial gallon)
 };

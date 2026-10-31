@@ -1,90 +1,12 @@
 // Coolant and oil temperature gauges on the panels (product owner's placements, D63), and the readings that drive them.
 import { describe, it, expect } from 'vitest';
-import { RAF_LAYOUT, instrumentReadings, panelRadius, rafEngineScales, gauge, BAND, captionLines } from '../../src/ui/instruments.js';
+import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { BF109_LAYOUT } from '../../src/ui/bf109Panel.js';
 import { BF110_LAYOUT } from '../../src/ui/bf110Panel.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 
 describe('temperature gauges (D63)', () => {
-  it('RAF (D85): the MAP gauge, full size, below the rev counter; oil, radiator and boost small, in a column right', () => {
-    const L = RAF_LAYOUT;
-    expect(L.small).toBeCloseTo(19 / 30, 9); // the Bf 110's engine gauges' proportion
-    expect(L.manifold[0]).toBe(L.rpm[0]);
-    expect(L.manifold[1]).toBeGreaterThan(L.rpm[1] + 2); // full size, clear of the rev counter
-    const column = [L.oilTemp, L.radTemp, L.boost];
-    for (const [x] of column) {
-      expect(x).toBe(L.oilTemp[0]);
-      expect(x - L.small).toBeGreaterThan(L.rpm[0] + 1); // clear of the rev counter
-      expect(x + L.small).toBeLessThan(L.width / 2); // inside the panel
-    }
-    for (let i = 1; i < column.length; i += 1) expect(column[i][1] - column[i - 1][1]).toBeGreaterThan(2 * L.small);
-    expect(column[0][1] - L.small).toBeGreaterThanOrEqual(0.1);
-    expect(column[2][1] + L.small).toBeLessThanOrEqual(4.8 + 1e-9);
-    expect(L.manifold[1] + 1).toBeLessThanOrEqual(4.8);
-  });
-
-  it('RAF: green normal bands on oil, radiator, boost and manifold pressure (S33), orange over +12 lb on both pressures', () => {
-    const v = instrumentReadings(new Simulation(aircraftById.hurricane, 'air'));
-    const s = rafEngineScales(v);
-    const green = (o) => o.bands.find((b) => b.colour === BAND.normal);
-    const orange = (o) => o.bands.find((b) => b.colour === BAND.emergency);
-    expect([green(s.oilTemp).from, green(s.oilTemp).to]).toEqual([15, 90]);
-    expect([green(s.radTemp).from, green(s.radTemp).to]).toEqual([60, 95]);
-    expect(green(s.boost).from).toBeCloseTo(2.25, 3);
-    expect(green(s.boost).to).toBeCloseTo(6.25, 3);
-    expect(green(s.manifold).from).toBeCloseTo(34.50, 1); // in. Hg absolute
-    expect(green(s.manifold).to).toBeCloseTo(42.65, 1);
-    expect(orange(s.boost).from).toBe(12);
-    expect(orange(s.manifold).from).toBeCloseTo(54.35, 1);
-  });
-
-  it('RAF: the manifold pressure gauge reads the boost in inches of mercury; the throttle moves both, the rpm lever neither', () => {
-    const sim = new Simulation(aircraftById.spitfire, 'air');
-    const inHg = (psi) => (101325 + psi * 6894.757293168) / 3386.389;
-    let v = instrumentReadings(sim);
-    expect(v.mapInHg).toBeCloseTo(inHg(v.manifold), 6);
-    const full = v.mapInHg;
-    sim.input.throttle = 0.3;
-    for (let t = 0; t < 2; t += 1 / 120) sim.step(1 / 120);
-    v = instrumentReadings(sim);
-    expect(v.mapInHg).toBeLessThan(full - 5);
-    expect(v.mapInHg).toBeCloseTo(inHg(v.manifold), 6);
-    expect(instrumentReadings(new Simulation(aircraftById.bf109e4, 'air')).mapInHg).toBeNull();
-  });
-
-  it('RAF: "in.Hg" above a larger "MAP", "PSI" above "BOOST", each under the hub and inside its dial (D85)', () => {
-    const r = 60;
-    const small = RAF_LAYOUT.small * r;
-    const lines = (name, size) => captionLines(name, size, r);
-    expect(lines('manifold', r).map((l) => l.text)).toEqual(['in.Hg', 'MAP']);
-    expect(lines('boost', small).map((l) => l.text)).toEqual(['PSI', 'BOOST']);
-    expect(lines('oilTemp', small).map((l) => l.text)).toEqual(['OIL °C']);
-    expect(lines('radTemp', small).map((l) => l.text)).toEqual(['RADIATOR °C']);
-    expect(lines('manifold', r)[1].size).toBeGreaterThan(lines('boost', small)[1].size);
-    expect(lines('manifold', r)[0].size).toBeGreaterThan(lines('boost', small)[0].size); // the larger in.Hg
-    for (const [name, size] of [['manifold', r], ['boost', small]]) {
-      const [unit, caption] = lines(name, size);
-      expect(unit.dy).toBeLessThan(caption.dy); // above it
-      expect(unit.dy - 0.08 * unit.size).toBeGreaterThan(0.12 * size); // clear of the hub
-      expect(caption.dy + 0.08 * caption.size).toBeLessThan(0.9 * size); // inside the scale's ring
-      expect(caption.dy - unit.dy).toBeGreaterThan(0.08 * (unit.size + caption.size)); // the lines don't overlap
-    }
-  });
-
-  it('draws every band of a gauge on its scale', () => {
-    const arcs = [];
-    const g = new Proxy({}, {
-      get: (target, key) => (key in target ? target[key] : key === 'arc' ? (...a) => arcs.push(a) : () => ({ width: 10 })),
-      set: (target, key, value) => { target[key] = value; return true; },
-    });
-    gauge(g, 0, 0, 10, 5, { min: 0, max: 10, start: -2, end: 2, major: 5, minor: 1, label: String,
-      bands: [{ from: 1, to: 2, colour: 'green' }, { from: 8, to: 20, colour: 'orange' }] });
-    const bandArcs = arcs.filter((a) => a[2] === 9); // the bands sit at 0.9 of the radius
-    expect(bandArcs).toHaveLength(2);
-    expect(bandArcs[1][4]).toBeCloseTo(2 - Math.PI / 2, 9); // clipped at the scale's end
-  });
-
   it('Bf 110: a combined gauge below each engine\'s fuel gauge, inside the panel', () => {
     const d = BF110_LAYOUT.dials;
     for (const side of ['Left', 'Right']) {

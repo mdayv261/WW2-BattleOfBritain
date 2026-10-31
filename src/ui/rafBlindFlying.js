@@ -2,9 +2,12 @@
 // D32): the artificial horizon with its shaped window and lower bank scale, the climb indicator lettered
 // CLIMB and DESCENT, and the two-needle turn and slip indicator (slip needle above, turn needle below).
 
-import { face, caption, LUMINOUS } from './dials.js';
+import { face, caption } from './dials.js';
+import { C } from './panelParts.js';
 
-const GREEN = '#8fd18a'; // the green luminous markings
+const LUMINOUS = C.mark; // the pale yellow luminous markings of the reference picture (D86)
+
+const GREEN = C.mark; // all the markings pale yellow, as the reference picture (D86)
 const DEG = Math.PI / 180;
 
 const at = (x, y, a, d) => [x + Math.sin(a) * d, y - Math.cos(a) * d];
@@ -111,17 +114,19 @@ export function rafClimb(g, x, y, r, climb, title) {
     g.stroke();
     if (whole) {
       const even = k % 2 === 0;
-      g.fillStyle = even ? LUMINOUS : GREEN;
-      font(g, r * (even ? 0.22 : 0.14), even);
+      g.fillStyle = LUMINOUS;
+      font(g, r * 0.22, true); // every figure the same size, as the reference picture (D86)
       g.fillText(String(Math.abs(k)), ...at(x, y, a, r * 0.64));
     }
   }
   g.fillStyle = LUMINOUS;
   font(g, r * 0.12, true);
-  g.fillText('CLIMB', x + r * 0.08, y - r * 0.17);
-  g.fillText('DESCENT', x + r * 0.08, y + r * 0.17);
-  font(g, r * 0.07);
-  g.fillText('1000 FT/MIN', x + r * 0.08, y + r * 0.42);
+  font(g, r * 0.14, true);
+  g.fillText('CLIMB', x + r * 0.1, y - r * 0.3);
+  g.fillText('DESCENT', x + r * 0.1, y + r * 0.3);
+  font(g, r * 0.065);
+  g.fillText('THOUSANDS', x + r * 0.1, y - r * 0.17);
+  g.fillText('FEET MIN.', x + r * 0.1, y + r * 0.17);
   g.save();
   g.translate(x, y);
   g.rotate(angle(climb / 1000));
@@ -141,78 +146,127 @@ export function rafClimb(g, x, y, r, climb, title) {
 }
 
 /**
- * Turn and slip indicator of the period two-needle kind: the slip needle points up over a green scale
- * lettered SIDE SLIP; the turn needle points down over a green scale lettered TURN, marked 2 and 4 each side
- * (rate-one marks between). A large L and R on the face. `turnRate` in deg/s (+ right), `sideG` (+ right).
+ * Turn and slip indicator, as the reference picture (D86): the slip needle points up over a scale numbered 20 10 5 | 5 10
+ * 20, the turn needle down over one numbered 4 3 2 1 | 1 2 3 4 (rate-one marks, a rate one turn being 3 degrees a
+ * second); white needles with yellow diamond tips, a grey centre, SIDE SLIP above and a large L and R lettered TURN.
+ * `turnRate` in deg/s (+ right), `sideG` (+ right).
  */
 export function rafTurnSlip(g, x, y, r, turnRate, sideG, title) {
   face(g, x, y, r);
   const RATE_ONE = 3; // deg/s
-  const perRate = 11 * DEG; // turn needle swing per rate
+  const perRate = 10 * DEG; // turn needle swing per rate
+  const perSlip = 2.2 * DEG; // slip needle swing per unit of the slip scale
   centred(g);
-  // Lower (turn) scale: marks for rates 1 to 4 each side, numbered 2 and 4.
-  for (let k = -4; k <= 4; k += 1) {
-    const a = Math.PI - k * perRate; // a right turn swings the lower needle's tip to the right
-    g.strokeStyle = k === 0 ? LUMINOUS : GREEN;
-    g.lineWidth = k % 2 === 0 ? 2 : 1.2;
+  const arc = (from, to, rad) => {
+    g.strokeStyle = '#f2f2ee';
+    g.lineWidth = Math.max(1, r * 0.018);
     g.beginPath();
-    g.moveTo(...at(x, y, a, r * 0.92));
-    g.lineTo(...at(x, y, a, r * (k % 2 === 0 ? 0.8 : 0.85)));
+    g.arc(x, y, rad, from - Math.PI / 2, to - Math.PI / 2);
     g.stroke();
-    if (k && k % 2 === 0) {
-      g.fillStyle = LUMINOUS;
-      font(g, r * 0.12);
-      g.fillText(String(Math.abs(k)), ...at(x, y, a, r * 0.98 + 2));
+    g.fillStyle = LUMINOUS;
+    for (const end of [from, to]) {
+      g.beginPath();
+      g.arc(...at(x, y, end, rad), r * 0.035, 0, Math.PI * 2);
+      g.fill();
+    }
+  };
+  // Upper (slip) scale.
+  const slipAt = (k) => k * perSlip;
+  arc(slipAt(-20), slipAt(20), r * 0.72);
+  for (const k of [-20, -10, -5, 0, 5, 10, 20]) {
+    g.strokeStyle = '#f2f2ee';
+    g.lineWidth = Math.max(1, r * 0.02);
+    g.beginPath();
+    g.moveTo(...at(x, y, slipAt(k), r * 0.72));
+    g.lineTo(...at(x, y, slipAt(k), r * 0.66));
+    g.stroke();
+    if (k) {
+      g.fillStyle = '#f2f2ee';
+      font(g, r * 0.1, true);
+      g.fillText(String(Math.abs(k)), ...at(x, y, slipAt(k), r * 0.82));
     }
   }
-  // Upper (slip) scale.
-  for (let k = -3; k <= 3; k += 1) {
-    const a = k * 10 * DEG;
-    g.strokeStyle = k === 0 ? LUMINOUS : GREEN;
-    g.lineWidth = 1.5;
+  for (let k = -20; k <= 20; k += 2.5) {
+    g.lineWidth = 1;
     g.beginPath();
-    g.moveTo(...at(x, y, a, r * 0.92));
-    g.lineTo(...at(x, y, a, r * 0.84));
+    g.moveTo(...at(x, y, slipAt(k), r * 0.72));
+    g.lineTo(...at(x, y, slipAt(k), r * 0.76));
     g.stroke();
   }
-  g.fillStyle = GREEN;
-  font(g, r * 0.09, true);
-  for (const s of [-1, 1]) {
-    g.fillText('SIDE', x + s * r * 0.48, y - r * 0.5);
-    g.fillText('SLIP', x + s * r * 0.48, y - r * 0.39);
-    g.fillText('TURN', x + s * r * 0.56, y + r * 0.5);
+  // Lower (turn) scale: a right turn swings the lower needle's tip to the right.
+  const turnAt = (k) => Math.PI - k * perRate;
+  arc(turnAt(4.5), turnAt(-4.5), r * 0.72);
+  for (let k = -4; k <= 4; k += 1) {
+    g.strokeStyle = '#f2f2ee';
+    g.lineWidth = Math.max(1, r * 0.02);
+    g.beginPath();
+    g.moveTo(...at(x, y, turnAt(k), r * 0.72));
+    g.lineTo(...at(x, y, turnAt(k), r * 0.65));
+    g.stroke();
+    if (k) {
+      g.fillStyle = '#f2f2ee';
+      font(g, r * 0.1, true);
+      g.fillText(String(Math.abs(k)), ...at(x, y, turnAt(k), r * 0.83));
+    }
   }
+  // Fixed indices at the top and bottom centre.
   g.fillStyle = LUMINOUS;
-  font(g, r * 0.24, true);
-  g.fillText('L', x - r * 0.55, y + r * 0.02);
-  g.fillText('R', x + r * 0.55, y + r * 0.02);
-  // Triangular indices at top and bottom centre.
   for (const s of [-1, 1]) {
     g.beginPath();
-    g.moveTo(x, y + s * r * 0.8);
-    g.lineTo(x - r * 0.05, y + s * r * 0.92);
-    g.lineTo(x + r * 0.05, y + s * r * 0.92);
+    g.moveTo(x, y + s * r * 0.66);
+    g.lineTo(x - r * 0.04, y + s * r * 0.76);
+    g.lineTo(x + r * 0.04, y + s * r * 0.76);
     g.fill();
   }
-  // Needles: slip up, turn down.
-  const needle = (angle, length) => {
+  // Lettering.
+  g.fillStyle = '#f2f2ee';
+  font(g, r * 0.075, true);
+  for (const s of [-1, 1]) {
+    g.fillText('SIDE', x + s * r * 0.62, y - r * 0.38);
+    g.fillText('SLIP', x + s * r * 0.62, y - r * 0.29);
+  }
+  g.fillStyle = LUMINOUS;
+  font(g, r * 0.2, true);
+  g.fillText('L', x - r * 0.62, y);
+  g.fillText('R', x + r * 0.62, y);
+  for (const s of [-1, 1]) {
+    font(g, r * 0.14, true);
+    g.fillStyle = LUMINOUS;
+    g.fillText('T', x + s * r * 0.62 - r * 0.1, y + r * 0.27);
+    font(g, r * 0.08, true);
+    g.fillStyle = '#f2f2ee';
+    g.fillText('URN', x + s * r * 0.62 + r * 0.04, y + r * 0.29);
+  }
+  // The grey centre and the needles: white bars with yellow diamonds near the tips.
+  g.fillStyle = '#3c3c3a';
+  g.beginPath();
+  g.arc(x, y, r * 0.24, 0, Math.PI * 2);
+  g.fill();
+  const needle = (angle) => {
     g.save();
     g.translate(x, y);
     g.rotate(angle);
+    g.fillStyle = '#f6f6f2';
+    g.fillRect(-r * 0.035, -r * 0.56, r * 0.07, r * 0.42);
     g.fillStyle = LUMINOUS;
     g.beginPath();
-    g.moveTo(-r * 0.03, 0);
-    g.lineTo(0, -length);
-    g.lineTo(r * 0.03, 0);
+    g.moveTo(0, -r * 0.7);
+    g.lineTo(-r * 0.055, -r * 0.6);
+    g.lineTo(0, -r * 0.5);
+    g.lineTo(r * 0.055, -r * 0.6);
+    g.closePath();
+    g.fill();
+    g.fillStyle = '#151515';
+    g.beginPath();
+    g.moveTo(0, -r * 0.66);
+    g.lineTo(-r * 0.025, -r * 0.6);
+    g.lineTo(0, -r * 0.54);
+    g.lineTo(r * 0.025, -r * 0.6);
     g.closePath();
     g.fill();
     g.restore();
   };
-  needle(Math.max(-0.5, Math.min(0.5, -sideG / 0.25 * 0.3)), r * 0.78);
-  needle(Math.PI - Math.max(-4.5, Math.min(4.5, turnRate / RATE_ONE)) * perRate, r * 0.78);
-  g.fillStyle = '#1b1b19';
-  g.beginPath();
-  g.arc(x, y, r * 0.16, 0, Math.PI * 2);
-  g.fill();
+  needle(Math.max(-0.6, Math.min(0.6, (-sideG / 0.25) * 0.3)));
+  needle(turnAt(Math.max(-4.5, Math.min(4.5, turnRate / RATE_ONE))));
   if (title) caption(g, x, y, r, title);
 }

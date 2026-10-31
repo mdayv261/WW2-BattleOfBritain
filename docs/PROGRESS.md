@@ -18,6 +18,21 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
 
+## Hurricane and Spitfire panel from the reference picture (1 Nov 2026)
+
+**Done** (D86):
+- the Spitfire I panel of the product owner's reference picture, redrawn in code, for both RAF fighters;
+- working: flight and engine instruments, trim gauge, UP/DOWN indicator, flap lever, clock (local time);
+- the rest shows normal operation;
+- the green and orange bands kept;
+- the MAP gauge removed;
+- tests in `tests/ui/rafPanel.test.js`.
+
+**Known issues:**
+- on screen the instruments are smaller than on the old strip panel (the whole panel is shown, kept below the sight);
+- the Hurricane uses the Spitfire's panel (flagged);
+- the fuel gauge is static until fuel use is modelled.
+
 ## RAF engine gauges (28 Oct 2026)
 
 **Done** (D85):

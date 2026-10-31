@@ -39,4 +39,6 @@ export const merlin3 = {
   // Normal boost range, the boost and manifold pressure gauges' green band (D85): +2¼ (cruising, weak mixture) to
   // +6¼ lb/sq in (climbing and all-out), absolute, Pa (S33).
   boostNormal: { from: 116838, to: 144417 },
+  // Oil pressure (Pa), the panel's oil pressure gauge (D86): normal 60 lb/sq in, emergency minimum (5 min) 45 (S33).
+  oilPressure: { normal: 413685, emergencyMinimum: 310264 },
 };
