@@ -2520,12 +2520,17 @@ stands in front of the panel's top. From the foot up:
 - the BASE ring (FEET 100-80-60-40-30) and the RANGE ring (YARDS 1.5-6), with label plates, figures and knurled thumb
   wheels each side, and the side bracket;
 - the collar, the lamp housing's cone and deep top ring;
-- the two cranked arms.
+- the two short brackets holding the glass.
 
 Proportions are the picture's; the finish is black anodised with soft highlights.
 
-**The glass:** the picture has none. The real sight's tinted reflector plate between the arms is drawn, a little wider
-than the arms' gap and as tall, so the 100-mil ring (D33 estimate) fits on it.
+**The glass:** the first picture has none. After the product owner's photograph of the sight with its glass:
+- the glass is held by its lower edge in slots in two short, straight brackets at the top ring's rim (first drawn as tall
+  cranked arms, as the render's);
+- the glass is wider than the top ring, standing out beyond both brackets and well above them, with its cut top edge
+  catching the light;
+- it is big enough for the 100-mil ring (D33 estimate);
+- the 3D sight has the same short brackets and wider glass.
 
 **Placing:**
 - the glass centred on the middle of the view (the guns' line looking ahead);

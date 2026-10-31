@@ -44,13 +44,17 @@ describe('GM 2 reflector sight placement (D87)', () => {
       expect(p.foot).toBeGreaterThan(top);
       expect(p.foot).toBeLessThanOrEqual(top + ((414 - 31) / 82) * r + 1e-6);
       // Clear of the voltmeter, to its right.
-      const widest = Math.max(SIGHT.top.w / 2, SIGHT.arms.x + 32 + SIGHT.arms.w, SIGHT.block.w / 2);
+      const widest = Math.max(SIGHT.top.w / 2, SIGHT.glass.w / 2, SIGHT.brackets.x + SIGHT.brackets.w + 10, SIGHT.block.w / 2);
       expect(p.x + widest * p.k).toBeLessThan(w / 2 + ((1155 - 946) / 82) * r);
     }
     expect(P(946, 410)[0]).toBeCloseTo(0, 9); // the foot stands on the panel's centre line
   });
 
-  it('makes the glass big enough for the reticle\'s ring at the cockpit\'s field of view', () => {
+  it('makes the glass wider than the top ring, standing out beyond its brackets, and big enough for the ring', () => {
+    expect(SIGHT.glass.w).toBeGreaterThan(SIGHT.top.w);
+    expect(SIGHT.glass.w / 2).toBeGreaterThan(SIGHT.brackets.x + SIGHT.brackets.w + 10);
+    expect(SIGHT.glass.y[0]).toBe(SIGHT.brackets.slot); // its lower edge in the brackets' slots
+    expect(SIGHT.glass.y[1]).toBeGreaterThan(SIGHT.brackets.top + 150); // well above the brackets
     for (const [w, h] of SCREENS) {
       const { glass } = sightPlacement(w, h);
       const ring = (h / 2 / Math.tan((70 * Math.PI) / 360)) * Math.tan(aircraftById.spitfire.sight.ringMils / 2000);

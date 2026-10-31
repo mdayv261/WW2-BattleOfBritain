@@ -40,7 +40,7 @@ export function buildReticle(ac) {
 }
 
 /** The reflector glass: its distance ahead of the eye and its size (m), for each sight; the glass leans back 45°. */
-export const SIGHT_GLASS = { ahead: 0.55, revi: { width: 0.11, height: 0.12 }, raf: { width: 0.1, height: 0.09 } };
+export const SIGHT_GLASS = { ahead: 0.55, revi: { width: 0.11, height: 0.12 }, raf: { width: 0.12, height: 0.086 } }; // the GM 2's glass wider than its top ring (D87)
 
 /**
  * The sight body on the coaming just ahead of the pilot, with its tilted reflector glass. The glass is centred on the
@@ -76,7 +76,8 @@ export function buildSightBody(ac) {
 
 /**
  * The GM 2's body in 3D (D87), for looking round: the same parts as the square-on drawing (src/ui/reflectorSight.js),
- * simply shaped: mounting block, scale rings, collar, cone, deep top ring and the two arms either side of the glass.
+ * simply shaped: mounting block, scale rings, collar, cone, deep top ring and the two short brackets at its rim holding
+ * the glass's lower edge.
  * Sizes are estimates on the drawing's proportions (no drawing of the sight was found).
  */
 function gm2Body(group, eye) {
@@ -94,9 +95,9 @@ function gm2Body(group, eye) {
   part(new THREE.CylinderGeometry(0.03, 0.03, 0.015, 24), top - 0.073); // collar
   part(new THREE.CylinderGeometry(0.032, 0.032, 0.036, 24), top - 0.098); // RANGE and BASE rings
   part(new THREE.BoxGeometry(0.075, 0.04, 0.075), top - 0.136); // mounting block
-  for (const z of [-0.042, 0.042]) {
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.008, SIGHT_GLASS.raf.height + 0.01, 0.008), black);
-    arm.position.set(eye.x + SIGHT_GLASS.ahead, eye.y, z);
-    group.add(arm);
+  for (const z of [-0.045, 0.045]) {
+    const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.03, 0.008), black);
+    bracket.position.set(x, top + 0.015, z);
+    group.add(bracket);
   }
 }

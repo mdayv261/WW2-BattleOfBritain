@@ -22,7 +22,7 @@ Read this at the start of every session.
 
 **Done** (D87):
 - the Barr & Stroud GM 2 drawn square-on in front of the panel, after the product owner's reference picture, with its
-  reflector glass;
+  reflector glass held in two short brackets (the product owner's photograph);
 - the reticle only on the glass, on the guns' line;
 - a simple GM 2 shape in 3D for looking round;
 - tests in `tests/ui/reflectorSight.test.js`.

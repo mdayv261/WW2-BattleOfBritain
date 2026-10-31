@@ -1,8 +1,9 @@
 // The RAF reflector sight, Barr & Stroud GM 2 (D87), drawn square-on as the pilot sees it, after the product owner's
 // reference picture (a render, used only as the reference). From the foot up: the mounting block, the BASE ring (the
 // target's wingspan, FEET) and the RANGE ring (YARDS) with their knurled thumb wheels and the side bracket, the collar,
-// the lamp housing's cone and deep top ring, and the two cranked arms holding the reflector glass. The picture has no
-// glass; the real sight's tinted plate between the arms is drawn, and the reticle is seen only on it, where the guns'
+// the lamp housing's cone and deep top ring, and the two short brackets at the top ring's rim holding the reflector
+// glass by its lower edge in their slots (product owner's photograph of the sight, D87): the glass is wider than the top
+// ring, standing out beyond both brackets and well above them. The reticle is seen only on the glass, where the guns'
 // line falls (collimated: a small look round moves it within the glass).
 // It stands in front of the panel's top centre, on its own canvas above the panel's, and is shown in the cockpit view
 // while the pilot looks ahead (the 3D sight shows otherwise, src/render/gunsight.js).
@@ -23,8 +24,10 @@ export const SIGHT = {
   collar: { w: 228, y: [290, 345] },
   cone: { w: [196, 360], y: [345, 465] },
   top: { w: 380, y: [465, 600] },
-  glass: { w: 360, y: [604, 964] }, // a little wider than the arms' gap and as tall, so the reticle's ring fits on it
-  arms: { x: 165, w: 26, top: 994 },
+  // The glass: its lower edge in the brackets' slots, wider than the top ring and standing well above the brackets (the
+  // photograph), big enough for the reticle's ring.
+  glass: { w: 460, y: [652, 982] },
+  brackets: { x: 164, w: 30, foot: 585, slot: 652, top: 742 },
 };
 const GLASS_CENTRE = (SIGHT.glass.y[0] + SIGHT.glass.y[1]) / 2;
 const FOOT = [946, 410]; // the panel point (its picture pixels) the foot stands on: just above the blind-flying plate
@@ -85,7 +88,7 @@ export function drawSight(g, p, aim) {
     g.fillStyle = fill;
     g.fillRect(x - S(hw), Y(y1), S(2 * hw), S(y1 - y0));
   };
-  // The arms and the glass: drawn first so that the top ring stands in front of their feet.
+  // The glass and its brackets: drawn first so that the top ring stands in front of the brackets' feet.
   glassAndArms(g, p, aim, Y, S);
   // Mounting block with its bevelled foot.
   const b = SIGHT.block;
@@ -186,12 +189,12 @@ function scaleRing(g, x, ring, Y, S, k, { label, unit, figures, below }) {
   void k;
 }
 
-/** The reflector glass between the arms, the reticle on it (clipped to it), and the arms in front of its edges. */
+/** The reflector glass, the reticle on it (clipped to it), and the two brackets holding its lower edge. */
 function glassAndArms(g, p, aim, Y, S) {
   const { x, glass } = p;
-  // Glass: faintly tinted, a lighter edge and a soft diagonal reflection.
+  // Glass: faintly tinted, its cut edges catching the light (the top one most), a soft diagonal reflection.
   g.save();
-  roundRect(g, glass.x, glass.y, glass.w, glass.h, S(10));
+  roundRect(g, glass.x, glass.y, glass.w, glass.h, S(5));
   g.fillStyle = 'rgba(150, 185, 180, 0.16)';
   g.fill();
   g.clip();
@@ -203,31 +206,32 @@ function glassAndArms(g, p, aim, Y, S) {
   g.fillRect(glass.x, glass.y, glass.w, glass.h);
   if (aim) drawReticle(g, aim.x, aim.y, aim.ring, 'GM2');
   g.restore();
-  g.strokeStyle = 'rgba(200, 225, 220, 0.45)';
-  g.lineWidth = Math.max(1, S(3));
-  roundRect(g, glass.x, glass.y, glass.w, glass.h, S(10));
+  g.strokeStyle = 'rgba(200, 225, 220, 0.4)';
+  g.lineWidth = Math.max(1, S(2.5));
+  roundRect(g, glass.x, glass.y, glass.w, glass.h, S(5));
   g.stroke();
-  // The arms: up from the top ring, cranked outward, a tab at the top holding the glass.
-  const a = SIGHT.arms;
+  g.strokeStyle = 'rgba(235, 245, 245, 0.75)';
+  g.lineWidth = Math.max(1, S(5));
+  g.beginPath();
+  g.moveTo(glass.x + S(6), glass.y + S(2));
+  g.lineTo(glass.x + glass.w - S(6), glass.y + S(2));
+  g.stroke();
+  // The brackets: short straight posts at the top ring's rim, a stepped foot, the glass's edge in a slot on the inner
+  // face, a small lip at the top.
+  const b = SIGHT.brackets;
   for (const sx of [-1, 1]) {
     const px = (u) => x + sx * S(u);
-    g.fillStyle = '#111111';
-    g.beginPath();
-    g.moveTo(px(a.x), Y(560));
-    g.lineTo(px(a.x), Y(700));
-    g.lineTo(px(a.x + 32), Y(800));
-    g.lineTo(px(a.x + 32), Y(a.top - 20));
-    g.lineTo(px(a.x + 10), Y(a.top));
-    g.lineTo(px(a.x + 10 + a.w), Y(a.top));
-    g.lineTo(px(a.x + 32 + a.w), Y(a.top - 20));
-    g.lineTo(px(a.x + 32 + a.w), Y(800));
-    g.lineTo(px(a.x + a.w), Y(700));
-    g.lineTo(px(a.x + a.w), Y(560));
-    g.closePath();
-    g.fill();
+    const fill = (u0, u1, y0, y1, colour) => {
+      g.fillStyle = colour;
+      g.fillRect(Math.min(px(u0), px(u1)), Y(y1), Math.abs(px(u1) - px(u0)), S(y1 - y0));
+    };
+    fill(b.x - 6, b.x + b.w + 4, b.foot, b.slot + 18, '#101010'); // the stepped foot
+    fill(b.x, b.x + b.w, b.slot + 18, b.top, '#121212'); // the post
+    fill(b.x + b.w - 4, b.x + b.w + 10, b.top - 16, b.top, '#121212'); // the lip
+    fill(b.x + 7, b.x + 11, b.slot, b.top - 10, '#2c3a38'); // the slot, the glass's edge in it
     g.strokeStyle = '#3e3e3e';
     g.lineWidth = Math.max(1, S(2));
-    g.stroke();
+    g.strokeRect(Math.min(px(b.x), px(b.x + b.w)), Y(b.top), S(b.w), S(b.top - b.slot - 18));
   }
 }
 
