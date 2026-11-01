@@ -2992,6 +2992,10 @@ pixels (the D89 dial match), all bars thin with mitred joins and flat ends:
   corners. The side windows' lower frames keep their feet on the
   coaming where the posts stood before. Standing right of centre as photographed, the Revi's glass now overlaps the
   right post's edge.
+- **Heights:** at the product owner's request the hood's top frame stands 20% lower above the coaming than at first.
+  The cross bar is lowered about 16%, as far as it can go while staying above the Revi's glass (a full 20% would cross
+  its top). The braces stay at 45°. Every corner stays joined, because the posts, braces and hood sides are all worked
+  out from these heights.
 - **The hood's top frame:** flat with square corners, 20% narrower than #16's at the product owner's request. Its sides
   lean out more steeply going down so that they still meet the side windows where they did.
 - **Corner braces:** across the top corners at about 45° (removed for a while, then put back at the product owner's

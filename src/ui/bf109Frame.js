@@ -25,14 +25,16 @@ export const FRAME = {
   sides: { feet: [[383, 260.4], [783, 260.4]], slope: 1.02, width: 32 },
   // The hood's flat top frame: its height and its half-width about the windscreen's centre (the square corners; 20%
   // narrower than #16's at the product owner's request, D103).
-  top: { y: -285, half: 464, width: 28 },
+  // 20% lower above the coaming than at first (product owner, D103).
+  top: { y: -176, half: 464, width: 28 },
   // The hood's sides: from the top frame's corners, outward this many pixels for each pixel down (steeper than #16's, so
   // they still meet the side windows' lower frames where they did).
   hood: { slope: 0.247, width: 28 },
-  // The front pane's cross bar between the posts, just above the Revi's glass.
-  crossBar: { y: -111, width: 22 },
+  // The front pane's cross bar between the posts, just above the Revi's glass (lowered with the top frame as far as the
+  // glass allows, D103).
+  crossBar: { y: -53, width: 22 },
   // The 45° braces across the top corners: from the top frame `half` from the centre down to the hood's side at `y`.
-  braces: { half: 320, y: -110, width: 22 },
+  braces: { half: 320, y: 15, width: 22 }, // at 45° from the lowered top frame
   // The cowling MG 17s' muzzle flashes on the lip's top edge (product owner, D94): symmetric about the windscreen's
   // centre (the fuselage's centre line), well apart, left and right; their size.
   flashes: { x: [423, 743], size: 16 }, // between the posts' feet (D103)
