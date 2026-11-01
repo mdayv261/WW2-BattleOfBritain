@@ -17,6 +17,8 @@ const DULL_RED = '#5a1a14';
 export const selectorPosition = (v) => (v.gearSelected ? 'Aus' : 'Ein');
 // The handle's direction for each position (rad from pointing left, + down): the labels stand on an arc to its left.
 const SELECTOR_ANGLE = { Ein: -0.75, Ruhe: 0, Aus: 0.75 };
+/** The product owner's English labels beside the selector's up and down positions (D92). */
+export const SELECTOR_LABELS = { Ein: 'UP', Aus: 'DN' };
 
 /** Draws the lower panel's fittings; `at` is the panel's placer (src/ui/bf109Panel.js), `L` its layout. */
 export function drawBf109Lower(g, at, L, v) {
@@ -193,48 +195,54 @@ function arrowPlacard(g, b, s) {
 }
 
 /**
- * The undercarriage selector: its placard (Fahrwerk; Ein, Ruhe and Aus on an arc to the left; small print too fine to
- * read) and the handle through the round window, turned to `position`.
+ * The undercarriage selector: its placard (Fahrwerk; Ein, Ruhe and Aus down its left, with UP and DN beside Ein and Aus,
+ * the product owner's labels, D92; small print too fine to read) and the handle through the round window, turned to
+ * `position`. Sizes are in the placard's height, measured from its left and right edges.
  */
 function gearSelector(g, b, position) {
   placard(g, ...centre(b), { lines: [] });
-  const X = (f) => b.x + b.w * f;
+  const u = b.h;
+  const left = (f) => b.x + f * u;
+  const right = (f) => b.x + b.w - f * u;
   const Y = (f) => b.y + b.h * f;
-  text(g, 'Fahrwerk', X(0.72), Y(0.15), b.h * 0.17, INK, { bold: true });
+  text(g, 'Fahrwerk', right(0.49), Y(0.15), u * 0.17, INK, { bold: true });
   const words = { Ein: 0.15, Ruhe: 0.5, Aus: 0.85 };
-  for (const [word, fy] of Object.entries(words)) text(g, word, X(0.08), Y(fy), b.h * 0.15, INK, { align: 'left' });
+  for (const [word, fy] of Object.entries(words)) {
+    text(g, word, left(0.14), Y(fy), u * 0.15, INK, { align: 'left' });
+    if (SELECTOR_LABELS[word]) text(g, SELECTOR_LABELS[word], left(0.66), Y(fy), u * 0.15, INK, { bold: true, align: 'left' });
+  }
+  // The window, and the arc of the handle's travel round it.
+  const [cx, cy] = [right(0.84), Y(0.5)];
   g.strokeStyle = INK;
   g.lineWidth = 1;
   g.beginPath();
-  g.arc(X(0.62), Y(0.5), b.h * 0.45, Math.PI * 0.72, Math.PI * 1.28);
+  g.arc(cx + u * 0.18, cy, u * 0.45, Math.PI * 0.72, Math.PI * 1.28);
   g.stroke();
   g.globalAlpha = 0.5;
   for (const fy of [0.66, 0.78, 0.9]) {
     g.beginPath();
-    g.moveTo(X(0.66), Y(fy));
-    g.lineTo(X(0.94), Y(fy));
+    g.moveTo(right(0.6), Y(fy));
+    g.lineTo(right(0.11), Y(fy));
     g.stroke();
   }
   g.globalAlpha = 1;
-  // The window and the handle.
-  const [cx, cy] = [X(0.52), Y(0.5)];
   g.fillStyle = '#5e5a4a';
   g.beginPath();
-  g.arc(cx, cy, b.h * 0.27, 0, Math.PI * 2);
+  g.arc(cx, cy, u * 0.27, 0, Math.PI * 2);
   g.fill();
   const a = SELECTOR_ANGLE[position];
-  const reach = b.w * 0.36;
+  const reach = u * 0.56;
   const [hx, hy] = [cx - Math.cos(a) * reach, cy + Math.sin(a) * reach];
   g.strokeStyle = '#1a1b1d';
-  g.lineWidth = Math.max(3, b.h * 0.16);
+  g.lineWidth = Math.max(3, u * 0.16);
   g.lineCap = 'round';
   g.beginPath();
   g.moveTo(cx, cy);
   g.lineTo(hx, hy);
   g.stroke();
   g.lineCap = 'butt';
-  roundKnob(g, hx, hy, b.h * 0.13);
-  roundKnob(g, cx, cy, b.h * 0.16);
+  roundKnob(g, hx, hy, u * 0.13);
+  roundKnob(g, cx, cy, u * 0.16);
 }
 
 /** A small pull knob. */

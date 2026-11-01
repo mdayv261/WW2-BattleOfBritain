@@ -2640,7 +2640,8 @@ pass and the validation is unchanged.
   emergency pull (Notzug für Fahrwerk), the arrow placard, the hand pump lever and placard, the left lever with its
   Aus/Betrieb box, the four-lamp box marked SKK404-2 and the narrow Ein/Aus strip.
 - **Working:** the flight and engine instruments, the fuel contents (full: fuel use is not modelled), the clock and the
-  undercarriage selector: its handle points to Ein with the undercarriage selected up, Aus with it selected down.
+  undercarriage selector: its handle points to Ein with the undercarriage selected up, Aus with it selected down. UP and DN
+  were added beside them in D92.
 - **Shown only:** everything else. Placards are lettered where the picture can be read, grey lines where it cannot.
 - **Data added:** the fuel tank's 400 litres (`fuel.tank`, S16, S17), the fuel gauge's full scale.
 
@@ -2743,3 +2744,11 @@ and the Hurricane's approach speed.
 - **Bf 109:** box [808, 345, 866, 478] on #17, inside the upper plate's edge and clear of the front frame.
 
 The labels are in English, as the product owner wrote them.
+
+## D92. UP and DN on the Bf 109's undercarriage selector (1 Nov 2026, plan approved by the product owner)
+
+At the product owner's request the Fahrwerk selector's placard (D89) carries UP beside Ein and DN beside Aus, in bold,
+between the German words and the window (`SELECTOR_LABELS` in `src/ui/bf109Lower.js`). Ruhe has no English label. To
+leave room for them clear of the handle, the placard is drawn wider than on the restored panel, out to the left into the
+plain panel beside the coolant thermometer: box [775, 695, 900, 749], against #17's [805, 695, 900, 749]. The English
+labels and the wider placard are additions to the photographed panel.

@@ -18,6 +18,10 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## UP and DN on the Bf 109's undercarriage selector (1 Nov 2026)
+
+**Done** (D92): UP beside Ein and DN beside Aus on the Fahrwerk selector, its placard drawn a little wider for them.
+
 ## Pilot's speed cards (1 Nov 2026)
 
 **Done** (D91):

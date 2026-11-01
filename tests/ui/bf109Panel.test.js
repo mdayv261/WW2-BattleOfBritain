@@ -149,7 +149,7 @@ describe('Bf 109 panel drawing (D89)', () => {
     const g = recorder();
     bf109Panel(g, 1000, 0, 40, readings());
     for (const w of ['Landeklappen 250 km/h', 'Start', '20°', 'Landung', '40°', 'Achtung!', 'Staurohr', 'Reststand',
-      'Notzug', 'für Fahrwerk', 'Handpumpe', 'Fahrwerk', 'Ein', 'Ruhe', 'Aus', 'Kühlstoff', 'Hell', 'SKK404-2', 'Liter',
+      'Notzug', 'für Fahrwerk', 'Handpumpe', 'Fahrwerk', 'Ein', 'Ruhe', 'Aus', 'UP', 'DN', 'Kühlstoff', 'Hell', 'SKK404-2', 'Liter',
       'U/min', 'EIN', 'AUS']) {
       expect(g.texts, w).toContain(w);
     }

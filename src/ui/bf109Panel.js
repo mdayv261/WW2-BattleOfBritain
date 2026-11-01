@@ -77,7 +77,7 @@ export const BF109_PANEL = {
     speedCard: [808, 345, 866, 478], cableHook: [632, 382, 656, 400], // the pilot's speed card in the deviation card's place (D91)
     blank: [499, 607, 576, 687], breakers: [672, 607, 750, 687], coolantPlacard: [672, 696, 750, 721],
     reserve: [480, 702, 532, 719], reserveLamp: [552, 692, 602, 718], lampBox: [252, 692, 425, 800],
-    fuelCock: [125, 750, 225, 847], arrowPlacard: [812, 662, 910, 682], gearSelector: [805, 695, 900, 749],
+    fuelCock: [125, 750, 225, 847], arrowPlacard: [812, 662, 910, 682], gearSelector: [775, 695, 900, 749],
     emergency: [812, 772, 908, 795], handPump: [895, 616, 948, 628], pumpSlot: [955, 600, 970, 690],
     strip: [957, 750, 995, 830],
   },
