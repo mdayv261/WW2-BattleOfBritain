@@ -169,8 +169,9 @@ describe('Spitfire frame, as the Hurricane\'s with #29\'s differences (D102)', (
   const H = RAF_FRAMES.hurricane;
   const lean = (F) => Math.atan2(F.coaming.half - F.outer.half, legFoot(F, 1)[1] - F.outer.spring) * 180 / Math.PI;
 
-  it('shares the Hurricane\'s armoured windscreen, coaming, sills and raised GM 2', () => {
-    expect(S.windscreen).toEqual(H.windscreen);
+  it('shares the Hurricane\'s coaming, sills and raised GM 2; its armoured windscreen narrower and lower', () => {
+    expect(S.windscreen.half).toBeLessThan(H.windscreen.half);
+    expect(S.windscreen.top).toBeGreaterThan(H.windscreen.top);
     expect(S.coaming).toEqual(H.coaming);
     expect(S.sills).toEqual(H.sills);
     expect(RAF_AIM.spitfire).toBe(RAF_AIM.hurricane);

@@ -23,8 +23,8 @@ const FAR = 4000; // picture pixels: far enough to run off any screen
 
 export const RAF_FRAMES = {
   spitfire: {
-    // The armoured windscreen, as the Hurricane's (D102).
-    windscreen: { half: 336, top: -687, width: 60 },
+    // The armoured windscreen: as the Hurricane's, then narrower between its posts and lower (product owner, D102).
+    windscreen: { half: 286, top: -637, width: 60 },
     // The outer windscreen frame: legs standing on the coaming's ends (`foot` either side of the axis), leaning in about
     // 20° to a flat top bar at `spring`, `half` either side of the axis, the corners rounded over `corner`.
     outer: { foot: 774, half: 303, spring: -780, top: -780, flat: true, corner: 110, width: 56 },

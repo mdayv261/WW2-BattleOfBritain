@@ -2957,7 +2957,9 @@ with the minor differences of their picture #29. #29 is a screenshot of a Spitfi
 #26: a shape guide only.
 
 **Shared with the Hurricane** (`RAF_FRAMES.spitfire`, `src/ui/rafFrame.js`):
-- the thin frames and the armoured windscreen;
+- the thin frames;
+- the armoured windscreen, made narrower between its posts and lower at the product owner's request (posts 3.5 dial
+  radii either side of the sight, top about 8.1 dial radii above the panel);
 - the coaming close round the panel;
 - the fuselage sides: sills at the Bf 109's slope, side walls and the dark interior;
 - the GM 2 raised, the guns' line at 45% of the screen.
