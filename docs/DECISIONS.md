@@ -2872,3 +2872,36 @@ guns, the reticle and the physics are unchanged.
 
 **Deviation, flagged:** on the real aircraft the pilot sits on the centre line, so the arc would centre on the guns'
 line. Here the arc follows the drawing.
+
+## D99. Hurricane and Spitfire front cockpit views, as the Bf 109's (1 Nov 2026, plan approved by the product owner)
+
+At the product owner's request the Hurricane and Spitfire get the Bf 109's front-view treatment (D90, D97, D98).
+- **Their frames are drawn with the panel:** `RAF_FRAMES` and `drawRafFrame` in `src/ui/rafFrame.js`, drawn on the
+  sight's canvas before the GM 2.
+- **No nose or wings** in the front view, and no 3D windscreen; they show again when looking round.
+- **The propeller arc stays,** its spinner hidden there. The GM 2 is on the panel's centre line, the middle of the
+  screen, so the arc needs no shift.
+
+**The pictures,** shape guides only, nothing copied:
+- **#25 and #27:** paintings of a Hurricane cockpit, #27 the main guide.
+- **#26:** a screenshot of a Spitfire cockpit from another game, flagged as such.
+
+**The frames,** measured against each picture's dials and sight in the RAF panel's picture pixels:
+- **Both:**
+  - the coaming's lip along the panel's arched top;
+  - the armoured windscreen's two posts on the coaming either side of the GM 2, joined over it by a rounded arch.
+- **Spitfire (light grey metal):**
+  - a wide arch, its top about 8 dial radii above the panel;
+  - two straight canopy bows meeting above the view and running down past the panel's lower corners;
+  - short struts from the arch's shoulders to them.
+- **Hurricane (grey-green, as both paintings):**
+  - a taller arch, about 12 dial radii;
+  - a wide canopy hoop rounding over the top, its legs running down outside the panel;
+  - level struts from the windscreen's posts across to it.
+
+**Departures from the plan:** no interior fill is drawn round the RAF panel. All three pictures show the landscape
+through the side windows beside it, so the ground shows there.
+
+**Deviations, flagged:**
+- the shapes come from paintings and another game's screenshot, not from drawings;
+- the Hurricane uses the Spitfire's panel (D86).

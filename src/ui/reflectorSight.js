@@ -17,6 +17,8 @@ import { drawReticle } from './reticle.js';
 import { reviPlacement, drawRevi } from './reviSight.js';
 import { BF109_PANEL, placer, plateTop } from './bf109Panel.js';
 import { drawFrontFrame } from './bf109Frame.js';
+import { RAF_FRAMES, drawRafFrame } from './rafFrame.js';
+import { placer as rafPlacer } from './rafPanel.js';
 
 // The sight square-on, in the picture's pixels: x from its axis, y up from its foot.
 export const SIGHT = {
@@ -294,6 +296,14 @@ export class ReflectorSight {
       drawFrontFrame(g, placer(width / 2, plateTop(height, r), r), flashes);
       drawRevi(g, reviPlacement(width, height), aim);
     }
-    else drawSight(g, sightPlacement(width, height), aim);
+    else {
+      // The Hurricane's or Spitfire's front frame on the panel's top, then the GM 2 in front of it (D99).
+      const frame = ac && RAF_FRAMES[ac.id];
+      if (frame) {
+        const r = panelRadius(SPITFIRE_PANEL, width, height);
+        drawRafFrame(g, rafPlacer(width / 2, height - (SPITFIRE_PANEL.height * r + 6), r), frame);
+      }
+      drawSight(g, sightPlacement(width, height), aim);
+    }
   }
 }

@@ -56,7 +56,8 @@ export class TestView {
    * the view's pixels per radian, at the hub's distance ahead of the eye.
    */
   screwShift(width, height) {
-    const offset = FUSELAGE_CENTRE_OFFSET * panelRadius(BF109_PANEL, width, height);
+    if (!this.fuselageOffset) return 0;
+    const offset = this.fuselageOffset * panelRadius(BF109_PANEL, width, height);
     const perRadian = height / 2 / Math.tan((this.rig.camera.fov * Math.PI) / 360);
     const ahead = this.aircraft.screws[0].group.position.x - this.eyeX;
     return (offset / perRadian) * ahead;
@@ -67,7 +68,9 @@ export class TestView {
     this.aircraft = buildAircraftModel(ac, DESIGNS[ac.id]);
     this.model = this.aircraft.group;
     this.cockpit = buildCockpitFrame(ac);
-    this.frameDrawn = ac.id === 'bf109e4'; // the Bf 109's front frame is drawn with its panel (D90)
+    // The Bf 109's, Hurricane's and Spitfire's front frames are drawn with their panels (D90, D99).
+    this.frameDrawn = ['bf109e4', 'hurricane', 'spitfire'].includes(ac.id);
+    this.fuselageOffset = ac.id === 'bf109e4' ? FUSELAGE_CENTRE_OFFSET : 0; // the RAF's GM 2 is on the centre line
     this.rig.aim = ac.id === 'bf109e4' ? BF109_AIM : 0.5; // its guns' line above the middle of the screen (D93)
     this.frontView = false;
     // The wings hide in the front view; the airscrew stays, its arc spinning ahead of the panel (D97).
