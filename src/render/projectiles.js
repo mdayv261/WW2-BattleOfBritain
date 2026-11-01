@@ -79,5 +79,5 @@ export function buildMuzzleFlashes(armament) {
       if (f.mesh.visible) f.mesh.position.copy(f.gun.position).addScaledVector(f.gun.bore, FLASH_AHEAD);
     }
   };
-  return { group, update, material };
+  return { group, update, material, flashes };
 }

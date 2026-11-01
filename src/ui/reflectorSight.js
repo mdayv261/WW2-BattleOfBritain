@@ -249,8 +249,11 @@ export class ReflectorSight {
     document.body.appendChild(this.canvas);
   }
 
-  /** Redraws the sight (or clears it) for the frame: `aim` the guns' line on the screen, or null; `ac` the aircraft. */
-  update(show, aim, ac = null) {
+  /**
+   * Redraws the sight (or clears it) for the frame: `aim` the guns' line on the screen, or null; `ac` the aircraft;
+   * `flashes` which of the Bf 109's MG 17s are flashing ({ left, right }, drawn on its coaming, D94).
+   */
+  update(show, aim, ac = null, flashes = undefined) {
     const width = window.innerWidth;
     const height = window.innerHeight;
     this.canvas.style.display = show ? 'block' : 'none';
@@ -266,7 +269,7 @@ export class ReflectorSight {
     if (ac && squareOnSight(ac) === 'Revi') {
       // The Bf 109's front frame on the panel's top, then the Revi in front of it (D90).
       const r = panelRadius(BF109_PANEL, width, height);
-      drawFrontFrame(g, placer(width / 2, plateTop(height, r), r));
+      drawFrontFrame(g, placer(width / 2, plateTop(height, r), r), flashes);
       drawRevi(g, reviPlacement(width, height), aim);
     }
     else drawSight(g, sightPlacement(width, height), aim);

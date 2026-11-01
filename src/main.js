@@ -16,6 +16,7 @@ import { Hud } from './ui/hud.js';
 import { FrameRate } from './ui/frameRate.js';
 import { InstrumentPanel } from './ui/instruments.js';
 import { ReflectorSight, showSight, boresight } from './ui/reflectorSight.js';
+import { mgFlashes } from './ui/bf109Frame.js';
 import { JoystickPanel } from './ui/joystickPanel.js';
 import { aircraftList } from './aircraft/index.js';
 import { loadTerrain } from './world/terrain.js';
@@ -109,7 +110,7 @@ renderer.setAnimationLoop((now) => {
   const sight2D = showSight(sim, view.rig);
   view.showSight2D(sight2D);
   const aim = sight2D ? boresight(camera, view.model.quaternion, window.innerWidth, window.innerHeight, sim.ac.sight.ringMils) : null;
-  sight.update(sight2D, aim, sim.ac);
+  sight.update(sight2D, aim, sim.ac, mgFlashes(sim)); // the Bf 109's MG 17 flashes on its coaming (D94)
   joyPanel.update();
   renderer.render(scene, camera);
   frameRate.work(performance.now() - now);

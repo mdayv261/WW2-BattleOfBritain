@@ -15,7 +15,29 @@ export const FRAME = {
   posts: { feet: [[333, 290], [833, 290]], width: 42, lean: 0.114 },
   // The side frames: from the posts' feet, outward this many pixels for each pixel down; their width.
   sides: { slope: 1.156, width: 46 },
+  // The cowling MG 17s' muzzle flashes on the lip's top edge (product owner, D94): symmetric about the windscreen's
+  // centre (the fuselage's centre line), well apart, left and right; their size.
+  flashes: { x: [393, 773], size: 16 },
 };
+/** How long a muzzle flash shows after each shot, s: as the 3D flashes (src/render/projectiles.js). */
+export const FLASH_TIME = 0.03;
+
+/** Which cowling MG 17s are flashing now: { left, right }, from the simulation's synchronised guns. */
+export function mgFlashes(sim) {
+  const out = { left: false, right: false };
+  for (const gun of sim.armament ?? []) {
+    if (!gun.spec.synchronised || sim.plane.time - gun.lastShot >= FLASH_TIME) continue;
+    out[gun.spec.z < 0 ? 'left' : 'right'] = true;
+  }
+  return out;
+}
+
+/** A muzzle flash's point on the lip's top edge (picture pixels): `side` -1 left, +1 right. */
+export function flashPoint(side) {
+  const { cx, a, thick } = FRAME.arch;
+  const x = FRAME.flashes.x[side < 0 ? 0 : 1];
+  return archPoint(2 * Math.PI - Math.acos((x - cx) / (a + thick / 2)), -thick / 2);
+}
 const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
 
@@ -59,8 +81,11 @@ export function drawInterior(g, at) {
   g.fill();
 }
 
-/** The side frames, the posts and the coaming's lip, on the sight's canvas before the Revi. `at` is the panel's placer. */
-export function drawFrontFrame(g, at) {
+/**
+ * The side frames, the posts and the coaming's lip, on the sight's canvas before the Revi, and the MG 17s' muzzle
+ * flashes on the lip (`flashes`: { left, right }, D94). `at` is the panel's placer.
+ */
+export function drawFrontFrame(g, at, flashes = { left: false, right: false }) {
   const { feet } = FRAME.posts;
   const y0 = feet[0][1];
   for (const side of [-1, 1]) {
@@ -99,6 +124,31 @@ export function drawFrontFrame(g, at) {
     g.arc(ex + a * scale * Math.cos(t), ey + b * scale * Math.sin(t), Math.max(1, thick * scale * 0.09), 0, Math.PI * 2);
     g.fill();
   }
+  for (const [side, on] of [[-1, flashes.left], [1, flashes.right]]) {
+    if (on) muzzleFlash(g, ...at.xy(flashPoint(side)), at.len(FRAME.flashes.size));
+  }
+}
+
+/** A muzzle flash: a short yellow-orange star with a soft glow, at (x, y) of radius `size` (canvas px). */
+function muzzleFlash(g, x, y, size) {
+  const glow = g.createRadialGradient(x, y, 0, x, y, size * 1.6);
+  glow.addColorStop(0, 'rgba(255, 245, 200, 0.95)');
+  glow.addColorStop(0.35, 'rgba(255, 190, 80, 0.75)');
+  glow.addColorStop(1, 'rgba(255, 140, 40, 0)');
+  g.fillStyle = glow;
+  g.beginPath();
+  g.arc(x, y, size * 1.6, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#fff1c4';
+  g.beginPath();
+  for (let k = 0; k < 12; k += 1) {
+    const a = (k / 12) * Math.PI * 2;
+    const r = k % 2 ? size * 0.35 : size;
+    if (k) g.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r);
+    else g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r);
+  }
+  g.closePath();
+  g.fill();
 }
 
 /** A frame bar from point a to point b (canvas px) of width w: the `light` face with a `dark` band along its inner half. */

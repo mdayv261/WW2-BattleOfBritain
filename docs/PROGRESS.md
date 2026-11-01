@@ -18,6 +18,11 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 109 MG 17 flashes on the coaming; hood bars removed (1 Nov 2026)
+
+**Done** (D94): the MG 17 flashes on top of the coaming lip in the front view, well apart; the hood's cross bar and
+corner braces removed.
+
 ## Whole Bf 109 panel in view; undercarriage and flap levers (1 Nov 2026)
 
 **Done** (D93):

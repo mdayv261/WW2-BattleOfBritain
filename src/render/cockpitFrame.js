@@ -43,9 +43,9 @@ function bar(from, to, thickness, material) {
 
 /**
  * The Bf 109 E's framed windscreen and hood as the product owner's photograph shows them from the seat (D41): the flat
- * front pane between two posts, crossed by a bar a little above eye level; the wide front arch of the hood, its sides
- * leaning in to a top bar; a diagonal brace across each upper corner; and the top rails running back over the head.
- * Positions are from the pilot's eye (m), judged from the photograph.
+ * front pane between two posts; the wide front arch of the hood, its sides leaning in to a top bar; and the top rails
+ * running back over the head. The front pane's cross bar and the diagonal braces across the upper corners were removed
+ * at the product owner's request (D94). Positions are from the pilot's eye (m), judged from the photograph.
  */
 function bf109Hood(eye, x0, base) {
   const group = new THREE.Group();
@@ -53,16 +53,12 @@ function bf109Hood(eye, x0, base) {
   const t = 0.02; // tube thickness
   const top = eye.y + 0.32;
   const xTop = x0 - 0.45;
-  const bar1 = eye.y + 0.12; // the cross bar of the front pane
-  const xBar = x0 - 0.25;
   for (const s of [-1, 1]) {
     group.add(bar([x0, base, s * 0.2], [xTop, top, s * 0.19], t, grey)); // front pane posts
     group.add(bar([x0 - 0.05, base - 0.02, s * 0.5], [xTop, top, s * 0.4], t, grey)); // sides of the front arch
-    group.add(bar([x0 - 0.3, eye.y + 0.12, s * 0.45], [xTop, top, s * 0.24], t, grey)); // corner braces
     group.add(bar([xTop, top, s * 0.38], [eye.x - 0.5, top, s * 0.36], t, grey)); // top rails back over the head
     group.add(bar([x0 - 0.05, base - 0.02, s * 0.5], [eye.x - 0.5, base - 0.02, s * 0.5], t, grey)); // sills
   }
-  group.add(bar([xBar, bar1, -0.2], [xBar, bar1, 0.2], t, grey));
   group.add(bar([xTop, top, -0.4], [xTop, top, 0.4], t, grey));
   return group;
 }

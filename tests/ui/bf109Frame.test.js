@@ -1,10 +1,13 @@
 // The Bf 109's front cockpit frame (D90), as the product owner's picture of the front view (#24): the coaming's lip
 // arching over the panel's top meets the windscreen posts' feet and clears the clock; the posts and side frames clear
 // every dial and the side frames pass outside both plates; the guns' line raised by a lens shift (D93); and while the front view
-// shows, the 3D windscreen, nose, wings and airscrew are hidden, showing again when the pilot looks round.
+// shows, the 3D windscreen, nose, wings and airscrew are hidden, showing again when the pilot looks round; the MG 17s
+// flash on the coaming instead of in 3D (D94).
 import { describe, it, expect, beforeAll } from 'vitest';
 import * as THREE from 'three';
-import { FRAME, archAngles, archPoint, sideX, postX } from '../../src/ui/bf109Frame.js';
+import { FRAME, FLASH_TIME, archAngles, archPoint, sideX, postX, flashPoint, mgFlashes } from '../../src/ui/bf109Frame.js';
+import { REVI } from '../../src/ui/reviSight.js';
+import { Simulation } from '../../src/core/simulation.js';
 import { BF109_PANEL, BF109_AIM, plateTop } from '../../src/ui/bf109Panel.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 
@@ -64,6 +67,35 @@ describe('Bf 109 front frame (D90)', () => {
   });
 });
 
+describe('Bf 109 MG 17 flashes on the coaming (D94)', () => {
+  it('stand on the lip, symmetric about its centre, inside the posts, clear of the Revi, well apart', () => {
+    const [l, r] = [flashPoint(-1), flashPoint(1)];
+    expect(l[0] + r[0]).toBeCloseTo(2 * FRAME.arch.cx, 6);
+    expect(l[1]).toBeCloseTo(r[1], 6);
+    // On the lip's top edge: half its thickness outside its middle line.
+    for (const p of [l, r]) {
+      const { cx, cy, a, b, thick } = FRAME.arch;
+      expect(((p[0] - cx) / (a + thick / 2)) ** 2 + ((p[1] - cy) / (b + thick / 2)) ** 2).toBeCloseTo(1, 6);
+    }
+    expect(l[0] - FRAME.flashes.size).toBeGreaterThan(FRAME.posts.feet[0][0] + FRAME.posts.width / 2);
+    expect(r[0] + FRAME.flashes.size).toBeLessThan(FRAME.posts.feet[1][0] - FRAME.posts.width / 2);
+    expect(r[0] - FRAME.flashes.size).toBeGreaterThan(660 + REVI.body.x[1] * 45); // right of the Revi's body
+    expect((r[0] - l[0]) / 45).toBeGreaterThan(6); // dial radii apart
+  });
+
+  it('show for a moment after each MG 17 shot, left and right separately, never for the cannon', () => {
+    const sim = new Simulation(aircraftById.bf109e4, 'air');
+    expect(mgFlashes(sim)).toEqual({ left: false, right: false });
+    const left = sim.armament.find((g) => g.id === 'mg17Left');
+    left.lastShot = sim.plane.time;
+    expect(mgFlashes(sim)).toEqual({ left: true, right: false });
+    left.lastShot = sim.plane.time - FLASH_TIME;
+    expect(mgFlashes(sim)).toEqual({ left: false, right: false });
+    for (const g of sim.armament.filter((x) => !x.spec.synchronised)) g.lastShot = sim.plane.time;
+    expect(mgFlashes(sim)).toEqual({ left: false, right: false });
+  });
+});
+
 describe('the 3D cockpit while the front frame shows (D90)', () => {
   let TestView;
   beforeAll(async () => {
@@ -74,7 +106,8 @@ describe('the 3D cockpit while the front frame shows (D90)', () => {
   });
 
   const view = (id) => {
-    const v = new TestView({ add() {}, remove() {} }, new THREE.PerspectiveCamera(70, 2, 0.1, 1000));
+    const sea = Object.assign(new THREE.Object3D(), { userData: { tile: 100 } });
+    const v = new TestView(new THREE.Scene(), new THREE.PerspectiveCamera(70, 2, 0.1, 1000), sea);
     v.setAircraft(aircraftById[id]);
     return v;
   };
@@ -108,6 +141,20 @@ describe('the 3D cockpit while the front frame shows (D90)', () => {
     expect(cam.fov).toBe(70); // no change of field of view
     v.rig.shiftPicture(0.5);
     expect(new THREE.Vector3(100, 0, 0).project(cam).y).toBeCloseTo(0, 6);
+  });
+
+  it('hides the MG 17s\' 3D flashes in the front view (they flash on the coaming), not the cannon\'s (D94)', () => {
+    const v = view('bf109e4');
+    const sim = new Simulation(aircraftById.bf109e4, 'air');
+    for (const g of sim.armament) g.lastShot = sim.plane.time;
+    v.showSight2D(true);
+    v.update(sim, 1, 0.01);
+    const shown = (sync) => v.flashes.flashes.filter((f) => !!f.gun.spec.synchronised === sync).map((f) => f.mesh.visible);
+    expect(shown(true)).toEqual([false, false]);
+    expect(shown(false).every(Boolean)).toBe(true);
+    v.showSight2D(false); // looking round
+    v.update(sim, 1, 0.01);
+    expect(shown(true)).toEqual([true, true]);
   });
 
   it('keeps a lost wing hidden, and leaves the Spitfire\'s view as it was', () => {

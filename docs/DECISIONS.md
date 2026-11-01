@@ -1411,6 +1411,8 @@ Placed as the product owner asked:
 
 ## D67. Guns and ballistics (27 Oct 2026, Phase 5 checkpoint 3)
 
+**Since D94 (1 Nov 2026):** in the Bf 109's front view the MG 17s flash on the drawn coaming; the guns' positions are unchanged.
+
 **Ballistics** (`src/weapons/ballistics.js`):
 - **Model:** each round flies with gravity and air drag, with the ISA density and speed of sound at its height.
 - **Drag:** each round's drag against Mach number is fitted to its sourced range table (`npm run fit:ballistics`):
@@ -2777,3 +2779,18 @@ lower Fahrwerk selector (probably the hand pump's valve), whose handle now rests
 **Deviation, flagged to the product owner:** the left ball lever swings with the flaps, from its photographed 39° out
 from the vertical with the flaps up to 20° with them fully down. The real Bf 109 E's flaps were set by a handwheel
 beside the seat; the lever stands in for it so that the flap setting shows on the panel (their choice).
+
+## D94. Bf 109 MG 17 flashes on the coaming; hood cross bar and corner braces removed (1 Nov 2026, plan approved by the product owner)
+
+**MG 17 flashes:** at the product owner's request the cowling MG 17s' muzzle flashes show on top of the coaming lip
+(D90) in the front view, well apart, instead of beside the Revi's glass.
+- **Where:** symmetric about the windscreen's centre (the fuselage's centre line, where the real guns sat), at x 393 and
+  773 on the panel picture: about 8.4 dial radii apart, inside the windscreen posts, the right one clear of the Revi.
+- **How:** drawn with the front frame (`flashPoint`, `mgFlashes` in `src/ui/bf109Frame.js`), each for 0.03 s after its
+  gun's shot, as the 3D flashes. The cowling guns' 3D flashes are hidden while the front view shows and show again when
+  looking round; the cannon's are unchanged.
+- **The guns themselves don't move:** their positions (D67) still set where the rounds start and how they are
+  harmonised, so the ballistics are unchanged.
+
+**Hood:** at the product owner's request the 3D Bf 109 hood seen when looking up or round no longer has the front pane's
+cross bar or the diagonal braces across its upper corners (`bf109Hood` in `src/render/cockpitFrame.js`).

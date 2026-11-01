@@ -125,6 +125,8 @@ export class TestView {
       this.flashesFor = sim.armament;
     }
     this.flashes.update(sim.plane.time);
+    // In the Bf 109's front view its cowling guns flash on the drawn coaming instead (D94).
+    if (this.frontView) for (const f of this.flashes.flashes) if (f.gun.spec.synchronised) f.mesh.visible = false;
     this.updateOthers(sim, alpha, dt);
 
     // Once the player has bailed out, the orbit view follows him down under his parachute (D80).
