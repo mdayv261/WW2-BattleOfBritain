@@ -2995,7 +2995,7 @@ pixels (the D89 dial match), all bars thin with mitred joins and flat ends:
 - **The hood's top frame:** flat with square corners, 20% narrower than #16's at the product owner's request. Its sides
   lean out more steeply going down so that they still meet the side windows where they did.
 - **Corner braces:** across the top corners at about 45° (removed for a while, then put back at the product owner's
-  request). They cross the posts' diagonals near the corners.
+  request). They cross the posts' diagonals near the corners, drawn over them (product owner).
 - **Side windows:** their lower frames run diagonally down from the posts' feet (at the Bf 109's slope, D90) to meet the
   hood's sides near the bottom corners, closing each side window. Below that the cockpit's side is filled in, so no ground
   shows under the windows.

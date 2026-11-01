@@ -150,12 +150,15 @@ export function drawFrontFrame(g, at, flashes = { left: false, right: false }) {
   bars(g, P([left, [CENTRE - FRAME.top.half, FRAME.top.y], [CENTRE + FRAME.top.half, FRAME.top.y], right]), w(FRAME.top.width));
   const { crossBar } = FRAME;
   for (const side of [-1, 1]) {
-    const { braces } = FRAME;
-    bars(g, P([[CENTRE + side * braces.half, FRAME.top.y], [hoodX(side, braces.y), braces.y]]), w(braces.width));
     // The side window's lower frame, from the post's foot to the window's corner.
     bars(g, P([FRAME.sides.feet[side < 0 ? 0 : 1], windowCorner(side)]), w(FRAME.sides.width));
     // The post: up from its foot on the coaming to the cross bar, then out to the top frame's corner.
     bars(g, P(postPath(side)), w(FRAME.posts.width));
+  }
+  // The corner braces, over the posts where they cross (product owner, D103).
+  for (const side of [-1, 1]) {
+    const { braces } = FRAME;
+    bars(g, P([[CENTRE + side * braces.half, FRAME.top.y], [hoodX(side, braces.y), braces.y]]), w(braces.width));
   }
   bars(g, P([[postX(-1, crossBar.y), crossBar.y], [postX(1, crossBar.y), crossBar.y]]), w(crossBar.width));
   // The coaming's lip, over the posts' feet: a dark band with a lighter top edge and a row of rivets.
