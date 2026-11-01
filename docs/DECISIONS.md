@@ -2996,9 +2996,11 @@ pixels (the D89 dial match), all bars thin with mitred joins and flat ends:
   lean out more steeply going down so that they still meet the side windows where they did.
 - **Corner braces:** across the top corners at about 45° (removed for a while, then put back at the product owner's
   request). They cross the posts' diagonals near the corners, drawn over them (product owner).
-- **Side windows:** their lower frames run diagonally down from the posts' feet (at the Bf 109's slope, D90) to meet the
-  hood's sides near the bottom corners, closing each side window. Below that the cockpit's side is filled in, so no ground
-  shows under the windows.
+- **Side windows:** their lower frames, the fuselage's sides, run down from their feet on the coaming to meet the hood's
+  sides near the bottom corners, closing each side window. At the product owner's request they are steeper than D90's
+  (0.9 across for each pixel down, not 1.156) and run on to the foot of the screen, close by the panel's wings. 0.9 is
+  the steepest that clears the upper plate's wings and the speed card. Below the windows the cockpit's side is filled
+  in, so no ground shows.
 
 **Screen fit, a deviation flagged:** at the photograph's proportions the top frame would stand well above the top of the
 screen. As for the Hurricane, the height above the cross bar is compressed so the whole frame shows. The coaming, posts'

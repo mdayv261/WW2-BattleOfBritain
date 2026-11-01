@@ -18,9 +18,10 @@ export const FRAME = {
   // The posts' feet at the arch's ends, their width, and how far they lean outward for each pixel up.
   // (D103: 20% closer together than #16's and leaning in about 5° going up, at the product owner's request.)
   posts: { feet: [[383, 260.4], [783, 260.4]], width: 24, lean: -0.0875 },
-  // The side windows' lower frames: from their feet on the coaming (where the posts stood before D103's narrowing),
-  // outward this many pixels for each pixel down; their width.
-  sides: { feet: [[333, 290], [833, 290]], slope: 1.156, width: 32 },
+  // The side windows' lower frames (the fuselage's sides): from their feet on the coaming (where the posts stood before
+  // D103's narrowing), outward this many pixels for each pixel down, steep enough to run close by the panel's wings to
+  // the foot of the screen (product owner, D103); their width.
+  sides: { feet: [[333, 290], [833, 290]], slope: 0.9, width: 32 },
   // The hood's flat top frame: its height and its half-width about the windscreen's centre (the square corners; 20%
   // narrower than #16's at the product owner's request, D103).
   top: { y: -285, half: 464, width: 28 },
@@ -150,8 +151,9 @@ export function drawFrontFrame(g, at, flashes = { left: false, right: false }) {
   bars(g, P([left, [CENTRE - FRAME.top.half, FRAME.top.y], [CENTRE + FRAME.top.half, FRAME.top.y], right]), w(FRAME.top.width));
   const { crossBar } = FRAME;
   for (const side of [-1, 1]) {
-    // The side window's lower frame, from the post's foot to the window's corner.
-    bars(g, P([FRAME.sides.feet[side < 0 ? 0 : 1], windowCorner(side)]), w(FRAME.sides.width));
+    // The side window's lower frame (the fuselage's side), from its foot past the window's corner to the foot of the
+    // screen (D103).
+    bars(g, P([FRAME.sides.feet[side < 0 ? 0 : 1], [sideX(side, FAR), FAR]]), w(FRAME.sides.width));
     // The post: up from its foot on the coaming to the cross bar, then out to the top frame's corner.
     bars(g, P(postPath(side)), w(FRAME.posts.width));
   }

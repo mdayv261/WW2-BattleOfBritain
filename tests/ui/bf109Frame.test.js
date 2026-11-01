@@ -95,9 +95,15 @@ describe('Bf 109 front frame as the museum photograph, square joins (D103)', () 
     expect(posts.feet[1][0] - posts.feet[0][0]).toBeCloseTo(0.8 * 500, 6);
   });
 
-  it('brings the hood\'s sides 20% closer at the top than #16\'s, still meeting the side windows where they did', () => {
+  it('brings the hood\'s sides 20% closer at the top than #16\'s, meeting the steeper fuselage sides near the foot of the screen', () => {
     expect(top.half).toBeCloseTo(0.8 * 580, 6);
-    expect(windowCorner(-1)[1]).toBeCloseTo(681.6, 0);
+    expect(windowCorner(-1)[1]).toBeGreaterThan(800);
+    expect(windowCorner(-1)[1]).toBeLessThan(L.full ?? 900);
+  });
+
+  it('runs the fuselage sides steeper than before, close by the panel to the foot of the screen', () => {
+    expect(FRAME.sides.slope).toBeLessThan(1.156);
+    expect(sideX(-1, 868)).toBeGreaterThan(333 - 1.156 * (868 - 290) + 100); // well in from where they ended before
   });
 
   it('squares the top frame\'s corners on the hood\'s sides, and shows it on the screen', () => {
