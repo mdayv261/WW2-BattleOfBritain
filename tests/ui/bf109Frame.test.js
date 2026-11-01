@@ -5,7 +5,7 @@
 // flash on the coaming instead of in 3D (D94).
 import { describe, it, expect, beforeAll } from 'vitest';
 import * as THREE from 'three';
-import { FRAME, FLASH_TIME, archAngles, archPoint, sideX, postX, hoodX, windowCorner, flashPoint, mgFlashes } from '../../src/ui/bf109Frame.js';
+import { FRAME, FLASH_TIME, archAngles, coamingAngles, archPoint, sideX, postX, postPath, hoodX, windowCorner, flashPoint, mgFlashes } from '../../src/ui/bf109Frame.js';
 import { REVI, reviPlacement } from '../../src/ui/reviSight.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { BF109_PANEL, BF109_AIM, FUSELAGE_CENTRE_OFFSET, plateTop } from '../../src/ui/bf109Panel.js';
@@ -80,7 +80,7 @@ describe('Bf 109 front frame (D90)', () => {
 });
 
 describe('Bf 109 front frame as the museum photograph, square joins (D103)', () => {
-  const { top, posts, crossBar, braces } = FRAME;
+  const { top, posts, crossBar } = FRAME;
 
   it('raises the posts from the coaming\'s ends to the top frame, leaning a little out', () => {
     for (const side of [-1, 1]) {
@@ -110,12 +110,22 @@ describe('Bf 109 front frame as the museum photograph, square joins (D103)', () 
     expect(crossBar.y).toBeGreaterThan(top.y);
   });
 
-  it('braces the top corners at about 45 degrees', () => {
+  it('angles the posts out from the cross bar to the top frame\'s corners, no corner braces (D103)', () => {
     for (const side of [-1, 1]) {
-      const dx = Math.abs(hoodX(side, braces.y) - (583 + side * braces.half));
-      const dy = braces.y - top.y;
-      expect(Math.atan2(dy, dx) * 180 / Math.PI).toBeCloseTo(45, -1);
+      const path = postPath(side);
+      expect(path[1][1]).toBe(crossBar.y);
+      expect(path[2]).toEqual([583 + side * top.half, top.y]);
+      expect(side * (path[2][0] - path[1][0])).toBeGreaterThan(0); // outward
     }
+    expect(FRAME.braces).toBeUndefined();
+  });
+
+  it('carries the coaming 25% further round the panel, past the posts\' feet', () => {
+    const [t0, t1] = archAngles();
+    const [c0, c1] = coamingAngles();
+    expect((c1 - c0) / (t1 - t0)).toBeCloseTo(1.25, 6);
+    expect(archPoint(c0)[0]).toBeLessThan(FRAME.posts.feet[0][0]);
+    expect(archPoint(c1)[0]).toBeGreaterThan(FRAME.posts.feet[1][0]);
   });
 
   it('closes each side window where the hood\'s side meets its lower frame, outside both plates', () => {

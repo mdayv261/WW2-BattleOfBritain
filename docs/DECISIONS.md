@@ -2980,17 +2980,19 @@ The long canopy bows and the dark lip of D99 are gone.
 
 With the RAF fighters' front views approved (D100–D102), the product owner asked for the Bf 109's to be similar to the
 Hurricane's, but with square frame joins rather than rounded ones, as their museum photograph from the seat shows (#16,
-a shape guide only). They chose to include the windscreen's cross bar and the two corner braces in the front view. The
+a shape guide only). They chose to include the windscreen's cross bar and the two corner braces in the front view; the braces were later
+replaced by the posts angling out to the corners (below). The
 3D view when looking up stays without them (D94).
 
 **The frame** (`FRAME` and `drawFrontFrame` in `src/ui/bf109Frame.js`), measured on #16 in the restored panel's picture
 pixels (the D89 dial match), all bars thin with mitred joins and flat ends:
-- **Coaming lip:** thinner (22), arching tight over the panel's top between the posts' feet, as before.
-- **Front pane:** two posts from the coaming's ends, leaning a little out (0.05 across for each pixel up), to the hood's
-  flat top frame.
-- **Cross bar:** between the posts just above the Revi's glass.
-- **The hood's top frame:** square corners, with its sides leaning a little out going down. 45° braces cross the top
-  corners.
+- **Coaming lip:** thinner (22), arching tight over the panel's top. At the product owner's further request it runs on
+  past the posts' feet round the panel, 25% longer in all.
+- **Front pane:** two posts from the coaming, leaning a little out (0.05 across for each pixel up) to a cross bar just
+  above the Revi's glass.
+- **Above the cross bar:** at the product owner's further request the posts angle out to the hood's top frame's
+  corners. These diagonals replace the 45° corner braces, which are gone, since the two would have crossed.
+- **The hood's top frame:** flat with square corners, its sides leaning a little out going down.
 - **Side windows:** their lower frames run diagonally down from the posts' feet (at the Bf 109's slope, D90) to meet the
   hood's sides near the bottom corners, closing each side window. Below that the cockpit's side is filled in, so no ground
   shows under the windows.

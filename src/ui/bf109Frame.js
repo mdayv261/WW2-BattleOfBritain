@@ -1,18 +1,19 @@
 // The Bf 109's front cockpit frame (D90, redrawn in D103), drawn square-on with the panel while the pilot looks ahead,
 // as the product owner's museum photograph from the seat shows it (#16, a shape guide only), with square joins: the
-// coaming's thin lip arching tight over the top of the panel above the clock; the front pane's two posts rising from its
-// ends, leaning a little out, to the hood's flat top frame; a cross bar between them just above the Revi; the hood's
-// sides from the top frame's square corners, leaning a little out going down, with 45° braces across the top corners;
-// and the side windows' lower frames running diagonally down from the posts' feet to meet the hood's sides, the
-// cockpit's dark interior below them round the panel. Sizes are in picture pixels of the restored panel (#17, through the
-// panel's placer, src/ui/bf109Panel.js), measured on #16 against its dials; the height above the cross bar is
-// compressed so the top frame shows on the screen. The 3D windscreen, nose and wings are hidden meanwhile
-// (src/render/testView.js) and show again when the pilot looks round.
+// coaming's thin lip arching tight over the top of the panel above the clock and on round it; the front pane's two
+// posts rising from its ends, leaning a little out, to a cross bar just above the Revi and then angling out to the
+// hood's flat top frame's square corners; the hood's sides from those corners, leaning a little out going down; and the
+// side windows' lower frames running diagonally down from the posts' feet to meet the hood's sides, the cockpit's dark
+// interior below them round the panel. Sizes are in picture pixels of the restored panel (#17, through the panel's
+// placer, src/ui/bf109Panel.js), measured on #16 against its dials; the height above the cross bar is compressed so the
+// top frame shows on the screen. The 3D windscreen, nose and wings are hidden meanwhile (src/render/testView.js) and
+// show again when the pilot looks round.
 
 export const FRAME = {
   // The coaming's lip: the middle of the band follows an ellipse; its inner edge runs over the upper plate's top above
   // the clock and down to the posts' feet.
-  arch: { cx: 583, cy: 343.2, a: 291, b: 129.2, thick: 22 },
+  // The lip runs on past the posts' feet round the panel by `extend` of its span at each end (25% longer in all, D103).
+  arch: { cx: 583, cy: 343.2, a: 291, b: 129.2, thick: 22, extend: 0.125 },
   // The posts' feet at the arch's ends, their width, and how far they lean outward for each pixel up.
   posts: { feet: [[333, 290], [833, 290]], width: 24, lean: 0.05 },
   // The side windows' lower frames: from the posts' feet, outward this many pixels for each pixel down; their width.
@@ -21,10 +22,9 @@ export const FRAME = {
   top: { y: -285, half: 580, width: 28 },
   // The hood's sides: from the top frame's corners, outward this many pixels for each pixel down.
   hood: { slope: 0.127, width: 28 },
-  // The front pane's cross bar between the posts, just above the Revi's glass.
+  // The front pane's cross bar between the posts, just above the Revi's glass. Above it the posts angle out to the top
+  // frame's corners (product owner, D103), in place of the corner braces.
   crossBar: { y: -111, width: 22 },
-  // The 45° braces across the top corners: from the top frame `half` from the centre down to the hood's side at `y`.
-  braces: { half: 400, y: -110, width: 22 },
   // The cowling MG 17s' muzzle flashes on the lip's top edge (product owner, D94): symmetric about the windscreen's
   // centre (the fuselage's centre line), well apart, left and right; their size.
   flashes: { x: [393, 773], size: 16 },
@@ -77,6 +77,20 @@ export function archAngles() {
   return [Math.PI + t, 2 * Math.PI - t];
 }
 
+/** The lip's end angles, carried on past the posts' feet round the panel (D103). */
+export function coamingAngles() {
+  const [t0, t1] = archAngles();
+  const more = (t1 - t0) * FRAME.arch.extend;
+  return [t0 - more, t1 + more];
+}
+
+/** A post's line (picture pixels): from its foot up to the cross bar, then out to the top frame's corner (D103). */
+export function postPath(side) {
+  const foot = FRAME.posts.feet[side < 0 ? 0 : 1];
+  const { y } = FRAME.crossBar;
+  return [foot, [postX(side, y), y], [CENTRE + side * FRAME.top.half, FRAME.top.y]];
+}
+
 /** A point on the arch at angle t (picture pixels): on its middle line, or `inset` pixels inside it (its inner edge). */
 export const archPoint = (t, inset = 0) => [
   FRAME.arch.cx + (FRAME.arch.a - inset) * Math.cos(t), FRAME.arch.cy + (FRAME.arch.b - inset) * Math.sin(t),
@@ -116,7 +130,7 @@ export function drawInterior(g, at) {
 }
 
 /**
- * The hood's front frame, the posts, the cross bar, the braces, the side windows' lower frames and the coaming's lip, on
+ * The hood's front frame, the posts, the cross bar, the side windows' lower frames and the coaming's lip, on
  * the sight's canvas before the Revi, all with square joins (D103), and the MG 17s' muzzle flashes on the lip
  * (`flashes`: { left, right }, D94). `at` is the panel's placer.
  */
@@ -127,19 +141,17 @@ export function drawFrontFrame(g, at, flashes = { left: false, right: false }) {
   const [left, right] = [windowCorner(-1), windowCorner(1)];
   // The hood: up the left side from the window's corner, across the top frame, down the right side.
   bars(g, P([left, [CENTRE - FRAME.top.half, FRAME.top.y], [CENTRE + FRAME.top.half, FRAME.top.y], right]), w(FRAME.top.width));
+  const { crossBar } = FRAME;
   for (const side of [-1, 1]) {
-    const { braces } = FRAME;
-    bars(g, P([[CENTRE + side * braces.half, FRAME.top.y], [hoodX(side, braces.y), braces.y]]), w(braces.width));
     // The side window's lower frame, from the post's foot to the window's corner.
     bars(g, P([feet[side < 0 ? 0 : 1], windowCorner(side)]), w(FRAME.sides.width));
-    // The post, from its foot to the top frame.
-    bars(g, P([feet[side < 0 ? 0 : 1], [postX(side, FRAME.top.y), FRAME.top.y]]), w(FRAME.posts.width));
+    // The post: up from its foot to the cross bar, then angling out to the top frame's corner.
+    bars(g, P(postPath(side)), w(FRAME.posts.width));
   }
-  const { crossBar } = FRAME;
   bars(g, P([[postX(-1, crossBar.y), crossBar.y], [postX(1, crossBar.y), crossBar.y]]), w(crossBar.width));
   // The coaming's lip, over the posts' feet: a dark band with a lighter top edge and a row of rivets.
   const { cx, cy, a, b, thick } = FRAME.arch;
-  const [t0, t1] = archAngles();
+  const [t0, t1] = coamingAngles();
   const [ex, ey] = at.xy([cx, cy]);
   const scale = at.len(1);
   g.strokeStyle = '#3a3e42';
