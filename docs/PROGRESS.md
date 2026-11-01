@@ -18,6 +18,11 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## RAF frames in the Bf 109's style (1 Nov 2026)
+
+**Done** (D102): the Hurricane's and Spitfire's windscreen, coaming and fuselage side frames in the Bf 109 frames' style,
+darker grey with rivets.
+
 ## Bf 109 front view as the museum photograph (1 Nov 2026)
 
 **Done** (D103): the Bf 109's front frame redrawn as #16 with square joins: the posts closer together and leaning in 5°

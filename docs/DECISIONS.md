@@ -2976,6 +2976,11 @@ with the minor differences of their picture #29. #29 is a screenshot of a Spitfi
 
 The long canopy bows and the dark lip of D99 are gone.
 
+**The look of both RAF fighters' frames:** at the product owner's request, the windscreen frames, struts, mirror stem,
+fuselage side frames and coaming of the Hurricane and Spitfire are drawn in the Bf 109 frames' style (D103), in a darker
+grey: a band with a dark outline, a lit edge on the outside, a shaded edge and a row of rivets. Their shapes, rounded
+corners included, are unchanged.
+
 ## D103. The Bf 109's front view framed as the museum photograph, with square joins (1 Nov 2026, plan approved by the product owner)
 
 With the RAF fighters' front views approved (D100–D102), the product owner asked for the Bf 109's to be similar to the

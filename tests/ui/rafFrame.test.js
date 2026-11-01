@@ -152,8 +152,10 @@ describe('Hurricane frame refined (D100, D101)', () => {
 
   it('draws the fuselage sides and interior for both RAF fighters (D102), nothing without a frame', () => {
     let fills = 0;
-    const g = new Proxy({}, { get: (t, p) => (p === 'fill' ? () => { fills += 1; } : p in t ? t[p] : () => {}), set: (t, p, v) => { t[p] = v; return true; } });
-    for (const frame of [F, RAF_FRAMES.spitfire]) {
+    let frame;
+    // Count the fills in the interior's and side walls' colours (the frames' rivets are fills too).
+    const g = new Proxy({}, { get: (t, p) => (p === 'fill' ? () => { if ([frame?.interiorColour, frame?.wallColour].includes(t.fillStyle)) fills += 1; } : p in t ? t[p] : () => {}), set: (t, p, v) => { t[p] = v; return true; } });
+    for (frame of [F, RAF_FRAMES.spitfire]) {
       fills = 0;
       drawRafInterior(g, placer(1000, 0, 40), frame);
       expect(fills).toBe(3); // the interior and two side walls

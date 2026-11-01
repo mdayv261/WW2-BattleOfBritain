@@ -17,8 +17,9 @@
 import { SPITFIRE_PANEL } from './rafPanel.js';
 
 const AXIS = 946; // the GM 2's axis on the panel picture: its centre line
-const METAL_DARK = '#61666a';
-const EDGE = '#2a2d30';
+// The windscreen frames, struts and fuselage side frames in the Bf 109 frames' style (D103), darker grey (product owner,
+// D102): the band with a dark outline, a lit edge on the outside, a shaded edge, and rivets.
+const DARK = { band: '#5d6266', lit: '#8d9296', shade: '#373b3e', rivet: '#464a4d', outline: '#1d1f21' };
 const FAR = 4000; // picture pixels: far enough to run off any screen
 
 export const RAF_FRAMES = {
@@ -35,10 +36,6 @@ export const RAF_FRAMES = {
     mirror: { w: 130, h: 34, stem: 40 },
     coaming: { half: 774, width: 56, overlap: 6 },
     sills: { slope: 1.156, width: 70, wall: 0.45 },
-    colour: '#a9aeb1',
-    windscreenColour: '#9a9fa3',
-    coamingColour: '#c4c7c8',
-    sillColour: '#c9cccd',
     wallColour: '#8d9295',
     interiorColour: '#2a2c2e',
   },
@@ -59,10 +56,6 @@ export const RAF_FRAMES = {
     // The sills: from the outer legs' feet outward `slope` for each pixel down (the Bf 109's side frames', D90); the
     // band's width. The side walls' inner edge leaves the feet at `wall` across for each pixel down.
     sills: { slope: 1.156, width: 70, wall: 0.45 },
-    colour: '#a3a690',
-    windscreenColour: '#b8ad9c',
-    coamingColour: '#c9c8b8',
-    sillColour: '#b4b9a6',
     wallColour: '#7f8774',
     interiorColour: '#2d2f2c',
   },
@@ -194,30 +187,30 @@ export function sillX(frame, side, y) {
 export function drawRafFrame(g, at, frame) {
   const w = (px) => at.len(px);
   const { outer } = frame;
-  bar(g, at, outerPath(frame), w(outer.width), frame.colour);
+  framed(g, at, outerPath(frame), w(outer.width));
   for (const side of [-1, 1]) {
     // The Hurricane's level frames halfway up the side panes; the Spitfire's struts rising to the outer legs.
     for (const r of frame.rails ?? []) {
-      bar(g, at, [[AXIS + side * frame.windscreen.half, r.y], [legX(frame, side, r.y), r.y]], w(frame.railWidth), frame.colour);
+      framed(g, at, [[AXIS + side * frame.windscreen.half, r.y], [legX(frame, side, r.y), r.y]], w(frame.railWidth));
     }
     for (const s of frame.struts ?? []) {
-      bar(g, at, [archPoint(frame, side, s.angle), [legX(frame, side, s.toY), s.toY]], w(frame.railWidth), frame.colour);
+      framed(g, at, [archPoint(frame, side, s.angle), [legX(frame, side, s.toY), s.toY]], w(frame.railWidth));
     }
   }
   if (frame.mirror) {
     // The rear-view mirror on the top bar's centre: a stem and a small dark glass in a grey rim.
     const { mirror } = frame;
     const base = outer.spring - outer.width / 2;
-    bar(g, at, [[AXIS, base], [AXIS, base - mirror.stem]], w(18), frame.colour);
+    framed(g, at, [[AXIS, base], [AXIS, base - mirror.stem]], w(18));
     const [x0, y0] = at.xy([AXIS - mirror.w / 2, base - mirror.stem - mirror.h]);
-    g.fillStyle = frame.colour;
+    g.fillStyle = DARK.band;
     g.fillRect(x0 - w(6), y0 - w(6), w(mirror.w) + w(12), w(mirror.h) + w(12));
     g.fillStyle = '#3c4246';
     g.fillRect(x0, y0, w(mirror.w), w(mirror.h));
   }
-  bar(g, at, windscreenPath(frame), w(frame.windscreen.width), frame.windscreenColour);
+  framed(g, at, windscreenPath(frame), w(frame.windscreen.width));
   // The coaming, close round the panel's arched top between the outer legs' feet, in front of them.
-  bar(g, at, coamingLine(frame), w(frame.coaming.width), frame.coamingColour);
+  framed(g, at, coamingLine(frame), w(frame.coaming.width)); // as the windscreen frames (product owner, D102)
 }
 
 /**
@@ -240,7 +233,7 @@ export function drawRafInterior(g, at, frame) {
   for (const side of [-1, 1]) {
     const foot = legFoot(frame, side);
     fill([foot, [sillX(frame, side, FAR), FAR], [wallAt(side, FAR), FAR]], frame.wallColour);
-    bar(g, at, [foot, [sillX(frame, side, FAR), FAR]], at.len(sills.width), frame.sillColour);
+    framed(g, at, [foot, [sillX(frame, side, FAR), FAR]], at.len(sills.width));
   }
 }
 
@@ -252,26 +245,57 @@ export function coamingLine(frame) {
   return xs.map((x) => coamingPoint(frame, x));
 }
 
-/** A frame bar along a path (picture pixels) of width `width` (canvas px): a dark edge, the face, a lit stripe. */
-function bar(g, at, pts, width, colour) {
+/**
+ * A frame in the Bf 109 frames' style, darker grey (D102): a band along a path (picture pixels) of width `width` (canvas
+ * px) with a dark outline, a lit edge and a shaded edge either side, the same side of the path all along, so the lit
+ * edge stays outside round an arch; and rivets down the middle, evenly spaced along the whole path.
+ */
+function framed(g, at, pts, width) {
+  const px = pts.map((p) => at.xy(p));
   const path = () => {
     g.beginPath();
-    pts.forEach((p, i) => (i ? g.lineTo(...at.xy(p)) : g.moveTo(...at.xy(p))));
+    px.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p)));
   };
   g.lineJoin = 'round';
   g.lineCap = 'butt';
-  g.strokeStyle = EDGE;
-  g.lineWidth = width + 3;
+  g.strokeStyle = DARK.outline;
+  g.lineWidth = width + 2;
   path();
   g.stroke();
-  g.strokeStyle = colour;
+  g.strokeStyle = DARK.band;
   g.lineWidth = width;
   path();
   g.stroke();
-  g.strokeStyle = METAL_DARK;
-  g.lineWidth = width * 0.3;
-  path();
-  g.globalAlpha = 0.35;
-  g.stroke();
-  g.globalAlpha = 1;
+  for (const [k, colour, w] of [[0.42, DARK.lit, 0.18], [-0.44, DARK.shade, 0.14]]) {
+    g.strokeStyle = colour;
+    g.lineWidth = Math.max(1, width * w);
+    g.beginPath();
+    px.forEach(([x, y], i) => {
+      // The normal to the left of the path's direction at this point (averaged over its two segments).
+      const [ax, ay] = px[Math.max(0, i - 1)];
+      const [bx, by] = px[Math.min(px.length - 1, i + 1)];
+      const len = Math.hypot(bx - ax, by - ay) || 1;
+      const [nx, ny] = [(by - ay) / len, -(bx - ax) / len];
+      const p = [x + nx * k * width, y + ny * k * width];
+      if (i) g.lineTo(...p);
+      else g.moveTo(...p);
+    });
+    g.stroke();
+  }
+  g.fillStyle = DARK.rivet;
+  const step = Math.max(width * 2.2, 8);
+  let carry = step / 2;
+  for (let i = 1; i < px.length; i += 1) {
+    const [ax, ay] = px[i - 1];
+    const [bx, by] = px[i];
+    const len = Math.hypot(bx - ax, by - ay);
+    let t = carry;
+    for (; t < len; t += step) {
+      g.beginPath();
+      g.arc(ax + ((bx - ax) * t) / len, ay + ((by - ay) * t) / len, Math.max(1, width * 0.09), 0, Math.PI * 2);
+      g.fill();
+    }
+    carry = t - len;
+  }
 }
+
