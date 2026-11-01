@@ -3009,6 +3009,6 @@ screen. As for the Hurricane, the height above the cross bar is compressed so th
 feet, cross bar and side windows keep the photograph's proportions.
 
 **The look:** at the product owner's request every frame, the coaming included, is drawn in the coaming's style in
-light grey: a band with a dark outline, a lit edge and a shaded edge, and a row of rivets.
+medium grey (light grey at first): a band with a dark outline, a lit edge and a shaded edge, and a row of rivets.
 
 **Unchanged:** the propeller arc (D98), the MG 17 flashes on the coaming (D94), the Revi and the panel.
