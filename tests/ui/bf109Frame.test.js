@@ -82,11 +82,11 @@ describe('Bf 109 front frame (D90)', () => {
 describe('Bf 109 front frame as the museum photograph, square joins (D103)', () => {
   const { top, posts, crossBar } = FRAME;
 
-  it('raises the posts from the coaming to the top frame, 20% closer together than before and leaning in about 5 degrees', () => {
+  it('raises the posts from the coaming to the cross bar, 20% closer together than before and leaning in about 5 degrees', () => {
     for (const side of [-1, 1]) {
       const foot = posts.feet[side < 0 ? 0 : 1];
       expect(postX(side, foot[1])).toBeCloseTo(foot[0], 9);
-      expect(side * (postX(side, top.y) - foot[0])).toBeLessThan(0); // leaning in going up
+      expect(side * (postX(side, crossBar.y) - foot[0])).toBeLessThan(0); // leaning in going up to the cross bar
       expect(Math.atan(-posts.lean) * 180 / Math.PI).toBeCloseTo(5, 0);
       // The foot stands on the coaming's inner edge.
       const t = 2 * Math.PI - Math.acos((foot[0] - 583) / (FRAME.arch.a - FRAME.arch.thick / 2));
@@ -119,12 +119,14 @@ describe('Bf 109 front frame as the museum photograph, square joins (D103)', () 
     expect(crossBar.y).toBeGreaterThan(top.y);
   });
 
-  it('braces the top corners at about 45 degrees, the posts running straight to the top frame', () => {
+  it('braces the top corners at about 45 degrees; above the cross bar the posts angle out to the top frame\'s corners', () => {
     for (const side of [-1, 1]) {
       const dx = Math.abs(hoodX(side, FRAME.braces.y) - (583 + side * FRAME.braces.half));
       expect(Math.atan2(FRAME.braces.y - top.y, dx) * 180 / Math.PI).toBeCloseTo(45, -1);
-      expect(postPath(side)).toHaveLength(2);
-      expect(postPath(side)[1][1]).toBe(top.y);
+      const path = postPath(side);
+      expect(path[1]).toEqual([postX(side, crossBar.y), crossBar.y]);
+      expect(path[2]).toEqual([583 + side * top.half, top.y]);
+      expect(side * (path[2][0] - path[1][0])).toBeGreaterThan(0); // outward
     }
   });
 

@@ -1,8 +1,9 @@
 // The Bf 109's front cockpit frame (D90, redrawn in D103), drawn square-on with the panel while the pilot looks ahead,
 // as the product owner's museum photograph from the seat shows it (#16, a shape guide only), with square joins: the
 // coaming's thin lip arching tight over the top of the panel above the clock and on round it; the front pane's two
-// posts rising from it, leaning in a little, past a cross bar just above the Revi to the hood's flat top frame; the
-// hood's sides from its square corners, leaning a little out going down, with 45° braces across the corners; and the
+// posts rising from it, leaning in a little, to a cross bar just above the Revi and then angling out to the hood's flat
+// top frame's square corners; the hood's sides from those corners, leaning out going down, with 45° braces across the
+// corners; and the
 // side windows' lower frames running diagonally down from the posts' feet to meet the hood's sides, the cockpit's dark
 // interior below them round the panel. Sizes are in picture pixels of the restored panel (#17, through the panel's
 // placer, src/ui/bf109Panel.js), measured on #16 against its dials; the height above the cross bar is compressed so the
@@ -89,9 +90,13 @@ export function coamingAngles() {
   return [t0 - more, t1 + more];
 }
 
-/** A post's line (picture pixels): from its foot on the coaming up to the top frame, leaning in (D103). */
+/**
+ * A post's line (picture pixels): from its foot on the coaming up to the cross bar, leaning in, then angling out to the
+ * top frame's corner (product owner, D103).
+ */
 export function postPath(side) {
-  return [FRAME.posts.feet[side < 0 ? 0 : 1], [postX(side, FRAME.top.y), FRAME.top.y]];
+  const { y } = FRAME.crossBar;
+  return [FRAME.posts.feet[side < 0 ? 0 : 1], [postX(side, y), y], [CENTRE + side * FRAME.top.half, FRAME.top.y]];
 }
 
 /** A point on the arch at angle t (picture pixels): on its middle line, or `inset` pixels inside it (its inner edge). */
@@ -149,7 +154,7 @@ export function drawFrontFrame(g, at, flashes = { left: false, right: false }) {
     bars(g, P([[CENTRE + side * braces.half, FRAME.top.y], [hoodX(side, braces.y), braces.y]]), w(braces.width));
     // The side window's lower frame, from the post's foot to the window's corner.
     bars(g, P([FRAME.sides.feet[side < 0 ? 0 : 1], windowCorner(side)]), w(FRAME.sides.width));
-    // The post: up from its foot on the coaming to the top frame.
+    // The post: up from its foot on the coaming to the cross bar, then out to the top frame's corner.
     bars(g, P(postPath(side)), w(FRAME.posts.width));
   }
   bars(g, P([[postX(-1, crossBar.y), crossBar.y], [postX(1, crossBar.y), crossBar.y]]), w(crossBar.width));

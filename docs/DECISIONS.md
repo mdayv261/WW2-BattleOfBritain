@@ -2988,14 +2988,14 @@ pixels (the D89 dial match), all bars thin with mitred joins and flat ends:
 - **Coaming lip:** thinner (22), arching tight over the panel's top. At the product owner's further request it runs on
   past the posts' feet round the panel, 25% longer in all.
 - **Front pane:** at the product owner's later requests, the two posts stand 20% closer together than in #16 and lean in
-  about 5° going up, past a cross bar just above the Revi's glass, to the hood's top frame. (For a while they angled
-  out to the top corners above the cross bar; that was undone.) The side windows' lower frames keep their feet on the
+  about 5° going up to a cross bar just above the Revi's glass. Above it they angle out to the hood's top frame's
+  corners. The side windows' lower frames keep their feet on the
   coaming where the posts stood before. Standing right of centre as photographed, the Revi's glass now overlaps the
   right post's edge.
 - **The hood's top frame:** flat with square corners, 20% narrower than #16's at the product owner's request. Its sides
   lean out more steeply going down so that they still meet the side windows where they did.
 - **Corner braces:** across the top corners at about 45° (removed for a while, then put back at the product owner's
-  request).
+  request). They cross the posts' diagonals near the corners.
 - **Side windows:** their lower frames run diagonally down from the posts' feet (at the Bf 109's slope, D90) to meet the
   hood's sides near the bottom corners, closing each side window. Below that the cockpit's side is filled in, so no ground
   shows under the windows.
