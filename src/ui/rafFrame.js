@@ -34,13 +34,13 @@ export const RAF_FRAMES = {
     windscreenColour: '#8f9498',
   },
   hurricane: {
-    // The armoured windscreen: posts either side of the axis on the coaming, its rounded top, its width (D101: 25% lower
-    // and thinner than D100's).
-    windscreen: { half: 416, top: -767, width: 60 },
+    // The armoured windscreen: posts either side of the axis on the coaming, its rounded top, its width (D101: lower,
+    // narrower and thinner than D100's).
+    windscreen: { half: 336, top: -687, width: 60 },
     // The outer windscreen frame: legs standing on the coaming `foot` either side of the axis, leaning in about 15° to
     // `half` where the elliptical crown springs at `spring`; its top `top` (the crown shortened at the product owner's
     // request, D101).
-    outer: { foot: 774, half: 512, spring: -463, top: -880, width: 56 },
+    outer: { foot: 774, half: 512, spring: -463, top: -820, width: 56 },
     // Horizontal frames halfway up the side panes, from the armoured posts across to the outer legs, at height y.
     rails: [{ y: -205 }],
     railWidth: 34,

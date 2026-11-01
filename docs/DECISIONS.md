@@ -2934,9 +2934,11 @@ The colours follow the photograph. The Spitfire's frame (D99) is unchanged until
 
 At the product owner's request, after reviewing D100:
 - **Thinner frames:** outer 56, armoured windscreen 60, coaming 56 and sills 70 picture pixels (were 96, 100, 112, 135).
-- **The windshield 25% lower:** the armoured windscreen's top now about 9.7 dial radii above the panel.
+- **The windshield lower:** first by 25%. Then, at the product owner's further request, the armoured windscreen's
+  posts were brought in by about a dial radius each side (to 4.1 radii from the sight's axis) and its top lowered by the
+  same amount, to about 8.8 dial radii above the panel.
 - **The outer frame:** its legs lean in about 15° from their feet on the coaming to where its crown springs, and its
-  crown is shorter. It still clears the armoured windscreen and now shows fully on screen.
+  crown is shorter and lower, its top about 10.4 dial radii above the panel. It still clears the armoured windscreen and now shows fully on screen.
 - **Side panes:** horizontal frames about halfway up, from the armoured posts across to the outer legs.
 - **Fuselage sides:** the sills angle in at the Bf 109 side frames' slope (1.156 across for each pixel down) from the
   outer legs' feet.

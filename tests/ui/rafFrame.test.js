@@ -91,7 +91,8 @@ describe('Hurricane frame refined (D100, D101)', () => {
     expect(F.windscreen.width).toBeLessThan(100);
     expect(F.coaming.width).toBeLessThan(112);
     expect(F.sills.width).toBeLessThan(135);
-    expect(F.windscreen.top).toBeCloseTo(31 + (-1033 - 31) * 0.75, -1);
+    expect(F.windscreen.top).toBeGreaterThan(31 + (-1033 - 31) * 0.75); // at least 25% lower
+    expect(F.windscreen.half).toBeLessThan(416); // posts brought in (D101)
     expect(F.outer.top).toBeGreaterThan(31 + (-1340 - 31) * 0.75); // the crown shortened further
     // The outer legs lean in about 15° from their feet to the crown's springing.
     const [fx, fy] = legFoot(F, -1);
