@@ -97,13 +97,13 @@ describe('Bf 109 front frame as the museum photograph, square joins (D103)', () 
 
   it('brings the hood\'s sides 20% closer at the top than #16\'s, meeting the steeper fuselage sides near the foot of the screen', () => {
     expect(top.half).toBeCloseTo(0.8 * 580, 6);
-    expect(windowCorner(-1)[1]).toBeGreaterThan(800);
+    expect(windowCorner(-1)[1]).toBeGreaterThan(700);
     expect(windowCorner(-1)[1]).toBeLessThan(L.full ?? 900);
   });
 
   it('runs the fuselage sides steeper than before, close by the panel to the foot of the screen', () => {
     expect(FRAME.sides.slope).toBeLessThan(1.156);
-    expect(sideX(-1, 868)).toBeGreaterThan(333 - 1.156 * (868 - 290) + 100); // well in from where they ended before
+    expect(sideX(-1, 868)).toBeGreaterThan(333 - 1.156 * (868 - 290) + 50); // in from where they ended before
   });
 
   it('squares the top frame\'s corners on the hood\'s sides, and shows it on the screen', () => {
@@ -136,12 +136,11 @@ describe('Bf 109 front frame as the museum photograph, square joins (D103)', () 
     }
   });
 
-  it('carries the coaming 25% further round the panel, past the posts\' feet', () => {
+  it('runs the coaming only between the posts\' feet, the fuselage sides starting there (D103)', () => {
     const [t0, t1] = archAngles();
-    const [c0, c1] = coamingAngles();
-    expect((c1 - c0) / (t1 - t0)).toBeCloseTo(1.25, 6);
-    expect(archPoint(c0)[0]).toBeLessThan(FRAME.sides.feet[0][0]);
-    expect(archPoint(c1)[0]).toBeGreaterThan(FRAME.sides.feet[1][0]);
+    expect(coamingAngles()).toEqual([t0, t1]);
+    expect(archPoint(t0, FRAME.arch.thick / 2)[0]).toBeCloseTo(FRAME.posts.feet[0][0], 6);
+    expect(FRAME.sides.feet).toEqual(FRAME.posts.feet);
   });
 
   it('closes each side window where the hood\'s side meets its lower frame, outside both plates', () => {

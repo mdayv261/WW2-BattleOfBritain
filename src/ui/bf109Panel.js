@@ -83,9 +83,9 @@ export const BF109_PANEL = {
   // The altimeter, manifold pressure and airspeed indicators have red bezels on the picture (#17).
   redBezels: ['altimeter', 'ata', 'airspeed'],
   boxes: {
-    flapPlacard: [387, 268, 484, 335], magneto: [303, 375, 346, 491], achtung: [290, 495, 342, 534],
+    flapPlacard: [393, 268, 484, 335], magneto: [303, 375, 346, 491], achtung: [290, 495, 342, 534],
     button: [249, 446, 288, 508], pitot: [270, 540, 342, 580], pitchLever: [617, 460, 660, 580],
-    speedCard: [808, 345, 866, 478], cableHook: [632, 382, 656, 400], // the pilot's speed card in the deviation card's place (D91)
+    speedCard: [800, 345, 852, 478], cableHook: [632, 382, 656, 400], // the pilot's speed card in the deviation card's place (D91)
     blank: [499, 607, 576, 687], gearLights: [672, 607, 750, 687], coolantPlacard: [672, 696, 750, 721],
     reserve: [480, 702, 532, 719], reserveLamp: [552, 692, 602, 718], lampBox: [252, 692, 425, 800],
     fuelCock: [125, 750, 225, 847], arrowPlacard: [812, 662, 910, 682], gearSelector: [775, 695, 900, 749],

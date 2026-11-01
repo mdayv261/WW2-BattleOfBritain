@@ -13,15 +13,16 @@
 export const FRAME = {
   // The coaming's lip: the middle of the band follows an ellipse; its inner edge runs over the upper plate's top above
   // the clock and down to the posts' feet.
-  // The lip runs on past the posts' feet round the panel by `extend` of its span at each end (25% longer in all, D103).
-  arch: { cx: 583, cy: 343.2, a: 291, b: 129.2, thick: 22, extend: 0.125 },
+  // The lip runs only between the posts' feet (product owner, D103).
+  arch: { cx: 583, cy: 343.2, a: 291, b: 129.2, thick: 22, extend: 0 },
   // The posts' feet at the arch's ends, their width, and how far they lean outward for each pixel up.
   // (D103: 20% closer together than #16's and leaning in about 5° going up, at the product owner's request.)
   posts: { feet: [[383, 260.4], [783, 260.4]], width: 24, lean: -0.0875 },
   // The side windows' lower frames (the fuselage's sides): from their feet on the coaming (where the posts stood before
   // D103's narrowing), outward this many pixels for each pixel down, steep enough to run close by the panel's wings to
   // the foot of the screen (product owner, D103); their width.
-  sides: { feet: [[333, 290], [833, 290]], slope: 0.9, width: 32 },
+  // They start at the posts' feet, joining them (product owner, D103).
+  sides: { feet: [[383, 260.4], [783, 260.4]], slope: 1.02, width: 32 },
   // The hood's flat top frame: its height and its half-width about the windscreen's centre (the square corners; 20%
   // narrower than #16's at the product owner's request, D103).
   top: { y: -285, half: 464, width: 28 },
@@ -128,14 +129,6 @@ export function drawInterior(g, at) {
   g.lineTo(...at.xy([sideX(-1, y0 + FAR), y0 + FAR]));
   g.closePath();
   g.fill();
-  // Below each side window: the cockpit's side, so no ground shows under the windows (D103).
-  for (const side of [-1, 1]) {
-    const [cx, cy] = windowCorner(side);
-    g.beginPath();
-    for (const p of [[cx, cy], [sideX(side, FAR), FAR], [CENTRE + side * FAR, FAR], [CENTRE + side * FAR, cy]]) g.lineTo(...at.xy(p));
-    g.closePath();
-    g.fill();
-  }
 }
 
 /**

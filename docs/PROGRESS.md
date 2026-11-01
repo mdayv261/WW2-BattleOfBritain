@@ -22,7 +22,7 @@ Read this at the start of every session.
 
 **Done** (D103): the Bf 109's front frame redrawn as #16 with square joins: the posts closer together and leaning in 5°
 to a cross bar above the Revi, then angling out to a narrower flat top frame's corners, with corner braces; the hood's sides meeting the steeper
-fuselage sides, which run close by the panel to the foot of the screen; a thinner coaming running 25% further round the panel.
+fuselage sides, which run close by the panel to the foot of the screen; a thinner coaming between the posts; no band across the foot of the view.
 
 ## Spitfire front view (1 Nov 2026)
 

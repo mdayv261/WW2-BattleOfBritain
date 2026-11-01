@@ -2985,8 +2985,8 @@ a shape guide only). They chose to include the windscreen's cross bar and the tw
 
 **The frame** (`FRAME` and `drawFrontFrame` in `src/ui/bf109Frame.js`), measured on #16 in the restored panel's picture
 pixels (the D89 dial match), all bars thin with mitred joins and flat ends:
-- **Coaming lip:** thinner (22), arching tight over the panel's top. At the product owner's further request it runs on
-  past the posts' feet round the panel, 25% longer in all.
+- **Coaming lip:** thinner (22), arching tight over the panel's top, only between the posts' feet (product owner).
+  For a while it ran 25% further round the panel.
 - **Front pane:** at the product owner's later requests, the two posts stand 20% closer together than in #16 and lean in
   about 5° going up to a cross bar just above the Revi's glass. Above it they angle out to the hood's top frame's
   corners. The side windows' lower frames keep their feet on the
@@ -2996,11 +2996,13 @@ pixels (the D89 dial match), all bars thin with mitred joins and flat ends:
   lean out more steeply going down so that they still meet the side windows where they did.
 - **Corner braces:** across the top corners at about 45° (removed for a while, then put back at the product owner's
   request). They cross the posts' diagonals near the corners, drawn over them (product owner).
-- **Side windows:** their lower frames, the fuselage's sides, run down from their feet on the coaming to meet the hood's
-  sides near the bottom corners, closing each side window. At the product owner's request they are steeper than D90's
-  (0.9 across for each pixel down, not 1.156) and run on to the foot of the screen, close by the panel's wings. 0.9 is
-  the steepest that clears the upper plate's wings and the speed card. Below the windows the cockpit's side is filled
-  in, so no ground shows.
+- **Side windows:** their lower frames, the fuselage's sides, start at the posts' feet, joining them (product owner).
+  They run down to meet the hood's sides near the bottom corners, and on to the foot of the screen. At the product
+  owner's request they are steeper than D90's: 1.02 across for each pixel down, not 1.156. That is the steepest that
+  clears the upper plate's wings from the posts' feet. To clear these frames, the speed card is 6 px narrower and 8 px
+  further left ([800, 345, 852, 478]), and the flap placard 6 px narrower on its left.
+- **No band below the windows:** the dark fill across the screen below the side windows, which looked like the wings'
+  leading edges, was removed (product owner).
 
 **Screen fit, a deviation flagged:** at the photograph's proportions the top frame would stand well above the top of the
 screen. As for the Hurricane, the height above the cross bar is compressed so the whole frame shows. The coaming, posts'
