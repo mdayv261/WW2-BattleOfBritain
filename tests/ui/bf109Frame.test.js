@@ -1,11 +1,11 @@
 // The Bf 109's front cockpit frame (D90), as the product owner's picture of the front view (#24): the coaming's lip
 // arching over the panel's top meets the windscreen posts' feet and clears the clock; the posts and side frames clear
-// every dial and the side frames pass outside both plates; the frame slides with the panel; and while the front view
+// every dial and the side frames pass outside both plates; the guns' line raised by a lens shift (D93); and while the front view
 // shows, the 3D windscreen, nose, wings and airscrew are hidden, showing again when the pilot looks round.
 import { describe, it, expect, beforeAll } from 'vitest';
 import * as THREE from 'three';
 import { FRAME, archAngles, archPoint, sideX, postX } from '../../src/ui/bf109Frame.js';
-import { BF109_PANEL, plateTop } from '../../src/ui/bf109Panel.js';
+import { BF109_PANEL, BF109_AIM, plateTop } from '../../src/ui/bf109Panel.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 
 const L = BF109_PANEL;
@@ -59,8 +59,7 @@ describe('Bf 109 front frame (D90)', () => {
     }
   });
 
-  it('slides with the panel as the pilot looks down', () => {
-    expect(plateTop(1259, 49, 100)).toBeCloseTo(plateTop(1259, 49) - 100, 9);
+  it('stands on the panel\'s top, the whole panel on the foot of the screen', () => {
     expect(plateTop(1259, 49)).toBeCloseTo(1259 - L.height * 49, 9);
   });
 });
@@ -93,6 +92,22 @@ describe('the 3D cockpit while the front frame shows (D90)', () => {
     expect(v.cockpit.visible).toBe(true);
     expect(v.model.getObjectByName('wingLeft').visible).toBe(true);
     expect(v.aircraft.screws[0].group.visible).toBe(true);
+  });
+
+  it('raises the guns\' line to BF109_AIM of the screen in the Bf 109 cockpit by a lens shift, the middle in others (D93)', () => {
+    const v = view('bf109e4');
+    expect(v.rig.aim).toBe(BF109_AIM);
+    expect(view('spitfire').rig.aim).toBe(0.5);
+    const cam = v.rig.camera;
+    cam.position.set(0, 0, 0);
+    cam.lookAt(1, 0, 0);
+    v.rig.shiftPicture(v.rig.aim);
+    cam.updateMatrixWorld();
+    const ahead = new THREE.Vector3(100, 0, 0).project(cam);
+    expect((1 - ahead.y) / 2).toBeCloseTo(BF109_AIM, 6); // the fraction of the screen's height from its top
+    expect(cam.fov).toBe(70); // no change of field of view
+    v.rig.shiftPicture(0.5);
+    expect(new THREE.Vector3(100, 0, 0).project(cam).y).toBeCloseTo(0, 6);
   });
 
   it('keeps a lost wing hidden, and leaves the Spitfire\'s view as it was', () => {

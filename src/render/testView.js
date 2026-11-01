@@ -10,6 +10,7 @@ import { buildAircraftModel } from './models/aircraftModel.js';
 import { DESIGNS } from './models/designs.js';
 import { buildMuzzleFlashes } from './projectiles.js';
 import { hideLost } from './wrecks.js';
+import { BF109_AIM } from '../ui/bf109Panel.js';
 
 export class TestView {
   constructor(scene, camera, sea) {
@@ -46,6 +47,7 @@ export class TestView {
     this.model = this.aircraft.group;
     this.cockpit = buildCockpitFrame(ac);
     this.frameDrawn = ac.id === 'bf109e4'; // the Bf 109's front frame is drawn with its panel (D90)
+    this.rig.aim = ac.id === 'bf109e4' ? BF109_AIM : 0.5; // its guns' line above the middle of the screen (D93)
     this.frontView = false;
     this.frontHidden = [this.model.getObjectByName('wingLeft'), this.model.getObjectByName('wingRight'),
       ...this.aircraft.screws.map((s) => s.group)];

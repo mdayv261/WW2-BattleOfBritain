@@ -4,15 +4,15 @@
 // references only: nothing of them is copied into the game. Positions and sizes are measured on #17 in its pixels (PX
 // to a dial radius) from the Revi's axis and the top of the upper plate.
 //   Upper panel: the clock at the top; the flap placard, fine altimeter, repeater compass, manifold pressure and the
-//   pilot's speed card (D91, in place of the deviation card) in the upper row; airspeed, turn and bank, the airscrew pitch
-//   switch, rev counter and the airscrew pitch indicator in the lower row; the magneto switch, a push button, the Achtung
+//   pilot's speed card (D91, in place of the deviation card) in the upper row; airspeed, turn and bank, the undercarriage
+//   lever (D93), rev counter and the airscrew pitch indicator in the lower row; the magneto switch, a push button, the Achtung
 //   placard and the pitot heater switch on the left.
 //   Lower panel: the lighting dimmer, a cover plate, the fuel and oil pressure gauge, the circuit breakers, the fuel
 //   warning lamp, the fuel contents, oil and coolant thermometers, the undercarriage selector (Fahrwerk Ein / Ruhe /
 //   Aus) and its emergency pull, the hand pump, the two levers, the four-lamp box and the narrow Ein/Aus strip.
 // Working: the flight and engine instruments, the fuel contents (full: fuel use is not modelled), the undercarriage
-// selector and the clock. The rest shows normal operation. Looking ahead, the screen shows the upper instruments and the
-// top of the lower ones, as from the seat; looking down slides the whole panel into view (D89).
+// lever, the left ball lever (showing the flaps, D93) and the clock. The rest shows normal operation. The whole panel is in view looking ahead: the guns' line
+// stands BF109_AIM of the way down the screen (D93).
 
 import { drawBf109Fittings } from './bf109Fittings.js';
 import { drawBf109Lower } from './bf109Lower.js';
@@ -27,10 +27,15 @@ import { millibarWindow } from './altimeters.js';
 const PX = 45; // picture pixels per dial radius: the airspeed indicator's face
 const AXIS = 660; // the Revi's axis on the picture: the guns' line, the middle of the screen
 const TOP = 227; // the top of the upper plate
-const AHEAD = 612; // looking ahead, the screen shows the panel down to here: the top of the lower instruments
 const FOOT = 868; // the bottom of the lower plate's wings
 /** The guns' line above the top of the upper plate, in dial radii, as seen from the seat (#16). */
 export const GLASS_ABOVE = 4.1;
+/**
+ * Where the guns' line stands looking ahead in the Bf 109's cockpit, as a fraction of the screen's height from its top
+ * (product owner, D93): above the middle, so the whole panel fits below the Revi at about its earlier size. The camera's
+ * picture is shifted to match (`CameraRig.aim`, src/render/cameras.js).
+ */
+export const BF109_AIM = 0.3;
 
 /** A picture point in dial radii from the Revi's axis at the top of the upper plate. */
 export const P = (px, py) => [(px - AXIS) / PX, (py - TOP) / PX];
@@ -54,13 +59,11 @@ const LOWER = [
  */
 export const BF109_PANEL = {
   width: (2 * (AXIS - 90)) / PX + 0.2, // the panel's reach either side of the axis: the left wing is the farther
-  height: (AHEAD - TOP) / PX + 0.1,
-  full: (FOOT - TOP) / PX + 0.1, // the whole panel, seen when looking down
-  // Looking ahead the guns' line is GLASS_ABOVE radii above the upper plate on the middle of the screen, the screen's foot at
-  // AHEAD: the panel takes this share of the screen height.
-  screenShare: ((AHEAD - TOP) / PX + 0.1) / (2 * ((AHEAD - TOP) / PX + 0.1 + GLASS_ABOVE)),
+  height: (FOOT - TOP) / PX + 0.1, // the whole panel
+  // The guns' line GLASS_ABOVE radii above the upper plate at BF109_AIM of the screen's height, the panel's foot on the
+  // screen's: the panel takes this share of the screen's height.
+  screenShare: ((1 - BF109_AIM) * ((FOOT - TOP) / PX + 0.1)) / ((FOOT - TOP) / PX + 0.1 + GLASS_ABOVE),
   ownBackground: true,
-  lookDown: true,
   upper: UPPER,
   lower: LOWER,
   dials: {
@@ -73,7 +76,7 @@ export const BF109_PANEL = {
   redBezels: ['altimeter', 'ata', 'airspeed'],
   boxes: {
     flapPlacard: [387, 268, 484, 335], magneto: [303, 375, 346, 491], achtung: [290, 495, 342, 534],
-    button: [249, 446, 288, 508], pitot: [270, 540, 342, 580], pitchSwitch: [617, 460, 660, 580],
+    button: [249, 446, 288, 508], pitot: [270, 540, 342, 580], gearLever: [617, 460, 660, 580],
     speedCard: [808, 345, 866, 478], cableHook: [632, 382, 656, 400], // the pilot's speed card in the deviation card's place (D91)
     blank: [499, 607, 576, 687], breakers: [672, 607, 750, 687], coolantPlacard: [672, 696, 750, 721],
     reserve: [480, 702, 532, 719], reserveLamp: [552, 692, 602, 718], lampBox: [252, 692, 425, 800],
@@ -103,28 +106,15 @@ export function placer(x0, y0, r) {
   return { xy, len, dial, box, knob };
 }
 
-/**
- * The top of the upper plate on a screen `height` px high (CSS px), at dial radius r, slid up by `slide` (looking down):
- * the panel stands on the foot of the screen, showing down to AHEAD.
- */
-export const plateTop = (height, r, slide = 0, L = BF109_PANEL) => height - L.height * r - slide;
-
-/**
- * How far (CSS px) the panel slides up as the pilot looks down (D89): as far as a point straight ahead moves on the
- * screen for the head's pitch (rad, + up) at the camera's vertical field of view (degrees), up to the whole panel.
- */
-export function lookDownShift(pitch, fov, height, r, L = BF109_PANEL) {
-  if (!L.lookDown || pitch >= 0) return 0;
-  const shift = (height / 2 / Math.tan((fov * Math.PI) / 360)) * Math.tan(-pitch);
-  return Math.min(shift, (L.full - L.height) * r);
-}
+/** The top of the upper plate on a screen `height` px high (CSS px), at dial radius r: the panel stands on its foot. */
+export const plateTop = (height, r, L = BF109_PANEL) => height - L.height * r;
 
 /** Draws the panel with the Revi's axis at the top of the upper plate at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
 export function bf109Panel(g, x0, y0, r, v, now = new Date()) {
   const L = BF109_PANEL;
   const at = placer(x0, y0, r);
   drawInterior(g, at); // the cockpit round the panel, below the front frame (D90)
-  drawBf109Fittings(g, at, L);
+  drawBf109Fittings(g, at, L, v);
   drawBf109Lower(g, at, L, v);
   for (const [name, entry] of Object.entries(L.dials)) {
     if (name === 'dimmer') continue; // a switch: drawn with the fittings

@@ -2645,6 +2645,8 @@ pass and the validation is unchanged.
 - **Shown only:** everything else. Placards are lettered where the picture can be read, grey lines where it cannot.
 - **Data added:** the fuel tank's 400 litres (`fuel.tank`, S16, S17), the fuel gauge's full scale.
 
+**Since D93** the whole panel is in the normal view and the look-down slide is gone.
+
 **Looking down:** looking ahead, the screen shows the Revi and the upper panel at about the earlier panel's size (dial
 radius 49 px on a 1,259-pixel-high window, against 56 before and 45 for the Spitfire), with the lower panel's top edge
 at the bottom, as from the seat (#16). Showing the whole panel at once would have made the dials about 34 px. Dragging
@@ -2752,3 +2754,26 @@ between the German words and the window (`SELECTOR_LABELS` in `src/ui/bf109Lower
 leave room for them clear of the handle, the placard is drawn wider than on the restored panel, out to the left into the
 plain panel beside the coolant thermometer: box [775, 695, 900, 749], against #17's [805, 695, 900, 749]. The English
 labels and the wider placard are additions to the photographed panel.
+
+## D93. Whole Bf 109 panel in the normal view; its undercarriage lever; the flap ball lever; hat forward (1 Nov 2026, plan approved by the product owner)
+
+**The whole panel looking ahead.** At the product owner's request the normal Bf 109 view shows the lower panel too:
+- The guns' line (the reticle, and the horizon in level flight) stands 30% of the way down the screen (`BF109_AIM`, their
+  choice), with the dials about their earlier size (48 px on a 1,259-pixel-high window, against 49).
+- The 3D picture is lens-shifted up to match (`CameraRig.aim` and `shiftPicture`, `camera.setViewOffset`): no tilt,
+  verticals stay upright and the field of view is unchanged. The RAF fighters and the Bf 110 keep the middle.
+- The look-down slide of D89 is gone.
+
+**Hat forward** looks up and ahead again, as before D89.
+
+**The undercarriage lever.** The product owner identified the switch between the turn and bank indicator and the rev
+counter as the undercarriage lever. It had been drawn as the airscrew pitch switch since D38, read on the museum
+photograph. The upper panel's "Vor Anlassen Fahrwerkschalter auf ‚Ruhe'" placard fits. Its red knob now slides up its
+slot with the undercarriage selected up and down with it selected down, lettered UP and DN (their choice).
+
+**The other undercarriage items** stay still: the right ball lever (by its placard, the hydraulic hand pump) and the
+lower Fahrwerk selector (probably the hand pump's valve), whose handle now rests at Ruhe. Its UP and DN labels (D92) stay.
+
+**Deviation, flagged to the product owner:** the left ball lever swings with the flaps, from its photographed 39° out
+from the vertical with the flaps up to 20° with them fully down. The real Bf 109 E's flaps were set by a handwheel
+beside the seat; the lever stands in for it so that the flap setting shows on the panel (their choice).

@@ -11,7 +11,7 @@
 // #21 against the reticle's ring (0.9 radii at the game's view): the sight stands in front of the panel's top, between
 // the clock and the manifold pressure gauge.
 
-import { BF109_PANEL } from './bf109Panel.js';
+import { BF109_PANEL, BF109_AIM } from './bf109Panel.js';
 import { panelRadius } from './instruments.js';
 import { roundRect } from './panelParts.js';
 import { drawReticle } from './reticle.js';
@@ -32,14 +32,14 @@ export const REVI = {
 };
 
 /**
- * Where the Revi goes on a screen `width` x `height` (CSS px), the panel slid up by `slide` (looking down, D89): placed on
- * the guns' line looking ahead (the middle of the screen, moved up with the panel). Returns { r (px per dial radius),
- * x, y (the guns' line looking ahead), glass: { x, y, w, h } (the clear glass's extent down to the dip) }.
+ * Where the Revi goes on a screen `width` x `height` (CSS px): on the guns' line looking ahead, BF109_AIM of the way down
+ * the screen (D93). Returns { r (px per dial radius), x, y (the guns' line looking ahead), glass: { x, y, w, h } (the
+ * clear glass's extent down to the dip) }.
  */
-export function reviPlacement(width, height, slide = 0) {
+export function reviPlacement(width, height) {
   const r = panelRadius(BF109_PANEL, width, height);
   const x = width / 2;
-  const y = height / 2 - slide;
+  const y = height * BF109_AIM;
   const { glass } = REVI;
   return {
     r, x, y,

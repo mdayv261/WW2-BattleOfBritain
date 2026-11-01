@@ -105,13 +105,11 @@ renderer.setAnimationLoop((now) => {
   effects.update(sim, dt, camera, renderer.domElement.height);
   updateScene(camera);
   hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
-  // Looking down slides the Bf 109's panel and its Revi up into view (D89).
-  const pitch = view.rig.inCockpit ? view.rig.look.pitch : 0;
-  instruments.update(sim, { hidden: view.rig.lookingAway || !!sim.playerJumper, pitch, fov: camera.fov }); // no panel once you have bailed out
+  instruments.update(sim, { hidden: view.rig.lookingAway || !!sim.playerJumper }); // no panel once you have bailed out
   const sight2D = showSight(sim, view.rig);
   view.showSight2D(sight2D);
   const aim = sight2D ? boresight(camera, view.model.quaternion, window.innerWidth, window.innerHeight, sim.ac.sight.ringMils) : null;
-  sight.update(sight2D, aim, sim.ac, instruments.slide);
+  sight.update(sight2D, aim, sim.ac);
   joyPanel.update();
   renderer.render(scene, camera);
   frameRate.work(performance.now() - now);

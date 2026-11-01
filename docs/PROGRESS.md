@@ -18,6 +18,15 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Whole Bf 109 panel in view; undercarriage and flap levers (1 Nov 2026)
+
+**Done** (D93):
+- the whole Bf 109 panel shows looking ahead: the guns' line 30% down the screen, the 3D picture lens-shifted to match;
+- the switch between the turn and bank and the rev counter is the undercarriage lever (the product owner), labelled UP
+  and DN, its knob following the undercarriage (key U);
+- the left ball lever swings with the flaps (a deviation: the real flaps used a handwheel);
+- the hat pushed forward looks up and ahead again.
+
 ## UP and DN on the Bf 109's undercarriage selector (1 Nov 2026)
 
 **Done** (D92): UP beside Ein and DN beside Aus on the Fahrwerk selector, its placard drawn a little wider for them.

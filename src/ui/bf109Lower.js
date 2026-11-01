@@ -1,8 +1,9 @@
 // The Bf 109 E lower panel's fittings (D89), after the product owner's picture of a restored panel (#17): the lighting
 // dimmer, a cover plate, the circuit breakers, the coolant placard, the fuel reserve warning lamp, the box below the
-// left lever, the arrow placard, the emergency pull and hand pump placards, the two levers, and the undercarriage
-// selector (Fahrwerk Ein / Ruhe / Aus), whose handle follows the undercarriage lever: Ein (retract) with it selected up,
-// Aus (lower) with it selected down. The rest are shown as photographed and not working. Two items could not be
+// left lever, the arrow placard, the emergency pull and hand pump placards, the two ball levers, and the Fahrwerk
+// selector (Ein / Ruhe / Aus, probably the hand pump's valve: its handle rests at Ruhe, D93). The left ball lever swings
+// with the flaps (the product owner's choice, D93: the real flaps were set by a handwheel); the rest are shown as
+// photographed and not working. Two items could not be
 // identified (the four-lamp box marked SKK404-2 and the narrow Ein/Aus strip at the bottom right): they are drawn as
 // photographed, lamps unlit.
 
@@ -13,8 +14,11 @@ import { BLACK, INK, centre, plain, roundKnob } from './bf109Fittings.js';
 
 const DULL_RED = '#5a1a14';
 
-/** Where the undercarriage selector's handle stands: Aus (lower) with the undercarriage selected down, else Ein. */
-export const selectorPosition = (v) => (v.gearSelected ? 'Aus' : 'Ein');
+/** Where the Fahrwerk selector's handle rests (D93): at Ruhe, as the Achtung placard asks before starting. */
+export const SELECTOR_REST = 'Ruhe';
+// The left ball lever's angle out from straight down (degrees, to the left): as photographed with the flaps up, swinging
+// in with the flaps down (D93).
+const FLAP_LEVER = { up: 39, down: 20 };
 // The handle's direction for each position (rad from pointing left, + down): the labels stand on an arc to its left.
 const SELECTOR_ANGLE = { Ein: -0.75, Ruhe: 0, Aus: 0.75 };
 /** The product owner's English labels beside the selector's up and down positions (D92). */
@@ -35,13 +39,14 @@ export function drawBf109Lower(g, at, L, v) {
   const [kx, ky, kr] = at.knob(L.knobs.primer);
   roundKnob(g, kx, ky, kr);
   arrowPlacard(g, B('arrowPlacard'), s);
-  gearSelector(g, B('gearSelector'), selectorPosition(v));
+  gearSelector(g, B('gearSelector'), SELECTOR_REST);
   placard(g, ...centre(B('emergency')), { lines: ['Notzug', 'für Fahrwerk'] });
   pull(g, B('emergency').x + B('emergency').w / 2, B('emergency').y - s * 0.12, s * 0.12);
   placard(g, ...centre(B('handPump')), { lines: ['Handpumpe'] });
   plain(g, B('pumpSlot'), s, '#2a2d30');
   strip(g, B('strip'), s);
-  for (const lever of Object.values(L.levers)) handle(g, at, lever);
+  handle(g, at, flapLever(L.levers.left, v.flapSelected ?? 0));
+  handle(g, at, L.levers.right);
 }
 
 /** The lighting dimmer: a round black plate with Hell and Aus on arrowed arcs and a pointer knob. */
@@ -269,6 +274,16 @@ function strip(g, b, s) {
   }
   text(g, 'Ein', b.x + b.w / 2, b.y + b.h * 0.2, b.w * 0.24, INK);
   text(g, 'Aus', b.x + b.w / 2, b.y + b.h * 0.84, b.w * 0.24, INK);
+}
+
+/**
+ * The left ball lever swung for a flap setting `f` (0 up to 1 fully down): the same pivot and length, its knob turned
+ * from the photographed angle in towards straight down (picture pixels, as the layout's levers).
+ */
+export function flapLever([x0, y0, x1, y1, knob], f) {
+  const length = Math.hypot(x1 - x0, y1 - y0);
+  const a = ((FLAP_LEVER.up + (FLAP_LEVER.down - FLAP_LEVER.up) * Math.max(0, Math.min(1, f))) * Math.PI) / 180;
+  return [x0, y0, x0 - Math.sin(a) * length, y0 + Math.cos(a) * length, knob];
 }
 
 /** A lever from its pivot (x0, y0) to a black ball knob (x1, y1) of radius `knob` (picture pixels). */

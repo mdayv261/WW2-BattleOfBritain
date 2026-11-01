@@ -10,18 +10,15 @@ import * as THREE from 'three';
 
 export const OUTSIDE_VIEWS = ['chase', 'fixed', 'orbit'];
 
-/**
- * Head turn for each hat direction (0 pushed forward, clockwise to 7 forward-left): down at the panel (forward, product
- * owner, D89: far enough to see the whole Bf 109 lower panel), the sides, and behind (pulled back).
- */
+/** Head turn for each hat direction (0 up, clockwise to 7 up-left): ahead-up, the sides, and behind. */
 export const HAT_LOOKS = [
-  { yaw: 0, pitch: -0.35 }, { yaw: -Math.PI / 4, pitch: 0.3 }, { yaw: -Math.PI / 2, pitch: 0.1 },
+  { yaw: 0, pitch: 0.6 }, { yaw: -Math.PI / 4, pitch: 0.3 }, { yaw: -Math.PI / 2, pitch: 0.1 },
   { yaw: -Math.PI * 0.75, pitch: 0.2 }, { yaw: Math.PI * 0.9, pitch: 0.3 }, { yaw: Math.PI * 0.75, pitch: 0.2 },
   { yaw: Math.PI / 2, pitch: 0.1 }, { yaw: Math.PI / 4, pitch: 0.3 },
 ];
 const LOOK_LIMITS = { yaw: Math.PI * 0.9, pitchUp: 1.4, pitchDown: -0.7 };
 // rad: a head turned further than this to the side, or raised further, is looking away from the instrument panel, which
-// is then hidden (D58). Every hat view but looking down is beyond it; looking down at the panel never hides it.
+// is then hidden (D58). Every hat view is beyond it; looking down at the panel never hides it.
 export const PANEL_LOOK_LIMIT = 20 * (Math.PI / 180);
 const FOV = { cockpit: 70, outside: 60 };
 
@@ -53,6 +50,9 @@ export class CameraRig {
     this.camPos = new THREE.Vector3();
     this.first = true;
     this.cockpitAllowed = true; // false for aircraft with no cockpit (the AI-only He 111)
+    // Where the guns' line stands in the cockpit view, as a fraction of the screen's height from its top: the middle,
+    // or higher for a cockpit whose whole panel is drawn below the sight (the Bf 109's, D93).
+    this.aim = 0.5;
   }
 
   get inCockpit() {
@@ -95,6 +95,22 @@ export class CameraRig {
     return this.hatLook ?? this.mouseLook;
   }
 
+  /**
+   * Shifts the camera's picture so that straight ahead falls `aim` of the way down the screen (0.5: the middle, no
+   * shift). A lens shift, not a tilt: verticals stay upright and the field of view is unchanged (D93).
+   */
+  shiftPicture(aim) {
+    const cam = this.camera;
+    if (aim === 0.5) {
+      if (cam.view?.enabled) cam.clearViewOffset();
+      return;
+    }
+    const v = cam.view;
+    const offset = 0.5 - aim; // of the picture's height
+    if (v?.enabled && v.offsetY === offset && v.fullWidth === cam.aspect) return;
+    cam.setViewOffset(cam.aspect, 1, 0, offset, cam.aspect, 1);
+  }
+
   /** Places the camera for the blended aircraft pose { position, quaternion } and its velocity. */
   update(ac, pose, velocity, dt) {
     const cam = this.camera;
@@ -103,6 +119,7 @@ export class CameraRig {
       cam.fov = fov;
       cam.updateProjectionMatrix();
     }
+    this.shiftPicture(this.inCockpit ? this.aim : 0.5);
     if (this.inCockpit) {
       eyePosition(ac, pose.position, pose.quaternion, cam.position);
       cockpitQuaternion(pose.quaternion, this.look, cam.quaternion);

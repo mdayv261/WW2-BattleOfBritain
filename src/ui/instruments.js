@@ -7,7 +7,7 @@
 import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
-import { BF109_PANEL, bf109Panel, lookDownShift } from './bf109Panel.js';
+import { BF109_PANEL, bf109Panel } from './bf109Panel.js';
 import { TRIM_SCALE } from './panelControls.js';
 import { pilotCard } from './speedCard.js';
 import { SPITFIRE_PANEL, rafPanel } from './rafPanel.js';
@@ -95,6 +95,7 @@ export function instrumentReadings(sim) {
     gearDown: plane.surfaces.gear > 0.99,
     gearUp: plane.surfaces.gear < 0.01,
     flaps: plane.surfaces.flaps, // fraction of travel
+    flapSelected: sim.input ? sim.input.flaps ?? 0 : plane.surfaces.flaps, // the flap setting selected (D93)
     flapDegrees: plane.surfaces.flaps * ac.controls.flapTravel * DEG,
     flapTravel: ac.controls.flapTravel * DEG,
     flapTakeoff: ac.controls.flapTakeoff,
@@ -125,7 +126,6 @@ export class InstrumentPanel {
     this.canvas.style.cssText = 'position:fixed;left:0;bottom:0;width:100%;pointer-events:none;';
     document.body.appendChild(this.canvas);
     this.visible = true;
-    this.slide = 0; // how far the panel has slid up as the pilot looks down (px, D89)
   }
 
   toggle() {
@@ -151,20 +151,17 @@ export class InstrumentPanel {
    * Redraws the panel for the current state, in the layout of the aircraft's side. `hidden` hides it for now (the pilot
    * looking to the side, up or behind, D58) without changing the I key's setting.
    */
-  update(sim, { hidden = false, pitch = 0, fov = 70 } = {}) {
+  update(sim, { hidden = false } = {}) {
     // Aircraft without a cockpit (the AI-only He 111) have no panel.
     const shown = this.visible && !hidden && sim.ac.cockpit !== false;
     this.canvas.style.display = shown ? 'block' : 'none';
-    this.slide = 0;
     if (!shown) return;
     const v = instrumentReadings(sim);
     const width = window.innerWidth;
     const twin = sim.ac.id === 'bf110c4';
     const L = v.raf ? SPITFIRE_PANEL : twin ? BF110_LAYOUT : BF109_PANEL;
     const r = panelRadius(L, width, window.innerHeight);
-    // Looking down slides a panel taller than the screen's share into view (the Bf 109's, D89): `pitch` the head's.
-    this.slide = lookDownShift(pitch, fov, window.innerHeight, r, L);
-    const height = L.height * r + 6 + this.slide;
+    const height = L.height * r + 6;
     const g = this.context(width, height);
     if (!L.ownBackground) {
       g.fillStyle = 'rgba(18, 18, 16, 0.94)';

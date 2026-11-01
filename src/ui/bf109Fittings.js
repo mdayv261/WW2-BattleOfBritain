@@ -1,6 +1,7 @@
 // The Bf 109 E panel's plates and upper fittings (D89), after the product owner's picture of a restored panel (#17, #23):
-// the upper and lower plates and their hexagon bolts; the placards, lettered where the picture can be read and drawn as grey lines where it cannot; the switches,
-// shown as photographed and not working. The lower panel's fittings are in src/ui/bf109Lower.js.
+// the upper and lower plates and their hexagon bolts; the placards, lettered where the picture can be read and drawn as
+// grey lines where it cannot; the switches, shown as photographed and not working, but for the undercarriage lever
+// (D93). The lower panel's fittings are in src/ui/bf109Lower.js.
 
 import { placard } from './luftwaffeDials.js';
 import { screw } from './lwStyle.js';
@@ -11,7 +12,7 @@ export const BLACK = '#121314';
 export const INK = '#e9e6dc';
 
 /** Draws the plates and the upper plate's fittings; `at` is the panel's placer (src/ui/bf109Panel.js), `L` its layout. */
-export function drawBf109Fittings(g, at, L) {
+export function drawBf109Fittings(g, at, L, v) {
   const s = at.len(45); // one dial radius in pixels: the unit for line widths and lettering
   outlinePlate(g, L.upper, at, [PANEL.top, PANEL.foot]);
   outlinePlate(g, L.lower, at, [PANEL.top, PANEL.foot]);
@@ -25,7 +26,7 @@ export function drawBf109Fittings(g, at, L) {
   placard(g, ...centre(B('achtung')), { lines: ['Achtung!', 'Vor Anlassen', 'Fahrwerkschalter', 'auf „Ruhe"'] });
   pushButton(g, B('button'), s);
   pitotSwitch(g, B('pitot'), s);
-  pitchSwitch(g, B('pitchSwitch'), s);
+  gearLever(g, B('gearLever'), s, v);
   cableHook(g, B('cableHook'), s);
 }
 
@@ -137,31 +138,22 @@ function pitotSwitch(g, b, s) {
   placard(g, b.x + b.w / 2, b.y + b.h * 0.84, b.w * 0.8, b.h * 0.3, { lines: ['Staurohr'], plate: '#d8d6cc', ink: '#1a1a1a' });
 }
 
-/** The airscrew pitch switch: a slot with up and down arrows, small print too fine to read, and its red knob. */
-function pitchSwitch(g, b, s) {
+/** Where the undercarriage lever's knob stands in its slot (fraction of the lever's height): up, or down when selected down. */
+export const gearKnob = (v) => (v.gearSelected ? 0.66 : 0.16);
+
+/**
+ * The undercarriage lever (identified by the product owner, D93): a red knob in a slot, up with the undercarriage
+ * selected up and down with it selected down, lettered UP and DN beside the slot.
+ */
+function gearLever(g, b, s, v) {
   plain(g, b, s);
   g.fillStyle = '#050505';
-  g.fillRect(b.x + b.w * 0.14, b.y + b.h * 0.1, b.w * 0.16, b.h * 0.62);
-  g.strokeStyle = INK;
-  g.lineWidth = Math.max(1, s * 0.03);
-  const ax = b.x + b.w * 0.62;
-  for (const [y0, y1] of [[0.4, 0.3], [0.48, 0.58]]) {
-    g.beginPath();
-    g.moveTo(ax, b.y + b.h * y0);
-    g.lineTo(ax, b.y + b.h * y1);
-    g.stroke();
-  }
-  g.globalAlpha = 0.55;
-  for (const fy of [0.16, 0.44, 0.7]) {
-    g.beginPath();
-    g.moveTo(b.x + b.w * 0.42, b.y + b.h * fy);
-    g.lineTo(b.x + b.w * 0.86, b.y + b.h * fy);
-    g.stroke();
-  }
-  g.globalAlpha = 1;
+  g.fillRect(b.x + b.w * 0.14, b.y + b.h * 0.08, b.w * 0.16, b.h * 0.66);
+  text(g, 'UP', b.x + b.w * 0.64, b.y + b.h * 0.16, s * 0.2, INK, { bold: true });
+  text(g, 'DN', b.x + b.w * 0.64, b.y + b.h * 0.66, s * 0.2, INK, { bold: true });
   g.fillStyle = '#c8392e';
   g.beginPath();
-  g.arc(b.x + b.w * 0.3, b.y + b.h * 0.88, b.w * 0.2, 0, Math.PI * 2);
+  g.arc(b.x + b.w * 0.22, b.y + b.h * gearKnob(v), b.w * 0.18, 0, Math.PI * 2);
   g.fill();
 }
 

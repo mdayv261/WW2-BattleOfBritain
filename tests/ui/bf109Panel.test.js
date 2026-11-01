@@ -1,18 +1,17 @@
 // The Bf 109 E panel after the product owner's pictures of a restored panel (D89): dial scales read as on the
 // photographed instruments; every dial, plate and knob on the restored panel's upper or lower plate (#17, #23), none
-// touching;
-// the Revi in front of the panel's top clear of the dials; the placards' words; the undercarriage selector following the
-// lever; no ammunition counter, flap, trim or GEAR displays; looking down slides the whole panel into view.
+// touching; the Revi in front of the panel's top clear of the dials; the placards' words; no ammunition counter, flap,
+// trim or GEAR displays; the whole panel below the Revi with the guns' line at BF109_AIM (D93); the undercarriage lever
+// and the left ball lever working.
 import { describe, it, expect } from 'vitest';
 import { lwAirspeedAngle, lwRpmAngle, lwAtaAngle, lwFuelAngle } from '../../src/ui/luftwaffeDials.js';
-import { BF109_PANEL, GLASS_ABOVE, P, bf109Panel, lookDownShift } from '../../src/ui/bf109Panel.js';
-import { selectorPosition } from '../../src/ui/bf109Lower.js';
+import { BF109_PANEL, BF109_AIM, GLASS_ABOVE, P, bf109Panel, plateTop } from '../../src/ui/bf109Panel.js';
+import { SELECTOR_REST, flapLever } from '../../src/ui/bf109Lower.js';
+import { gearKnob } from '../../src/ui/bf109Fittings.js';
 import { REVI, reviPlacement } from '../../src/ui/reviSight.js';
-import { SPITFIRE_PANEL } from '../../src/ui/rafPanel.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
-import { HAT_LOOKS } from '../../src/render/cameras.js';
 
 const DEG = Math.PI / 180;
 const clockwise = (a) => ((a / DEG) % 360 + 360) % 360;
@@ -113,22 +112,24 @@ describe('Bf 109 panel layout (D89)', () => {
     }
   });
 
-  it('sits below the Revi\'s glass on every screen, the glass big enough for the reticle\'s ring', () => {
+  it('fits the whole panel below the Revi on every screen, the guns\' line at BF109_AIM, the glass round the reticle', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);
-      const archTop = h - (L.height * r + 6);
-      expect(archTop - h / 2, `${w}x${h}`).toBeGreaterThanOrEqual(GLASS_ABOVE * r - 6 - 1e-6);
+      // The panel stands on the foot of the screen; the guns' line GLASS_ABOVE radii above its top, at BF109_AIM of the
+      // height when the height sets the size, higher only on a screen too narrow for it.
+      const top = plateTop(h, r);
+      expect(top - GLASS_ABOVE * r, `${w}x${h}`).toBeGreaterThanOrEqual(BF109_AIM * h - 1e-6);
       expect(L.width * r, `${w}x${h}`).toBeLessThanOrEqual(0.96 * w + 1e-6);
-      // The reticle looking ahead, on the middle of the screen, with its lines' reach (src/ui/reticle.js) on the glass
-      // and above the housing's dip, as photographed (#21).
-      const { glass } = reviPlacement(w, h);
+      const { glass, y } = reviPlacement(w, h);
+      expect(y).toBeCloseTo(BF109_AIM * h, 6);
       expect(glass.x + glass.w / 2).toBeCloseTo(w / 2, 6);
       const ring = (h / 2 / Math.tan((70 * Math.PI) / 360)) * Math.tan(aircraftById.bf109e4.sight.ringMils / 2000);
       expect(glass.x, `${w}x${h}`).toBeLessThan(w / 2 - 1.22 * ring);
-      expect(glass.y, `${w}x${h}`).toBeLessThan(h / 2 - 1.2 * ring);
-      expect(glass.y + glass.h, `${w}x${h}`).toBeGreaterThan(h / 2 + ring);
+      expect(glass.y, `${w}x${h}`).toBeLessThan(y - 1.2 * ring);
+      expect(glass.y + glass.h, `${w}x${h}`).toBeGreaterThan(y + ring);
     }
-    expect(panelRadius(L, 2560, 1259)).toBeGreaterThan(45); // about the earlier panel's size, larger than the Spitfire's
+    expect(plateTop(1259, panelRadius(L, 2560, 1259)) - GLASS_ABOVE * panelRadius(L, 2560, 1259)).toBeCloseTo(0.3 * 1259, 6);
+    expect(panelRadius(L, 2560, 1259)).toBeGreaterThan(47); // about the size it was before the whole panel showed (D93)
   });
 
   it('uses the picture\'s positions: the Revi on the guns\' line right of the clock, its upper plate\'s raised middle round the clock', () => {
@@ -163,41 +164,22 @@ describe('Bf 109 panel drawing (D89)', () => {
     expect(L.ammo).toBeUndefined();
   });
 
-  it('turns the undercarriage selector to Ein with the lever up, Aus with it down', () => {
-    expect(selectorPosition({ gearSelected: false })).toBe('Ein');
-    expect(selectorPosition({ gearSelected: true })).toBe('Aus');
-    const sim = new Simulation(aircraftById.bf109e4, 'ground');
-    expect(selectorPosition(instrumentReadings(sim))).toBe('Aus');
-  });
-});
-
-describe('looking down at the Bf 109 panel (D89)', () => {
-  const [w, h] = [2560, 1259];
-  const r = panelRadius(L, w, h);
-
-  it('slides nothing looking ahead or up, and as far as a point ahead moves on the screen looking down', () => {
-    expect(lookDownShift(0, 70, h, r)).toBe(0);
-    expect(lookDownShift(0.3, 70, h, r)).toBe(0);
-    const pitch = -0.1;
-    expect(lookDownShift(pitch, 70, h, r)).toBeCloseTo((h / 2 / Math.tan(35 * DEG)) * Math.tan(0.1), 6);
+  it('moves the undercarriage lever\'s knob down its slot with the undercarriage selected down, lettered UP and DN (D93)', () => {
+    expect(gearKnob({ gearSelected: false })).toBeLessThan(gearKnob({ gearSelected: true }));
+    expect(gearKnob(readings())).toBe(gearKnob({ gearSelected: false })); // the air start: undercarriage up
+    expect(gearKnob(instrumentReadings(new Simulation(aircraftById.bf109e4, 'ground')))).toBe(gearKnob({ gearSelected: true }));
+    expect(L.boxes.gearLever).toEqual([617, 460, 660, 580]); // between the turn and bank and the rev counter
+    expect(L.boxes.pitchSwitch).toBeUndefined();
   });
 
-  it('stops with the whole panel in view, and never slides the RAF panel', () => {
-    expect(lookDownShift(-0.7, 70, h, r)).toBeCloseTo((L.full - L.height) * r, 6);
-    expect(lookDownShift(-0.7, 70, h, r, SPITFIRE_PANEL)).toBe(0);
-  });
-
-  it('shows the whole lower panel with the hat pushed forward; the hat pulled back looks behind (product owner, D89)', () => {
-    expect(HAT_LOOKS[0].yaw).toBe(0);
-    for (const [sw, sh] of SCREENS) {
-      const sr = panelRadius(L, sw, sh);
-      expect(lookDownShift(HAT_LOOKS[0].pitch, 70, sh, sr), `${sw}x${sh}`).toBeCloseTo((L.full - L.height) * sr, 6);
-    }
-    expect(Math.abs(HAT_LOOKS[4].yaw)).toBeGreaterThan(Math.PI / 2);
-  });
-
-  it('moves the Revi up with the panel', () => {
-    const slide = lookDownShift(-0.2, 70, h, r);
-    expect(reviPlacement(w, h, slide).y).toBeCloseTo(h / 2 - slide, 6);
+  it('swings the left ball lever in with the flaps, inside the panel; the right lever and the Fahrwerk selector stay', () => {
+    const up = flapLever(L.levers.left, 0);
+    const down = flapLever(L.levers.left, 1);
+    expect(up[2]).toBeCloseTo(L.levers.left[2], 0); // as photographed with the flaps up
+    expect(up[3]).toBeCloseTo(L.levers.left[3], 0);
+    expect(down[2]).toBeGreaterThan(up[2] + 40);
+    for (const [, , x, y] of [up, down, flapLever(L.levers.left, 0.5)]) expect(onPanel([x, y])).toBe(true);
+    expect(SELECTOR_REST).toBe('Ruhe');
+    expect(readings({ flapSelected: 1 }).flapSelected).toBe(1);
   });
 });
