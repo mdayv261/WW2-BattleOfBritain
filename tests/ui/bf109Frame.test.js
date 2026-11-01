@@ -1,18 +1,29 @@
-// The Bf 109's front cockpit frame (D90), as the product owner's picture of the front view (#24): the coaming's lip
+// The Bf 109's front cockpit frame (D90, redrawn in D103 from the museum photograph #16): the coaming's lip
 // arching over the panel's top meets the windscreen posts' feet and clears the clock; the posts and side frames clear
 // every dial and the side frames pass outside both plates; the guns' line raised by a lens shift (D93); and while the front view
 // shows, the 3D windscreen, nose, wings and airscrew are hidden, showing again when the pilot looks round; the MG 17s
 // flash on the coaming instead of in 3D (D94).
 import { describe, it, expect, beforeAll } from 'vitest';
 import * as THREE from 'three';
-import { FRAME, FLASH_TIME, archAngles, archPoint, sideX, postX, flashPoint, mgFlashes } from '../../src/ui/bf109Frame.js';
-import { REVI } from '../../src/ui/reviSight.js';
+import { FRAME, FLASH_TIME, archAngles, archPoint, sideX, postX, hoodX, windowCorner, flashPoint, mgFlashes } from '../../src/ui/bf109Frame.js';
+import { REVI, reviPlacement } from '../../src/ui/reviSight.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { BF109_PANEL, BF109_AIM, FUSELAGE_CENTRE_OFFSET, plateTop } from '../../src/ui/bf109Panel.js';
 import { panelRadius } from '../../src/ui/instruments.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 
 const L = BF109_PANEL;
+
+/** Whether a picture point lies inside an outline (picture pixels). */
+function inside([px, py], pts) {
+  let hit = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i, i += 1) {
+    const [xi, yi] = pts[i];
+    const [xj, yj] = pts[j];
+    if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) hit = !hit;
+  }
+  return hit;
+}
 const TOP = 227; // the upper plate's top on the picture
 
 /** Distance from a point to the line through a and b (picture pixels). */
@@ -65,6 +76,57 @@ describe('Bf 109 front frame (D90)', () => {
 
   it('stands on the panel\'s top, the whole panel on the foot of the screen', () => {
     expect(plateTop(1259, 49)).toBeCloseTo(1259 - L.height * 49, 9);
+  });
+});
+
+describe('Bf 109 front frame as the museum photograph, square joins (D103)', () => {
+  const { top, posts, crossBar, braces } = FRAME;
+
+  it('raises the posts from the coaming\'s ends to the top frame, leaning a little out', () => {
+    for (const side of [-1, 1]) {
+      const foot = posts.feet[side < 0 ? 0 : 1];
+      expect(postX(side, foot[1])).toBeCloseTo(foot[0], 9);
+      expect(side * (postX(side, top.y) - foot[0])).toBeGreaterThan(0); // leaning out going up
+      expect(posts.lean).toBeLessThan(0.1);
+    }
+  });
+
+  it('squares the top frame\'s corners on the hood\'s sides, and shows it on the screen', () => {
+    for (const side of [-1, 1]) expect(hoodX(side, top.y)).toBeCloseTo(583 + side * top.half, 9);
+    for (const [w, h] of [[2560, 1259], [1280, 720], [1920, 1080]]) {
+      const r = panelRadius(BF109_PANEL, w, h);
+      const y = plateTop(h, r) + ((top.y - top.width / 2 - 227) / 45) * r;
+      expect(y, `${w}x${h}`).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('puts the cross bar between the posts just above the Revi\'s glass, clear of it', () => {
+    const [w, h] = [2560, 1259];
+    const r = panelRadius(BF109_PANEL, w, h);
+    const bar = plateTop(h, r) + ((crossBar.y + crossBar.width / 2 - 227) / 45) * r;
+    const { glass } = reviPlacement(w, h);
+    expect(bar).toBeLessThan(glass.y);
+    expect(glass.y - bar).toBeLessThan(3 * r); // just above it
+    expect(crossBar.y).toBeGreaterThan(top.y);
+  });
+
+  it('braces the top corners at about 45 degrees', () => {
+    for (const side of [-1, 1]) {
+      const dx = Math.abs(hoodX(side, braces.y) - (583 + side * braces.half));
+      const dy = braces.y - top.y;
+      expect(Math.atan2(dy, dx) * 180 / Math.PI).toBeCloseTo(45, -1);
+    }
+  });
+
+  it('closes each side window where the hood\'s side meets its lower frame, outside both plates', () => {
+    for (const side of [-1, 1]) {
+      const [x, y] = windowCorner(side);
+      expect(x).toBeCloseTo(hoodX(side, y), 6);
+      expect(x).toBeCloseTo(sideX(side, y), 6);
+      for (let yy = top.y; yy <= y; yy += 25) {
+        expect(inside([hoodX(side, yy), yy], L.upper) || inside([hoodX(side, yy), yy], L.lower), String(yy)).toBe(false);
+      }
+    }
   });
 });
 

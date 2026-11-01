@@ -2688,6 +2688,8 @@ flap and trim displays and its undercarriage lever and lamps. The Bf 110 keeps t
 
 ## D90. The Bf 109's front cockpit view framed as the product owner's picture (1 Nov 2026, plan approved by the product owner)
 
+**The frame superseded by D103** (from the museum photograph #16, square joins).
+
 **The picture** (#24): a Bf 109 E cockpit from the seat. It is a screenshot from another program's model viewer, so it
 is used as a shape guide only and nothing is copied. The product owner's museum photograph from the seat (#16) shows the
 same framing.
@@ -2973,3 +2975,28 @@ with the minor differences of their picture #29. #29 is a screenshot of a Spitfi
 - **Colours:** light grey metal frames, pale grey coaming and sills, grey side walls.
 
 The long canopy bows and the dark lip of D99 are gone.
+
+## D103. The Bf 109's front view framed as the museum photograph, with square joins (1 Nov 2026, plan approved by the product owner)
+
+With the RAF fighters' front views approved (D100–D102), the product owner asked for the Bf 109's to be similar to the
+Hurricane's, but with square frame joins rather than rounded ones, as their museum photograph from the seat shows (#16,
+a shape guide only). They chose to include the windscreen's cross bar and the two corner braces in the front view. The
+3D view when looking up stays without them (D94).
+
+**The frame** (`FRAME` and `drawFrontFrame` in `src/ui/bf109Frame.js`), measured on #16 in the restored panel's picture
+pixels (the D89 dial match), all bars thin with mitred joins and flat ends:
+- **Coaming lip:** thinner (22), arching tight over the panel's top between the posts' feet, as before.
+- **Front pane:** two posts from the coaming's ends, leaning a little out (0.05 across for each pixel up), to the hood's
+  flat top frame.
+- **Cross bar:** between the posts just above the Revi's glass.
+- **The hood's top frame:** square corners, with its sides leaning a little out going down. 45° braces cross the top
+  corners.
+- **Side windows:** their lower frames run diagonally down from the posts' feet (at the Bf 109's slope, D90) to meet the
+  hood's sides near the bottom corners, closing each side window. Below that the cockpit's side is filled in, so no ground
+  shows under the windows.
+
+**Screen fit, a deviation flagged:** at the photograph's proportions the top frame would stand well above the top of the
+screen. As for the Hurricane, the height above the cross bar is compressed so the whole frame shows. The coaming, posts'
+feet, cross bar and side windows keep the photograph's proportions.
+
+**Unchanged:** the propeller arc (D98), the MG 17 flashes on the coaming (D94), the Revi and the panel.

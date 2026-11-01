@@ -1,20 +1,30 @@
-// The Bf 109's front cockpit frame (D90), drawn square-on with the panel while the pilot looks ahead, as the product
-// owner's picture of the front view shows it (#24, a shape guide only; their museum photograph from the seat, #16,
-// shows the same framing): the coaming's curved lip arching over the top of the panel above the clock; the two front
-// windscreen posts rising from its ends, nearly upright and leaning a little outward; and the cockpit's side frames
-// running diagonally down from the posts' feet past the panel's wings to the foot of the view, the cockpit's dark
-// interior below them round the panel. Sizes are in picture pixels of the restored panel (#17, through the panel's
-// placer, src/ui/bf109Panel.js), measured on #24 against its dials. The 3D windscreen, nose and wings are hidden
-// meanwhile (src/render/testView.js) and show again when the pilot looks round.
+// The Bf 109's front cockpit frame (D90, redrawn in D103), drawn square-on with the panel while the pilot looks ahead,
+// as the product owner's museum photograph from the seat shows it (#16, a shape guide only), with square joins: the
+// coaming's thin lip arching tight over the top of the panel above the clock; the front pane's two posts rising from its
+// ends, leaning a little out, to the hood's flat top frame; a cross bar between them just above the Revi; the hood's
+// sides from the top frame's square corners, leaning a little out going down, with 45° braces across the top corners;
+// and the side windows' lower frames running diagonally down from the posts' feet to meet the hood's sides, the
+// cockpit's dark interior below them round the panel. Sizes are in picture pixels of the restored panel (#17, through the
+// panel's placer, src/ui/bf109Panel.js), measured on #16 against its dials; the height above the cross bar is
+// compressed so the top frame shows on the screen. The 3D windscreen, nose and wings are hidden meanwhile
+// (src/render/testView.js) and show again when the pilot looks round.
 
 export const FRAME = {
   // The coaming's lip: the middle of the band follows an ellipse; its inner edge runs over the upper plate's top above
   // the clock and down to the posts' feet.
-  arch: { cx: 583, cy: 343.2, a: 295, b: 133.2, thick: 30 },
+  arch: { cx: 583, cy: 343.2, a: 291, b: 129.2, thick: 22 },
   // The posts' feet at the arch's ends, their width, and how far they lean outward for each pixel up.
-  posts: { feet: [[333, 290], [833, 290]], width: 42, lean: 0.114 },
-  // The side frames: from the posts' feet, outward this many pixels for each pixel down; their width.
-  sides: { slope: 1.156, width: 46 },
+  posts: { feet: [[333, 290], [833, 290]], width: 24, lean: 0.05 },
+  // The side windows' lower frames: from the posts' feet, outward this many pixels for each pixel down; their width.
+  sides: { slope: 1.156, width: 32 },
+  // The hood's flat top frame: its height and its half-width about the windscreen's centre (the square corners).
+  top: { y: -285, half: 580, width: 28 },
+  // The hood's sides: from the top frame's corners, outward this many pixels for each pixel down.
+  hood: { slope: 0.127, width: 28 },
+  // The front pane's cross bar between the posts, just above the Revi's glass.
+  crossBar: { y: -111, width: 22 },
+  // The 45° braces across the top corners: from the top frame `half` from the centre down to the hood's side at `y`.
+  braces: { half: 400, y: -110, width: 22 },
   // The cowling MG 17s' muzzle flashes on the lip's top edge (product owner, D94): symmetric about the windscreen's
   // centre (the fuselage's centre line), well apart, left and right; their size.
   flashes: { x: [393, 773], size: 16 },
@@ -40,6 +50,22 @@ export function flashPoint(side) {
 }
 const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
+const CENTRE = 583; // the windscreen's centre, the fuselage's centre line
+const METAL = '#8a8f93';
+const METAL_DARK = '#5c6064';
+
+/** The hood's side's x at height y (`side` -1 left, +1 right), from the top frame's corner outward going down. */
+export const hoodX = (side, y) => CENTRE + side * (FRAME.top.half + FRAME.hood.slope * (y - FRAME.top.y));
+
+/** Where a side window's lower frame meets the hood's side (`side` -1 left, +1 right): the window's bottom corner. */
+export function windowCorner(side) {
+  const [fx, fy] = FRAME.posts.feet[side < 0 ? 0 : 1];
+  // fx + side·s·(y − fy) = CENTRE + side·(half + h·(y − top)), solved for y.
+  const { slope: s } = FRAME.sides;
+  const { slope: h } = FRAME.hood;
+  const y = (side * (CENTRE - fx) + FRAME.top.half - h * FRAME.top.y + s * fy) / (s - h);
+  return [sideX(side, y), y];
+}
 
 /**
  * The arch's end angles (rad, canvas ellipse angles: 0 to the right, increasing clockwise), where its inner edge meets
@@ -79,24 +105,38 @@ export function drawInterior(g, at) {
   g.lineTo(...at.xy([sideX(-1, y0 + FAR), y0 + FAR]));
   g.closePath();
   g.fill();
+  // Below each side window: the cockpit's side, so no ground shows under the windows (D103).
+  for (const side of [-1, 1]) {
+    const [cx, cy] = windowCorner(side);
+    g.beginPath();
+    for (const p of [[cx, cy], [sideX(side, FAR), FAR], [CENTRE + side * FAR, FAR], [CENTRE + side * FAR, cy]]) g.lineTo(...at.xy(p));
+    g.closePath();
+    g.fill();
+  }
 }
 
 /**
- * The side frames, the posts and the coaming's lip, on the sight's canvas before the Revi, and the MG 17s' muzzle
- * flashes on the lip (`flashes`: { left, right }, D94). `at` is the panel's placer.
+ * The hood's front frame, the posts, the cross bar, the braces, the side windows' lower frames and the coaming's lip, on
+ * the sight's canvas before the Revi, all with square joins (D103), and the MG 17s' muzzle flashes on the lip
+ * (`flashes`: { left, right }, D94). `at` is the panel's placer.
  */
 export function drawFrontFrame(g, at, flashes = { left: false, right: false }) {
   const { feet } = FRAME.posts;
-  const y0 = feet[0][1];
+  const w = (px) => at.len(px);
+  const P = (pts) => pts.map((p) => at.xy(p));
+  const [left, right] = [windowCorner(-1), windowCorner(1)];
+  // The hood: up the left side from the window's corner, across the top frame, down the right side.
+  bars(g, P([left, [CENTRE - FRAME.top.half, FRAME.top.y], [CENTRE + FRAME.top.half, FRAME.top.y], right]), w(FRAME.top.width));
   for (const side of [-1, 1]) {
-    // Side frame: a light outer bar with a darker inner band and a dark edge.
-    const a = at.xy([sideX(side, y0), y0]);
-    const b = at.xy([sideX(side, y0 + FAR), y0 + FAR]);
-    bar(g, a, b, at.len(FRAME.sides.width), '#868b90', '#5a5f63');
-    // Post: metal grey, lit from the left.
-    const top = at.xy([postX(side, y0 - FAR), y0 - FAR]);
-    bar(g, at.xy(feet[side < 0 ? 0 : 1]), top, at.len(FRAME.posts.width), '#7b8085', '#55595d');
+    const { braces } = FRAME;
+    bars(g, P([[CENTRE + side * braces.half, FRAME.top.y], [hoodX(side, braces.y), braces.y]]), w(braces.width));
+    // The side window's lower frame, from the post's foot to the window's corner.
+    bars(g, P([feet[side < 0 ? 0 : 1], windowCorner(side)]), w(FRAME.sides.width));
+    // The post, from its foot to the top frame.
+    bars(g, P([feet[side < 0 ? 0 : 1], [postX(side, FRAME.top.y), FRAME.top.y]]), w(FRAME.posts.width));
   }
+  const { crossBar } = FRAME;
+  bars(g, P([[postX(-1, crossBar.y), crossBar.y], [postX(1, crossBar.y), crossBar.y]]), w(crossBar.width));
   // The coaming's lip, over the posts' feet: a dark band with a lighter top edge and a row of rivets.
   const { cx, cy, a, b, thick } = FRAME.arch;
   const [t0, t1] = archAngles();
@@ -151,27 +191,29 @@ function muzzleFlash(g, x, y, size) {
   g.fill();
 }
 
-/** A frame bar from point a to point b (canvas px) of width w: the `light` face with a `dark` band along its inner half. */
-function bar(g, a, b, w, light, dark) {
-  g.lineCap = 'butt';
+/** Frame bars along a path (canvas px) of width w, with square (mitred) joins and flat ends: a dark edge, the metal, a
+ * darker stripe down the middle. */
+function bars(g, pts, w) {
+  const path = () => {
+    g.beginPath();
+    pts.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p)));
+  };
+  g.lineJoin = 'miter';
+  g.miterLimit = 10;
+  g.lineCap = 'square';
   g.strokeStyle = '#1e2022';
   g.lineWidth = w + 2;
-  line(g, a, b);
-  g.strokeStyle = light;
-  g.lineWidth = w;
-  line(g, a, b);
-  // The darker band on the side away from the light (the bar's right half, offset across it).
-  const [dx, dy] = [b[0] - a[0], b[1] - a[1]];
-  const len = Math.hypot(dx, dy) || 1;
-  const [nx, ny] = [(-dy / len) * w * 0.25, (dx / len) * w * 0.25];
-  g.strokeStyle = dark;
-  g.lineWidth = w * 0.45;
-  line(g, [a[0] - nx, a[1] - ny], [b[0] - nx, b[1] - ny]);
-}
-
-function line(g, a, b) {
-  g.beginPath();
-  g.moveTo(...a);
-  g.lineTo(...b);
+  path();
   g.stroke();
+  g.strokeStyle = METAL;
+  g.lineWidth = w;
+  path();
+  g.stroke();
+  g.lineCap = 'butt';
+  g.strokeStyle = METAL_DARK;
+  g.lineWidth = w * 0.3;
+  g.globalAlpha = 0.45;
+  path();
+  g.stroke();
+  g.globalAlpha = 1;
 }
