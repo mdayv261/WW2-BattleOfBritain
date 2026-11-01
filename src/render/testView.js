@@ -26,7 +26,7 @@ export class TestView {
 
   /**
    * While a 2D sight shows (D87), the 3D sight body and reticle are hidden. With the Bf 109's, its front frame is drawn
-   * with the panel (src/ui/bf109Frame.js, D90), so the 3D windscreen and nose, the wings and the airscrew hide too.
+   * with the panel (src/ui/bf109Frame.js, D90), so the 3D windscreen, nose and wings hide too (not the airscrew, D97).
    */
   showSight2D(on) {
     for (const part of this.sight3D ?? []) part.visible = !on;
@@ -49,8 +49,8 @@ export class TestView {
     this.frameDrawn = ac.id === 'bf109e4'; // the Bf 109's front frame is drawn with its panel (D90)
     this.rig.aim = ac.id === 'bf109e4' ? BF109_AIM : 0.5; // its guns' line above the middle of the screen (D93)
     this.frontView = false;
-    this.frontHidden = [this.model.getObjectByName('wingLeft'), this.model.getObjectByName('wingRight'),
-      ...this.aircraft.screws.map((s) => s.group)];
+    // The wings hide in the front view; the airscrew stays, its arc spinning ahead of the panel (D97).
+    this.frontHidden = [this.model.getObjectByName('wingLeft'), this.model.getObjectByName('wingRight')];
     this.lost = new Set();
     // The AI-only He 111 has no pilot's sight. The RAF's is drawn square-on in front of the panel while the pilot looks
     // ahead (src/ui/reflectorSight.js, D87): showSight2D hides these 3D parts meanwhile.

@@ -122,6 +122,9 @@ export function panelRadius(L, width, height) {
   return L.sizeAs ? Math.min(r, fittedRadius(L.sizeAs, width, height) * L.sizeAs.factor) : r;
 }
 
+/** Whether the panel hides: looking away (D58), after bailing out, or in the outside views (D97). */
+export const panelHidden = (rig, sim) => rig.lookingAway || !!sim.playerJumper || !rig.inCockpit;
+
 export class InstrumentPanel {
   constructor() {
     this.canvas = document.createElement('canvas');

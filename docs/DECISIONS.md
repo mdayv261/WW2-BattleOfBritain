@@ -2833,3 +2833,25 @@ At the product owner's request the joystick panel (J) offers two more buttons, *
 - **What they do while held:** on the Bf 109 and Bf 110 (manually pitched VDM airscrews) they work the pitch thumb
   switch, as the E and D keys do, so the Bf 109's pitch lever (D95) follows. On the RAF fighters (constant-speed
   airscrews) they move the rpm lever up or down at the keyboard's rate.
+
+## D97. Propeller arc from the cockpit; HUD and reticle in the outside views (1 Nov 2026, plan approved by the product owner)
+
+**Propeller arc:** at the product owner's request a spinning propeller arc shows from the cockpit.
+- **Bf 109:** its airscrew is no longer hidden in the front view (it was since D90); the nose and wings stay hidden.
+- **Tip ring:** every airscrew gains a faint ring where its blade tips run, beside its disc. Both show only above the
+  blade-drawing speed (700 rpm), so stopped blades still show on the ground.
+- **Opacity from the cockpit:** the disc goes from 6% to 10%, with the ring at 25%. From outside: disc 30%, ring 35%.
+
+**Outside views** (chase, fixed and orbit; all aircraft), at the product owner's request:
+- **Panel:** hidden (`panelHidden` in `src/ui/instruments.js`).
+- **Reticle:** each aircraft's pattern (GM 2 or Revi) drawn without the sight body at the guns' convergence point:
+  the point on its line of sight at its harmonisation range (aircraft data), projected from the chase camera, so it shows
+  where the guns point. The ring keeps the sight's mils at the camera's field of view (`chaseAim` in
+  `src/ui/reflectorSight.js`).
+- **HUD** (`src/ui/flightHud.js`): a translucent column on the right of the screen in the side's units:
+  - airspeed, altitude, heading and climb;
+  - throttle, boost or ata, rpm with the rpm lever or blade pitch, and coolant temperature;
+  - flaps, undercarriage (UP, DN or moving) and trim;
+  - rounds left.
+
+  It shows only in the outside views; the F2 strip and F3 overlay are unchanged.

@@ -14,8 +14,9 @@ import { Joystick } from './input/joystick.js';
 import { MouseLook } from './input/mouse.js';
 import { Hud } from './ui/hud.js';
 import { FrameRate } from './ui/frameRate.js';
-import { InstrumentPanel } from './ui/instruments.js';
-import { ReflectorSight, showSight, boresight } from './ui/reflectorSight.js';
+import { InstrumentPanel, panelHidden } from './ui/instruments.js';
+import { ReflectorSight, showSight, boresight, chaseAim } from './ui/reflectorSight.js';
+import { FlightHud } from './ui/flightHud.js';
 import { mgFlashes } from './ui/bf109Frame.js';
 import { JoystickPanel } from './ui/joystickPanel.js';
 import { aircraftList } from './aircraft/index.js';
@@ -41,6 +42,7 @@ const hud = new Hud();
 const frameRate = new FrameRate();
 const instruments = new InstrumentPanel();
 const sight = new ReflectorSight(); // the RAF's GM 2 drawn square-on in front of the panel (D87)
+const flightHud = new FlightHud(); // the outside views' HUD on the right of the screen (D97)
 const joyPanel = new JoystickPanel(joystick);
 
 function select(ac) {
@@ -106,11 +108,19 @@ renderer.setAnimationLoop((now) => {
   effects.update(sim, dt, camera, renderer.domElement.height);
   updateScene(camera);
   hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
-  instruments.update(sim, { hidden: view.rig.lookingAway || !!sim.playerJumper }); // no panel once you have bailed out
+  const outside = !view.rig.inCockpit;
+  instruments.update(sim, { hidden: panelHidden(view.rig, sim) }); // no panel looking away, bailed out or outside (D97)
   const sight2D = showSight(sim, view.rig);
   view.showSight2D(sight2D);
   const aim = sight2D ? boresight(camera, view.model.quaternion, window.innerWidth, window.innerHeight, sim.ac.sight.ringMils) : null;
-  sight.update(sight2D, aim, sim.ac, mgFlashes(sim)); // the Bf 109's MG 17 flashes on its coaming (D94)
+  if (outside && sim.ac.sight && !sim.playerJumper) {
+    // The outside views (D97): the reticle where the guns converge, and the HUD on the right.
+    const chase = chaseAim(camera, view.model.position, view.model.quaternion, sim.ac, window.innerWidth, window.innerHeight);
+    sight.update(true, chase, sim.ac, undefined, { reticleOnly: true });
+  } else {
+    sight.update(sight2D, aim, sim.ac, mgFlashes(sim)); // the Bf 109's MG 17 flashes on its coaming (D94)
+  }
+  flightHud.update(sim, outside && !sim.playerJumper);
   joyPanel.update();
   renderer.render(scene, camera);
   frameRate.work(performance.now() - now);

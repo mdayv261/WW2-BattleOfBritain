@@ -65,6 +65,23 @@ export function boresight(camera, quaternion, width, height, ringMils) {
   return { x: ((p.x + 1) / 2) * width, y: ((1 - p.y) / 2) * height, ring: perRadian * Math.tan(ringMils / 2000) };
 }
 
+/**
+ * The reticle's place in an outside view (D97): the guns' convergence point (on the aircraft's line of sight at its
+ * harmonisation range) projected to the screen from the chase camera, the ring the sight's mils at the camera's field of
+ * view. `position` and `quaternion` are the aircraft's (drawn) pose. null if the point is behind the camera.
+ */
+export function chaseAim(camera, position, quaternion, ac, width, height) {
+  camera.updateMatrixWorld();
+  const point = new Vector3(1, 0, 0).applyQuaternion(quaternion).multiplyScalar(ac.harmonisation).add(position);
+  const p = point.project(camera);
+  if (p.z > 1 || p.z < -1) return null;
+  const perRadian = height / 2 / Math.tan((camera.fov * Math.PI) / 360);
+  return { x: ((p.x + 1) / 2) * width, y: ((1 - p.y) / 2) * height, ring: perRadian * Math.tan(ac.sight.ringMils / 2000) };
+}
+
+/** The reticle pattern of an aircraft's sight: the GM 2's for the RAF, the Revi's for the Luftwaffe. */
+export const reticleStyle = (ac) => (ac.side === 'RAF' ? 'GM2' : 'Revi');
+
 /** The sight drawn square-on for an aircraft: the GM 2 (RAF), the Revi (Bf 109, D89), or null (a 3D sight only). */
 export const squareOnSight = (ac) => (!ac.sight ? null : ac.side === 'RAF' ? 'GM2' : ac.id === 'bf109e4' ? 'Revi' : null);
 
@@ -251,9 +268,10 @@ export class ReflectorSight {
 
   /**
    * Redraws the sight (or clears it) for the frame: `aim` the guns' line on the screen, or null; `ac` the aircraft;
-   * `flashes` which of the Bf 109's MG 17s are flashing ({ left, right }, drawn on its coaming, D94).
+   * `flashes` which of the Bf 109's MG 17s are flashing ({ left, right }, drawn on its coaming, D94). With
+   * `reticleOnly` (the outside views, D97) only the reticle is drawn, at `aim`.
    */
-  update(show, aim, ac = null, flashes = undefined) {
+  update(show, aim, ac = null, flashes = undefined, { reticleOnly = false } = {}) {
     const width = window.innerWidth;
     const height = window.innerHeight;
     this.canvas.style.display = show ? 'block' : 'none';
@@ -266,6 +284,10 @@ export class ReflectorSight {
     const g = this.canvas.getContext('2d');
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.clearRect(0, 0, width, height);
+    if (reticleOnly) {
+      if (aim) drawReticle(g, aim.x, aim.y, aim.ring, reticleStyle(ac));
+      return;
+    }
     if (ac && squareOnSight(ac) === 'Revi') {
       // The Bf 109's front frame on the panel's top, then the Revi in front of it (D90).
       const r = panelRadius(BF109_PANEL, width, height);

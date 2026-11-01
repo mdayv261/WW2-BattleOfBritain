@@ -18,6 +18,11 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Propeller arc; HUD and reticle in the outside views (1 Nov 2026)
+
+**Done** (D97): a spinning propeller arc from the cockpit (the Bf 109's airscrew shows in its front view again); in the
+outside views the panel hides, the reticle shows where the guns converge, and a HUD on the right gives the readings.
+
 ## Joystick propeller pitch buttons (1 Nov 2026)
 
 **Done** (D96): Propeller pitch fine and coarse buttons in the joystick panel (J), 7 and 9 by default; on the RAF

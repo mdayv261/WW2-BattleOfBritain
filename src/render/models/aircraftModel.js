@@ -19,8 +19,11 @@ const DEG = Math.PI / 180;
 // Display estimates where the data have no figure (D54): aileron and rudder travel; the elevator's down travel is drawn
 // equal to its recorded up travel (controls.elevatorUp).
 const DEFLECTION = { aileron: 20 * DEG, rudder: 25 * DEG };
-const BLADES_UNTIL = 700; // rpm: blades drawn below this, a disc above
-const DISC = { outside: 0.3, inside: 0.06 }; // the disc's greatest opacity, seen from outside and from the cockpit
+export const BLADES_UNTIL = 700; // rpm: blades drawn below this, a disc above
+// The spinning airscrew's disc and the arc at its blade tips: their greatest opacity seen from outside and from the
+// cockpit (the arc stronger from inside, so it shows ahead: D97).
+export const DISC = { outside: 0.3, inside: 0.1 };
+export const TIPS = { outside: 0.35, inside: 0.25 };
 
 const skin = () => new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, side: THREE.DoubleSide });
 const glass = () => new THREE.MeshLambertMaterial({
@@ -95,8 +98,11 @@ function airscrew(ac, hub, bladeColour) {
   }
   const disc = new THREE.Mesh(new THREE.CircleGeometry(radius, 32).rotateY(Math.PI / 2),
     new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
-  group.add(spinner, blades, disc);
-  return { group, blades, disc };
+  // The propeller arc (D97): a faint ring where the blade tips run.
+  const tips = new THREE.Mesh(new THREE.RingGeometry(radius * 0.88, radius, 48).rotateY(Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0x2c2c2c, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
+  group.add(spinner, blades, disc, tips);
+  return { group, blades, disc, tips };
 }
 
 /** A main undercarriage leg and wheel, folding about its top: { pivot, axis }. */
@@ -226,6 +232,7 @@ export function buildAircraftModel(ac, design) {
       sc.blades.rotation.x += omega * ac.propeller.gearRatio * ac.propeller.rotation * dt;
       sc.blades.visible = rpm < BLADES_UNTIL;
       sc.disc.material.opacity = rpm < BLADES_UNTIL ? 0 : Math.min(inside ? DISC.inside : DISC.outside, rpm / 6000);
+      sc.tips.material.opacity = rpm < BLADES_UNTIL ? 0 : Math.min(inside ? TIPS.inside : TIPS.outside, rpm / 3000);
     });
   };
   return { group, update, movers, legs, screws };

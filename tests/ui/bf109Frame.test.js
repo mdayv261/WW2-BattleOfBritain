@@ -112,14 +112,14 @@ describe('the 3D cockpit while the front frame shows (D90)', () => {
     return v;
   };
 
-  it('hides the Bf 109\'s 3D windscreen, nose, wings and airscrew looking ahead, and shows them looking round', () => {
+  it('hides the Bf 109\'s 3D windscreen, nose and wings looking ahead (not its airscrew, D97), and shows them looking round', () => {
     const v = view('bf109e4');
     v.showSight2D(true);
     v.showParts(true);
     expect(v.cockpit.visible).toBe(false);
     expect(v.model.getObjectByName('wingLeft').visible).toBe(false);
     expect(v.model.getObjectByName('wingRight').visible).toBe(false);
-    expect(v.aircraft.screws[0].group.visible).toBe(false);
+    expect(v.aircraft.screws[0].group.visible).toBe(true); // the airscrew stays, its arc ahead (D97)
     v.showSight2D(false); // looking round
     v.showParts(true);
     expect(v.cockpit.visible).toBe(true);
