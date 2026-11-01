@@ -1,5 +1,5 @@
-// The undercarriage indicators' words (product owner, D66): the Luftwaffe panels read OBEN (up) and UNTEN (down) and are
-// labelled GEAR; the RAF panels keep UP, DOWN and UNDERCARRIAGE. Each panel is drawn on a stand-in canvas that records
+// The undercarriage indicators' words (product owner, D66): the Bf 110's panel reads OBEN (up) and UNTEN (down) and is
+// labelled GEAR; the RAF panels keep UP, DOWN and UNDERCARRIAGE; the Bf 109's has the real selector's words (D89). Each panel is drawn on a stand-in canvas that records
 // the text it writes.
 import { describe, it, expect } from 'vitest';
 import { bf109Panel } from '../../src/ui/bf109Panel.js';
@@ -33,12 +33,11 @@ function recordingContext() {
 const readings = (id) => instrumentReadings(new Simulation(aircraftById[id], 'air'));
 
 describe('undercarriage indicator words (D66)', () => {
-  it('Bf 109: OBEN, UNTEN and GEAR; EIN/AUS only on the ammunition counter\'s gun switch', () => {
+  it('Bf 109: the real undercarriage selector\'s words (Fahrwerk, Ein, Ruhe, Aus) since D89, not the added OBEN, UNTEN and GEAR', () => {
     const g = recordingContext();
     bf109Panel(g, 500, 0, 40, readings('bf109e4'));
-    for (const word of ['OBEN', 'UNTEN', 'GEAR']) expect(g.texts, word).toContain(word);
-    expect(g.texts.filter((t) => t === 'EIN')).toHaveLength(1);
-    expect(g.texts.filter((t) => t === 'AUS')).toHaveLength(1);
+    for (const word of ['Fahrwerk', 'Ein', 'Ruhe', 'Aus']) expect(g.texts, word).toContain(word);
+    for (const word of ['OBEN', 'UNTEN', 'GEAR', 'UP', 'DOWN']) expect(g.texts, word).not.toContain(word);
   });
 
   it('Bf 110: OBEN, UNTEN and GEAR, and no EIN, AUS, UP, DOWN or FAHRWERK', () => {

@@ -1,16 +1,16 @@
 // The instrument panels (Phase 2, D28): 2D panels along the bottom of the screen, in each side's units, and the
 // readings that drive them. The 3D cockpits come in Phase 7.
 //   Hurricane and Spitfire: the Spitfire I panel of the product owner's reference picture, src/ui/rafPanel.js (D86).
-//   Bf 109 and Bf 110: their own modules, src/ui/bf109Panel.js (D38) and src/ui/bf110Panel.js (D39).
+//   Bf 109: the restored Bf 109 E panel of the product owner's pictures, src/ui/bf109Panel.js (D89).
+//   Bf 110: its own module, src/ui/bf110Panel.js (D39).
 
 import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
-import { BF109_LAYOUT, bf109Panel } from './bf109Panel.js';
+import { BF109_PANEL, bf109Panel, lookDownShift } from './bf109Panel.js';
 import { TRIM_SCALE } from './panelControls.js';
 import { SPITFIRE_PANEL, rafPanel } from './rafPanel.js';
 import { BF110_LAYOUT, bf110Panel } from './bf110Panel.js';
-import { counterState } from './ammoCounter.js';
 
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
@@ -36,6 +36,12 @@ function gaugePressures(p, rpm) {
   };
 }
 
+/** The fuel tanks' contents and capacities (litres), full: fuel use is not modelled yet. */
+function fuelTanks(ac) {
+  const tanks = ac.fuel?.wingTank ? [ac.fuel.wingTank, ac.fuel.wingTank] : ac.fuel?.tank ? [ac.fuel.tank] : null;
+  return tanks ? tanks.map((m3) => ({ litres: m3 * 1000, capacity: m3 * 1000 })) : null;
+}
+
 /** What the instruments show, in the aircraft's own units. Pure: used by the panel and the tests. */
 export function instrumentReadings(sim) {
   const { ac, plane } = sim;
@@ -55,6 +61,7 @@ export function instrumentReadings(sim) {
     turnRate: -spin.y * DEG, // deg/s, + turning right
     sideG: d.sideG,
     rpm: plane.omega / UNIT.RPM,
+    rpmLimit: plane.engine.maxSpeed / UNIT.RPM, // the red mark on the rev counter (D89)
     coolant: plane.engines[0].heat.coolant, // °C, the first engine's (the single-engine panels)
     oil: plane.engines[0].heat.oil,
     manifold: raf ? (d.map - ISA.P0) / UNIT.PSI : d.map / UNIT.ATA,
@@ -70,19 +77,14 @@ export function instrumentReadings(sim) {
       manifold: raf ? (d.engines[i].map - ISA.P0) / UNIT.PSI : d.engines[i].map / UNIT.ATA,
       pitchClock: raf ? null : pitchClock(e.beta, ac),
     })),
-    // Fuel in each wing, litres (fuel use is not modelled yet: full tanks).
-    fuelTanks: ac.fuel ? [ac.fuel.wingTank, ac.fuel.wingTank].map((m3) => ({ litres: m3 * 1000, capacity: m3 * 1000 })) : null,
+    // Fuel in each tank, litres (fuel use is not modelled yet: full tanks): each wing's on the Bf 110, the one tank on
+    // the Bf 109 (D89).
+    fuelTanks: fuelTanks(ac),
     gearSelected: sim.input ? !!sim.input.gear : plane.surfaces.gear > 0.5, // the undercarriage lever: down
     pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, plane.omega / UNIT.RPM) : null,
     // The RAF oil pressure gauge, lb/sq in (D86): the Merlin's normal pressure while it turns, rising from nothing as it
     // starts (the pressure is not modelled physically, as the DB 601A's gauges, D63).
     oilPressure: plane.engine.oilPressure ? (plane.engine.oilPressure.normal / UNIT.PSI) * running(plane.omega / UNIT.RPM) : null,
-    // The ammunition counter's columns (Bf 109, D64, D65): each gun's tape and window from its rounds left, read from
-    // the simulation's guns ({ rounds, capacity } by gun, from checkpoint 3); full and still until then.
-    ammoCounters: ac.ammoCounter ? ac.ammoCounter.map((gun) => {
-      const state = sim.guns?.[gun];
-      return { gun, ...(state ? counterState(state.rounds, state.capacity) : { fraction: 1, angle: 0, empty: false }) };
-    }) : null,
     // Normal temperature ranges for gauges that mark them (°C), where the engine data give them (D63).
     normalTemps: plane.engine.heat.oilNormal ? {
       oil: [plane.engine.heat.oilNormal.from, plane.engine.heat.oilNormal.to],
@@ -106,12 +108,13 @@ function fittedRadius(L, width, height) {
 }
 
 /**
- * A panel's dial radius (screen pixels) on a screen `width` x `height`. A layout with `matchBf109` takes the Bf 109's
- * radius times that factor, so its instruments come out the same size as the Bf 109's (D64), but never more than fits.
+ * A panel's dial radius (screen pixels) on a screen `width` x `height`. A layout with `sizeAs` { width, height,
+ * screenShare, factor } takes that panel's fitted radius times the factor, but never more than fits: the Bf 110 keeps
+ * the size of the Bf 109's earlier panel (D64) until its own redraw (D89).
  */
 export function panelRadius(L, width, height) {
   const r = fittedRadius(L, width, height);
-  return L.matchBf109 ? Math.min(r, fittedRadius(BF109_LAYOUT, width, height) * L.matchBf109) : r;
+  return L.sizeAs ? Math.min(r, fittedRadius(L.sizeAs, width, height) * L.sizeAs.factor) : r;
 }
 
 export class InstrumentPanel {
@@ -120,6 +123,7 @@ export class InstrumentPanel {
     this.canvas.style.cssText = 'position:fixed;left:0;bottom:0;width:100%;pointer-events:none;';
     document.body.appendChild(this.canvas);
     this.visible = true;
+    this.slide = 0; // how far the panel has slid up as the pilot looks down (px, D89)
   }
 
   toggle() {
@@ -145,17 +149,20 @@ export class InstrumentPanel {
    * Redraws the panel for the current state, in the layout of the aircraft's side. `hidden` hides it for now (the pilot
    * looking to the side, up or behind, D58) without changing the I key's setting.
    */
-  update(sim, { hidden = false } = {}) {
+  update(sim, { hidden = false, pitch = 0, fov = 70 } = {}) {
     // Aircraft without a cockpit (the AI-only He 111) have no panel.
     const shown = this.visible && !hidden && sim.ac.cockpit !== false;
     this.canvas.style.display = shown ? 'block' : 'none';
+    this.slide = 0;
     if (!shown) return;
     const v = instrumentReadings(sim);
     const width = window.innerWidth;
     const twin = sim.ac.id === 'bf110c4';
-    const L = v.raf ? SPITFIRE_PANEL : twin ? BF110_LAYOUT : BF109_LAYOUT;
+    const L = v.raf ? SPITFIRE_PANEL : twin ? BF110_LAYOUT : BF109_PANEL;
     const r = panelRadius(L, width, window.innerHeight);
-    const height = L.height * r + 6;
+    // Looking down slides a panel taller than the screen's share into view (the Bf 109's, D89): `pitch` the head's.
+    this.slide = lookDownShift(pitch, fov, window.innerHeight, r, L);
+    const height = L.height * r + 6 + this.slide;
     const g = this.context(width, height);
     if (!L.ownBackground) {
       g.fillStyle = 'rgba(18, 18, 16, 0.94)';

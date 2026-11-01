@@ -16,7 +16,28 @@ Read this at the start of every session.
   parachutes, the product owner's addition) done (D80); checkpoint 3 (fighter tactics and formations) done (D81);
   checkpoint 4 (bombers' routes and air gunners) done (D83); next checkpoint 5 (skill levels and the Phase 6 acceptance
   test).
-- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026.
+- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
+
+## Bf 109 E panel and Revi from the product owner's pictures (1 Nov 2026)
+
+**Done** (D89):
+- the restored Bf 109 E panel of the product owner's pictures, redrawn in code, with its own upper and lower plates;
+- working: the flight and engine instruments, fuel contents (400 L, full), clock and the undercarriage selector
+  (Fahrwerk Ein / Ruhe / Aus); the rest shown only;
+- looking down (hat pushed forward, or drag the mouse down) slides the whole panel into view; the hat pulled back still
+  looks behind;
+- the Revi drawn square-on in front of the panel, its reticle redrawn from the product owner's photograph;
+- removed: the ammunition counter, and the Bf 109's flap, trim and GEAR displays;
+- the rev counter rescaled to the photographed 600-3,400 rpm (the Bf 110 shares it);
+- tests in `tests/ui/bf109Panel.test.js` and `tests/ui/reflectorSight.test.js`.
+
+**Left:**
+- the product owner's browser test;
+- then the Bf 110 panel and its Revi from their pictures.
+
+**Known issues:**
+- two lower-panel items are unidentified (shown only);
+- the Revi's 100-mil ring is still an estimate (D33).
 
 ## Faster twelve-aircraft simulation (1 Nov 2026)
 
@@ -27,7 +48,7 @@ Read this at the start of every session.
   flaps are part-way;
 - the validation is unchanged.
 
-**Left:** push again with permission, and check that the deploy succeeds.
+**Pushed** with permission on 1 Nov 2026; the deploy succeeded and the live game is up to date.
 
 ## RAF reflector sight (1 Nov 2026)
 

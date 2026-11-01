@@ -1,7 +1,6 @@
 // Coolant and oil temperature gauges on the panels (product owner's placements, D63), and the readings that drive them.
 import { describe, it, expect } from 'vitest';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
-import { BF109_LAYOUT } from '../../src/ui/bf109Panel.js';
 import { BF110_LAYOUT } from '../../src/ui/bf110Panel.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
@@ -35,16 +34,15 @@ describe('temperature gauges (D63)', () => {
     expect(v.normalTemps).toEqual({ oil: [15, 90], coolant: [60, 95] }); // S33 (D85)
   });
 
-  it('reads the Bf 109 ammunition counter: left MG 17, cannon, right MG 17, full until the guns are wired', () => {
-    const v = instrumentReadings(new Simulation(aircraftById.bf109e4, 'air'));
-    expect(v.ammoCounters.map((c) => c.gun)).toEqual(['mg17Left', 'cannon', 'mg17Right']);
-    expect(v.ammoCounters.every((c) => c.fraction === 1)).toBe(true);
-    expect(instrumentReadings(new Simulation(aircraftById.spitfire, 'air')).ammoCounters).toBeNull();
+  it('has no ammunition counter: the Bf 109 E had none (product owner, D89)', () => {
+    expect(instrumentReadings(new Simulation(aircraftById.bf109e4, 'air')).ammoCounters).toBeUndefined();
+    expect(aircraftById.bf109e4.ammoCounter).toBeUndefined();
   });
 
-  it('draws the Bf 110\'s large dials the same size as the Bf 109\'s on any screen (D64)', () => {
+  it('keeps the Bf 110\'s large dials the size of the Bf 109\'s earlier panel (D64) until its redraw (D89)', () => {
+    const before = { width: 14.6, height: 9.45, screenShare: 0.42 }; // the Bf 109's panel of D41-D88
     for (const [w, h] of [[1548, 784], [1920, 1080], [1280, 720], [2560, 1259]]) {
-      const big109 = panelRadius(BF109_LAYOUT, w, h) * (BF109_LAYOUT.dials.airspeed[2] / 25);
+      const big109 = Math.min(66, (w * 0.96) / before.width, (h * before.screenShare) / before.height) * (23 / 25);
       const big110 = panelRadius(BF110_LAYOUT, w, h) * (BF110_LAYOUT.dials.airspeed[2] / 30);
       expect(big110, `${w}x${h}`).toBeCloseTo(big109, 6);
     }

@@ -62,18 +62,16 @@ export const bf109e4 = {
     dampingRatio: 0.6,
     brake: 0.3,
   },
-  // The cockpit's gun ammunition counter columns, left to right (product owner's choice, D64; not from a source).
-  ammoCounter: ['mg17Left', 'cannon', 'mg17Right'],
   // Guns (Phase 5, D67): type, muzzle position in body axes (m; estimates placed on the airframe: no drawing found) and
-  // rounds. MG 17s synchronised through the airscrew; belts as D61. The counter column each feeds (D64).
+  // rounds. MG 17s synchronised through the airscrew; belts as D61.
   harmonisation: 200, // m: range at which the guns' rounds cross the sight line
   guns: {
     // MG 17 muzzles at the front of the cowling, spread either side so their flashes show left and right of the Revi's
     // glass from the cockpit (product owner's choice, D67; the real guns sat closer together).
-    mg17Left: { type: 'mg17', x: 2.1, y: 0.4, z: -0.37, rounds: 1000, synchronised: true, counter: 'mg17Left' },
-    mg17Right: { type: 'mg17', x: 2.1, y: 0.4, z: 0.37, rounds: 1000, synchronised: true, counter: 'mg17Right' },
-    cannonLeft: { type: 'mgffm', x: 0.85, y: -0.2, z: -1.95, rounds: 60, counter: 'cannon' },
-    cannonRight: { type: 'mgffm', x: 0.85, y: -0.2, z: 1.95, rounds: 60, counter: 'cannon' },
+    mg17Left: { type: 'mg17', x: 2.1, y: 0.4, z: -0.37, rounds: 1000, synchronised: true },
+    mg17Right: { type: 'mg17', x: 2.1, y: 0.4, z: 0.37, rounds: 1000, synchronised: true },
+    cannonLeft: { type: 'mgffm', x: 0.85, y: -0.2, z: -1.95, rounds: 60 },
+    cannonRight: { type: 'mgffm', x: 0.85, y: -0.2, z: 1.95, rounds: 60 },
   },
   // Engine cooling (Phase 5, D62). Estimates: the temperatures each engine settles at, used to solve the radiator's
   // conductance. Climb: the normal rating's sea-level power at the model's best-climb speed, radiator open. Cruise: 60%
@@ -96,6 +94,9 @@ export const bf109e4 = {
     wing: { front: 0.9, back: -1.3, y: -0.4, halfThickness: 0.16 },
     tailSpan: 3.1, finTop: 1.4,
   },
+  // The fuel tank's capacity (m^3), for the fuel contents gauge (D89): Kraftstoff 400 Liter (S16, S17). Fuel use is not
+  // modelled yet: the gauge reads full.
+  fuel: { tank: 0.4 },
   // A fuel tank under and behind the pilot (self-sealing: an estimate), radiators under both wings, the oil cooler under
   // the nose; 8 mm pilot armour (S38).
   systems: {

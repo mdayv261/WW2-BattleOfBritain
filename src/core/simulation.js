@@ -18,7 +18,7 @@ import { lerp } from '../physics/interp.js';
 import { engineMounts } from '../physics/powerplant.js';
 import { createTwinLevers, applyTwinLevers, selectNextEngine, toggleRunning, toggleFeather } from '../input/twinLevers.js';
 import { common } from '../aircraft/common.js';
-import { createArmament, stepGuns, counters } from '../weapons/guns.js';
+import { createArmament, stepGuns } from '../weapons/guns.js';
 import { Projectiles } from '../weapons/projectiles.js';
 import { seededRandom } from '../weapons/random.js';
 import { nextTarget, hittable, resolveHit, stepOthers, testHit } from './combat.js';
@@ -217,11 +217,6 @@ export class Simulation {
   /** 9: a test 20 mm hit on the player's own aircraft (D68). */
   testHit() {
     this.notice = { text: testHit(this), until: this.plane.time + 3 };
-  }
-
-  /** The ammunition counter's columns as { rounds, capacity } (the Bf 109's: D64, D65). */
-  get guns() {
-    return counters(this.armament);
   }
 
   copyPose(to) {

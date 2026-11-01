@@ -3,7 +3,7 @@
 import { describe, it, expect } from 'vitest';
 import { aircraftById, aircraftList } from '../../src/aircraft/index.js';
 import { ballistics } from '../../src/aircraft/ammunition.js';
-import { createArmament, stepGuns, counters, groupRounds } from '../../src/weapons/guns.js';
+import { createArmament, stepGuns, groupRounds } from '../../src/weapons/guns.js';
 import { stepRound } from '../../src/weapons/ballistics.js';
 import { createAircraft } from '../../src/physics/flightModel.js';
 import { Simulation } from '../../src/core/simulation.js';
@@ -144,20 +144,18 @@ describe('recoil', () => {
 });
 
 describe('counters and readouts', () => {
-  it('the Bf 109 counter columns sum their guns, the cannon column both drums', () => {
+  it('the Bf 109 firing groups sum their guns, the cannon group both drums', () => {
     const arm = createArmament(aircraftById.bf109e4);
-    expect(counters(arm)).toEqual({
-      mg17Left: { rounds: 1000, capacity: 1000 }, mg17Right: { rounds: 1000, capacity: 1000 }, cannon: { rounds: 120, capacity: 120 },
-    });
     expect(groupRounds(arm)).toEqual({ mg: { rounds: 2000, capacity: 2000 }, cannon: { rounds: 120, capacity: 120 } });
   });
 
-  it('rounds fired in the simulation show on the counter', () => {
+  it('rounds fired in the simulation leave the guns', () => {
     const sim = new Simulation(aircraftById.bf109e4, 'air');
     sim.input.fireCannon = true;
     for (let i = 0; i < 120; i += 1) sim.step(DT);
-    expect(sim.guns.cannon.rounds).toBeLessThan(120);
-    expect(sim.guns.mg17Left.rounds).toBe(1000);
+    const left = groupRounds(sim.armament);
+    expect(left.cannon.rounds).toBeLessThan(120);
+    expect(left.mg.rounds).toBe(2000);
   });
 
   it('rounds in flight leave the world after five seconds', () => {

@@ -28,8 +28,9 @@ const size = (px) => px / PX;
 
 export const BF110_LAYOUT = {
   width: 15.7, height: 9.55, screenShare: 0.54, ownBackground: true,
-  // Sized like the Bf 109's panel (D64): its large dial faces are 23 of 25 photograph pixels to a radius, these 30 of 30.
-  matchBf109: 23 / 25,
+  // Sized like the Bf 109's earlier panel (D64), whose size it keeps until its own redraw (D89): that panel's large dial
+  // faces were 23 of 25 photograph pixels to a radius, these 30 of 30.
+  sizeAs: { width: 14.6, height: 9.45, screenShare: 0.42, factor: 23 / 25 },
   outline: [[12, 600], [12, 380], [28, 350], [50, 340], [300, 335], [306, 340], [462, 340], [471, 350], [471, 620],
     [300, 620]].map(([x, y]) => P(x, y)),
   // Dial centres, face radii and mounting half-widths, in photograph pixels. The instruments sit on an even grid with

@@ -661,6 +661,7 @@ in armament and armour (details and weights are open gaps). This is flagged as a
 | Equipped weight (E-3) | 2053 | kg | Rüstgewicht 2053 kg | S16 | medium | Empty plus 188 kg of additional equipment. |
 | Flying weight, full (E-3, no armour plate) (`mass.flying`) | 2608 | kg | Fluggewicht voll 2608 kg | S16 | medium | S17 gives 2,540 kg for an earlier specification. |
 | Fuel | 304 | kg | Kraftstoff 400 Liter, 0–304 kg | S16, S17 | high | 400 L. S17: 400 L = 303 kg. |
+| Fuel tank capacity (`fuel.tank`) | 400 | L | Kraftstoff 400 Liter | S16, S17 | high | Full scale of the cockpit's fuel contents gauge (D89). Fuel use is not modelled yet: the gauge reads full. |
 | Oil | 27 | kg | Schmierstoff 29,5 Liter, 9–27 kg | S16 | medium | S17: 30 L = 27 kg. |
 | Pilot with parachute | 100 | kg | Führer + Fallschirm + Sonderbekleidung 70–100 kg | S16 | medium | |
 | Ballast | 25 | kg | Ballast 25 kg | S16 | medium | |

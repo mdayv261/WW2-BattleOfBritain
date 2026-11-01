@@ -83,7 +83,7 @@ describe('Bf 110 panel changes (D44)', () => {
     const { readFileSync } = await import('node:fs');
     const shared = readFileSync(new URL('../../src/ui/panelControls.js', import.meta.url), 'utf8');
     expect(shared).toMatch(/takeoff: 'TAKEOFF', landing: 'LANDING'/);
-    for (const file of ['bf109Panel.js', 'bf110Panel.js']) {
+    for (const file of ['bf110Panel.js']) { // the Bf 109's panel has no flap display since D89
       const text = readFileSync(new URL(`../../src/ui/${file}`, import.meta.url), 'utf8');
       expect(text, file).toMatch(/flapDisplay\(/);
       expect(text, file).not.toMatch(/'(START|T\/O|LANDUNG|LAND)'/);

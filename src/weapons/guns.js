@@ -81,18 +81,6 @@ export function stepGuns(armament, plane, input, dt, now, emit) {
   return { force, moment };
 }
 
-/** Rounds left and loaded for each ammunition-counter column (the Bf 109's: D64, D65), summed over its guns. */
-export function counters(armament) {
-  const out = {};
-  for (const gun of armament) {
-    if (!gun.spec.counter) continue;
-    const c = (out[gun.spec.counter] ??= { rounds: 0, capacity: 0 });
-    c.rounds += gun.rounds;
-    c.capacity += gun.capacity;
-  }
-  return out;
-}
-
 /** Rounds left in each firing group: { mg: { rounds, capacity }, cannon: { ... } } (groups the aircraft has). */
 export function groupRounds(armament) {
   const out = {};

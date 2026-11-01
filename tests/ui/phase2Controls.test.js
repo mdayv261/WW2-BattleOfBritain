@@ -220,13 +220,15 @@ describe('cameras', () => {
     expect(rig.mode).toBe('fixed');
   });
 
-  it('is looking away from the panel in every hat view, but not ahead, slightly turned or looking down (D58)', () => {
+  it('is looking away from the panel in every hat view but down, and not ahead, slightly turned or looking down (D58)', () => {
     const rig = new CameraRig({ fov: 60, updateProjectionMatrix() {} });
     expect(rig.lookingAway).toBe(false);
-    for (const look of HAT_LOOKS) {
+    for (const look of HAT_LOOKS.slice(1)) {
       rig.hatLook = look;
       expect(rig.lookingAway, JSON.stringify(look)).toBe(true);
     }
+    rig.hatLook = HAT_LOOKS[0]; // pushed forward: down at the panel (D89)
+    expect(rig.lookingAway).toBe(false);
     rig.hatLook = null;
     rig.turn(0.25, 0.25); // about 14 degrees left and up
     expect(rig.lookingAway).toBe(false);

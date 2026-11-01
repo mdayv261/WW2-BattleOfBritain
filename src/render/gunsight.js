@@ -2,7 +2,7 @@
 // appears at infinity along the aircraft's line of sight, plus the sight body on the coaming. Drawn only in
 // the cockpit view. Reticle patterns (D33):
 //   RAF, Barr & Stroud GM 2: a ring, range bars either side of a central gap, a short post below, a centre dot
-//   Luftwaffe, Revi C/12C: a ring crossed by horizontal and vertical lines, a centre dot
+//   Luftwaffe, Revi C/12C: a ring crossed by broken horizontal and vertical lines (D89)
 // The ring's angular size is aircraft data (`sight.ringMils`, an estimate until the gunsights are
 // researched for Phase 5).
 

@@ -1,26 +1,35 @@
 // Luftwaffe engine and other instruments in the look of the product owner's reference drawings (D43, src/ui/lwStyle.js):
 // the rev counter (U/min x 100), manifold pressure (ata), the Bf 109 E's strip repeater compass, the clock, the airscrew
-// pitch indicator (Luftschraubenstellung), the fuel and oil pressure gauge, and placards. The flying instruments are
-// in src/ui/lwFlightDials.js. Angles are in radians, 0 straight up, clockwise.
+// pitch indicator (Luftschraubenstellung), the fuel and oil pressure gauge, thermometers, the fuel contents gauge and
+// placards. The flying instruments are in src/ui/lwFlightDials.js. Angles are in radians, 0 straight up, clockwise.
 
 import { DEG, INK, at, font, centred, tick, lwFace, lwHand } from './lwStyle.js';
 
 export { mount } from './lwStyle.js';
 export { lwAirspeed, lwAirspeedAngle, lwFineAltimeter, lwTurnBank } from './lwFlightDials.js';
 
-/** Rev counter, 600-3,000 rpm: 600 at half past seven, 1,800 at twelve, 3,000 at half past four. */
-export const lwRpmAngle = (rpm) => (225 + (Math.max(500, Math.min(3100, rpm)) - 600) * 0.1125) * DEG;
+/**
+ * Rev counter, 600-3,400 rpm, as photographed on the restored Bf 109 E panel (#17, D89): 600 at about half past seven,
+ * 2,000 at twelve, 3,400 at about half past four, figures every 400 (6 to 34).
+ */
+export const lwRpmAngle = (rpm) => (Math.max(500, Math.min(3500, rpm)) - 2000) * 0.1125 * DEG;
 
-export function lwRpm(g, x, y, r, rpm) {
+/** `limit` (rpm), when given, is marked in red at the edge of the scale. */
+export function lwRpm(g, x, y, r, rpm, limit = null) {
   lwFace(g, x, y, r);
   centred(g);
-  for (let v = 600; v <= 3000; v += 100) tick(g, x, y, r, lwRpmAngle(v), 0.95, v % 200 === 0 ? 0.8 : 0.87, v % 200 === 0 ? 2 : 1.2);
+  for (let v = 600; v <= 3400; v += 100) tick(g, x, y, r, lwRpmAngle(v), 0.95, v % 200 === 0 ? 0.8 : 0.87, v % 200 === 0 ? 2 : 1.2);
+  if (limit) {
+    g.strokeStyle = '#d8402e';
+    tick(g, x, y, r, lwRpmAngle(limit), 1.0, 0.86, Math.max(2.5, r * 0.08));
+    centred(g);
+  }
   font(g, r * 0.19);
-  for (const v of [6, 10, 14, 18, 22, 26, 30]) g.fillText(String(v), ...at(x, y, lwRpmAngle(v * 100), r * 0.6));
+  for (let v = 6; v <= 34; v += 4) g.fillText(String(v), ...at(x, y, lwRpmAngle(v * 100), r * 0.62));
   font(g, r * 0.17, true);
-  g.fillText('U/min', x, y + r * 0.42);
+  g.fillText('U/min', x, y + r * 0.3);
   font(g, r * 0.1);
-  g.fillText('x 100', x, y + r * 0.58);
+  g.fillText('x 100', x, y + r * 0.45);
   lwHand(g, x, y, r, lwRpmAngle(rpm));
 }
 
@@ -186,15 +195,20 @@ export function twoScaleGauge(g, x, y, r, left, right, { labels, ring }) {
 /**
  * Fuel and oil pressure gauge (kg/cm²): fuel on the left half, oil on the right, normal pressures in green and low in
  * red, in a yellow ring.
- *   fuel, oil: { value, max, low, normal: [from, to] } in kg/cm²
+ *   fuel, oil: { value, max, low, normal: [from, to] } in kg/cm²; `ring` the bezel ring's colour (null for none: the
+ *   restored Bf 109 E panel's, D89)
  */
-export function pressureGauge(g, x, y, r, fuel, oil) {
+export function pressureGauge(g, x, y, r, fuel, oil, { ring = '#d9b623' } = {}) {
   const step = (o) => (o.max <= 3 ? 0.5 : 1);
-  twoScaleGauge(g, x, y, r, { ...fuel, step: step(fuel) }, { ...oil, step: step(oil) }, { labels: ['Kraftst.', 'Öl'], ring: '#d9b623' });
+  twoScaleGauge(g, x, y, r, { ...fuel, step: step(fuel) }, { ...oil, step: step(oil) }, { labels: ['Kraftst.', 'Öl'], ring });
 }
 
-/** Temperature gauge, °C over `min`-`max` on a 270-degree scale, ticks every 10 °C, with its caption. */
-export function lwThermometer(g, x, y, r, value, { min = 0, max = 130, label }) {
+/**
+ * Temperature gauge, °C over `min`-`max` on a 270-degree scale, ticks every 10 °C, with its caption; `ring` a coloured
+ * bezel ring (the coolant thermometer's blue on the restored Bf 109 E panel, D89).
+ */
+export function lwThermometer(g, x, y, r, value, { min = 0, max = 130, label, ring = null }) {
+  if (ring) colourRing(g, x, y, r, ring);
   lwFace(g, x, y, r);
   const angleOf = (v) => (225 + ((Math.max(min, Math.min(max, v)) - min) / (max - min)) * 270) * DEG;
   centred(g);
@@ -205,4 +219,38 @@ export function lwThermometer(g, x, y, r, value, { min = 0, max = 130, label }) 
   g.fillText(label, x, y + r * 0.7); // in the gap at the bottom of the scale
   g.fillText('°C', x, y - r * 0.32);
   lwHand(g, x, y, r, angleOf(value));
+}
+
+/**
+ * Fuel contents gauge (Liter) in its yellow ring, as on the restored Bf 109 E panel (D89): empty to the tank's capacity
+ * over the upper 200 degrees of the face, figures every 100 litres. The picture's figures are too small to read, so the
+ * scale runs to the documented capacity.
+ */
+export const lwFuelAngle = (litres, capacity) => (-100 + (Math.max(0, Math.min(capacity, litres)) / capacity) * 200) * DEG;
+
+export function lwFuelGauge(g, x, y, r, litres, capacity, { ring = null } = {}) {
+  if (ring) colourRing(g, x, y, r, ring);
+  lwFace(g, x, y, r);
+  centred(g);
+  if (capacity > 0) {
+    for (let v = 0; v <= capacity + 1e-9; v += 20) {
+      const major = v % 100 === 0;
+      tick(g, x, y, r, lwFuelAngle(v, capacity), 0.95, major ? 0.78 : 0.88, major ? 1.8 : 1);
+    }
+    font(g, r * 0.2, true);
+    for (let v = 0; v <= capacity + 1e-9; v += 100) g.fillText(String(v / 100), ...at(x, y, lwFuelAngle(v, capacity), r * 0.6));
+  }
+  font(g, r * 0.2, true);
+  g.fillText('Liter', x, y + r * 0.45);
+  font(g, r * 0.12);
+  g.fillText('x 100', x, y + r * 0.66);
+  lwHand(g, x, y, r, capacity > 0 ? lwFuelAngle(litres, capacity) : -100 * DEG);
+}
+
+/** A coloured ring round a dial's bezel. */
+function colourRing(g, x, y, r, colour) {
+  g.fillStyle = colour;
+  g.beginPath();
+  g.arc(x, y, r * 1.22, 0, Math.PI * 2);
+  g.fill();
 }

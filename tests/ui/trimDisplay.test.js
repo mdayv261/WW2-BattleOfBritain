@@ -1,9 +1,9 @@
 // The elevator trim display (product owner, D74): an upright ±15° scale graduated every degree, NOSE UP at the top and
-// NOSE DOWN at the bottom; left of the flaps on the RAF panels, in place of the push button left of the Bf 109's magneto
-// switch, and right of the Bf 110's turn and bank.
+// NOSE DOWN at the bottom; left of the flaps on the RAF panels and right of the Bf 110's turn and bank. Taken off the
+// Bf 109's panel with its redraw (D89).
 import { describe, it, expect } from 'vitest';
 import { instrumentReadings } from '../../src/ui/instruments.js';
-import { BF109_LAYOUT, bf109Panel } from '../../src/ui/bf109Panel.js';
+import { BF109_PANEL, bf109Panel } from '../../src/ui/bf109Panel.js';
 import { BF110_LAYOUT, bf110Panel } from '../../src/ui/bf110Panel.js';
 import { trimDisplay, trimLayout, trimY, TRIM_SCALE, TRIM_WORDS } from '../../src/ui/panelControls.js';
 import { Simulation } from '../../src/core/simulation.js';
@@ -83,12 +83,11 @@ describe('elevator trim display (D74)', () => {
     expect(tip.y).toBeCloseTo(trimY(L, 10), 9);
   });
 
-  it('Bf 109: in place of the push button, left of the magneto switch; the button is gone', () => {
-    expect(BF109_LAYOUT.button).toBeUndefined();
-    expect(BF109_LAYOUT.trim.to[0]).toBeLessThan(BF109_LAYOUT.magneto.from[0]);
+  it('Bf 109: not on the panel since D89 (the real E\'s trim was a handwheel beside the seat)', () => {
+    expect(BF109_PANEL.trim).toBeUndefined();
     const g = recordingContext();
     bf109Panel(g, 500, 0, 40, instrumentReadings(new Simulation(aircraftById.bf109e4, 'air')));
-    expect(g.texts.some((t) => t.t === 'ELEVATOR')).toBe(true);
+    expect(g.texts.some((t) => t.t === 'ELEVATOR')).toBe(false);
   });
 
   it('Bf 110: right of the turn and bank, inside the panel', () => {

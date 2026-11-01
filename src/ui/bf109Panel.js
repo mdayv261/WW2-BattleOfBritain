@@ -1,181 +1,171 @@
-// Bf 109 E instrument panel laid out after the product owner's photograph of a preserved Bf 109 E cockpit (D41).
-// Positions and sizes are measured on the photograph (pixels, 25 to a dial radius) from the panel's centre and the top
-// of its arch, so the drawing keeps the photograph's proportions.
-//   Black panel: the clock at the top; altimeter, repeater compass and manifold pressure in the upper row; airspeed,
-//   turn and bank, rev counter and the airscrew pitch indicator in the lower row; the magneto switch (shown only, not
-//   working) and a push button on the left. Placed where the product owner asked: the flap position indicator
-//   (upright, D34) between the compass and the manifold pressure gauge; the undercarriage lever between the turn and
-//   bank and the rev counter, with the two undercarriage lamps below it. Rearranged by the product owner (D63, D64): the
-//   fuel and oil pressure gauge beside the manifold pressure gauge; the airscrew pitch indicator, small, beside the rev
-//   counter; the oil and coolant thermometers, the same small size, side by side under the rev counter; and the gun
-//   ammunition counter (src/ui/ammoCounter.js) above the altimeter. The elevator trim display (D74) stands at the left
-//   edge, left of the magneto switch, where a red push button was.
+// Bf 109 E instrument panel (D89), redrawn in code after the product owner's pictures of a restored Bf 109 E panel (#17,
+// again as #23 with the same layout as their drawing #15): its upper plate with the shoulders, the wings either side and
+// the raised middle round the clock, and its lower plate with the two wings for the levers. The pictures are layout
+// references only: nothing of them is copied into the game. Positions and sizes are measured on #17 in its pixels (PX
+// to a dial radius) from the Revi's axis and the top of the upper plate.
+//   Upper panel: the clock at the top; the flap placard, fine altimeter, repeater compass, manifold pressure and the
+//   deviation card in the upper row; airspeed, turn and bank, the airscrew pitch switch, rev counter and the airscrew
+//   pitch indicator in the lower row; the magneto switch, a push button, the Achtung placard and the pitot heater switch
+//   on the left.
+//   Lower panel: the lighting dimmer, a cover plate, the fuel and oil pressure gauge, the circuit breakers, the fuel
+//   warning lamp, the fuel contents, oil and coolant thermometers, the undercarriage selector (Fahrwerk Ein / Ruhe /
+//   Aus) and its emergency pull, the hand pump, the two levers, the four-lamp box and the narrow Ein/Aus strip.
+// Working: the flight and engine instruments, the fuel contents (full: fuel use is not modelled), the undercarriage
+// selector and the clock. The rest shows normal operation. Looking ahead, the screen shows the upper instruments and the
+// top of the lower ones, as from the seat; looking down slides the whole panel into view (D89).
 
-import { lamp } from './dials.js';
-import { ammoCounter } from './ammoCounter.js';
-import { flapDisplay, trimDisplay } from './panelControls.js';
-import { millibarWindow } from './altimeters.js';
+import { drawBf109Fittings } from './bf109Fittings.js';
+import { drawBf109Lower } from './bf109Lower.js';
 import {
-  mount, lwAirspeed, lwRpm, lwAta, lwStripCompass, lwTurnBank, lwFineAltimeter, lwClock, lwPitchIndicator, placard,
-  pressureGauge, lwThermometer,
+  mount, lwAirspeed, lwRpm, lwAta, lwStripCompass, lwTurnBank, lwFineAltimeter, lwClock, lwPitchIndicator,
+  pressureGauge, lwThermometer, lwFuelGauge,
 } from './luftwaffeDials.js';
+import { millibarWindow } from './altimeters.js';
 
-/** The undercarriage lever's and lamps' words (product owner, D66): OBEN (up) and UNTEN (down); the lamps titled GEAR. */
-export const GEAR_LABELS = { title: 'GEAR', up: 'OBEN', down: 'UNTEN' };
+const PX = 45; // picture pixels per dial radius: the airspeed indicator's face
+const AXIS = 660; // the Revi's axis on the picture: the guns' line, the middle of the screen
+const TOP = 227; // the top of the upper plate
+const AHEAD = 612; // looking ahead, the screen shows the panel down to here: the top of the lower instruments
+const FOOT = 868; // the bottom of the lower plate's wings
+/** The guns' line above the top of the upper plate, in dial radii, as seen from the seat (#16). */
+export const GLASS_ABOVE = 4.1;
 
-/** The gap between neighbouring mountings and plates, photograph pixels (D44). */
-export const GAP = 5;
+/** A picture point in dial radii from the Revi's axis at the top of the upper plate. */
+export const P = (px, py) => [(px - AXIS) / PX, (py - TOP) / PX];
 
-const PX = 25; // photograph pixels per dial radius
-const CENTRE = 369; // the panel's centre on the photograph
-const TOP = 394; // the top of its arch
+// The upper plate (#17, #23): from its foot on the left up under the left wing, out to the wing's tip, up the left
+// shoulder, the step up to the raised middle, its top behind the clock and the Revi, down the right, the right wing's tip
+// and back under it to the foot.
+const UPPER = [
+  [262, 592], [258, 512], [192, 502], [190, 488], [295, 307], [378, 305], [383, 265], [398, 232], [590, 227],
+  [710, 232], [772, 240], [790, 262], [802, 305], [845, 312], [975, 498], [968, 512], [905, 522], [900, 592],
+];
+// The lower plate (#17, #23): its top edge, the right wing with the hand pump lever, the foot, the left wing.
+const LOWER = [
+  [252, 592], [897, 592], [915, 578], [985, 575], [1000, 598], [1066, 860], [962, 864], [930, 846], [905, 818],
+  [898, 810], [292, 810], [282, 820], [258, 850], [230, 865], [90, 864], [154, 629], [202, 629],
+];
 
-/** Photograph pixels to panel units (dial radii from the top centre). */
-const P = (px, py) => [(px - CENTRE) / PX, (py - TOP) / PX];
-const size = (px) => px / PX;
-
-export const BF109_LAYOUT = {
-  width: 14.6, height: 9.45, screenShare: 0.42, ownBackground: true, // kept below the sight glass (D41)
-  outline: [[190, 628], [190, 470], [205, 448], [240, 421], [290, 403], [345, 396], [400, 403], [450, 421], [490, 446],
-    [530, 470], [545, 500], [548, 628]].map(([x, y]) => P(x, y)),
-  lowerPanel: { from: [196, 590], to: [542, 628] },
-  // Dial centres, face radii and mounting half-widths (0: a round bezel, 1.2 times the face), in photograph pixels.
-  // The rows and columns keep the photograph's order with the same gap (GAP) between every pair of mountings and
-  // plates, none touching (product owner, D44).
+/**
+ * Everything on the panel, in picture pixels: the upper and lower plates' outlines; dials [x, y, face radius, mounting half-width or bezel radius]; boxes
+ * [left, top, right, bottom]; knobs and lamps [x, y, radius]; levers [x0, y0, x1, y1, knob radius].
+ */
+export const BF109_PANEL = {
+  width: (2 * (AXIS - 90)) / PX + 0.2, // the panel's reach either side of the axis: the left wing is the farther
+  height: (AHEAD - TOP) / PX + 0.1,
+  full: (FOOT - TOP) / PX + 0.1, // the whole panel, seen when looking down
+  // Looking ahead the guns' line is GLASS_ABOVE radii above the upper plate on the middle of the screen, the screen's foot at
+  // AHEAD: the panel takes this share of the screen height.
+  screenShare: ((AHEAD - TOP) / PX + 0.1) / (2 * ((AHEAD - TOP) / PX + 0.1 + GLASS_ABOVE)),
+  ownBackground: true,
+  lookDown: true,
+  upper: UPPER,
+  lower: LOWER,
   dials: {
-    clock: [347, 433.5, 17.5, 22], altimeter: [285, 489, 23, 28.5], compass: [347, 489, 23.75, 0], ata: [449, 489, 23, 28.5],
-    airspeed: [285, 551, 23, 28.5], turn: [347, 551, 23, 28.5], rpm: [449, 551, 23, 28.5], pitch: [501.7, 551, 16, 0],
-    pressure: [501.7, 489, 16, 0], oilTemp: [427.3, 603.7, 16, 0], coolTemp: [470.7, 603.7, 16, 0],
+    clock: [539, 272, 30, 40], altimeter: [411, 397, 44, 54], compass: [537, 392, 44, 55], ata: [742, 397, 44, 54],
+    airspeed: [411, 522, 44, 54], turn: [537, 525, 44, 55], rpm: [740, 525, 44, 53], pitch: [850, 525, 31, 40],
+    dimmer: [453, 646, 36, 42], pressure: [620, 645, 33, 42], fuel: [530, 765, 32, 40], oilTemp: [620, 762, 32, 40],
+    coolTemp: [710, 765, 32, 40],
   },
-  knobs: [[313, 607, 13]],
-  bolts: [[214, 455], [524, 455], [200, 610], [538, 610]],
-  flaps: { from: [380.5, 460.5], to: [415.5, 517.5] },
-  gearLever: { from: [380.5, 522.5], to: [415.5, 579.5] },
-  gearLamps: { from: [363.1, 591], to: [403.1, 616] },
-  // Gun ammunition counter (D64): the altimeter's width, above it.
-  ammo: { from: [256.5, 419], to: [313.5, 455.5] },
-  magneto: { from: [221.5, 476], to: [251.5, 555] },
-  // Elevator trim display (product owner, D74), in place of the push button: the panel's left edge to the magneto
-  // switch, the usual gap from it.
-  trim: { from: [194, 470], to: [216.5, 586] },
-  placard: { from: [221.5, 560], to: [251.5, 574] },
+  // The altimeter, manifold pressure and airspeed indicators have red bezels on the picture (#17).
+  redBezels: ['altimeter', 'ata', 'airspeed'],
+  boxes: {
+    flapPlacard: [387, 268, 484, 335], magneto: [303, 375, 346, 491], achtung: [290, 495, 342, 534],
+    button: [249, 446, 288, 508], pitot: [270, 540, 342, 580], pitchSwitch: [617, 460, 660, 580],
+    deviation: [817, 335, 852, 467], cableHook: [632, 382, 656, 400],
+    blank: [499, 607, 576, 687], breakers: [672, 607, 750, 687], coolantPlacard: [672, 696, 750, 721],
+    reserve: [480, 702, 532, 719], reserveLamp: [552, 692, 602, 718], lampBox: [252, 692, 425, 800],
+    fuelCock: [125, 750, 225, 847], arrowPlacard: [812, 662, 910, 682], gearSelector: [805, 695, 900, 749],
+    emergency: [812, 772, 908, 795], handPump: [895, 616, 948, 628], pumpSlot: [955, 600, 970, 690],
+    strip: [957, 750, 995, 830],
+  },
+  knobs: { setAltimeter: [411, 450, 11], setAta: [742, 447, 10], setAirspeed: [411, 576, 10], primer: [457, 757, 22] },
+  bolts: [[436, 251], [734, 255], [211, 487], [952, 495], [160, 662], [110, 820], [177, 737], [972, 595], [1042, 832]],
+  levers: { left: [250, 594, 132, 740, 27], right: [967, 584, 1002, 752, 27] },
 };
 
-/** Draws the panel with its top centre at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
-export function bf109Panel(g, x0, y0, r, v) {
-  const L = BF109_LAYOUT;
+/** A layout entry in canvas pixels, given the Revi's axis at the top of the upper plate (x0, y0) and dial radius r. */
+export function placer(x0, y0, r) {
   const xy = ([px, py]) => {
     const [dx, dy] = P(px, py);
     return [x0 + dx * r, y0 + dy * r];
   };
-  const box = ({ from, to }) => {
-    const [ax, ay] = xy(from);
-    const [bx, by] = xy(to);
-    return { x: (ax + bx) / 2, y: (ay + by) / 2, w: bx - ax, h: by - ay };
+  const len = (px) => (px / PX) * r;
+  const dial = ([px, py, face, outer]) => [...xy([px, py]), len(face), len(outer)];
+  const box = ([l, t, rt, b]) => {
+    const [ax, ay] = xy([l, t]);
+    const [bx, by] = xy([rt, b]);
+    return { x: ax, y: ay, w: bx - ax, h: by - ay };
   };
-  const dial = (name) => {
-    const [px, py, face] = L.dials[name];
-    return [...xy([px, py]), size(face) * r];
-  };
+  const knob = ([px, py, rad]) => [...xy([px, py]), len(rad)];
+  return { xy, len, dial, box, knob };
+}
 
-  // The black panel and the lower panel below it, bolts, knobs and the dials' mountings.
-  g.fillStyle = '#1a1b1c';
-  g.strokeStyle = '#2f3133';
-  g.lineWidth = 2;
-  g.beginPath();
-  L.outline.forEach(([dx, dy], i) => (i ? g.lineTo(x0 + dx * r, y0 + dy * r) : g.moveTo(x0 + dx * r, y0 + dy * r)));
-  g.closePath();
-  g.fill();
-  g.stroke();
-  const low = box(L.lowerPanel);
-  g.fillStyle = '#141516';
-  g.fillRect(low.x - low.w / 2, low.y - low.h / 2, low.w, low.h);
-  for (const b of L.bolts) disc(g, ...xy(b), r * 0.14, '#3c3e40');
-  for (const [px, py, rad] of L.knobs) disc(g, ...xy([px, py]), size(rad) * r, '#2b2c2e');
-  for (const [px, py, face, half] of Object.values(L.dials)) {
-    if (half) mount(g, ...xy([px, py]), size(half) * r);
-    else disc(g, ...xy([px, py]), size(face) * r * 1.2, '#0d0d0d');
+/**
+ * How far (CSS px) the panel slides up as the pilot looks down (D89): as far as a point straight ahead moves on the
+ * screen for the head's pitch (rad, + up) at the camera's vertical field of view (degrees), up to the whole panel.
+ */
+export function lookDownShift(pitch, fov, height, r, L = BF109_PANEL) {
+  if (!L.lookDown || pitch >= 0) return 0;
+  const shift = (height / 2 / Math.tan((fov * Math.PI) / 360)) * Math.tan(-pitch);
+  return Math.min(shift, (L.full - L.height) * r);
+}
+
+/** Draws the panel with the Revi's axis at the top of the upper plate at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
+export function bf109Panel(g, x0, y0, r, v, now = new Date()) {
+  const L = BF109_PANEL;
+  const at = placer(x0, y0, r);
+  drawBf109Fittings(g, at, L);
+  drawBf109Lower(g, at, L, v);
+  for (const [name, entry] of Object.entries(L.dials)) {
+    if (name === 'dimmer') continue; // a switch: drawn with the fittings
+    const [x, y, , outer] = at.dial(entry);
+    if (L.redBezels.includes(name)) redBezel(g, x, y, outer);
+    else mount(g, x, y, outer, name === 'clock' ? 'screw' : null);
   }
-
-  // Instruments.
-  lwClock(g, ...dial('clock'), new Date());
+  const dial = (name) => at.dial(L.dials[name]).slice(0, 3);
+  lwClock(g, ...dial('clock'), now);
   const [ax, ay, ar] = dial('altimeter');
   lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013));
   lwStripCompass(g, ...dial('compass'), v.heading);
   lwAta(g, ...dial('ata'), v.manifold);
   lwAirspeed(g, ...dial('airspeed'), v.airspeed);
   lwTurnBank(g, ...dial('turn'), v.turnRate, v.sideG);
-  lwRpm(g, ...dial('rpm'), v.rpm);
+  lwRpm(g, ...dial('rpm'), v.rpm, v.rpmLimit);
   lwPitchIndicator(g, ...dial('pitch'), v.pitchClock);
-  if (v.pressures) pressureGauge(g, ...dial('pressure'), v.pressures.fuel, v.pressures.oil);
+  if (v.pressures) pressureGauge(g, ...dial('pressure'), v.pressures.fuel, v.pressures.oil, { ring: null });
+  const tank = v.fuelTanks?.[0];
+  lwFuelGauge(g, ...dial('fuel'), tank ? tank.litres : 0, tank ? tank.capacity : 0, { ring: '#c9b52c' });
   lwThermometer(g, ...dial('oilTemp'), v.oil, { label: 'Öl' });
-  lwThermometer(g, ...dial('coolTemp'), v.coolant, { label: 'Kühlst.' });
-
-  // Flap position (D34), standing upright between the compass and the manifold pressure gauge.
-  flapDisplay(g, box(L.flaps), r, v, 'KLAPPEN');
-
-  // Undercarriage lever, and the two lamps below it.
-  gearLever(g, box(L.gearLever), r, v.gearSelected);
-  const k = box(L.gearLamps);
-  g.fillStyle = '#0c0c0c';
-  g.fillRect(k.x - k.w / 2, k.y - k.h / 2, k.w, k.h);
-  g.fillStyle = '#e9e6dc';
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
-  g.font = `bold ${Math.max(6, Math.round(r * 0.16))}px ui-sans-serif, Helvetica, sans-serif`;
-  g.fillText(GEAR_LABELS.title, k.x, k.y - k.h * 0.34);
-  lamp(g, k.x - k.w * 0.25, k.y - k.h * 0.02, r * 0.12, '#3fbf4a', v.gearDown);
-  lamp(g, k.x + k.w * 0.25, k.y - k.h * 0.02, r * 0.12, '#d8402e', v.gearUp);
-  g.fillStyle = '#e9e6dc';
-  g.font = `bold ${Math.max(5, Math.round(r * 0.12))}px ui-sans-serif, Helvetica, sans-serif`;
-  g.fillText(GEAR_LABELS.down, k.x - k.w * 0.25, k.y + k.h * 0.32);
-  g.fillText(GEAR_LABELS.up, k.x + k.w * 0.25, k.y + k.h * 0.32);
-
-  // Gun ammunition counter: left MG 17, cannon, right MG 17 (product owner, D64).
-  ammoCounter(g, box(L.ammo), r, v.ammoCounters);
-
-  // Elevator trim (D74), the magneto switch (shown for accuracy only) and a placard.
-  trimDisplay(g, box(L.trim), r, v);
-  magnetoSwitch(g, box(L.magneto), r);
-  const pl = box(L.placard);
-  placard(g, pl.x, pl.y, pl.w, pl.h, { scribbles: 2, plate: '#4a2a1c' });
+  lwThermometer(g, ...dial('coolTemp'), v.coolant, { label: 'Kühlst.', ring: '#2f8a96' });
+  for (const name of ['setAltimeter', 'setAta', 'setAirspeed']) settingKnob(g, ...at.knob(L.knobs[name]));
 }
 
-function disc(g, x, y, radius, colour) {
-  g.fillStyle = colour;
+/** The round red bezel of the altimeter, manifold pressure and airspeed indicators, with a dark rim. */
+function redBezel(g, x, y, outer) {
+  g.fillStyle = '#0d0d0d';
   g.beginPath();
-  g.arc(x, y, radius, 0, Math.PI * 2);
+  g.arc(x, y, outer * 1.04, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#8a3a2c';
+  g.beginPath();
+  g.arc(x, y, outer, 0, Math.PI * 2);
   g.fill();
 }
 
-/** Undercarriage lever in its slot: up at OBEN (raised), down at UNTEN (lowered). */
-function gearLever(g, { x, y, w, h }, r, down) {
+/** A knurled black setting knob below a dial. */
+function settingKnob(g, x, y, rad) {
   g.fillStyle = '#0c0c0c';
-  g.fillRect(x - w / 2, y - h / 2, w, h);
-  g.fillStyle = '#050505';
-  g.fillRect(x - w * 0.1, y - h * 0.36, w * 0.2, h * 0.72);
-  g.fillStyle = '#e9e6dc';
-  g.textAlign = 'center';
-  g.textBaseline = 'middle';
-  g.font = `bold ${Math.max(6, Math.round(r * 0.18))}px ui-sans-serif, Helvetica, sans-serif`;
-  g.fillText(GEAR_LABELS.up, x, y - h * 0.44);
-  g.fillText(GEAR_LABELS.down, x, y + h * 0.44);
-  const ky = y + (down ? 0.3 : -0.3) * h;
-  g.fillStyle = '#9a9a96';
-  g.fillRect(x - w * 0.06, Math.min(y, ky), w * 0.12, Math.abs(ky - y));
-  disc(g, x, ky, r * 0.2, '#d8382c');
-}
-
-/** The magneto switch (not working): a lever in a slot at M1+2, marked M1+2, M2 and M1. */
-function magnetoSwitch(g, { x, y, w, h }, r) {
-  g.fillStyle = '#0c0c0c';
-  g.fillRect(x - w / 2, y - h / 2, w, h);
-  g.fillStyle = '#050505';
-  g.fillRect(x - w * 0.36, y - h * 0.4, w * 0.18, h * 0.8);
-  g.fillStyle = '#e9e6dc';
-  g.textAlign = 'left';
-  g.textBaseline = 'middle';
-  g.font = `bold ${Math.max(6, Math.round(r * 0.2))}px ui-sans-serif, Helvetica, sans-serif`;
-  ['M1+2', 'M2', 'M1'].forEach((t, i) => g.fillText(t, x - w * 0.12, y - h * 0.3 + i * h * 0.3));
-  disc(g, x - w * 0.27, y - h * 0.3, r * 0.15, '#d8382c');
+  g.beginPath();
+  g.arc(x, y, rad, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = '#3a3c3e';
+  g.lineWidth = Math.max(1, rad * 0.12);
+  for (let k = 0; k < 12; k += 1) {
+    const a = (k / 12) * Math.PI * 2;
+    g.beginPath();
+    g.moveTo(x + Math.cos(a) * rad * 0.7, y + Math.sin(a) * rad * 0.7);
+    g.lineTo(x + Math.cos(a) * rad * 0.95, y + Math.sin(a) * rad * 0.95);
+    g.stroke();
+  }
 }

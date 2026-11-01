@@ -1,7 +1,7 @@
-// The Luftwaffe panels' instruments sit with the same gap between every pair of neighbouring mountings and plates,
-// none touching or overlapping (product owner, D44).
+// The Bf 110 panel's instruments sit with the same gap between every pair of neighbouring mountings and plates, none
+// touching or overlapping (product owner, D44). The Bf 109's panel follows the restored panel's own spacing since D89
+// (tests/ui/bf109Panel.test.js).
 import { describe, it, expect } from 'vitest';
-import { BF109_LAYOUT, GAP as GAP109 } from '../../src/ui/bf109Panel.js';
 import { BF110_LAYOUT, GAP as GAP110 } from '../../src/ui/bf110Panel.js';
 
 /** Boxes { name, x, y, hw, hh } of every mounting (square: its half-width; round: 1.2 times the face) and plate. */
@@ -20,8 +20,6 @@ function boxes(L, plates) {
 const clearance = (a, b) => Math.max(Math.abs(a.x - b.x) - a.hw - b.hw, Math.abs(a.y - b.y) - a.hh - b.hh);
 
 const PANELS = [
-  ['Bf 109', GAP109, boxes(BF109_LAYOUT, [['flaps', BF109_LAYOUT.flaps], ['gear lever', BF109_LAYOUT.gearLever], ['gear lamps', BF109_LAYOUT.gearLamps], ['ammo counter', BF109_LAYOUT.ammo],
-    ['elevator trim', BF109_LAYOUT.trim], ['magneto switch', BF109_LAYOUT.magneto], ['placard', BF109_LAYOUT.placard]])],
   ['Bf 110', GAP110, boxes(BF110_LAYOUT, [['flaps', BF110_LAYOUT.flaps], ['gear', BF110_LAYOUT.gear], ['elevator trim', BF110_LAYOUT.trim],
     ...BF110_LAYOUT.plates.map((p, i) => [`plate ${i}`, p])])],
 ];

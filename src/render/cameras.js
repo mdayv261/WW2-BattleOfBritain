@@ -10,15 +10,18 @@ import * as THREE from 'three';
 
 export const OUTSIDE_VIEWS = ['chase', 'fixed', 'orbit'];
 
-/** Head turn for each hat direction (0 up, clockwise to 7 up-left): ahead-up, the sides, and behind. */
+/**
+ * Head turn for each hat direction (0 pushed forward, clockwise to 7 forward-left): down at the panel (forward, product
+ * owner, D89: far enough to see the whole Bf 109 lower panel), the sides, and behind (pulled back).
+ */
 export const HAT_LOOKS = [
-  { yaw: 0, pitch: 0.6 }, { yaw: -Math.PI / 4, pitch: 0.3 }, { yaw: -Math.PI / 2, pitch: 0.1 },
+  { yaw: 0, pitch: -0.35 }, { yaw: -Math.PI / 4, pitch: 0.3 }, { yaw: -Math.PI / 2, pitch: 0.1 },
   { yaw: -Math.PI * 0.75, pitch: 0.2 }, { yaw: Math.PI * 0.9, pitch: 0.3 }, { yaw: Math.PI * 0.75, pitch: 0.2 },
   { yaw: Math.PI / 2, pitch: 0.1 }, { yaw: Math.PI / 4, pitch: 0.3 },
 ];
 const LOOK_LIMITS = { yaw: Math.PI * 0.9, pitchUp: 1.4, pitchDown: -0.7 };
 // rad: a head turned further than this to the side, or raised further, is looking away from the instrument panel, which
-// is then hidden (D58). Every hat view is beyond it; looking down at the panel never hides it.
+// is then hidden (D58). Every hat view but looking down is beyond it; looking down at the panel never hides it.
 export const PANEL_LOOK_LIMIT = 20 * (Math.PI / 180);
 const FOV = { cockpit: 70, outside: 60 };
 

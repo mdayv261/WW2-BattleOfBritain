@@ -6,13 +6,15 @@
 // ring, standing out beyond both brackets and well above them. The reticle is seen only on the glass, where the guns'
 // line falls (collimated: a small look round moves it within the glass).
 // It stands in front of the panel's top centre, on its own canvas above the panel's, and is shown in the cockpit view
-// while the pilot looks ahead (the 3D sight shows otherwise, src/render/gunsight.js).
+// while the pilot looks ahead (the 3D sight shows otherwise, src/render/gunsight.js). The same canvas carries the Bf 109's
+// Revi (src/ui/reviSight.js, D89); the Bf 110 keeps its 3D Revi until its own panel is redrawn.
 
 import { Vector3 } from 'three';
 import { SPITFIRE_PANEL } from './rafPanel.js';
 import { panelRadius } from './instruments.js';
 import { roundRect, text } from './panelParts.js';
 import { drawReticle } from './reticle.js';
+import { reviPlacement, drawRevi } from './reviSight.js';
 
 // The sight square-on, in the picture's pixels: x from its axis, y up from its foot.
 export const SIGHT = {
@@ -61,8 +63,11 @@ export function boresight(camera, quaternion, width, height, ringMils) {
   return { x: ((p.x + 1) / 2) * width, y: ((1 - p.y) / 2) * height, ring: perRadian * Math.tan(ringMils / 2000) };
 }
 
-/** Whether the 2D sight shows: an RAF aircraft, the cockpit view, looking ahead, the pilot still aboard. */
-export const showSight = (sim, rig) => sim.ac.side === 'RAF' && !!sim.ac.sight && rig.inCockpit && !rig.lookingAway && !sim.playerJumper;
+/** The sight drawn square-on for an aircraft: the GM 2 (RAF), the Revi (Bf 109, D89), or null (a 3D sight only). */
+export const squareOnSight = (ac) => (!ac.sight ? null : ac.side === 'RAF' ? 'GM2' : ac.id === 'bf109e4' ? 'Revi' : null);
+
+/** Whether the 2D sight shows: an aircraft with one, the cockpit view, looking ahead, the pilot still aboard. */
+export const showSight = (sim, rig) => !!squareOnSight(sim.ac) && rig.inCockpit && !rig.lookingAway && !sim.playerJumper;
 
 // Finish: black anodised, highlights a soft grey.
 const BLACK = '#0c0c0c';
@@ -242,8 +247,11 @@ export class ReflectorSight {
     document.body.appendChild(this.canvas);
   }
 
-  /** Redraws the sight (or clears it) for the frame: `aim` the guns' line on the screen, or null. */
-  update(show, aim) {
+  /**
+   * Redraws the sight (or clears it) for the frame: `aim` the guns' line on the screen, or null; `ac` the aircraft;
+   * `slide` how far the Bf 109's panel, and the Revi on it, have slid up as the pilot looks down (D89).
+   */
+  update(show, aim, ac = null, slide = 0) {
     const width = window.innerWidth;
     const height = window.innerHeight;
     this.canvas.style.display = show ? 'block' : 'none';
@@ -256,6 +264,7 @@ export class ReflectorSight {
     const g = this.canvas.getContext('2d');
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.clearRect(0, 0, width, height);
-    drawSight(g, sightPlacement(width, height), aim);
+    if (ac && squareOnSight(ac) === 'Revi') drawRevi(g, reviPlacement(width, height, slide), aim);
+    else drawSight(g, sightPlacement(width, height), aim);
   }
 }

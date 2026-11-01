@@ -745,7 +745,9 @@ match S12 and S20; the amount of rudder is for the product owner's flight test t
 ## D33. Reflector gunsights (25 Oct 2026, Phase 2)
 
 **Since D87 (1 Nov 2026):** the RAF's GM 2 is drawn square-on in front of the panel while the pilot looks ahead, the
-reticle seen only on its glass; the 3D sight shows when looking round.
+reticle seen only on its glass; the 3D sight shows when looking round. **Since D89:** the Bf 109's Revi is drawn the same
+way and its reticle redrawn from the product owner's photograph. The product owner approved the GM 2's 100-mil ring
+(1 Nov 2026); the Revi's ring stays a 100-mil estimate.
 
 The product owner asked for the optical reflector gunsight in all aircraft. Each cockpit now has the sight body on the
 coaming, with its glass, and a glowing reticle collimated along the aircraft's line of sight. It is drawn at a
@@ -833,6 +835,8 @@ rigging recomputed. The climb to 4-8 km is now within 10% and the ceiling 6.6% h
 
 ## D38. Bf 109 panel redrawn after the product owner's photographs (25-26 Oct 2026)
 
+**Superseded by D89 (1 Nov 2026):** the panel is now the restored panel of the product owner's later pictures.
+
 The product owner asked for the Bf 109 panel to look like a photograph of a preserved panel. A first version followed a
 photograph of a later Bf 109 panel; the product owner then supplied a photograph of a Bf 109 E panel, and the panel
 now follows that one. It is drawn in its own module (`src/ui/bf109Panel.js`, dials in `src/ui/luftwaffeDials.js`)
@@ -913,6 +917,8 @@ flagged as a deviation (more engine power than the H-3).
   level turn at a speed with the power setting.
 
 ## D41. Bf 109 cockpit after the product owner's photograph of a Bf 109 E cockpit (26 Oct 2026)
+
+**Panel superseded by D89 (1 Nov 2026).**
 
 The product owner supplied a photograph of a preserved Bf 109 E cockpit seen from the seat, with notes. The panel
 (`src/ui/bf109Panel.js`) and the cockpit frame follow it:
@@ -1347,6 +1353,8 @@ Placed as the product owner asked:
 
 ## D64. Bf 109 panel rearranged, its ammunition counter, and the Bf 110 sized like the Bf 109 (27 Oct 2026, product owner)
 
+**Superseded by D89 (1 Nov 2026):** the Bf 109 panel is redrawn and the ammunition counter removed (the Bf 109 E had none); the Bf 110 keeps this size until its redraw.
+
 **Bf 109** (supersedes D63's Bf 109 placement), as the product owner asked:
 - **Moves:**
   - the airscrew pitch indicator is now the small gauges' size, beside the rev counter;
@@ -1387,6 +1395,8 @@ Placed as the product owner asked:
 - **Tape length:** each full tape runs down to just above its plate, a thin gap clear of it (product owner, 27 Oct 2026).
 
 ## D66. OBEN / UNTEN and "GEAR" on the Luftwaffe undercarriage indicators (27 Oct 2026, product owner)
+
+**Since D89 (1 Nov 2026):** the Bf 109 shows the real undercarriage selector (Fahrwerk Ein / Ruhe / Aus); the Bf 110 keeps OBEN / UNTEN.
 
 - **Bf 109:**
   - its undercarriage lever reads OBEN (up) at the top and UNTEN (down) at the bottom, in place of EIN and AUS;
@@ -1768,6 +1778,8 @@ as in the real aircraft.
 0% stick.
 
 ## D74. Elevator trim display on the four flyable panels (27 Oct 2026, product owner)
+
+**Since D89 (1 Nov 2026):** removed from the Bf 109's panel (the real E's trim was a handwheel beside the seat).
 
 **The display:** an upright plate, like the flaps display.
 - "ELEVATOR TRIM" at the top, "NOSE UP" above the scale and "NOSE DOWN" below it, in English on every panel as the
@@ -2591,3 +2603,80 @@ parallel, and on GitHub's smaller machine they compete with the timed test. The 
 
 **Result:** twelve aircraft now take 15.5 ms per simulated second on the Mac, against 23 before (a third less). All tests
 pass and the validation is unchanged.
+
+## D89. The Bf 109 E panel and its Revi from the product owner's pictures (1 Nov 2026, plan approved by the product owner)
+
+**The pictures** (layout references only: everything is redrawn in code, nothing of them goes into the game):
+- #15: a printed drawing of a Bf 109 E-4 panel;
+- #16: a museum photograph from the seat, the panel under the windscreen arch (the source of D38/D41);
+- #17: a restored Bf 109 E panel on a stand, with its Revi, in the same layout as #15;
+- #18: a page of a German Revi manual (drawn at about 1:2.5), for the parts' names;
+- #19, #20: a Revi C/12D photograph and a drawing;
+- #21: the reflected reticle as the pilot sees it, with the dark glass set in the clear glass;
+- #22, then #23: for the panel's shape. #22 looked like a Ju 87 panel (bomb release, ETC racks, dive placard); the
+  product owner then chose #23, the restored panel of #17.
+
+**The product owner's answers:**
+- laid out as #17, with its lower panel; the shape is the restored panel's own (#23): the upper plate with its
+  shoulders, wings and the raised middle round the clock, and the lower plate with its two lever wings (the plan's
+  first version used #16's arch);
+- the flap indicator, the elevator trim display and the OBEN/UNTEN lever with its GEAR lamps are removed: none was on a
+  real E panel (flaps and trim were handwheels beside the seat). The undercarriage shows on the real selector;
+- no ammunition counter: their research shows the Bf 109 E and Bf 110 C had none;
+- the two items that could not be identified are drawn as photographed, not working;
+- looking down slides the panel up to show the whole lower panel (below).
+- The GM 2's 100-mil ring is approved (D33).
+
+**The panel** (`src/ui/bf109Panel.js`, fittings in `src/ui/bf109Fittings.js` and `src/ui/bf109Lower.js`), measured on
+#17 in its pixels from the Revi's axis and the top of the upper plate:
+- **Upper panel:** clock; flap placard ("Höchstgeschwindigkeit mit voll ausgefahrenen Landeklappen 250 km/h", Start 20°,
+  Landung 40°); fine altimeter, repeater compass and manifold pressure, the altimeter, airspeed and manifold pressure
+  gauges in red bezels as photographed; the deviation card; airspeed, turn and bank, the airscrew pitch switch, rev
+  counter and airscrew pitch indicator; on the left the magneto switch, a red push button, the "Achtung! Vor Anlassen
+  Fahrwerkschalter auf ‚Ruhe'" placard and the pitot heater switch (Staurohr).
+- **Lower panel:** lighting dimmer (Hell/Aus), a cover plate, the fuel and oil pressure gauge, the circuit breakers
+  (EIN/AUS), the fuel reserve warning lamp, fuel contents (Liter, yellow ring), oil and coolant thermometers (the
+  coolant's blue ring) with the coolant placard, the undercarriage selector (Fahrwerk Ein / Ruhe / Aus) with its
+  emergency pull (Notzug für Fahrwerk), the arrow placard, the hand pump lever and placard, the left lever with its
+  Aus/Betrieb box, the four-lamp box marked SKK404-2 and the narrow Ein/Aus strip.
+- **Working:** the flight and engine instruments, the fuel contents (full: fuel use is not modelled), the clock and the
+  undercarriage selector: its handle points to Ein with the undercarriage selected up, Aus with it selected down.
+- **Shown only:** everything else. Placards are lettered where the picture can be read, grey lines where it cannot.
+- **Data added:** the fuel tank's 400 litres (`fuel.tank`, S16, S17), the fuel gauge's full scale.
+
+**Looking down:** looking ahead, the screen shows the Revi and the upper panel at about the earlier panel's size (dial
+radius 49 px on a 1,259-pixel-high window, against 56 before and 45 for the Spitfire), with the lower panel's top edge
+at the bottom, as from the seat (#16). Showing the whole panel at once would have made the dials about 34 px. Dragging
+the mouse down slides the panel and the Revi up by as much as a point ahead moves on the screen, until the whole lower
+panel is in view. Pushing the joystick hat forward does the same (product owner): it now looks down 20° at the panel, in
+place of the forward hat's look up and ahead, far enough to show the whole lower panel. Pulling the hat back still
+looks behind.
+
+**The Revi** (`src/ui/reviSight.js`), drawn square-on in front of the panel while the pilot looks ahead, on the RAF
+sight's canvas (D87): the clear glass with the dark glass set in its middle (clear glass above and beside it, #21), the
+black housing at their foot with its curved dip, the body and its brown leather crash pad, the sun filter's lever, the
+bead post, the mounting block, the knurled lamp knob and the cable to its clip on the panel. Sizes are as seen from the
+seat (#16) and measured on #21 against the ring. The 3D Revi stays for looking round. The Bf 110 keeps its 3D Revi
+until its own redraw.
+
+**The Revi reticle** (`src/ui/reticle.js`, shared with the 3D reticle) redrawn from #21: a fine ring; a horizontal line
+broken either side of the centre, both halves running a little past the ring; a vertical line broken above the centre
+and running from the centre down, well past the ring; no centre dot. The ring stays 100 mils, an estimate (D33).
+
+**Deviations, flagged to the product owner:**
+- **Rev counter:** redrawn to #17's scale, 600 to 3,400 rpm with 2,000 at the top (before: 600-3,000 with 1,800 at the
+  top). The Bf 110 shares it. The red mark is at the DB 601A's 2,400 rpm limit from our data (S15, S18); the
+  photograph's mark looks nearer 2,500.
+- **Panel offset:** the Revi stands right of the panel's centre on #16 and #17. With the Revi on the guns' line in the
+  middle of the screen, the panel sits a little left of centre, as photographed.
+- **Revi height:** the glass stands a little nearer the panel than from the seat, so the panel can be larger.
+- **The panel's colour** follows #17's blue-grey; #16's panel is black.
+- **Unidentified:** the four-lamp box (SKK404-2) and the Ein/Aus strip, drawn as photographed and not working.
+- **Fuel gauge figures:** #17's are too small to read; the scale runs to the documented 400 litres.
+- **Revi C/12D pictures:** #19-#21 show the later C/12D. Its outside and reticle are taken as the 1940 C/12C's.
+
+**Removed:** the ammunition counter (`src/ui/ammoCounter.js`, the guns' counter columns and `sim.guns`); the Bf 109's
+flap and trim displays and its undercarriage lever and lamps. The Bf 110 keeps the size of the Bf 109's earlier panel
+(`sizeAs`, D64) until its own redraw.
+
+**Cost:** drawing the new panel takes about 0.2 ms a frame in Chrome, half the Spitfire panel's.

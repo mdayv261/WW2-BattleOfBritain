@@ -1,9 +1,11 @@
 // The RAF's GM 2 reflector sight drawn square-on in front of the panel (D87): its glass on the guns' line and its foot
 // on the panel's plain top centre on every screen, clear of the voltmeter; the reticle where the guns' line falls, its
-// ring the sight's mils at the camera's field of view, drawn only on the glass; shown only for the RAF looking ahead.
+// ring the sight's mils at the camera's field of view, drawn only on the glass; shown for the RAF and, with the Bf 109's
+// Revi (D89), the Bf 109, looking ahead.
 import { describe, it, expect } from 'vitest';
 import * as THREE from 'three';
-import { sightPlacement, boresight, showSight, drawSight, SIGHT } from '../../src/ui/reflectorSight.js';
+import { sightPlacement, boresight, showSight, squareOnSight, drawSight, SIGHT } from '../../src/ui/reflectorSight.js';
+import { REVI, reviPlacement, drawRevi } from '../../src/ui/reviSight.js';
 import { SPITFIRE_PANEL, P } from '../../src/ui/rafPanel.js';
 import { panelRadius } from '../../src/ui/instruments.js';
 import { aircraftById } from '../../src/aircraft/index.js';
@@ -100,13 +102,42 @@ describe('when the GM 2 shows (D87)', () => {
   const sim = (id, jumper = null) => ({ ac: aircraftById[id], playerJumper: jumper });
   const rig = (inCockpit, lookingAway) => ({ inCockpit, lookingAway });
 
-  it('shows in the RAF fighters\' cockpits looking ahead; not looking away, outside, in the Luftwaffe aircraft or after bailing out', () => {
+  it('shows in the RAF fighters\' and the Bf 109\'s cockpits looking ahead; not looking away, outside, in the Bf 110 or after bailing out', () => {
     expect(showSight(sim('spitfire'), rig(true, false))).toBe(true);
     expect(showSight(sim('hurricane'), rig(true, false))).toBe(true);
+    expect(showSight(sim('bf109e4'), rig(true, false))).toBe(true); // the Revi (D89)
     expect(showSight(sim('spitfire'), rig(true, true))).toBe(false);
     expect(showSight(sim('spitfire'), rig(false, false))).toBe(false);
-    expect(showSight(sim('bf109e4'), rig(true, false))).toBe(false);
-    expect(showSight(sim('bf110c4'), rig(true, false))).toBe(false);
+    expect(showSight(sim('bf109e4'), rig(true, true))).toBe(false);
+    expect(showSight(sim('bf110c4'), rig(true, false))).toBe(false); // keeps its 3D Revi until its redraw
     expect(showSight(sim('spitfire', {}), rig(true, false))).toBe(false);
+    expect(squareOnSight(aircraftById.spitfire)).toBe('GM2');
+    expect(squareOnSight(aircraftById.bf109e4)).toBe('Revi');
+    expect(squareOnSight(aircraftById.he111h)).toBeNull();
+  });
+});
+
+describe('the Bf 109\'s Revi drawn square-on (D89)', () => {
+  it('draws the reticle only on its glass, at the guns\' line', () => {
+    const g = recorder();
+    const p = reviPlacement(1920, 1080);
+    drawRevi(g, p, { x: 962, y: 538, ring: 40 });
+    const clip = g.log.findIndex((e) => e.op === 'clip');
+    const ring = g.log.findIndex((e) => e.op === 'arc' && e.r === 40);
+    const restore = g.log.findIndex((e, i) => i > clip && e.op === 'restore');
+    expect(clip).toBeGreaterThan(-1);
+    expect(ring).toBeGreaterThan(clip);
+    expect(ring).toBeLessThan(restore);
+    expect(g.log[ring].x).toBe(962);
+  });
+
+  it('sets the dark glass inside the clear glass, clear glass above and beside it, as photographed (#21)', () => {
+    const { glass, filter } = REVI;
+    expect(filter.top).toBeGreaterThan(glass.top + 0.5);
+    expect(filter.x[0]).toBeGreaterThan(-glass.footHalf);
+    expect(filter.x[1]).toBeLessThan(glass.footHalf);
+    expect(2 * glass.topHalf).toBeGreaterThan(REVI.pad.x[1] - REVI.pad.x[0]);
+    expect(REVI.pad.y[0]).toBeGreaterThan(glass.foot);
+    expect(REVI.block.y[0]).toBeGreaterThanOrEqual(REVI.pad.y[1]);
   });
 });
