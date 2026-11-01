@@ -115,6 +115,10 @@ export const bf109e4 = {
   propHub: { x: 2.41, y: 0 },
   // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
   sight: { type: 'Revi C/12C', ringMils: 100 },
+  // The pilot's speed card on the panel (D91), m/s as the airspeed indicator reads: stall without and with full flap
+  // (S20), take-off with 20° of flap (the product owner's figure: no source), best rate of climb at sea level (S15) and
+  // the approach (S32: about 90 mph).
+  pilotCard: { stallClean: 150 * UNIT.KMH, stallFlaps: 100 * UNIT.KMH, takeoff: 120 * UNIT.KMH, climb: 250 * UNIT.KMH, approach: 90 * UNIT.MPH },
   eye: { x: -0.89, y: 0.556 },
   // Crew (Phase 6, D80): where each sits (m, body axes; estimates on the model) and how long after deciding to bail
   // out he is clear of the aircraft (s, estimates: hood or hatch, harness, over the side; one after another).

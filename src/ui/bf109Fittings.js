@@ -26,7 +26,6 @@ export function drawBf109Fittings(g, at, L) {
   pushButton(g, B('button'), s);
   pitotSwitch(g, B('pitot'), s);
   pitchSwitch(g, B('pitchSwitch'), s);
-  deviationCard(g, B('deviation'), s);
   cableHook(g, B('cableHook'), s);
 }
 
@@ -164,24 +163,6 @@ function pitchSwitch(g, b, s) {
   g.beginPath();
   g.arc(b.x + b.w * 0.3, b.y + b.h * 0.88, b.w * 0.2, 0, Math.PI * 2);
   g.fill();
-}
-
-/** The deviation card: a pale card behind a frame, its table too fine to read. */
-function deviationCard(g, b, s) {
-  plain(g, b, s, '#2c2f33');
-  const card = { x: b.x + b.w * 0.14, y: b.y + b.h * 0.05, w: b.w * 0.72, h: b.h * 0.82 };
-  g.fillStyle = '#d9d8d0';
-  g.fillRect(card.x, card.y, card.w, card.h);
-  g.strokeStyle = '#55554f';
-  g.lineWidth = 1;
-  for (let k = 1; k < 16; k += 1) {
-    const y = card.y + (card.h * k) / 16;
-    g.beginPath();
-    g.moveTo(card.x + card.w * 0.1, y);
-    g.lineTo(card.x + card.w * (k < 6 ? 0.7 : 0.9), y);
-    g.stroke();
-  }
-  screw(g, b.x + b.w / 2, b.y + b.h * 0.94, s * 0.06);
 }
 
 /** The clip on the panel that holds the Revi's cable (the cable itself is drawn with the sight). */

@@ -262,6 +262,11 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Pilot's eye, x (`eye.x`) | -0.89 | m | — | S12, ASSUMPTION | estimate | Read from S12 Fig. 4 (cockpit position); the eye position itself is estimated. |
 | Pilot's eye, height (`eye.y`) | 0.65 | m | — | S12, ASSUMPTION | estimate | A little below the canopy top in S12 Fig. 4. |
 | Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Barr & Stroud GM 2 reflector sight assumed (standard in RAF fighters by 1940; not yet confirmed from an allowed source). The ring's size was not found in an allowed source (forum and dealer figures disagree); a display placeholder until the gunsights are researched for Phase 5 (see gaps). |
+| Speed card: stalling speed, flaps up (`pilotCard.stallClean`) | 38.67 | m/s | 86.5 mph IAS | S12 | medium | Mk II at 7,014 lb, gun ports closed (a close variant). Shown as 87 mph (D91). |
+| Speed card: stalling speed, flaps down (`pilotCard.stallFlaps`) | 31.43 | m/s | 70.3 mph IAS | S12 | medium | Mk II, landing condition. |
+| Speed card: take-off speed (`pilotCard.takeoff`) | 36.21 | m/s | 81 mph | ASSUMPTION | estimate | Product owner's figure (D91); no source found (see gaps). |
+| Speed card: best rate-of-climb speed (`pilotCard.climb`) | 73.31 | m/s | 164 mph at sea level | S2 | medium | Read from the chart (TAS, close to the indicated speed at sea level). |
+| Speed card: final approach speed (`pilotCard.approach`) | 31.29 | m/s | 70 mph | ASSUMPTION | estimate | Product owner's figure (D91); no source found (see gaps). |
 | Flap positions besides up (`controls.flapStops`) | 4 | — | — | ASSUMPTION | estimate | Hydraulic flaps that could be stopped part-way assumed; the Mk I Pilot's Notes were not found (see gaps). |
 | Flap travel, fully down (`controls.flapTravel`) | 80 | deg | 80° down | S12 | medium | Split flaps. |
 | Flap setting for take-off, fraction of travel (`controls.flapTakeoff`) | 0 | fraction | — | ASSUMPTION | estimate | No take-off flap setting found (the Mk I Pilot's Notes were not found); flaps up assumed, as for the Spitfire (S33). |
@@ -500,6 +505,11 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Pilot's eye, x (`eye.x`) | -1.39 | m | — | S11, ASSUMPTION | estimate | Read from S11 Fig. 4 (cockpit position); the eye position itself is estimated. |
 | Pilot's eye, height (`eye.y`) | 0.48 | m | — | S11, ASSUMPTION | estimate | About 2 in below the canopy top in S11 Fig. 4. |
 | Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Barr & Stroud GM 2 reflector sight assumed (standard in RAF fighters by 1940; not yet confirmed from an allowed source). The ring's size was not found in an allowed source (forum and dealer figures disagree); a display placeholder until the gunsights are researched for Phase 5 (see gaps). |
+| Speed card: stalling speed, flaps up (`pilotCard.stallClean`) | 34.87 | m/s | 78 mph ASI | S4 | medium | Shown on the pilot's speed card (D91). |
+| Speed card: stalling speed, flaps down (`pilotCard.stallFlaps`) | 30.40 | m/s | 68 mph ASI | S4 | medium |  |
+| Speed card: take-off speed (`pilotCard.takeoff`) | 36.21 | m/s | 81 mph | ASSUMPTION | estimate | Product owner's figure (D91); no source found (see gaps). |
+| Speed card: best rate-of-climb speed (`pilotCard.climb`) | 62.59 | m/s | 140 mph ASI | S4 | medium | S4 recommends 162 mph instead (steep attitude, poor view at 140). |
+| Speed card: final approach speed (`pilotCard.approach`) | 38.00 | m/s | engine assisted about 85 mph IAS | S33 | medium | Flaps and undercarriage down. |
 | Flap positions besides up (1 = up or fully down only) (`controls.flapStops`) | 1 | — | two positions only, up and fully down | S33 | medium | Pneumatic split flaps; they 'cannot therefore be used to assist take-off' (S33). |
 | Flap travel, fully down (`controls.flapTravel`) | 85 | deg | 85° | S11 | medium | Split flaps. Close variant (VA). |
 | Flap setting for take-off, fraction of travel (`controls.flapTakeoff`) | 0 | fraction | Flaps - UP | S33 | medium | Take-off drill; the flaps 'cannot therefore be used to assist take-off' (S33). |
@@ -809,6 +819,11 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Pilot's eye, x (`eye.x`) | -0.89 | m | — | S32, ASSUMPTION | estimate | Read from S32 Fig. 5 (cockpit position); the eye position itself is estimated. |
 | Pilot's eye, height (`eye.y`) | 0.556 | m | — | S32, ASSUMPTION | estimate | A little below the canopy top in S32 Fig. 5. S20: the hood touches the head of a normal pilot. |
 | Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Revi C/12C reflector sight assumed (the usual sight of the Bf 109 E; not yet confirmed from an allowed source). The ring's size was not found in an allowed source (figures of 6 and 100 mils appear in unverified descriptions); a display placeholder until Phase 5 (see gaps). |
+| Speed card: stalling speed, flaps up (`pilotCard.stallClean`) | 41.67 | m/s | 150 km/h ASI | S20 | medium | Shown on the pilot's speed card (D91). |
+| Speed card: stalling speed, flaps down (40°) (`pilotCard.stallFlaps`) | 27.78 | m/s | 100 km/h ASI | S20 | medium | Flaps and undercarriage down. |
+| Speed card: take-off speed, 20° flap (`pilotCard.takeoff`) | 33.33 | m/s | 120 km/h | ASSUMPTION | estimate | Product owner's figure (D91); no source found (see gaps). |
+| Speed card: best rate-of-climb speed (`pilotCard.climb`) | 69.44 | m/s | 250 km/h at sea level | S15 | medium |  |
+| Speed card: final approach speed (`pilotCard.approach`) | 40.23 | m/s | about 90 mph (145 km/h) | S32 | medium | Flaps and undercarriage down, pilot's indicator. |
 | Flap positions besides up (`controls.flapStops`) | 4 | — | marked from zero to 40 degrees (fully down) in tens of degrees | S20 | medium | Handwheel; any position could be set (S32), the markings are every 10°. S32 takes off with 20°. |
 | Flap travel, fully down (`controls.flapTravel`) | 40 | deg | marked from zero to 40 degrees (fully down) | S20 | medium | S32 gives 42.5° (Table 4) and 42.6° (Table 1); the cockpit markings (S20) are used for the indicator. |
 | Flap setting for take-off, fraction of travel (`controls.flapTakeoff`) | 0.5 | fraction | 20 deg (the recommended position) | S32 | medium | 'All the take-off tests were done with the slotted flaps set at the recommended position of 20 deg.' |
@@ -1736,6 +1751,7 @@ kind of round (each aircraft's `guns`).
 
 | Gap | Needed for | Where to look next |
 |---|---|---|
+| Take-off (unstick) speeds of the Spitfire I, Hurricane I and Bf 109 E; the Hurricane I's approach speed (the speed cards show the product owner's figures meanwhile, D91) | Pilot's speed cards | Pilot's Notes A.P. 1564A and A.P. 1565A; A&AEE take-off trials; Bf 109 E Flugzeug-Handbuch (Start) |
 | Any test of a Spitfire I or Hurricane I at +12 lb/sq in boost (speeds and climb) | Phase 1 validation of the chosen mid-August 1940 configuration | Rolls-Royce or RAE reports of 1940; A&AEE reports on later Hurricane I serials; H.C.T. Dowding, "Handling of Merlin in Hurricane, Spitfire and Defiant Aircraft", 1 Aug 1940 (on the archive site, not yet read) |
 | Time limit for +12 lb/sq in in mid-1940 | Historical note only: the game has no fixed limit (D14) | Pilot's Notes A.P. 1564A (Hurricane I) and A.P. 1565A (Spitfire I) full text; Dowding letter above |
 | Hurricane I Rotol airscrew diameter and pitch range (the Mk II's 11 ft 4 in and the Spitfire's pitch range are used) | Propeller model | A&AEE report on a Rotol Hurricane I; Rotol type records |

@@ -18,6 +18,16 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Pilot's speed cards (1 Nov 2026)
+
+**Done** (D91):
+- a white speed card on the RAF panel left of the GM 2 and on the Bf 109's in place of the deviation card;
+- the period sources' figures where found, the product owner's otherwise (the take-off speeds and the Hurricane's
+  approach);
+- tests in `tests/ui/speedCard.test.js`.
+
+**Known issue:** the take-off speeds and the Hurricane's approach speed have no source yet (research gaps).
+
 ## Bf 109 front cockpit frame (1 Nov 2026)
 
 **Done** (D90):

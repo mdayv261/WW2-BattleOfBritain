@@ -4,9 +4,9 @@
 // references only: nothing of them is copied into the game. Positions and sizes are measured on #17 in its pixels (PX
 // to a dial radius) from the Revi's axis and the top of the upper plate.
 //   Upper panel: the clock at the top; the flap placard, fine altimeter, repeater compass, manifold pressure and the
-//   deviation card in the upper row; airspeed, turn and bank, the airscrew pitch switch, rev counter and the airscrew
-//   pitch indicator in the lower row; the magneto switch, a push button, the Achtung placard and the pitot heater switch
-//   on the left.
+//   pilot's speed card (D91, in place of the deviation card) in the upper row; airspeed, turn and bank, the airscrew pitch
+//   switch, rev counter and the airscrew pitch indicator in the lower row; the magneto switch, a push button, the Achtung
+//   placard and the pitot heater switch on the left.
 //   Lower panel: the lighting dimmer, a cover plate, the fuel and oil pressure gauge, the circuit breakers, the fuel
 //   warning lamp, the fuel contents, oil and coolant thermometers, the undercarriage selector (Fahrwerk Ein / Ruhe /
 //   Aus) and its emergency pull, the hand pump, the two levers, the four-lamp box and the narrow Ein/Aus strip.
@@ -17,6 +17,7 @@
 import { drawBf109Fittings } from './bf109Fittings.js';
 import { drawBf109Lower } from './bf109Lower.js';
 import { drawInterior } from './bf109Frame.js';
+import { speedCard } from './speedCard.js';
 import {
   mount, lwAirspeed, lwRpm, lwAta, lwStripCompass, lwTurnBank, lwFineAltimeter, lwClock, lwPitchIndicator,
   pressureGauge, lwThermometer, lwFuelGauge,
@@ -73,7 +74,7 @@ export const BF109_PANEL = {
   boxes: {
     flapPlacard: [387, 268, 484, 335], magneto: [303, 375, 346, 491], achtung: [290, 495, 342, 534],
     button: [249, 446, 288, 508], pitot: [270, 540, 342, 580], pitchSwitch: [617, 460, 660, 580],
-    deviation: [817, 335, 852, 467], cableHook: [632, 382, 656, 400],
+    speedCard: [808, 345, 866, 478], cableHook: [632, 382, 656, 400], // the pilot's speed card in the deviation card's place (D91)
     blank: [499, 607, 576, 687], breakers: [672, 607, 750, 687], coolantPlacard: [672, 696, 750, 721],
     reserve: [480, 702, 532, 719], reserveLamp: [552, 692, 602, 718], lampBox: [252, 692, 425, 800],
     fuelCock: [125, 750, 225, 847], arrowPlacard: [812, 662, 910, 682], gearSelector: [805, 695, 900, 749],
@@ -147,6 +148,7 @@ export function bf109Panel(g, x0, y0, r, v, now = new Date()) {
   lwThermometer(g, ...dial('oilTemp'), v.oil, { label: 'Öl' });
   lwThermometer(g, ...dial('coolTemp'), v.coolant, { label: 'Kühlst.', ring: '#2f8a96' });
   for (const name of ['setAltimeter', 'setAta', 'setAirspeed']) settingKnob(g, ...at.knob(L.knobs[name]));
+  speedCard(g, at.box(L.boxes.speedCard), v.pilotCard);
 }
 
 /** The round red bezel of the altimeter, manifold pressure and airspeed indicators, with a dark rim. */

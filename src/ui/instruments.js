@@ -9,6 +9,7 @@ import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
 import { BF109_PANEL, bf109Panel, lookDownShift } from './bf109Panel.js';
 import { TRIM_SCALE } from './panelControls.js';
+import { pilotCard } from './speedCard.js';
 import { SPITFIRE_PANEL, rafPanel } from './rafPanel.js';
 import { BF110_LAYOUT, bf110Panel } from './bf110Panel.js';
 
@@ -62,6 +63,7 @@ export function instrumentReadings(sim) {
     sideG: d.sideG,
     rpm: plane.omega / UNIT.RPM,
     rpmLimit: plane.engine.maxSpeed / UNIT.RPM, // the red mark on the rev counter (D89)
+    pilotCard: pilotCard(ac, raf), // the speed card on the panel (D91)
     coolant: plane.engines[0].heat.coolant, // °C, the first engine's (the single-engine panels)
     oil: plane.engines[0].heat.oil,
     manifold: raf ? (d.map - ISA.P0) / UNIT.PSI : d.map / UNIT.ATA,

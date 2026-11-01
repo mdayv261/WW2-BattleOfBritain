@@ -14,6 +14,7 @@
 
 import { drawFittings } from './rafPanelFittings.js';
 import { drawRafDials } from './rafPanelDials.js';
+import { speedCard } from './speedCard.js';
 
 const PX = 82; // picture pixels per dial radius: the airspeed indicator's face
 const CENTRE = 946; // the panel's centre on the picture
@@ -59,6 +60,9 @@ export const SPITFIRE_PANEL = {
     oxygen: [283, 350, 545, 565], magnetos: [115, 790, 195, 925], pumpNote: [102, 942, 200, 1000],
     cardLeft: [470, 925, 560, 1030], cardRight: [683, 930, 783, 1035], fuelPlacard: [1530, 818, 1705, 872],
     fuelWarning: [1732, 830, 1778, 922],
+    // The pilot's speed card (D91), the product owner's addition: a white card left of the GM 2, above the blind-flying
+    // panel and right of the flap placard.
+    speedCard: [714, 70, 822, 400],
   },
   knobs: {
     altimeterSet: [700, 832, 14], directionSet: [923, 862, 18], nightBlind: [395, 527, 11], topLeft: [625, 375, 12],
@@ -95,4 +99,5 @@ export function rafPanel(g, x0, y0, r, v, now = new Date()) {
   const at = placer(x0, y0, r);
   drawFittings(g, at, SPITFIRE_PANEL, v);
   drawRafDials(g, at, SPITFIRE_PANEL, v, now);
+  speedCard(g, at.box(SPITFIRE_PANEL.boxes.speedCard), v.pilotCard);
 }

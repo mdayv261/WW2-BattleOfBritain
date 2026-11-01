@@ -2705,3 +2705,41 @@ the 3D frame, nose and wings show again. A wing lost in a break-up stays hidden.
 **Deviation, flagged to the product owner:** on the ground the Bf 109's long nose hid the view ahead (S20: about 20°
 either side, D28). With the nose hidden in the front view, the view straight ahead over the panel opens up. That is the
 product owner's choice; the nose still shows when looking round.
+
+## D91. Pilot's speed cards on the RAF and Bf 109 panels (1 Nov 2026, plan approved by the product owner)
+
+**Request:** a white pilot's card on each panel with the stall, take-off, best rate-of-climb and final approach speeds:
+on the RAF panel left of the GM 2, on the Bf 109's right of the manifold pressure gauge (the product owner wrote
+"boost"; the Bf 109's equivalent is the ata gauge).
+
+**The product owner's choice:** the period sources' figures where we have them, theirs only where we have none. The Bf
+109's card replaces the white deviation card (D89). The two RAF fighters share a panel but show their own figures.
+
+**Figures** (`pilotCard` in `src/aircraft/spitfire.js`, `hurricane.js`, `bf109e4.js`; card in `src/ui/speedCard.js`):
+
+| | Spitfire | Hurricane | Bf 109 E |
+|---|---|---|---|
+| Stall, flaps up | 78 mph (S4) | 87 mph (S12, Mk II, 86.5) | 150 km/h (S20) |
+| Stall, flaps down | 68 mph (S4) | 70 mph (S12, Mk II) | 100 km/h, flap 40° (S20) |
+| Take-off | 81 mph (product owner) | 81 mph (product owner) | 120 km/h, flap 20° (product owner) |
+| Best rate of climb | 140 mph (S4) | 164 mph (S2, sea level) | 250 km/h (S15, sea level) |
+| Final approach | 85 mph (S33) | 70 mph (product owner) | 145 km/h (S32: about 90 mph) |
+
+**The product owner's figures that differ from the sources** (not used):
+- **RAF stall:** 57 mph, against the Spitfire's 78/68 (S4) and the Hurricane's 86.5/70.3 (S12).
+- **RAF best climb:** 130 mph, against the Spitfire's 140 (S4, with 162 recommended) and the Hurricane's 164 (S2).
+- **RAF approach:** 70 mph, against the Spitfire's 85-90 (S33).
+- **Bf 109 stall without flap:** 120 km/h, against 150 (S20).
+- **Bf 109 best climb:** 150 km/h, against 250 (S15).
+
+The product owner's Bf 109 stall with flap (100 km/h) and approach (145 km/h) agree with the sources.
+
+**Unsourced, the product owner's figures used** (estimates, listed under the research gaps): the three take-off speeds
+and the Hurricane's approach speed.
+
+**Placement:**
+- **RAF:** box [714, 70, 822, 400] on the reference picture, above the blind-flying panel, right of the flap placard,
+  clear of every part of the GM 2 on every screen tested.
+- **Bf 109:** box [808, 345, 866, 478] on #17, inside the upper plate's edge and clear of the front frame.
+
+The labels are in English, as the product owner wrote them.
