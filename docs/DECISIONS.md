@@ -2759,6 +2759,8 @@ labels and the wider placard are additions to the photographed panel.
 
 ## D93. Whole Bf 109 panel in the normal view; its undercarriage lever; the flap ball lever; hat forward (1 Nov 2026, plan approved by the product owner)
 
+**Partly superseded by D95:** the switch between the turn and bank and the rev counter is the propeller pitch lever, and the Fahrwerk selector is the undercarriage switch again.
+
 **The whole panel looking ahead.** At the product owner's request the normal Bf 109 view shows the lower panel too:
 - The guns' line (the reticle, and the horizon in level flight) stands 30% of the way down the screen (`BF109_AIM`, their
   choice), with the dials about their earlier size (48 px on a 1,259-pixel-high window, against 49).
@@ -2794,3 +2796,28 @@ beside the seat; the lever stands in for it so that the flap setting shows on th
 
 **Hood:** at the product owner's request the 3D Bf 109 hood seen when looking up or round no longer has the front pane's
 cross bar or the diagonal braces across its upper corners (`bf109Hood` in `src/render/cockpitFrame.js`).
+
+## D95. Bf 109 pitch lever, undercarriage switch and lights, trim indicator (1 Nov 2026, plan approved by the product owner)
+
+After the conflict flagged after D94 (the Achtung placard's "Fahrwerkschalter auf ‚Ruhe'" matches the lower selector's
+Ein / Ruhe / Aus), the product owner settled the Bf 109 panel's controls:
+- **Propeller pitch lever:** the lever switch between the turn and bank indicator and the rev counter, as first drawn in
+  D38. It is lettered Fine at the top and Coarse at the bottom. Its red knob moves with the blade angle, from the fine
+  stop (22.5°) at the top to the coarse stop (55°) at the bottom: the thumb-switch changes and the engine-management
+  assist both show (`pitchFraction`).
+- **Undercarriage switch:** the Fahrwerk selector beside the hand pump. Its handle stands at Ein (UP) with the
+  undercarriage selected up and Aus (DN) with it selected down. D93's undercarriage lever and the selector's rest at
+  Ruhe are undone.
+- **Undercarriage lights:** the lamps marked EIN and AUS beside the fuel and oil pressure gauge, one of each per leg.
+  The EIN pair glows red with the undercarriage fully up, the AUS pair green with it down and locked, and all are dark
+  while it moves.
+- **Elevator trim indicator:** the narrow window below the hand pump. A white pointer moves with the trim, from + (nose
+  up) at the top through 0 (neutral) in the middle to − (nose down) at the bottom, on the trim display's ±15° scale (D74).
+  The window was moved down (box [957, 782, 995, 858]) to clear the right ball lever's knob, which covers its top on
+  the photograph.
+
+**Deviations from the photographed panel, flagged:**
+- the EIN/AUS lamps are drawn as undercarriage lights;
+- the strip is drawn as a trim indicator, moved down;
+- the trim marks are + and − rather than words: the window is too narrow for words to be read;
+- the labels Fine and Coarse are in English, as the product owner asked.

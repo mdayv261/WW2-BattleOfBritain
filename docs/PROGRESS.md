@@ -18,6 +18,15 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 109 pitch lever, undercarriage switch and lights, trim indicator (1 Nov 2026)
+
+**Done** (D95):
+- the lever switch between the turn and bank and the rev counter is the propeller pitch lever (Fine / Coarse), moving
+  with the blade angle;
+- the Fahrwerk selector is the undercarriage switch (U);
+- the EIN/AUS lamps glow red with the undercarriage up and green with it down;
+- the strip below the hand pump shows the elevator trim, 0 in the middle.
+
 ## Bf 109 MG 17 flashes on the coaming; hood bars removed (1 Nov 2026)
 
 **Done** (D94): the MG 17 flashes on top of the coaming lip in the front view, well apart; the hood's cross bar and

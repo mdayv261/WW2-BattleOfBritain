@@ -4,15 +4,16 @@
 // references only: nothing of them is copied into the game. Positions and sizes are measured on #17 in its pixels (PX
 // to a dial radius) from the Revi's axis and the top of the upper plate.
 //   Upper panel: the clock at the top; the flap placard, fine altimeter, repeater compass, manifold pressure and the
-//   pilot's speed card (D91, in place of the deviation card) in the upper row; airspeed, turn and bank, the undercarriage
-//   lever (D93), rev counter and the airscrew pitch indicator in the lower row; the magneto switch, a push button, the Achtung
+//   pilot's speed card (D91, in place of the deviation card) in the upper row; airspeed, turn and bank, the propeller
+//   pitch lever (D95), rev counter and the airscrew pitch indicator in the lower row; the magneto switch, a push button, the Achtung
 //   placard and the pitot heater switch on the left.
-//   Lower panel: the lighting dimmer, a cover plate, the fuel and oil pressure gauge, the circuit breakers, the fuel
-//   warning lamp, the fuel contents, oil and coolant thermometers, the undercarriage selector (Fahrwerk Ein / Ruhe /
-//   Aus) and its emergency pull, the hand pump, the two levers, the four-lamp box and the narrow Ein/Aus strip.
-// Working: the flight and engine instruments, the fuel contents (full: fuel use is not modelled), the undercarriage
-// lever, the left ball lever (showing the flaps, D93) and the clock. The rest shows normal operation. The whole panel is in view looking ahead: the guns' line
-// stands BF109_AIM of the way down the screen (D93).
+//   Lower panel: the lighting dimmer, a cover plate, the fuel and oil pressure gauge, the undercarriage lights, the fuel
+//   warning lamp, the fuel contents, oil and coolant thermometers, the undercarriage switch (Fahrwerk Ein / Ruhe / Aus)
+//   and its emergency pull, the hand pump, the two levers, the four-lamp box and the elevator trim indicator (D95).
+// Working: the flight and engine instruments, the fuel contents (full: fuel use is not modelled), the propeller pitch
+// lever, the undercarriage switch and lights, the elevator trim indicator (D95), the left ball lever (showing the flaps,
+// D93) and the clock. The rest shows normal operation. The whole panel is in view looking ahead: the guns' line stands
+// BF109_AIM of the way down the screen (D93).
 
 import { drawBf109Fittings } from './bf109Fittings.js';
 import { drawBf109Lower } from './bf109Lower.js';
@@ -76,13 +77,13 @@ export const BF109_PANEL = {
   redBezels: ['altimeter', 'ata', 'airspeed'],
   boxes: {
     flapPlacard: [387, 268, 484, 335], magneto: [303, 375, 346, 491], achtung: [290, 495, 342, 534],
-    button: [249, 446, 288, 508], pitot: [270, 540, 342, 580], gearLever: [617, 460, 660, 580],
+    button: [249, 446, 288, 508], pitot: [270, 540, 342, 580], pitchLever: [617, 460, 660, 580],
     speedCard: [808, 345, 866, 478], cableHook: [632, 382, 656, 400], // the pilot's speed card in the deviation card's place (D91)
-    blank: [499, 607, 576, 687], breakers: [672, 607, 750, 687], coolantPlacard: [672, 696, 750, 721],
+    blank: [499, 607, 576, 687], gearLights: [672, 607, 750, 687], coolantPlacard: [672, 696, 750, 721],
     reserve: [480, 702, 532, 719], reserveLamp: [552, 692, 602, 718], lampBox: [252, 692, 425, 800],
     fuelCock: [125, 750, 225, 847], arrowPlacard: [812, 662, 910, 682], gearSelector: [775, 695, 900, 749],
     emergency: [812, 772, 908, 795], handPump: [895, 616, 948, 628], pumpSlot: [955, 600, 970, 690],
-    strip: [957, 750, 995, 830],
+    trim: [957, 782, 995, 858],
   },
   knobs: { setAltimeter: [411, 450, 11], setAta: [742, 447, 10], setAirspeed: [411, 576, 10], primer: [457, 757, 22] },
   bolts: [[436, 251], [734, 255], [211, 487], [952, 495], [160, 662], [110, 820], [177, 737], [972, 595], [1042, 832]],

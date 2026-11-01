@@ -71,6 +71,8 @@ export function instrumentReadings(sim) {
     normalBoost: plane.engine.boostNormal ? [plane.engine.boostNormal.from, plane.engine.boostNormal.to]
       .map((pa) => (pa - ISA.P0) / UNIT.PSI) : null,
     pitchClock: raf ? null : pitchClock(plane.beta, ac),
+    // The blade angle from the fine stop (0) to the coarse stop (1), for the Bf 109's pitch lever (D95).
+    pitchFraction: raf ? null : Math.max(0, Math.min(1, (plane.beta - ac.propeller.betaMin) / (ac.propeller.betaMax - ac.propeller.betaMin))),
     // Each engine's own readings (the twins have a set of engine instruments per engine).
     engines: plane.engines.map((e, i) => ({
       rpm: e.omega / UNIT.RPM,

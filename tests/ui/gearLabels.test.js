@@ -33,7 +33,7 @@ function recordingContext() {
 const readings = (id) => instrumentReadings(new Simulation(aircraftById[id], 'air'));
 
 describe('undercarriage indicator words (D66)', () => {
-  it('Bf 109: the real undercarriage selector\'s words (Fahrwerk, Ein, Ruhe, Aus, D89) with UP and DN (D92), not OBEN, UNTEN or GEAR', () => {
+  it('Bf 109: the undercarriage switch\'s words (Fahrwerk, Ein, Ruhe, Aus, D89, D95) with UP and DN (D92), not OBEN, UNTEN or GEAR', () => {
     const g = recordingContext();
     bf109Panel(g, 500, 0, 40, readings('bf109e4'));
     for (const word of ['Fahrwerk', 'Ein', 'Ruhe', 'Aus', 'UP', 'DN']) expect(g.texts, word).toContain(word);

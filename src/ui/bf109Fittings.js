@@ -1,7 +1,7 @@
 // The Bf 109 E panel's plates and upper fittings (D89), after the product owner's picture of a restored panel (#17, #23):
 // the upper and lower plates and their hexagon bolts; the placards, lettered where the picture can be read and drawn as
-// grey lines where it cannot; the switches, shown as photographed and not working, but for the undercarriage lever
-// (D93). The lower panel's fittings are in src/ui/bf109Lower.js.
+// grey lines where it cannot; the switches, shown as photographed and not working, but for the propeller pitch lever
+// (D95). The lower panel's fittings are in src/ui/bf109Lower.js.
 
 import { placard } from './luftwaffeDials.js';
 import { screw } from './lwStyle.js';
@@ -26,7 +26,7 @@ export function drawBf109Fittings(g, at, L, v) {
   placard(g, ...centre(B('achtung')), { lines: ['Achtung!', 'Vor Anlassen', 'Fahrwerkschalter', 'auf „Ruhe"'] });
   pushButton(g, B('button'), s);
   pitotSwitch(g, B('pitot'), s);
-  gearLever(g, B('gearLever'), s, v);
+  pitchLever(g, B('pitchLever'), s, v);
   cableHook(g, B('cableHook'), s);
 }
 
@@ -138,22 +138,22 @@ function pitotSwitch(g, b, s) {
   placard(g, b.x + b.w / 2, b.y + b.h * 0.84, b.w * 0.8, b.h * 0.3, { lines: ['Staurohr'], plate: '#d8d6cc', ink: '#1a1a1a' });
 }
 
-/** Where the undercarriage lever's knob stands in its slot (fraction of the lever's height): up, or down when selected down. */
-export const gearKnob = (v) => (v.gearSelected ? 0.66 : 0.16);
+/** Where the propeller pitch lever's knob stands in its slot (fraction of the lever's height): top at fine, bottom at coarse. */
+export const pitchKnob = (v) => 0.16 + 0.5 * Math.max(0, Math.min(1, v.pitchFraction ?? 0));
 
 /**
- * The undercarriage lever (identified by the product owner, D93): a red knob in a slot, up with the undercarriage
- * selected up and down with it selected down, lettered UP and DN beside the slot.
+ * The propeller pitch lever (the product owner, D95; as first drawn in D38): a red knob in a slot, at the top with the
+ * blades at the fine stop and the bottom at the coarse stop, moving with the blade angle; lettered Fine and Coarse.
  */
-function gearLever(g, b, s, v) {
+function pitchLever(g, b, s, v) {
   plain(g, b, s);
   g.fillStyle = '#050505';
   g.fillRect(b.x + b.w * 0.14, b.y + b.h * 0.08, b.w * 0.16, b.h * 0.66);
-  text(g, 'UP', b.x + b.w * 0.64, b.y + b.h * 0.16, s * 0.2, INK, { bold: true });
-  text(g, 'DN', b.x + b.w * 0.64, b.y + b.h * 0.66, s * 0.2, INK, { bold: true });
+  text(g, 'Fine', b.x + b.w * 0.4, b.y + b.h * 0.16, s * 0.15, INK, { bold: true, align: 'left' });
+  text(g, 'Coarse', b.x + b.w * 0.4, b.y + b.h * 0.66, s * 0.15, INK, { bold: true, align: 'left' });
   g.fillStyle = '#c8392e';
   g.beginPath();
-  g.arc(b.x + b.w * 0.22, b.y + b.h * gearKnob(v), b.w * 0.18, 0, Math.PI * 2);
+  g.arc(b.x + b.w * 0.22, b.y + b.h * pitchKnob(v), b.w * 0.18, 0, Math.PI * 2);
   g.fill();
 }
 

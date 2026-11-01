@@ -1,13 +1,13 @@
 // The Bf 109 E panel after the product owner's pictures of a restored panel (D89): dial scales read as on the
 // photographed instruments; every dial, plate and knob on the restored panel's upper or lower plate (#17, #23), none
 // touching; the Revi in front of the panel's top clear of the dials; the placards' words; no ammunition counter, flap,
-// trim or GEAR displays; the whole panel below the Revi with the guns' line at BF109_AIM (D93); the undercarriage lever
-// and the left ball lever working.
+// trim or GEAR displays; the whole panel below the Revi with the guns' line at BF109_AIM (D93); the propeller pitch
+// lever, undercarriage switch and lights, elevator trim indicator (D95) and the left ball lever working.
 import { describe, it, expect } from 'vitest';
 import { lwAirspeedAngle, lwRpmAngle, lwAtaAngle, lwFuelAngle } from '../../src/ui/luftwaffeDials.js';
 import { BF109_PANEL, BF109_AIM, GLASS_ABOVE, P, bf109Panel, plateTop } from '../../src/ui/bf109Panel.js';
-import { SELECTOR_REST, flapLever } from '../../src/ui/bf109Lower.js';
-import { gearKnob } from '../../src/ui/bf109Fittings.js';
+import { flapLever, selectorPosition, gearLightState, trimPointer } from '../../src/ui/bf109Lower.js';
+import { pitchKnob } from '../../src/ui/bf109Fittings.js';
 import { REVI, reviPlacement } from '../../src/ui/reviSight.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { Simulation } from '../../src/core/simulation.js';
@@ -164,22 +164,56 @@ describe('Bf 109 panel drawing (D89)', () => {
     expect(L.ammo).toBeUndefined();
   });
 
-  it('moves the undercarriage lever\'s knob down its slot with the undercarriage selected down, lettered UP and DN (D93)', () => {
-    expect(gearKnob({ gearSelected: false })).toBeLessThan(gearKnob({ gearSelected: true }));
-    expect(gearKnob(readings())).toBe(gearKnob({ gearSelected: false })); // the air start: undercarriage up
-    expect(gearKnob(instrumentReadings(new Simulation(aircraftById.bf109e4, 'ground')))).toBe(gearKnob({ gearSelected: true }));
-    expect(L.boxes.gearLever).toEqual([617, 460, 660, 580]); // between the turn and bank and the rev counter
-    expect(L.boxes.pitchSwitch).toBeUndefined();
+  it('moves the propeller pitch lever\'s knob from Fine at the top to Coarse at the bottom with the blade angle (D95)', () => {
+    expect(pitchKnob({ pitchFraction: 0 })).toBeLessThan(pitchKnob({ pitchFraction: 0.5 }));
+    expect(pitchKnob({ pitchFraction: 0.5 })).toBeLessThan(pitchKnob({ pitchFraction: 1 }));
+    const sim = new Simulation(aircraftById.bf109e4, 'air');
+    const { betaMin, betaMax } = aircraftById.bf109e4.propeller;
+    sim.plane.beta = betaMin;
+    expect(instrumentReadings(sim).pitchFraction).toBeCloseTo(0, 9);
+    sim.plane.beta = (betaMin + betaMax) / 2;
+    expect(instrumentReadings(sim).pitchFraction).toBeCloseTo(0.5, 9);
+    expect(instrumentReadings(new Simulation(aircraftById.spitfire, 'air')).pitchFraction).toBeNull();
+    expect(L.boxes.pitchLever).toEqual([617, 460, 660, 580]); // between the turn and bank and the rev counter
+    const g = recorder();
+    bf109Panel(g, 1000, 0, 40, readings());
+    for (const w of ['Fine', 'Coarse']) expect(g.texts, w).toContain(w);
   });
 
-  it('swings the left ball lever in with the flaps, inside the panel; the right lever and the Fahrwerk selector stay', () => {
+  it('turns the undercarriage switch (Fahrwerk) to Ein with the undercarriage selected up, Aus with it down (D95)', () => {
+    expect(selectorPosition({ gearSelected: false })).toBe('Ein');
+    expect(selectorPosition({ gearSelected: true })).toBe('Aus');
+    expect(selectorPosition(instrumentReadings(new Simulation(aircraftById.bf109e4, 'ground')))).toBe('Aus');
+  });
+
+  it('lights the EIN lamps red with the undercarriage up, the AUS lamps green with it down, none while it moves (D95)', () => {
+    expect(gearLightState({ gearUp: true, gearDown: false })).toEqual({ ein: true, aus: false });
+    expect(gearLightState({ gearUp: false, gearDown: true })).toEqual({ ein: false, aus: true });
+    expect(gearLightState({ gearUp: false, gearDown: false })).toEqual({ ein: false, aus: false });
+    expect(gearLightState(readings())).toEqual({ ein: true, aus: false }); // the air start
+  });
+
+  it('moves the elevator trim indicator\'s pointer from the top (nose up) through 0 to the bottom (nose down) (D95)', () => {
+    expect(trimPointer(0)).toBeCloseTo(0.5, 9);
+    expect(trimPointer(15)).toBeCloseTo(0, 9);
+    expect(trimPointer(-15)).toBeCloseTo(1, 9);
+    expect(trimPointer(40)).toBe(trimPointer(15));
+    // Below the right ball lever's knob, clear of it.
+    const [, , kx, ky, knob] = L.levers.right;
+    expect(L.boxes.trim[1]).toBeGreaterThan(ky + knob);
+    expect(L.boxes.trim[0]).toBeLessThan(kx);
+    const g = recorder();
+    bf109Panel(g, 1000, 0, 40, readings());
+    for (const w of ['+', '0', '\u2212']) expect(g.texts, w).toContain(w);
+  });
+
+  it('swings the left ball lever in with the flaps, inside the panel; the right ball lever stays', () => {
     const up = flapLever(L.levers.left, 0);
     const down = flapLever(L.levers.left, 1);
     expect(up[2]).toBeCloseTo(L.levers.left[2], 0); // as photographed with the flaps up
     expect(up[3]).toBeCloseTo(L.levers.left[3], 0);
     expect(down[2]).toBeGreaterThan(up[2] + 40);
     for (const [, , x, y] of [up, down, flapLever(L.levers.left, 0.5)]) expect(onPanel([x, y])).toBe(true);
-    expect(SELECTOR_REST).toBe('Ruhe');
     expect(readings({ flapSelected: 1 }).flapSelected).toBe(1);
   });
 });

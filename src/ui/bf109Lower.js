@@ -1,21 +1,22 @@
 // The Bf 109 E lower panel's fittings (D89), after the product owner's picture of a restored panel (#17): the lighting
-// dimmer, a cover plate, the circuit breakers, the coolant placard, the fuel reserve warning lamp, the box below the
-// left lever, the arrow placard, the emergency pull and hand pump placards, the two ball levers, and the Fahrwerk
-// selector (Ein / Ruhe / Aus, probably the hand pump's valve: its handle rests at Ruhe, D93). The left ball lever swings
-// with the flaps (the product owner's choice, D93: the real flaps were set by a handwheel); the rest are shown as
-// photographed and not working. Two items could not be
-// identified (the four-lamp box marked SKK404-2 and the narrow Ein/Aus strip at the bottom right): they are drawn as
-// photographed, lamps unlit.
+// dimmer, a cover plate, the undercarriage lights (EIN red with it up, AUS green with it down, D95), the coolant
+// placard, the fuel reserve warning lamp, the box below the left lever, the arrow placard, the emergency pull and hand
+// pump placards, the two ball levers, the undercarriage switch (Fahrwerk Ein / Ruhe / Aus, the product owner's
+// identification, D95: its handle at Ein with the undercarriage selected up, Aus with it down) and the elevator trim
+// indicator below the hand pump (D95). The left ball lever swings with the flaps (the product owner's choice, D93: the
+// real flaps were set by a handwheel); the rest are shown as photographed and not working. The four-lamp box marked
+// SKK404-2 could not be identified: it is drawn as photographed, lamps unlit.
 
 import { placard } from './luftwaffeDials.js';
 import { screw } from './lwStyle.js';
-import { roundRect, text } from './panelParts.js';
+import { lens, roundRect, text } from './panelParts.js';
+import { TRIM_SCALE } from './panelControls.js';
 import { BLACK, INK, centre, plain, roundKnob } from './bf109Fittings.js';
 
 const DULL_RED = '#5a1a14';
 
-/** Where the Fahrwerk selector's handle rests (D93): at Ruhe, as the Achtung placard asks before starting. */
-export const SELECTOR_REST = 'Ruhe';
+/** Where the undercarriage switch's handle stands (D95): Aus (lower) with the undercarriage selected down, else Ein. */
+export const selectorPosition = (v) => (v.gearSelected ? 'Aus' : 'Ein');
 // The left ball lever's angle out from straight down (degrees, to the left): as photographed with the flaps up, swinging
 // in with the flaps down (D93).
 const FLAP_LEVER = { up: 39, down: 20 };
@@ -30,7 +31,7 @@ export function drawBf109Lower(g, at, L, v) {
   const B = (name) => at.box(L.boxes[name]);
   dimmer(g, ...at.dial(L.dials.dimmer), s);
   plain(g, B('blank'), s, '#4a4e54');
-  breakers(g, B('breakers'), s);
+  gearLights(g, B('gearLights'), s, v);
   coolantPlacard(g, B('coolantPlacard'));
   placard(g, ...centre(B('reserve')), { lines: ['Reststand', 'warnlampe'] });
   reserveLamp(g, B('reserveLamp'), s);
@@ -39,12 +40,12 @@ export function drawBf109Lower(g, at, L, v) {
   const [kx, ky, kr] = at.knob(L.knobs.primer);
   roundKnob(g, kx, ky, kr);
   arrowPlacard(g, B('arrowPlacard'), s);
-  gearSelector(g, B('gearSelector'), SELECTOR_REST);
+  gearSelector(g, B('gearSelector'), selectorPosition(v));
   placard(g, ...centre(B('emergency')), { lines: ['Notzug', 'für Fahrwerk'] });
   pull(g, B('emergency').x + B('emergency').w / 2, B('emergency').y - s * 0.12, s * 0.12);
   placard(g, ...centre(B('handPump')), { lines: ['Handpumpe'] });
   plain(g, B('pumpSlot'), s, '#2a2d30');
-  strip(g, B('strip'), s);
+  trimIndicator(g, B('trim'), s, v);
   handle(g, at, flapLever(L.levers.left, v.flapSelected ?? 0));
   handle(g, at, L.levers.right);
 }
@@ -72,21 +73,23 @@ function dimmer(g, x, y, face, outer, s) {
   g.stroke();
 }
 
-/** The circuit breakers: two red-ringed EIN buttons above two black AUS buttons, a small lever between. */
-function breakers(g, b, s) {
+/** Which undercarriage lights glow (D95): the EIN pair red with the undercarriage fully up, the AUS pair green with it down. */
+export const gearLightState = (v) => ({ ein: !!v.gearUp, aus: !!v.gearDown });
+
+/**
+ * The undercarriage lights (the product owner, D95): the box beside the fuel and oil pressure gauge, an EIN lamp for each
+ * leg above glowing red with the undercarriage up, an AUS lamp for each below glowing green with it down, all dark while
+ * it moves; a small lever between them (shown only).
+ */
+function gearLights(g, b, s, v) {
   plain(g, b, s);
-  for (const [fx, fy, word, ring] of [[0.3, 0.32, 'EIN', '#a8352a'], [0.7, 0.32, 'EIN', '#a8352a'], [0.3, 0.66, 'AUS', '#2a2c2f'], [0.7, 0.66, 'AUS', '#2a2c2f']]) {
+  const lit = gearLightState(v);
+  for (const [fx, fy, word, colour, on] of [[0.3, 0.32, 'EIN', '#e0402c', lit.ein], [0.7, 0.32, 'EIN', '#e0402c', lit.ein],
+    [0.3, 0.66, 'AUS', '#3fcf4a', lit.aus], [0.7, 0.66, 'AUS', '#3fcf4a', lit.aus]]) {
     const x = b.x + b.w * fx;
     const y = b.y + b.h * fy;
-    g.fillStyle = ring;
-    g.beginPath();
-    g.arc(x, y, b.w * 0.17, 0, Math.PI * 2);
-    g.fill();
-    g.fillStyle = '#0a0a0a';
-    g.beginPath();
-    g.arc(x, y, b.w * 0.13, 0, Math.PI * 2);
-    g.fill();
-    text(g, word, x, y, b.w * 0.09, INK, { bold: true });
+    lens(g, x, y, b.w * 0.15, on ? colour : on === false ? dim(colour) : colour, on);
+    text(g, word, x, y, b.w * 0.09, on ? '#1a1a1a' : INK, { bold: true });
   }
   g.strokeStyle = '#1c1d1f';
   g.lineWidth = Math.max(2, s * 0.08);
@@ -95,6 +98,9 @@ function breakers(g, b, s) {
   g.lineTo(b.x + b.w * 0.62, b.y + b.h * 0.92);
   g.stroke();
 }
+
+/** An unlit lamp's dark glass of a colour. */
+const dim = (colour) => (colour === '#e0402c' ? '#4a1610' : '#14401a');
 
 /** The coolant placard: Kühlstoff and Temp. with their figures too fine to read. */
 function coolantPlacard(g, b) {
@@ -255,25 +261,39 @@ function pull(g, x, y, rad) {
   roundKnob(g, x, y, rad);
 }
 
-/** The narrow Ein/Aus strip (not identified): a ladder of green bars under a red one in a framed window. */
-function strip(g, b, s) {
+/** The trim indicator's pointer, as a fraction of its window from the top (D95): 0 at full nose up, 1 at full nose down. */
+export const trimPointer = (degrees) => 0.5 - Math.max(-1, Math.min(1, degrees / TRIM_SCALE)) * 0.5;
+
+/**
+ * The elevator trim position indicator (the product owner, D95), in the narrow window below the hand pump: ticks with 0
+ * (neutral) in the middle, + (nose up) at the top and − (nose down) at the bottom, and a white pointer moving with the
+ * trim on the trim display's ±15° scale (D74).
+ */
+function trimIndicator(g, b, s, v) {
   plain(g, b, s, '#2a2d30');
-  const w = { x: b.x + b.w * 0.2, y: b.y + b.h * 0.12, w: b.w * 0.6, h: b.h * 0.76 };
-  g.fillStyle = '#1a1714';
+  const w = { x: b.x + b.w * 0.42, y: b.y + b.h * 0.08, w: b.w * 0.4, h: b.h * 0.84 };
+  g.fillStyle = '#16140f';
   g.fillRect(w.x, w.y, w.w, w.h);
-  g.fillStyle = '#8a2a20';
-  g.fillRect(w.x, w.y, w.w, w.h * 0.08);
-  g.strokeStyle = '#5f7a52';
-  g.lineWidth = 1;
-  for (let k = 1; k < 12; k += 1) {
-    const y = w.y + w.h * (0.1 + k * 0.075);
+  const at = (f) => w.y + w.h * (0.06 + f * 0.88);
+  g.strokeStyle = '#d8d6cc';
+  for (let k = 0; k <= 6; k += 1) {
+    g.lineWidth = k === 3 ? Math.max(1.5, s * 0.04) : 1;
     g.beginPath();
-    g.moveTo(w.x + w.w * 0.15, y);
-    g.lineTo(w.x + w.w * 0.85, y);
+    g.moveTo(w.x + w.w * (k % 3 === 0 ? 0.1 : 0.45), at(k / 6));
+    g.lineTo(w.x + w.w * 0.9, at(k / 6));
     g.stroke();
   }
-  text(g, 'Ein', b.x + b.w / 2, b.y + b.h * 0.2, b.w * 0.24, INK);
-  text(g, 'Aus', b.x + b.w / 2, b.y + b.h * 0.84, b.w * 0.24, INK);
+  text(g, '+', b.x + b.w * 0.22, at(0), b.w * 0.34, INK, { bold: true });
+  text(g, '0', b.x + b.w * 0.22, at(0.5), b.w * 0.3, INK, { bold: true });
+  text(g, '−', b.x + b.w * 0.22, at(1), b.w * 0.34, INK, { bold: true });
+  const y = at(trimPointer(v.trimDegrees ?? 0));
+  g.fillStyle = '#ffffff';
+  g.beginPath();
+  g.moveTo(w.x + w.w * 0.05, y);
+  g.lineTo(w.x + w.w * 0.95, y - w.w * 0.32);
+  g.lineTo(w.x + w.w * 0.95, y + w.w * 0.32);
+  g.closePath();
+  g.fill();
 }
 
 /**
