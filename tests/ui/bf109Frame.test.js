@@ -35,7 +35,7 @@ describe('Bf 109 front frame (D90)', () => {
   it('meets the windscreen posts\' feet with the coaming lip\'s inner edge, the lip over the plate\'s top', () => {
     const [t0, t1] = archAngles();
     const inner = (t) => archPoint(t, FRAME.arch.thick / 2);
-    for (const [t, foot] of [[t0, FRAME.posts.feet[0]], [t1, FRAME.posts.feet[1]]]) {
+    for (const [t, foot] of [[t0, FRAME.sides.feet[0]], [t1, FRAME.sides.feet[1]]]) {
       expect(inner(t)[0]).toBeCloseTo(foot[0], 0);
       expect(Math.abs(inner(t)[1] - foot[1])).toBeLessThan(2);
     }
@@ -53,7 +53,7 @@ describe('Bf 109 front frame (D90)', () => {
   });
 
   it('keeps the posts and side frames clear of every dial, the side frames outside both plates', () => {
-    const y0 = FRAME.posts.feet[0][1];
+    const y0 = FRAME.sides.feet[0][1];
     for (const side of [-1, 1]) {
       const sideLine = [[sideX(side, y0), y0], [sideX(side, y0 + 1000), y0 + 1000]];
       const postLine = [[postX(side, y0), y0], [postX(side, y0 - 1000), y0 - 1000]];
@@ -82,13 +82,22 @@ describe('Bf 109 front frame (D90)', () => {
 describe('Bf 109 front frame as the museum photograph, square joins (D103)', () => {
   const { top, posts, crossBar } = FRAME;
 
-  it('raises the posts from the coaming\'s ends to the top frame, leaning a little out', () => {
+  it('raises the posts from the coaming to the top frame, 20% closer together than before and leaning in about 5 degrees', () => {
     for (const side of [-1, 1]) {
       const foot = posts.feet[side < 0 ? 0 : 1];
       expect(postX(side, foot[1])).toBeCloseTo(foot[0], 9);
-      expect(side * (postX(side, top.y) - foot[0])).toBeGreaterThan(0); // leaning out going up
-      expect(posts.lean).toBeLessThan(0.1);
+      expect(side * (postX(side, top.y) - foot[0])).toBeLessThan(0); // leaning in going up
+      expect(Math.atan(-posts.lean) * 180 / Math.PI).toBeCloseTo(5, 0);
+      // The foot stands on the coaming's inner edge.
+      const t = 2 * Math.PI - Math.acos((foot[0] - 583) / (FRAME.arch.a - FRAME.arch.thick / 2));
+      expect(archPoint(t, FRAME.arch.thick / 2)[1]).toBeCloseTo(foot[1], 0);
     }
+    expect(posts.feet[1][0] - posts.feet[0][0]).toBeCloseTo(0.8 * 500, 6);
+  });
+
+  it('brings the hood\'s sides 20% closer at the top than #16\'s, still meeting the side windows where they did', () => {
+    expect(top.half).toBeCloseTo(0.8 * 580, 6);
+    expect(windowCorner(-1)[1]).toBeCloseTo(681.6, 0);
   });
 
   it('squares the top frame\'s corners on the hood\'s sides, and shows it on the screen', () => {
@@ -110,22 +119,21 @@ describe('Bf 109 front frame as the museum photograph, square joins (D103)', () 
     expect(crossBar.y).toBeGreaterThan(top.y);
   });
 
-  it('angles the posts out from the cross bar to the top frame\'s corners, no corner braces (D103)', () => {
+  it('braces the top corners at about 45 degrees, the posts running straight to the top frame', () => {
     for (const side of [-1, 1]) {
-      const path = postPath(side);
-      expect(path[1][1]).toBe(crossBar.y);
-      expect(path[2]).toEqual([583 + side * top.half, top.y]);
-      expect(side * (path[2][0] - path[1][0])).toBeGreaterThan(0); // outward
+      const dx = Math.abs(hoodX(side, FRAME.braces.y) - (583 + side * FRAME.braces.half));
+      expect(Math.atan2(FRAME.braces.y - top.y, dx) * 180 / Math.PI).toBeCloseTo(45, -1);
+      expect(postPath(side)).toHaveLength(2);
+      expect(postPath(side)[1][1]).toBe(top.y);
     }
-    expect(FRAME.braces).toBeUndefined();
   });
 
   it('carries the coaming 25% further round the panel, past the posts\' feet', () => {
     const [t0, t1] = archAngles();
     const [c0, c1] = coamingAngles();
     expect((c1 - c0) / (t1 - t0)).toBeCloseTo(1.25, 6);
-    expect(archPoint(c0)[0]).toBeLessThan(FRAME.posts.feet[0][0]);
-    expect(archPoint(c1)[0]).toBeGreaterThan(FRAME.posts.feet[1][0]);
+    expect(archPoint(c0)[0]).toBeLessThan(FRAME.sides.feet[0][0]);
+    expect(archPoint(c1)[0]).toBeGreaterThan(FRAME.sides.feet[1][0]);
   });
 
   it('closes each side window where the hood\'s side meets its lower frame, outside both plates', () => {

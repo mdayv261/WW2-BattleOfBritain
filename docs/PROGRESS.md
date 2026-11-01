@@ -20,9 +20,9 @@ Read this at the start of every session.
 
 ## Bf 109 front view as the museum photograph (1 Nov 2026)
 
-**Done** (D103): the Bf 109's front frame redrawn as #16 with square joins: posts to a cross bar above the Revi, then
-angling out to the flat top frame's corners; the hood's sides meeting the side windows' lower frames; a thinner coaming
-running 25% further round the panel.
+**Done** (D103): the Bf 109's front frame redrawn as #16 with square joins: the posts closer together and leaning in 5°
+past a cross bar above the Revi to a narrower flat top frame with corner braces; the hood's sides meeting the side
+windows' lower frames; a thinner coaming running 25% further round the panel.
 
 ## Spitfire front view (1 Nov 2026)
 

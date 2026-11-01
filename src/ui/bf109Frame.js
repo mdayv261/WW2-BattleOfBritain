@@ -1,8 +1,8 @@
 // The Bf 109's front cockpit frame (D90, redrawn in D103), drawn square-on with the panel while the pilot looks ahead,
 // as the product owner's museum photograph from the seat shows it (#16, a shape guide only), with square joins: the
 // coaming's thin lip arching tight over the top of the panel above the clock and on round it; the front pane's two
-// posts rising from its ends, leaning a little out, to a cross bar just above the Revi and then angling out to the
-// hood's flat top frame's square corners; the hood's sides from those corners, leaning a little out going down; and the
+// posts rising from it, leaning in a little, past a cross bar just above the Revi to the hood's flat top frame; the
+// hood's sides from its square corners, leaning a little out going down, with 45° braces across the corners; and the
 // side windows' lower frames running diagonally down from the posts' feet to meet the hood's sides, the cockpit's dark
 // interior below them round the panel. Sizes are in picture pixels of the restored panel (#17, through the panel's
 // placer, src/ui/bf109Panel.js), measured on #16 against its dials; the height above the cross bar is compressed so the
@@ -15,19 +15,24 @@ export const FRAME = {
   // The lip runs on past the posts' feet round the panel by `extend` of its span at each end (25% longer in all, D103).
   arch: { cx: 583, cy: 343.2, a: 291, b: 129.2, thick: 22, extend: 0.125 },
   // The posts' feet at the arch's ends, their width, and how far they lean outward for each pixel up.
-  posts: { feet: [[333, 290], [833, 290]], width: 24, lean: 0.05 },
-  // The side windows' lower frames: from the posts' feet, outward this many pixels for each pixel down; their width.
-  sides: { slope: 1.156, width: 32 },
-  // The hood's flat top frame: its height and its half-width about the windscreen's centre (the square corners).
-  top: { y: -285, half: 580, width: 28 },
-  // The hood's sides: from the top frame's corners, outward this many pixels for each pixel down.
-  hood: { slope: 0.127, width: 28 },
-  // The front pane's cross bar between the posts, just above the Revi's glass. Above it the posts angle out to the top
-  // frame's corners (product owner, D103), in place of the corner braces.
+  // (D103: 20% closer together than #16's and leaning in about 5° going up, at the product owner's request.)
+  posts: { feet: [[383, 260.4], [783, 260.4]], width: 24, lean: -0.0875 },
+  // The side windows' lower frames: from their feet on the coaming (where the posts stood before D103's narrowing),
+  // outward this many pixels for each pixel down; their width.
+  sides: { feet: [[333, 290], [833, 290]], slope: 1.156, width: 32 },
+  // The hood's flat top frame: its height and its half-width about the windscreen's centre (the square corners; 20%
+  // narrower than #16's at the product owner's request, D103).
+  top: { y: -285, half: 464, width: 28 },
+  // The hood's sides: from the top frame's corners, outward this many pixels for each pixel down (steeper than #16's, so
+  // they still meet the side windows' lower frames where they did).
+  hood: { slope: 0.247, width: 28 },
+  // The front pane's cross bar between the posts, just above the Revi's glass.
   crossBar: { y: -111, width: 22 },
+  // The 45° braces across the top corners: from the top frame `half` from the centre down to the hood's side at `y`.
+  braces: { half: 320, y: -110, width: 22 },
   // The cowling MG 17s' muzzle flashes on the lip's top edge (product owner, D94): symmetric about the windscreen's
   // centre (the fuselage's centre line), well apart, left and right; their size.
-  flashes: { x: [393, 773], size: 16 },
+  flashes: { x: [423, 743], size: 16 }, // between the posts' feet (D103)
 };
 /** How long a muzzle flash shows after each shot, s: as the 3D flashes (src/render/projectiles.js). */
 export const FLASH_TIME = 0.03;
@@ -59,7 +64,7 @@ export const hoodX = (side, y) => CENTRE + side * (FRAME.top.half + FRAME.hood.s
 
 /** Where a side window's lower frame meets the hood's side (`side` -1 left, +1 right): the window's bottom corner. */
 export function windowCorner(side) {
-  const [fx, fy] = FRAME.posts.feet[side < 0 ? 0 : 1];
+  const [fx, fy] = FRAME.sides.feet[side < 0 ? 0 : 1];
   // fx + side·s·(y − fy) = CENTRE + side·(half + h·(y − top)), solved for y.
   const { slope: s } = FRAME.sides;
   const { slope: h } = FRAME.hood;
@@ -69,11 +74,11 @@ export function windowCorner(side) {
 
 /**
  * The arch's end angles (rad, canvas ellipse angles: 0 to the right, increasing clockwise), where its inner edge meets
- * the posts' feet.
+ * the side windows' lower frames' feet.
  */
 export function archAngles() {
   const { cx, a, thick } = FRAME.arch;
-  const t = Math.acos((FRAME.posts.feet[1][0] - cx) / (a - thick / 2));
+  const t = Math.acos((FRAME.sides.feet[1][0] - cx) / (a - thick / 2));
   return [Math.PI + t, 2 * Math.PI - t];
 }
 
@@ -84,11 +89,9 @@ export function coamingAngles() {
   return [t0 - more, t1 + more];
 }
 
-/** A post's line (picture pixels): from its foot up to the cross bar, then out to the top frame's corner (D103). */
+/** A post's line (picture pixels): from its foot on the coaming up to the top frame, leaning in (D103). */
 export function postPath(side) {
-  const foot = FRAME.posts.feet[side < 0 ? 0 : 1];
-  const { y } = FRAME.crossBar;
-  return [foot, [postX(side, y), y], [CENTRE + side * FRAME.top.half, FRAME.top.y]];
+  return [FRAME.posts.feet[side < 0 ? 0 : 1], [postX(side, FRAME.top.y), FRAME.top.y]];
 }
 
 /** A point on the arch at angle t (picture pixels): on its middle line, or `inset` pixels inside it (its inner edge). */
@@ -96,8 +99,8 @@ export const archPoint = (t, inset = 0) => [
   FRAME.arch.cx + (FRAME.arch.a - inset) * Math.cos(t), FRAME.arch.cy + (FRAME.arch.b - inset) * Math.sin(t),
 ];
 
-/** The side frame's line from a post's foot (`side` -1 left, +1 right) at picture height y. */
-export const sideX = (side, y) => FRAME.posts.feet[side < 0 ? 0 : 1][0] + side * FRAME.sides.slope * (y - FRAME.posts.feet[0][1]);
+/** The side window's lower frame's line from its foot (`side` -1 left, +1 right) at picture height y. */
+export const sideX = (side, y) => FRAME.sides.feet[side < 0 ? 0 : 1][0] + side * FRAME.sides.slope * (y - FRAME.sides.feet[0][1]);
 /** A post's middle line (`side` -1 left, +1 right) at picture height y (above its foot). */
 export const postX = (side, y) => FRAME.posts.feet[side < 0 ? 0 : 1][0] + side * FRAME.posts.lean * (FRAME.posts.feet[0][1] - y);
 
@@ -107,7 +110,7 @@ export const postX = (side, y) => FRAME.posts.feet[side < 0 ? 0 : 1][0] + side *
  */
 export function drawInterior(g, at) {
   const [t0, t1] = archAngles();
-  const y0 = FRAME.posts.feet[0][1];
+  const y0 = FRAME.sides.feet[0][1];
   g.fillStyle = INTERIOR;
   g.beginPath();
   for (let k = 0; k <= 24; k += 1) {
@@ -135,7 +138,6 @@ export function drawInterior(g, at) {
  * (`flashes`: { left, right }, D94). `at` is the panel's placer.
  */
 export function drawFrontFrame(g, at, flashes = { left: false, right: false }) {
-  const { feet } = FRAME.posts;
   const w = (px) => at.len(px);
   const P = (pts) => pts.map((p) => at.xy(p));
   const [left, right] = [windowCorner(-1), windowCorner(1)];
@@ -143,9 +145,11 @@ export function drawFrontFrame(g, at, flashes = { left: false, right: false }) {
   bars(g, P([left, [CENTRE - FRAME.top.half, FRAME.top.y], [CENTRE + FRAME.top.half, FRAME.top.y], right]), w(FRAME.top.width));
   const { crossBar } = FRAME;
   for (const side of [-1, 1]) {
+    const { braces } = FRAME;
+    bars(g, P([[CENTRE + side * braces.half, FRAME.top.y], [hoodX(side, braces.y), braces.y]]), w(braces.width));
     // The side window's lower frame, from the post's foot to the window's corner.
-    bars(g, P([feet[side < 0 ? 0 : 1], windowCorner(side)]), w(FRAME.sides.width));
-    // The post: up from its foot to the cross bar, then angling out to the top frame's corner.
+    bars(g, P([FRAME.sides.feet[side < 0 ? 0 : 1], windowCorner(side)]), w(FRAME.sides.width));
+    // The post: up from its foot on the coaming to the top frame.
     bars(g, P(postPath(side)), w(FRAME.posts.width));
   }
   bars(g, P([[postX(-1, crossBar.y), crossBar.y], [postX(1, crossBar.y), crossBar.y]]), w(crossBar.width));
