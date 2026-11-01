@@ -5,7 +5,7 @@
 // front view shows, the airscrew kept with its spinner hidden and not shifted.
 import { describe, it, expect, beforeAll } from 'vitest';
 import * as THREE from 'three';
-import { RAF_FRAMES, RAF_AIM, windscreenPath, bowX, outerPath, coamingY, coamingLine, coamingPoint, legFoot, legX, sillX, panelTopY, drawRafInterior } from '../../src/ui/rafFrame.js';
+import { RAF_FRAMES, RAF_AIM, windscreenPath, archPoint, outerPath, coamingY, coamingLine, coamingPoint, legFoot, legX, sillX, panelTopY, drawRafInterior } from '../../src/ui/rafFrame.js';
 import { SPITFIRE_PANEL, P, placer } from '../../src/ui/rafPanel.js';
 import { SIGHT, sightPlacement } from '../../src/ui/reflectorSight.js';
 import { panelRadius } from '../../src/ui/instruments.js';
@@ -57,11 +57,10 @@ for (const id of ['spitfire', 'hurricane']) {
       expect(clearOfDials(windscreenPath(F), F.windscreen.width)).toBe(true);
       for (const s of [-1, 1]) {
         for (let y = 60; y <= 1010; y += 50) {
-          if (F.bows) expect(inPanel([bowX(F.bows, s, y), y]), `${id} bow ${s} ${y}`).toBe(false);
-          if (F.sills && y > legFoot(F, s)[1]) expect(inPanel([sillX(F, s, y), y]), `${id} sill ${s} ${y}`).toBe(false);
+          if (y > legFoot(F, s)[1]) expect(inPanel([sillX(F, s, y), y]), `${id} sill ${s} ${y}`).toBe(false);
         }
       }
-      if (F.outer) {
+      {
         // The outer frame's legs stand on the coaming's ends, outside the panel, and rise above the armoured windscreen.
         const path = outerPath(F);
         expect(path[0]).toEqual(legFoot(F, -1));
@@ -72,11 +71,15 @@ for (const id of ['spitfire', 'hurricane']) {
     });
 
     if (F.struts) {
-      it('joins the struts from the windscreen\'s arch to the bows', () => {
-        for (const s of F.struts) {
-          const spring = F.windscreen.top + F.windscreen.half;
-          expect(Math.abs(Math.hypot(s.from[0], s.from[1] - spring) - F.windscreen.half)).toBeLessThan(F.windscreen.width);
-          expect(bowX(F.bows, -1, s.toY)).toBeLessThan(AXIS - s.from[0]);
+      it('raises the struts from the armoured windscreen\'s round top out to the outer legs (D102)', () => {
+        for (const st of F.struts) {
+          for (const side of [-1, 1]) {
+            const [ax, ay] = archPoint(F, side, st.angle);
+            expect(Math.hypot(ax - AXIS, ay - (F.windscreen.top + F.windscreen.half))).toBeCloseTo(F.windscreen.half, 6);
+            const lx = legX(F, side, st.toY);
+            expect(side * (lx - ax)).toBeGreaterThan(0); // outward
+            expect(st.toY).toBeLessThan(ay); // rising
+          }
         }
       });
     }
@@ -135,6 +138,7 @@ describe('Hurricane frame refined (D100, D101)', () => {
 
   it('raises the guns\' line so the GM 2\'s glass stands above the coaming, the reticle centred in it, on every screen', () => {
     expect(RAF_AIM.hurricane).toBe(0.45);
+    expect(RAF_AIM.spitfire).toBe(0.45); // as the Hurricane (D102)
     for (const [w, h] of SCREENS) {
       const r = panelRadius(SPITFIRE_PANEL, w, h);
       const p = sightPlacement(w, h, RAF_AIM.hurricane);
@@ -144,26 +148,64 @@ describe('Hurricane frame refined (D100, D101)', () => {
       const inner = ((F.windscreen.half - F.windscreen.width / 2) / 82) * r;
       expect(inner, `${w}x${h}`).toBeGreaterThan(p.glass.w / 2);
     }
-    expect(RAF_AIM.spitfire).toBeUndefined(); // the Spitfire keeps the middle until it is reworked
   });
 
-  it('draws the fuselage sides and interior for the Hurricane only', () => {
+  it('draws the fuselage sides and interior for both RAF fighters (D102), nothing without a frame', () => {
     let fills = 0;
     const g = new Proxy({}, { get: (t, p) => (p === 'fill' ? () => { fills += 1; } : p in t ? t[p] : () => {}), set: (t, p, v) => { t[p] = v; return true; } });
-    drawRafInterior(g, placer(1000, 0, 40), F);
-    expect(fills).toBe(3); // the interior and two side walls
+    for (const frame of [F, RAF_FRAMES.spitfire]) {
+      fills = 0;
+      drawRafInterior(g, placer(1000, 0, 40), frame);
+      expect(fills).toBe(3); // the interior and two side walls
+    }
     fills = 0;
-    drawRafInterior(g, placer(1000, 0, 40), RAF_FRAMES.spitfire);
+    drawRafInterior(g, placer(1000, 0, 40), undefined);
     expect(fills).toBe(0);
   });
 });
 
-describe('Hurricane and Spitfire frames compared (D99)', () => {
-  it('gives the Hurricane a taller windscreen than the Spitfire, inside an outer frame rather than bows', () => {
-    expect(RAF_FRAMES.hurricane.windscreen.top).toBeLessThan(RAF_FRAMES.spitfire.windscreen.top);
-    expect(RAF_FRAMES.hurricane.outer).toBeDefined();
-    expect(RAF_FRAMES.spitfire.bows).toBeDefined();
-    expect(RAF_FRAMES.bf109e4).toBeUndefined();
+describe('Spitfire frame, as the Hurricane\'s with #29\'s differences (D102)', () => {
+  const S = RAF_FRAMES.spitfire;
+  const H = RAF_FRAMES.hurricane;
+  const lean = (F) => Math.atan2(F.coaming.half - F.outer.half, legFoot(F, 1)[1] - F.outer.spring) * 180 / Math.PI;
+
+  it('shares the Hurricane\'s armoured windscreen, coaming, sills and raised GM 2', () => {
+    expect(S.windscreen).toEqual(H.windscreen);
+    expect(S.coaming).toEqual(H.coaming);
+    expect(S.sills).toEqual(H.sills);
+    expect(RAF_AIM.spitfire).toBe(RAF_AIM.hurricane);
+  });
+
+  it('leans the outer legs in about 20 degrees, more than the Hurricane\'s, to a flat top bar clear above the armoured windscreen', () => {
+    expect(lean(S)).toBeCloseTo(20, -1);
+    expect(lean(S)).toBeGreaterThan(lean(H));
+    expect(S.outer.flat).toBe(true);
+    expect(S.outer.spring + S.outer.width / 2).toBeLessThan(S.windscreen.top - S.windscreen.width / 2);
+    // The legs stay clear of the armoured windscreen's round top all the way up.
+    const spring = S.windscreen.top + S.windscreen.half;
+    const outerEdge = S.windscreen.half + S.windscreen.width / 2;
+    for (let y = spring; y >= S.outer.spring; y -= 10) {
+      const archX = Math.sqrt(Math.max(0, outerEdge ** 2 - (spring - y) ** 2));
+      expect(legX(S, 1, y) - S.outer.width / 2 - AXIS, String(y)).toBeGreaterThan(archX);
+    }
+  });
+
+  it('rounds the top bar\'s corners: no point of the frame at the sharp corner (product owner, D102)', () => {
+    const path = outerPath(S);
+    for (const side of [-1, 1]) {
+      const corner = [AXIS + side * S.outer.half, S.outer.spring];
+      const nearest = Math.min(...path.map(([x, y]) => Math.hypot(x - corner[0], y - corner[1])));
+      expect(nearest).toBeGreaterThan(S.outer.corner * 0.2);
+    }
+    expect(path[0]).toEqual(legFoot(S, -1));
+    expect(path[path.length - 1]).toEqual(legFoot(S, 1));
+  });
+
+  it('carries the rear-view mirror on the top bar\'s centre; the Hurricane has none', () => {
+    expect(S.mirror.w).toBeGreaterThan(0);
+    expect(H.mirror).toBeUndefined();
+    expect(H.rails).toBeDefined();
+    expect(S.rails).toBeUndefined();
   });
 });
 

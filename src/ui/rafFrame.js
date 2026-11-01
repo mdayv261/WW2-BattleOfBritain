@@ -1,15 +1,15 @@
-// The Hurricane's and Spitfire's front cockpit frames (D99, D100), drawn square-on with the panel while the pilot looks
+// The Hurricane's and Spitfire's front cockpit frames (D99-D102), drawn square-on with the panel while the pilot looks
 // ahead. Shape guides only, nothing copied: the product owner's museum photograph of a Hurricane cockpit from the front
-// (#28), and a Spitfire's cockpit from another game (#26).
-//   Spitfire (light grey metal, #26): the coaming's lip along the panel's arched top; the armoured windscreen's two posts
-//   either side of the GM 2 joined by a wide rounded arch; two straight canopy bows running down past the panel's lower
-//   corners; short struts from the arch's shoulders to them.
-//   Hurricane (#28, D100, refined by the product owner in D101): the thin grey-green outer windscreen frame, legs
-//   standing on the coaming and leaning in about 15° to a short elliptical crown; the lighter armoured windscreen inside it, posts on the coaming and a
-//   rounded top; horizontal frames halfway up the side panes between them; the coaming wrapping close round the panel's
-//   arched top; and the fuselage sides, the cockpit's sills angling in from the legs' feet at the Bf 109's slope, with the
-//   side walls below them and the dark interior beside the panel (`drawRafInterior`, on the panel's canvas before the
-//   panel). The guns' line stands at RAF_AIM of the screen so the GM 2's glass clears the coaming.
+// (#28), and a Spitfire's cockpit from another game (#26, #29).
+// Both, as the Hurricane's approved view (D100, D101): the thin outer windscreen frame, its legs standing on the coaming
+// and leaning in; the armoured windscreen inside it, posts on the coaming and a rounded top; the coaming wrapping close
+// round the panel's arched top; and the fuselage sides, the cockpit's sills angling in from the coaming's ends at the
+// Bf 109's slope, with the side walls below them and the dark interior beside the panel (`drawRafInterior`, on the
+// panel's canvas before the panel). The guns' line stands at RAF_AIM of the screen so the GM 2's glass clears the coaming.
+//   Hurricane (grey-green, #28): the outer frame's legs lean in about 15° to a short elliptical crown; level frames
+//   halfway up the side panes.
+//   Spitfire (light grey metal, #29, D102): the outer frame's legs lean in about 20° to a flat top bar carrying the
+//   rear-view mirror; struts rise from the armoured windscreen's shoulders out to the legs.
 // Sizes are in the RAF panel's picture pixels (through its placer, src/ui/rafPanel.js), measured on the pictures against
 // their dials and sights. The 3D windscreen, nose and wings are hidden meanwhile (src/render/testView.js) and show again
 // when the pilot looks round.
@@ -23,15 +23,24 @@ const FAR = 4000; // picture pixels: far enough to run off any screen
 
 export const RAF_FRAMES = {
   spitfire: {
-    // The windscreen's posts either side of the axis, its arch's top, and the frame's width.
-    windscreen: { half: 343, top: -637, width: 70 },
-    // Two straight bows: across from the axis at the height `at`, outward `slope` for each pixel down; their width.
-    bows: { half: 620, at: -833, slope: 0.62, width: 110 },
-    // Struts from the arch's shoulders to the bows: [x on the arch side, y] to the bow at y.
-    struts: [{ from: [330, -400], toY: -539 }],
-    width: 46, // the struts'
-    colour: '#a2a7aa',
-    windscreenColour: '#8f9498',
+    // The armoured windscreen, as the Hurricane's (D102).
+    windscreen: { half: 336, top: -687, width: 60 },
+    // The outer windscreen frame: legs standing on the coaming's ends (`foot` either side of the axis), leaning in about
+    // 20° to a flat top bar at `spring`, `half` either side of the axis, the corners rounded over `corner`.
+    outer: { foot: 774, half: 303, spring: -780, top: -780, flat: true, corner: 110, width: 56 },
+    // Struts rising from the armoured windscreen's round top (at `angle` degrees from straight up) to the outer legs at y.
+    struts: [{ angle: 50, toY: -640 }],
+    railWidth: 34,
+    // The rear-view mirror on the top bar's centre: its width and height and the stem's length.
+    mirror: { w: 130, h: 34, stem: 40 },
+    coaming: { half: 774, width: 56, overlap: 6 },
+    sills: { slope: 1.156, width: 70, wall: 0.45 },
+    colour: '#a9aeb1',
+    windscreenColour: '#9a9fa3',
+    coamingColour: '#c4c7c8',
+    sillColour: '#c9cccd',
+    wallColour: '#8d9295',
+    interiorColour: '#2a2c2e',
   },
   hurricane: {
     // The armoured windscreen: posts either side of the axis on the coaming, its rounded top, its width (D101: lower,
@@ -44,9 +53,9 @@ export const RAF_FRAMES = {
     // Horizontal frames halfway up the side panes, from the armoured posts across to the outer legs, at height y.
     rails: [{ y: -205 }],
     railWidth: 34,
-    // The coaming: a band along the panel's arched outline, just outside it (`overlap` over its edge), between the outer
-    // frame's legs.
-    coaming: { width: 56, overlap: 6 },
+    // The coaming: a band along the panel's arched outline, just outside it (`overlap` over its edge), ending `half`
+    // either side of the axis, where the outer frame's legs stand.
+    coaming: { half: 774, width: 56, overlap: 6 },
     // The sills: from the outer legs' feet outward `slope` for each pixel down (the Bf 109's side frames', D90); the
     // band's width. The side walls' inner edge leaves the feet at `wall` across for each pixel down.
     sills: { slope: 1.156, width: 70, wall: 0.45 },
@@ -81,7 +90,7 @@ export function panelTopY(x) {
 }
 
 /** Where the guns' line stands in each RAF fighter's cockpit, as a fraction of the screen's height from its top. */
-export const RAF_AIM = { hurricane: 0.45 }; // raised so the GM 2's glass clears the coaming (D101)
+export const RAF_AIM = { hurricane: 0.45, spitfire: 0.45 }; // raised so the GM 2's glass clears the coaming (D101, D102)
 
 /** The panel outline's outward normal at picture x on its arched top (unit vector, away from the panel). */
 function outlineNormal(x) {
@@ -100,7 +109,7 @@ function outlineNormal(x) {
   return [nx, ny];
 }
 
-/** A point of the Hurricane's coaming band at picture x: its middle line (`edge` 0) or top edge (`edge` 1). */
+/** A point of the coaming band at picture x: its middle line (`edge` 0) or top edge (`edge` 1). */
 export function coamingPoint(frame, x, edge = 0) {
   const { width, overlap } = frame.coaming;
   const [nx, ny] = outlineNormal(x);
@@ -108,15 +117,15 @@ export function coamingPoint(frame, x, edge = 0) {
   return [x + nx * d, panelTopY(x) + ny * d];
 }
 
-/** Where a windscreen's posts stand: on the Hurricane's coaming band's top edge, or on the Spitfire's panel top. */
-export function coamingY(x, frame = RAF_FRAMES.spitfire) {
-  return frame.coaming ? coamingPoint(frame, x, 1)[1] : panelTopY(x);
+/** Where a windscreen's posts stand: on the coaming band's top edge. */
+export function coamingY(x, frame) {
+  return coamingPoint(frame, x, 1)[1];
 }
 
-/** The Hurricane's outer legs' feet (picture pixels, `side` -1 left, +1 right): on the coaming's top edge. */
-export const legFoot = (frame, side) => [AXIS + side * frame.outer.foot, coamingY(AXIS + side * frame.outer.foot, frame)];
+/** The outer legs' feet (picture pixels, `side` -1 left, +1 right): on the coaming's top edge at its ends. */
+export const legFoot = (frame, side) => [AXIS + side * frame.coaming.half, coamingY(AXIS + side * frame.coaming.half, frame)];
 
-/** The Hurricane's outer leg's x at height y (between its foot and the crown's springing). */
+/** The outer leg's x at height y (between its foot and the crown's springing). */
 export function legX(frame, side, y) {
   const [fx, fy] = legFoot(frame, side);
   const t = (fy - y) / (fy - frame.outer.spring);
@@ -136,9 +145,29 @@ export function windscreenPath(frame) {
   return pts;
 }
 
-/** The Hurricane's outer windscreen frame (picture pixels): up the left leg from the coaming, over the crown, down. */
+/** The outer windscreen frame (picture pixels): up the left leg from the coaming, over the crown or along the top bar, down. */
 export function outerPath(frame) {
-  const { half, spring, top } = frame.outer;
+  const { half, spring, top, flat, corner } = frame.outer;
+  if (flat) {
+    // The Spitfire's top bar, its corners rounded (product owner, D102): each leg bends into the bar along a curve
+    // `corner` long either side of where they would meet.
+    const pts = [legFoot(frame, -1)];
+    for (const side of [-1, 1]) {
+      const foot = legFoot(frame, side);
+      const meet = [AXIS + side * half, spring];
+      const len = Math.hypot(meet[0] - foot[0], meet[1] - foot[1]);
+      const onLeg = [meet[0] + ((foot[0] - meet[0]) / len) * corner, meet[1] + ((foot[1] - meet[1]) / len) * corner];
+      const onBar = [meet[0] - side * corner, spring];
+      const [from, to] = side < 0 ? [onLeg, onBar] : [onBar, onLeg];
+      for (let k = 0; k <= 8; k += 1) {
+        const t = k / 8;
+        const u = 1 - t;
+        pts.push([u * u * from[0] + 2 * u * t * meet[0] + t * t * to[0], u * u * from[1] + 2 * u * t * meet[1] + t * t * to[1]]);
+      }
+    }
+    pts.push(legFoot(frame, 1));
+    return pts;
+  }
   const pts = [legFoot(frame, -1), [AXIS - half, spring]];
   for (let k = 1; k < 32; k += 1) {
     const a = Math.PI + (k / 32) * Math.PI;
@@ -148,10 +177,14 @@ export function outerPath(frame) {
   return pts;
 }
 
-/** A Spitfire bow's x at height y (`side` -1 left, +1 right). */
-export const bowX = (bows, side, y) => AXIS + side * (bows.half + bows.slope * (y - bows.at));
+/** A point on the armoured windscreen's round top at `angle` degrees from straight up (`side` -1 left, +1 right). */
+export function archPoint(frame, side, angle) {
+  const { half, top } = frame.windscreen;
+  const a = (angle * Math.PI) / 180;
+  return [AXIS + side * half * Math.sin(a), top + half - half * Math.cos(a)];
+}
 
-/** A Hurricane sill's x at height y (`side` -1 left, +1 right), from the outer leg's foot outward and down. */
+/** A sill's x at height y (`side` -1 left, +1 right), from the outer leg's foot outward and down. */
 export function sillX(frame, side, y) {
   const [fx, fy] = legFoot(frame, side);
   return fx + side * frame.sills.slope * (y - fy);
@@ -160,44 +193,35 @@ export function sillX(frame, side, y) {
 /** Draws the frame (`frame`: RAF_FRAMES entry) on the sight's canvas before the GM 2; `at` is the RAF panel's placer. */
 export function drawRafFrame(g, at, frame) {
   const w = (px) => at.len(px);
-  if (frame.bows) {
-    const { bows } = frame;
-    const apexY = bows.at - bows.half / bows.slope; // where the two bows meet, above the view
-    for (const side of [-1, 1]) {
-      bar(g, at, [[bowX(bows, side, apexY), apexY], [bowX(bows, side, FAR), FAR]], w(bows.width), frame.colour);
-      for (const s of frame.struts) {
-        bar(g, at, [[AXIS + side * s.from[0], s.from[1]], [bowX(bows, side, s.toY), s.toY]], w(frame.width), frame.colour);
-      }
+  const { outer } = frame;
+  bar(g, at, outerPath(frame), w(outer.width), frame.colour);
+  for (const side of [-1, 1]) {
+    // The Hurricane's level frames halfway up the side panes; the Spitfire's struts rising to the outer legs.
+    for (const r of frame.rails ?? []) {
+      bar(g, at, [[AXIS + side * frame.windscreen.half, r.y], [legX(frame, side, r.y), r.y]], w(frame.railWidth), frame.colour);
+    }
+    for (const s of frame.struts ?? []) {
+      bar(g, at, [archPoint(frame, side, s.angle), [legX(frame, side, s.toY), s.toY]], w(frame.railWidth), frame.colour);
     }
   }
-  if (frame.outer) {
-    bar(g, at, outerPath(frame), w(frame.outer.width), frame.colour);
-    for (const r of frame.rails) {
-      for (const side of [-1, 1]) {
-        bar(g, at, [[AXIS + side * frame.windscreen.half, r.y], [legX(frame, side, r.y), r.y]], w(frame.railWidth), frame.colour);
-      }
-    }
+  if (frame.mirror) {
+    // The rear-view mirror on the top bar's centre: a stem and a small dark glass in a grey rim.
+    const { mirror } = frame;
+    const base = outer.spring - outer.width / 2;
+    bar(g, at, [[AXIS, base], [AXIS, base - mirror.stem]], w(18), frame.colour);
+    const [x0, y0] = at.xy([AXIS - mirror.w / 2, base - mirror.stem - mirror.h]);
+    g.fillStyle = frame.colour;
+    g.fillRect(x0 - w(6), y0 - w(6), w(mirror.w) + w(12), w(mirror.h) + w(12));
+    g.fillStyle = '#3c4246';
+    g.fillRect(x0, y0, w(mirror.w), w(mirror.h));
   }
   bar(g, at, windscreenPath(frame), w(frame.windscreen.width), frame.windscreenColour);
-  if (frame.coaming) {
-    // The Hurricane's coaming, close round the panel's arched top between the outer legs, in front of their feet.
-    bar(g, at, coamingLine(frame), w(frame.coaming.width), frame.coamingColour);
-    return;
-  }
-  // The Spitfire's coaming lip along the panel's arched top, with a row of rivets.
-  const arch = archPx();
-  bar(g, at, arch, w(44), '#4d5256');
-  g.fillStyle = '#7b8084';
-  for (let i = 2; i < arch.length - 2; i += 2) {
-    const [x, y] = at.xy(arch[i]);
-    g.beginPath();
-    g.arc(x, y, Math.max(1, w(5)), 0, Math.PI * 2);
-    g.fill();
-  }
+  // The coaming, close round the panel's arched top between the outer legs' feet, in front of them.
+  bar(g, at, coamingLine(frame), w(frame.coaming.width), frame.coamingColour);
 }
 
 /**
- * The Hurricane's fuselage sides and cockpit interior (D100), on the panel's canvas before the panel: the dark interior
+ * The fuselage sides and cockpit interior (D100, D102), on the panel's canvas before the panel: the dark interior
  * under the coaming, the side walls from the coaming's ends outward, and the pale sills along their tops. `at` is the
  * RAF panel's placer; frames without sills draw nothing.
  */
@@ -220,9 +244,9 @@ export function drawRafInterior(g, at, frame) {
   }
 }
 
-/** The Hurricane coaming's middle line (picture pixels) along the panel's arch between the outer legs. */
+/** The coaming's middle line (picture pixels) along the panel's arch between the outer legs. */
 export function coamingLine(frame) {
-  const half = frame.outer.foot;
+  const { half } = frame.coaming;
   // The arch runs left to right once over the top, so its points between the legs' feet, with theirs, trace it.
   const xs = [AXIS - half, ...archPx().map(([x]) => x).filter((x) => Math.abs(x - AXIS) < half), AXIS + half];
   return xs.map((x) => coamingPoint(frame, x));

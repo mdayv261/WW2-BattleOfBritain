@@ -131,7 +131,7 @@ describe('the 3D cockpit while the front frame shows (D90)', () => {
   it('raises the guns\' line to BF109_AIM of the screen in the Bf 109 cockpit by a lens shift, the middle in others (D93)', () => {
     const v = view('bf109e4');
     expect(v.rig.aim).toBe(BF109_AIM);
-    expect(view('spitfire').rig.aim).toBe(0.5);
+    expect(view('bf110c4').rig.aim).toBe(0.5); // the Bf 110 keeps the middle (the RAF fighters are raised, D101, D102)
     const cam = v.rig.camera;
     cam.position.set(0, 0, 0);
     cam.lookAt(1, 0, 0);

@@ -2875,7 +2875,7 @@ line. Here the arc follows the drawing.
 
 ## D99. Hurricane and Spitfire front cockpit views, as the Bf 109's (1 Nov 2026, plan approved by the product owner)
 
-**The Hurricane's frame superseded by D100** (from the museum photograph #28).
+**The Hurricane's frame superseded by D100** (from the museum photograph #28); **the Spitfire's by D102.**
 
 At the product owner's request the Hurricane and Spitfire get the Bf 109's front-view treatment (D90, D97, D98).
 - **Their frames are drawn with the panel:** `RAF_FRAMES` and `drawRafFrame` in `src/ui/rafFrame.js`, drawn on the
@@ -2949,3 +2949,25 @@ At the product owner's request, after reviewing D100:
   reflector glass stands above the coaming, with the reticle still centred in it.
 
 The Spitfire is unchanged until it is reworked.
+
+## D102. The Spitfire's front view, as the Hurricane's with #29's differences (1 Nov 2026, plan approved by the product owner)
+
+With the Hurricane's front view approved (D100, D101), the product owner asked for the Spitfire's to closely resemble it,
+with the minor differences of their picture #29. #29 is a screenshot of a Spitfire cockpit from another game, the same as
+#26: a shape guide only.
+
+**Shared with the Hurricane** (`RAF_FRAMES.spitfire`, `src/ui/rafFrame.js`):
+- the thin frames and the armoured windscreen;
+- the coaming close round the panel;
+- the fuselage sides: sills at the Bf 109's slope, side walls and the dark interior;
+- the GM 2 raised, the guns' line at 45% of the screen.
+
+**The Spitfire's differences, from #29:**
+- **Outer windscreen frame:** the legs lean in more steeply, about 20° (the Hurricane's 15°), to a flat top bar about
+  10 dial radii above the panel, clear above the armoured windscreen. Its corners are rounded (product owner).
+- **A rear-view mirror** on the top bar's centre.
+- **Struts** rising from the armoured windscreen's shoulders out to the outer legs, in place of the Hurricane's level
+  frames halfway up.
+- **Colours:** light grey metal frames, pale grey coaming and sills, grey side walls.
+
+The long canopy bows and the dark lip of D99 are gone.
