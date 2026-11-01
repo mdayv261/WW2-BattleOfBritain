@@ -2929,3 +2929,21 @@ GM 2:
   - the dark cockpit interior under the coaming beside the panel.
 
 The colours follow the photograph. The Spitfire's frame (D99) is unchanged until it is reworked.
+
+## D101. The Hurricane's front view refined (1 Nov 2026, plan approved by the product owner)
+
+At the product owner's request, after reviewing D100:
+- **Thinner frames:** outer 56, armoured windscreen 60, coaming 56 and sills 70 picture pixels (were 96, 100, 112, 135).
+- **The windshield 25% lower:** the armoured windscreen's top now about 9.7 dial radii above the panel.
+- **The outer frame:** its legs lean in about 15° from their feet on the coaming to where its crown springs, and its
+  crown is shorter. It still clears the armoured windscreen and now shows fully on screen.
+- **Side panes:** horizontal frames about halfway up, from the armoured posts across to the outer legs.
+- **Fuselage sides:** the sills angle in at the Bf 109 side frames' slope (1.156 across for each pixel down) from the
+  outer legs' feet.
+- **The coaming:** wraps close round the panel's arched top, a band just outside its outline between the outer legs'
+  feet. The legs stand on it, and the dark interior and side walls follow.
+- **The GM 2 raised:** in the Hurricane cockpit the guns' line stands 45% of the way down the screen (`RAF_AIM`), with
+  the 3D picture lens-shifted to match as the Bf 109's (D93). The GM 2 standing on the panel grows a little, so that its
+  reflector glass stands above the coaming, with the reticle still centred in it.
+
+The Spitfire is unchanged until it is reworked.

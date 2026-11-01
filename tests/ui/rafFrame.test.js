@@ -5,7 +5,7 @@
 // front view shows, the airscrew kept with its spinner hidden and not shifted.
 import { describe, it, expect, beforeAll } from 'vitest';
 import * as THREE from 'three';
-import { RAF_FRAMES, windscreenPath, bowX, outerPath, coamingY, coamingMid, sillX, drawRafInterior } from '../../src/ui/rafFrame.js';
+import { RAF_FRAMES, RAF_AIM, windscreenPath, bowX, outerPath, coamingY, coamingLine, coamingPoint, legFoot, legX, sillX, panelTopY, drawRafInterior } from '../../src/ui/rafFrame.js';
 import { SPITFIRE_PANEL, P, placer } from '../../src/ui/rafPanel.js';
 import { SIGHT, sightPlacement } from '../../src/ui/reflectorSight.js';
 import { panelRadius } from '../../src/ui/instruments.js';
@@ -58,14 +58,14 @@ for (const id of ['spitfire', 'hurricane']) {
       for (const s of [-1, 1]) {
         for (let y = 60; y <= 1010; y += 50) {
           if (F.bows) expect(inPanel([bowX(F.bows, s, y), y]), `${id} bow ${s} ${y}`).toBe(false);
-          if (F.sills) expect(inPanel([sillX(F, s, y), y]), `${id} sill ${s} ${y}`).toBe(false);
+          if (F.sills && y > legFoot(F, s)[1]) expect(inPanel([sillX(F, s, y), y]), `${id} sill ${s} ${y}`).toBe(false);
         }
       }
       if (F.outer) {
         // The outer frame's legs stand on the coaming's ends, outside the panel, and rise above the armoured windscreen.
         const path = outerPath(F);
-        expect(path[0]).toEqual([AXIS - F.outer.foot, F.coaming.ends]);
-        expect(F.outer.foot).toBe(F.coaming.half);
+        expect(path[0]).toEqual(legFoot(F, -1));
+        expect(path[path.length - 1]).toEqual(legFoot(F, 1));
         for (const [x, y] of path) if (y > 31) expect(inPanel([x, y]), `${x},${y}`).toBe(false);
         expect(F.outer.top).toBeLessThan(F.windscreen.top);
       }
@@ -83,28 +83,67 @@ for (const id of ['spitfire', 'hurricane']) {
   });
 }
 
-describe('Hurricane coaming, sills and interior (D100)', () => {
+describe('Hurricane frame refined (D100, D101)', () => {
   const F = RAF_FRAMES.hurricane;
 
-  it('curves the coaming across over the panel\'s top, its lower edge clear of the placards and dials below it', () => {
-    expect(coamingMid(F.coaming, AXIS)).toBeCloseTo(F.coaming.top, 9);
-    expect(coamingMid(F.coaming, AXIS - F.coaming.half)).toBeCloseTo(F.coaming.ends, 9);
-    expect(coamingMid(F.coaming, AXIS) - F.coaming.width / 2).toBeLessThan(31); // over the panel's top
-    const lower = (x) => coamingMid(F.coaming, x) + F.coaming.width / 2;
-    for (const name of ['speedCard', 'flapPlacard', 'voltmeter', 'navLights', 'oxygen']) {
-      const [l, t, r] = SPITFIRE_PANEL.boxes[name];
-      expect(Math.max(lower(l), lower(r)), name).toBeLessThan(t);
-    }
-    for (const name of ['rpm', 'oxygenDelivery', 'oxygenSupply']) {
-      const [x, y, , bezel] = SPITFIRE_PANEL.dials[name];
-      expect(lower(x), name).toBeLessThan(y - bezel);
+  it('has thinner frames and a windshield 25% lower than D100\'s, the outer crown on a 2560 x 1259 screen', () => {
+    expect(F.outer.width).toBeLessThan(96);
+    expect(F.windscreen.width).toBeLessThan(100);
+    expect(F.coaming.width).toBeLessThan(112);
+    expect(F.sills.width).toBeLessThan(135);
+    expect(F.windscreen.top).toBeCloseTo(31 + (-1033 - 31) * 0.75, -1);
+    expect(F.outer.top).toBeGreaterThan(31 + (-1340 - 31) * 0.75); // the crown shortened further
+    // The outer legs lean in about 15° from their feet to the crown's springing.
+    const [fx, fy] = legFoot(F, -1);
+    expect(Math.atan2(AXIS - F.outer.half - fx, fy - F.outer.spring) * 180 / Math.PI).toBeCloseTo(15, -1);
+    // The crown still clears the armoured windscreen's top.
+    expect(F.outer.top + F.outer.width / 2).toBeLessThan(F.windscreen.top - F.windscreen.width / 2);
+    const [w, h] = [2560, 1259];
+    const r = panelRadius(SPITFIRE_PANEL, w, h);
+    const top = h - (SPITFIRE_PANEL.height * r + 6) + P(AXIS, F.outer.top - F.outer.width / 2)[1] * r;
+    expect(top).toBeGreaterThan(0);
+  });
+
+  it('runs the side panes\' frames from the armoured posts to the outer legs, between the coaming and the springing', () => {
+    for (const r of F.rails) {
+      expect(r.y).toBeLessThan(coamingY(AXIS - F.windscreen.half, F));
+      expect(r.y).toBeGreaterThan(F.outer.spring);
+      expect(AXIS + F.windscreen.half).toBeLessThan(legX(F, 1, r.y) - F.outer.width / 2);
     }
   });
 
-  it('runs the sills from the coaming\'s ends outward and down', () => {
-    expect(sillX(F, -1, F.coaming.ends)).toBeCloseTo(AXIS - F.coaming.half, 9);
-    expect(sillX(F, -1, F.coaming.ends + 100)).toBeLessThan(AXIS - F.coaming.half);
-    expect(sillX(F, 1, F.coaming.ends + 100)).toBeGreaterThan(AXIS + F.coaming.half);
+  it('wraps the coaming close round the panel\'s arched top, its legs standing on it', () => {
+    // Each point of the band's middle line lies outside the panel, half the band's width (less its overlap) from the edge.
+    const toOutline = (q) => Math.min(...OUTLINE.slice(1).map((o, i) => toSegment(q, OUTLINE[i], o)));
+    for (const p of coamingLine(F)) {
+      expect(inPanel(p), String(p)).toBe(false);
+      expect(toOutline(p)).toBeCloseTo(F.coaming.width / 2 - F.coaming.overlap, -1);
+    }
+    expect(panelTopY(AXIS)).toBeCloseTo(31, 6);
+    expect(coamingPoint(F, AXIS, 1)[1]).toBeCloseTo(31 - F.coaming.width + F.coaming.overlap, 6); // its top edge over the sight
+    for (const s of [-1, 1]) expect(legFoot(F, s)[1]).toBeCloseTo(coamingY(AXIS + s * F.outer.foot, F), 9);
+  });
+
+  it('angles the sills in at the Bf 109\'s slope from the legs\' feet, outward and down', () => {
+    expect(F.sills.slope).toBeCloseTo(1.156, 9);
+    const [fx, fy] = legFoot(F, -1);
+    expect(sillX(F, -1, fy)).toBeCloseTo(fx, 9);
+    expect(sillX(F, -1, fy + 100)).toBeCloseTo(fx - 115.6, 6);
+    expect(sillX(F, 1, legFoot(F, 1)[1] + 100)).toBeGreaterThan(legFoot(F, 1)[0]);
+  });
+
+  it('raises the guns\' line so the GM 2\'s glass stands above the coaming, the reticle centred in it, on every screen', () => {
+    expect(RAF_AIM.hurricane).toBe(0.45);
+    for (const [w, h] of SCREENS) {
+      const r = panelRadius(SPITFIRE_PANEL, w, h);
+      const p = sightPlacement(w, h, RAF_AIM.hurricane);
+      const coamingTop = h - (SPITFIRE_PANEL.height * r + 6) + P(AXIS, coamingPoint(F, AXIS, 1)[1])[1] * r;
+      expect(p.glass.y + p.glass.h, `${w}x${h}`).toBeLessThan(coamingTop);
+      expect(p.glass.y + p.glass.h / 2).toBeCloseTo(RAF_AIM.hurricane * h, 6);
+      const inner = ((F.windscreen.half - F.windscreen.width / 2) / 82) * r;
+      expect(inner, `${w}x${h}`).toBeGreaterThan(p.glass.w / 2);
+    }
+    expect(RAF_AIM.spitfire).toBeUndefined(); // the Spitfire keeps the middle until it is reworked
   });
 
   it('draws the fuselage sides and interior for the Hurricane only', () => {
@@ -146,7 +185,7 @@ describe('the RAF fighters\' 3D cockpit while the front frame shows (D99)', () =
       expect(v.aircraft.screws[0].group.visible).toBe(true);
       expect(v.aircraft.screws[0].group.position.z).toBe(0);
       expect(v.aircraft.screws[0].spinner.visible).toBe(false);
-      expect(v.rig.aim).toBe(0.5);
+      expect(v.rig.aim).toBe(RAF_AIM[id] ?? 0.5); // raised for the Hurricane (D101)
       v.showSight2D(false);
       v.showParts(true, { width: 2560, height: 1259 });
       expect(v.cockpit.visible).toBe(true);

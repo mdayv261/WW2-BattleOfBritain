@@ -12,6 +12,7 @@ import { buildMuzzleFlashes } from './projectiles.js';
 import { hideLost } from './wrecks.js';
 import { BF109_AIM, BF109_PANEL, FUSELAGE_CENTRE_OFFSET } from '../ui/bf109Panel.js';
 import { panelRadius } from '../ui/instruments.js';
+import { RAF_AIM } from '../ui/rafFrame.js';
 
 export class TestView {
   constructor(scene, camera, sea) {
@@ -71,7 +72,8 @@ export class TestView {
     // The Bf 109's, Hurricane's and Spitfire's front frames are drawn with their panels (D90, D99).
     this.frameDrawn = ['bf109e4', 'hurricane', 'spitfire'].includes(ac.id);
     this.fuselageOffset = ac.id === 'bf109e4' ? FUSELAGE_CENTRE_OFFSET : 0; // the RAF's GM 2 is on the centre line
-    this.rig.aim = ac.id === 'bf109e4' ? BF109_AIM : 0.5; // its guns' line above the middle of the screen (D93)
+    // The guns' line above the middle of the screen for the Bf 109 (D93) and the Hurricane (D101).
+    this.rig.aim = ac.id === 'bf109e4' ? BF109_AIM : RAF_AIM[ac.id] ?? 0.5;
     this.frontView = false;
     // The wings hide in the front view; the airscrew stays, its arc spinning ahead of the panel (D97).
     this.frontHidden = [this.model.getObjectByName('wingLeft'), this.model.getObjectByName('wingRight')];

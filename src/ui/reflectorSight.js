@@ -17,7 +17,7 @@ import { drawReticle } from './reticle.js';
 import { reviPlacement, drawRevi } from './reviSight.js';
 import { BF109_PANEL, placer, plateTop } from './bf109Panel.js';
 import { drawFrontFrame } from './bf109Frame.js';
-import { RAF_FRAMES, drawRafFrame } from './rafFrame.js';
+import { RAF_FRAMES, RAF_AIM, drawRafFrame } from './rafFrame.js';
 import { placer as rafPlacer } from './rafPanel.js';
 
 // The sight square-on, in the picture's pixels: x from its axis, y up from its foot.
@@ -40,15 +40,15 @@ const FOOT = [946, 410]; // the panel point (its picture pixels) the foot stands
 
 /**
  * Where the sight goes on a screen `width` x `height` (CSS px): its axis on the middle, its foot on the panel just above
- * the blind-flying instruments and its glass centred on the middle of the view (the guns' line looking ahead). Returns
- * { k (screen px per picture px), x (axis), foot (y), glass: { x, y, w, h } }.
+ * the blind-flying instruments and its glass centred on the guns' line looking ahead, `aim` of the way down the view (the
+ * middle, or higher for the Hurricane, D101). Returns { k (screen px per picture px), x (axis), foot (y), glass }.
  */
-export function sightPlacement(width, height) {
+export function sightPlacement(width, height, aim = 0.5) {
   const L = SPITFIRE_PANEL;
   const r = panelRadius(L, width, height);
   const panelTop = height - (L.height * r + 6);
   const foot = panelTop + ((FOOT[1] - 31) / 82) * r;
-  const k = (foot - height / 2) / GLASS_CENTRE;
+  const k = (foot - height * aim) / GLASS_CENTRE;
   const x = width / 2;
   const glass = { x: x - (SIGHT.glass.w / 2) * k, y: foot - SIGHT.glass.y[1] * k, w: SIGHT.glass.w * k, h: (SIGHT.glass.y[1] - SIGHT.glass.y[0]) * k };
   return { k, x, foot, glass };
@@ -303,7 +303,7 @@ export class ReflectorSight {
         const r = panelRadius(SPITFIRE_PANEL, width, height);
         drawRafFrame(g, rafPlacer(width / 2, height - (SPITFIRE_PANEL.height * r + 6), r), frame);
       }
-      drawSight(g, sightPlacement(width, height), aim);
+      drawSight(g, sightPlacement(width, height, RAF_AIM[ac?.id] ?? 0.5), aim); // raised for the Hurricane (D101)
     }
   }
 }

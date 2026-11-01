@@ -18,6 +18,12 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Hurricane front view refined (1 Nov 2026)
+
+**Done** (D101): thinner frames, the windshield 25% lower with its outer legs leaning in 15° and a shorter crown,
+halfway frames on the side panes, the sills at the Bf 109's slope, the coaming close round the panel, and the GM 2 raised
+so its glass stands above the coaming.
+
 ## Hurricane front view from the museum photograph (1 Nov 2026)
 
 **Done** (D100): the Hurricane's outer windscreen frame, armoured windscreen, broad coaming and fuselage sides (sills,
