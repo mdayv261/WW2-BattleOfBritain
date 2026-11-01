@@ -59,8 +59,8 @@ export function flashPoint(side) {
 const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
 const CENTRE = 583; // the windscreen's centre, the fuselage's centre line
-const METAL = '#8a8f93';
-const METAL_DARK = '#5c6064';
+// All the frames in the coaming's style, light grey (product owner, D103): the band, a lit edge, a shaded edge, rivets.
+const GREY = { band: '#b3b7ba', lit: '#e1e3e4', shade: '#6b7073', rivet: '#858a8d', outline: '#3a3d40' };
 
 /** The hood's side's x at height y (`side` -1 left, +1 right), from the top frame's corner outward going down. */
 export const hoodX = (side, y) => CENTRE + side * (FRAME.top.half + FRAME.hood.slope * (y - FRAME.top.y));
@@ -161,22 +161,22 @@ export function drawFrontFrame(g, at, flashes = { left: false, right: false }) {
   const [t0, t1] = coamingAngles();
   const [ex, ey] = at.xy([cx, cy]);
   const scale = at.len(1);
-  g.strokeStyle = '#3a3e42';
+  g.strokeStyle = GREY.band;
   g.lineWidth = thick * scale;
   g.beginPath();
   g.ellipse(ex, ey, a * scale, b * scale, 0, t0, t1);
   g.stroke();
-  g.strokeStyle = '#6f7479';
+  g.strokeStyle = GREY.lit;
   g.lineWidth = Math.max(1, thick * scale * 0.18);
   g.beginPath();
   g.ellipse(ex, ey, (a + thick * 0.42) * scale, (b + thick * 0.42) * scale, 0, t0, t1);
   g.stroke();
-  g.strokeStyle = '#141617';
-  g.lineWidth = Math.max(1, thick * scale * 0.12);
+  g.strokeStyle = GREY.shade;
+  g.lineWidth = Math.max(1, thick * scale * 0.14);
   g.beginPath();
-  g.ellipse(ex, ey, (a - thick * 0.46) * scale, (b - thick * 0.46) * scale, 0, t0, t1);
+  g.ellipse(ex, ey, (a - thick * 0.44) * scale, (b - thick * 0.44) * scale, 0, t0, t1);
   g.stroke();
-  g.fillStyle = '#5c6166';
+  g.fillStyle = GREY.rivet;
   for (let k = 1; k < 18; k += 1) {
     const t = t0 + ((t1 - t0) * k) / 18;
     g.beginPath();
@@ -210,8 +210,11 @@ function muzzleFlash(g, x, y, size) {
   g.fill();
 }
 
-/** Frame bars along a path (canvas px) of width w, with square (mitred) joins and flat ends: a dark edge, the metal, a
- * darker stripe down the middle. */
+/**
+ * Frame bars along a path (canvas px) of width w, with square (mitred) joins and flat ends, in the coaming's style
+ * (D103): a light grey band with a dark outline, a lit edge along one side, a shaded edge along the other, and rivets
+ * down the middle.
+ */
 function bars(g, pts, w) {
   const path = () => {
     g.beginPath();
@@ -220,19 +223,37 @@ function bars(g, pts, w) {
   g.lineJoin = 'miter';
   g.miterLimit = 10;
   g.lineCap = 'square';
-  g.strokeStyle = '#1e2022';
+  g.strokeStyle = GREY.outline;
   g.lineWidth = w + 2;
   path();
   g.stroke();
-  g.strokeStyle = METAL;
+  g.strokeStyle = GREY.band;
   g.lineWidth = w;
   path();
   g.stroke();
+  // The edges and rivets, segment by segment: the lit edge on the side towards the top left.
   g.lineCap = 'butt';
-  g.strokeStyle = METAL_DARK;
-  g.lineWidth = w * 0.3;
-  g.globalAlpha = 0.45;
-  path();
-  g.stroke();
-  g.globalAlpha = 1;
+  for (let i = 1; i < pts.length; i += 1) {
+    const [ax, ay] = pts[i - 1];
+    const [bx, by] = pts[i];
+    const len = Math.hypot(bx - ax, by - ay) || 1;
+    let [nx, ny] = [-(by - ay) / len, (bx - ax) / len];
+    if (nx + ny > 0) [nx, ny] = [-nx, -ny]; // the normal pointing up or left
+    for (const [sideK, colour, width] of [[0.42, GREY.lit, 0.18], [-0.44, GREY.shade, 0.14]]) {
+      const d = sideK * w;
+      g.strokeStyle = colour;
+      g.lineWidth = Math.max(1, w * width);
+      g.beginPath();
+      g.moveTo(ax + nx * d, ay + ny * d);
+      g.lineTo(bx + nx * d, by + ny * d);
+      g.stroke();
+    }
+    g.fillStyle = GREY.rivet;
+    const step = Math.max(w * 2.2, 8);
+    for (let t = step / 2; t < len; t += step) {
+      g.beginPath();
+      g.arc(ax + ((bx - ax) * t) / len, ay + ((by - ay) * t) / len, Math.max(1, w * 0.09), 0, Math.PI * 2);
+      g.fill();
+    }
+  }
 }
