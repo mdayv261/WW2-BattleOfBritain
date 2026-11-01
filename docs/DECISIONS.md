@@ -2680,3 +2680,28 @@ flap and trim displays and its undercarriage lever and lamps. The Bf 110 keeps t
 (`sizeAs`, D64) until its own redraw.
 
 **Cost:** drawing the new panel takes about 0.2 ms a frame in Chrome, half the Spitfire panel's.
+
+## D90. The Bf 109's front cockpit view framed as the product owner's picture (1 Nov 2026, plan approved by the product owner)
+
+**The picture** (#24): a Bf 109 E cockpit from the seat. It is a screenshot from another program's model viewer, so it
+is used as a shape guide only and nothing is copied. The product owner's museum photograph from the seat (#16) shows the
+same framing.
+
+**The front frame** (`src/ui/bf109Frame.js`), drawn square-on with the panel while the pilot looks ahead, sliding up
+with it when he looks down (D89):
+- the coaming's curved lip arching over the upper plate's top above the clock, with a lighter top edge and rivets;
+- the two front windscreen posts rising from its ends, leaning a little outward;
+- the cockpit's side frames running diagonally down from the posts' feet, outside the panel's wings, to the foot of the
+  screen;
+- the cockpit's dark interior round the panel below them (drawn on the panel's canvas before its plates).
+- Positions were measured on #24 against its dials and converted to the restored panel's (#17) pixels.
+
+**Hidden while the front view shows** (`src/render/testView.js`): the 3D windscreen frame and hood, the nose (cowling),
+the wings and the airscrew. Looking round (past 20°, by hat or mouse), the 2D panel, Revi and frame hide as before and
+the 3D frame, nose and wings show again. A wing lost in a break-up stays hidden.
+
+**Only the Bf 109 changes:** the RAF fighters and the Bf 110 keep their views.
+
+**Deviation, flagged to the product owner:** on the ground the Bf 109's long nose hid the view ahead (S20: about 20°
+either side, D28). With the nose hidden in the front view, the view straight ahead over the panel opens up. That is the
+product owner's choice; the nose still shows when looking round.

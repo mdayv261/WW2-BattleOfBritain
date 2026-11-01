@@ -15,6 +15,8 @@ import { panelRadius } from './instruments.js';
 import { roundRect, text } from './panelParts.js';
 import { drawReticle } from './reticle.js';
 import { reviPlacement, drawRevi } from './reviSight.js';
+import { BF109_PANEL, placer, plateTop } from './bf109Panel.js';
+import { drawFrontFrame } from './bf109Frame.js';
 
 // The sight square-on, in the picture's pixels: x from its axis, y up from its foot.
 export const SIGHT = {
@@ -264,7 +266,12 @@ export class ReflectorSight {
     const g = this.canvas.getContext('2d');
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.clearRect(0, 0, width, height);
-    if (ac && squareOnSight(ac) === 'Revi') drawRevi(g, reviPlacement(width, height, slide), aim);
+    if (ac && squareOnSight(ac) === 'Revi') {
+      // The Bf 109's front frame on the panel's top, then the Revi in front of it (D90).
+      const r = panelRadius(BF109_PANEL, width, height);
+      drawFrontFrame(g, placer(width / 2, plateTop(height, r, slide), r));
+      drawRevi(g, reviPlacement(width, height, slide), aim);
+    }
     else drawSight(g, sightPlacement(width, height), aim);
   }
 }

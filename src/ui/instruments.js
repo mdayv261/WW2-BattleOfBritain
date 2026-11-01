@@ -170,6 +170,6 @@ export class InstrumentPanel {
     }
     if (v.raf) rafPanel(g, width / 2, 0, r, v);
     else if (twin) bf110Panel(g, width / 2, 0, r, v);
-    else bf109Panel(g, width / 2, 0, r, v);
+    else bf109Panel(g, width / 2, 6, r, v); // the margin above, for the coaming's lip over its top (D90)
   }
 }

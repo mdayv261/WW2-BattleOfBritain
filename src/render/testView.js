@@ -23,9 +23,21 @@ export class TestView {
     this._quat = new THREE.Quaternion();
   }
 
-  /** While the 2D RAF sight shows (D87), the 3D sight body and reticle are hidden. */
+  /**
+   * While a 2D sight shows (D87), the 3D sight body and reticle are hidden. With the Bf 109's, its front frame is drawn
+   * with the panel (src/ui/bf109Frame.js, D90), so the 3D windscreen and nose, the wings and the airscrew hide too.
+   */
   showSight2D(on) {
     for (const part of this.sight3D ?? []) part.visible = !on;
+    this.frontView = on && this.frameDrawn;
+  }
+
+  /** Shows or hides the parts seen from the cockpit (`inside`): the cockpit frame, and the parts the front view hides. */
+  showParts(inside) {
+    const front = inside && this.frontView;
+    this.model.getObjectByName('fuselage').visible = !inside;
+    this.cockpit.visible = inside && !front;
+    for (const part of this.frontHidden) part.visible = !front && !this.lost.has(part.name);
   }
 
   setAircraft(ac) {
@@ -33,6 +45,11 @@ export class TestView {
     this.aircraft = buildAircraftModel(ac, DESIGNS[ac.id]);
     this.model = this.aircraft.group;
     this.cockpit = buildCockpitFrame(ac);
+    this.frameDrawn = ac.id === 'bf109e4'; // the Bf 109's front frame is drawn with its panel (D90)
+    this.frontView = false;
+    this.frontHidden = [this.model.getObjectByName('wingLeft'), this.model.getObjectByName('wingRight'),
+      ...this.aircraft.screws.map((s) => s.group)];
+    this.lost = new Set();
     // The AI-only He 111 has no pilot's sight. The RAF's is drawn square-on in front of the panel while the pilot looks
     // ahead (src/ui/reflectorSight.js, D87): showSight2D hides these 3D parts meanwhile.
     this.sight3D = ac.sight ? [buildSightBody(ac), buildReticle(ac)] : [];
@@ -84,6 +101,7 @@ export class TestView {
     if (!(sim.wreck || sim.uncontrolled) || this.lossFor === sim.plane) return;
     this.lossFor = sim.plane;
     hideLost(this.model, sim.plane.damage.failed?.parts);
+    this.lost = new Set(sim.plane.damage.failed?.parts ?? []);
     if (this.rig.inCockpit) this.rig.mode = this.rig.outside;
   }
 
@@ -95,8 +113,7 @@ export class TestView {
     this.model.position.copy(this._pos);
     this.model.quaternion.copy(this._quat);
     const inside = this.rig.inCockpit;
-    this.model.getObjectByName('fuselage').visible = !inside;
-    this.cockpit.visible = inside;
+    this.showParts(inside);
     this.aircraft.update(sim.plane, dt, { inside });
     this.followLoss(sim);
     // Muzzle flashes for this flight's guns (rebuilt when the aircraft or its armament changes).

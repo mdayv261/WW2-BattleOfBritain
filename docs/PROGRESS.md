@@ -18,6 +18,16 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 109 front cockpit frame (1 Nov 2026)
+
+**Done** (D90):
+- the front view framed as the product owner's picture: the coaming's lip over the panel, the windscreen posts and the
+  side frames, with the cockpit's dark interior round the panel;
+- no nose, wings or airscrew in the front view; they and the 3D frame show again when looking round;
+- tests in `tests/ui/bf109Frame.test.js`.
+
+**Known issue:** on the ground, the view straight ahead is no longer blocked by the nose (the product owner's choice).
+
 ## Bf 109 E panel and Revi from the product owner's pictures (1 Nov 2026)
 
 **Done** (D89):

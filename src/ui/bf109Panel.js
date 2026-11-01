@@ -16,6 +16,7 @@
 
 import { drawBf109Fittings } from './bf109Fittings.js';
 import { drawBf109Lower } from './bf109Lower.js';
+import { drawInterior } from './bf109Frame.js';
 import {
   mount, lwAirspeed, lwRpm, lwAta, lwStripCompass, lwTurnBank, lwFineAltimeter, lwClock, lwPitchIndicator,
   pressureGauge, lwThermometer, lwFuelGauge,
@@ -102,6 +103,12 @@ export function placer(x0, y0, r) {
 }
 
 /**
+ * The top of the upper plate on a screen `height` px high (CSS px), at dial radius r, slid up by `slide` (looking down):
+ * the panel stands on the foot of the screen, showing down to AHEAD.
+ */
+export const plateTop = (height, r, slide = 0, L = BF109_PANEL) => height - L.height * r - slide;
+
+/**
  * How far (CSS px) the panel slides up as the pilot looks down (D89): as far as a point straight ahead moves on the
  * screen for the head's pitch (rad, + up) at the camera's vertical field of view (degrees), up to the whole panel.
  */
@@ -115,6 +122,7 @@ export function lookDownShift(pitch, fov, height, r, L = BF109_PANEL) {
 export function bf109Panel(g, x0, y0, r, v, now = new Date()) {
   const L = BF109_PANEL;
   const at = placer(x0, y0, r);
+  drawInterior(g, at); // the cockpit round the panel, below the front frame (D90)
   drawBf109Fittings(g, at, L);
   drawBf109Lower(g, at, L, v);
   for (const [name, entry] of Object.entries(L.dials)) {
