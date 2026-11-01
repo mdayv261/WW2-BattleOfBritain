@@ -18,6 +18,13 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Hurricane front view from the museum photograph (1 Nov 2026)
+
+**Done** (D100): the Hurricane's outer windscreen frame, armoured windscreen, broad coaming and fuselage sides (sills,
+side walls, dark interior) as the product owner's photograph #28.
+
+**Left:** the Spitfire's front view to be reworked the same way.
+
 ## Hurricane and Spitfire front cockpit views (1 Nov 2026)
 
 **Done** (D99): the Bf 109's treatment for the RAF fighters: their windscreen and canopy frames drawn with the panel

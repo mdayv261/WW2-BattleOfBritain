@@ -53,6 +53,7 @@ export function instrumentReadings(sim) {
   const spin = body.angularVelocity.clone().applyQuaternion(body.quaternion);
   return {
     raf,
+    id: ac.id, // which aircraft: the RAF fighters share a panel but not a cockpit (D100)
     airspeed: d.eas / (raf ? UNIT.MPH : UNIT.KMH),
     altitude: raf ? d.altitude / UNIT.FT : d.altitude,
     climb: raf ? (body.velocity.y / UNIT.FT) * 60 : body.velocity.y,

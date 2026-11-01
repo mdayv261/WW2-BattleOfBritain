@@ -2875,6 +2875,8 @@ line. Here the arc follows the drawing.
 
 ## D99. Hurricane and Spitfire front cockpit views, as the Bf 109's (1 Nov 2026, plan approved by the product owner)
 
+**The Hurricane's frame superseded by D100** (from the museum photograph #28).
+
 At the product owner's request the Hurricane and Spitfire get the Bf 109's front-view treatment (D90, D97, D98).
 - **Their frames are drawn with the panel:** `RAF_FRAMES` and `drawRafFrame` in `src/ui/rafFrame.js`, drawn on the
   sight's canvas before the GM 2.
@@ -2905,3 +2907,25 @@ through the side windows beside it, so the ground shows there.
 **Deviations, flagged:**
 - the shapes come from paintings and another game's screenshot, not from drawings;
 - the Hurricane uses the Spitfire's panel (D86).
+
+## D100. The Hurricane's front view redrawn from the museum photograph (1 Nov 2026, plan approved by the product owner)
+
+The product owner found the RAF front views of D99 needed fixing, starting with the Hurricane. It should show the
+front windscreen frame, the coaming and the fuselage sides as in their photograph #28: a museum Hurricane cockpit from
+the front, canopy back, used as the shape reference only. The canopy hoop and struts from the paintings are gone.
+
+**The frame** (`RAF_FRAMES.hurricane`, `src/ui/rafFrame.js`), measured on #28 against its blind-flying dials and the
+GM 2:
+- **Outer windscreen frame:** grey-green, upright legs on the coaming's ends about 9.9 dial radii either side of the
+  sight, and an elliptical crown about 16 dial radii above the panel's top. On most screens the crown runs just off the
+  top of the view.
+- **Armoured windscreen:** a broad, lighter frame inside it, posts on the coaming about 5 dial radii either side and a
+  rounded top about 13 dial radii above the panel.
+- **Coaming:** a broad pale lip curving across over the panel's top, highest over the sight, down to its ends about 2.4
+  dial radii below the panel's top. Its lower edge stays clear of the speed card, placards and dials.
+- **Fuselage sides** (`drawRafInterior`, on the panel's canvas before the panel):
+  - the pale sills sloping from the coaming's ends out to the edges of the view;
+  - the grey-green side walls below them;
+  - the dark cockpit interior under the coaming beside the panel.
+
+The colours follow the photograph. The Spitfire's frame (D99) is unchanged until it is reworked.

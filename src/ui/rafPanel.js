@@ -15,6 +15,7 @@
 import { drawFittings } from './rafPanelFittings.js';
 import { drawRafDials } from './rafPanelDials.js';
 import { speedCard } from './speedCard.js';
+import { RAF_FRAMES, drawRafInterior } from './rafFrame.js';
 
 const PX = 82; // picture pixels per dial radius: the airspeed indicator's face
 const CENTRE = 946; // the panel's centre on the picture
@@ -97,6 +98,7 @@ export function placer(x0, y0, r) {
 /** Draws the panel with its top centre at (x0, y0) and dial radius r. `v` is instrumentReadings(); `now` a Date. */
 export function rafPanel(g, x0, y0, r, v, now = new Date()) {
   const at = placer(x0, y0, r);
+  drawRafInterior(g, at, RAF_FRAMES[v.id]); // the Hurricane's fuselage sides behind the panel (D100)
   drawFittings(g, at, SPITFIRE_PANEL, v);
   drawRafDials(g, at, SPITFIRE_PANEL, v, now);
   speedCard(g, at.box(SPITFIRE_PANEL.boxes.speedCard), v.pilotCard);
