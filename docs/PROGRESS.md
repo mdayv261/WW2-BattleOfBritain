@@ -18,6 +18,11 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Joystick propeller pitch buttons (1 Nov 2026)
+
+**Done** (D96): Propeller pitch fine and coarse buttons in the joystick panel (J), 7 and 9 by default; on the RAF
+fighters they move the rpm lever.
+
 ## Bf 109 pitch lever, undercarriage switch and lights, trim indicator (1 Nov 2026)
 
 **Done** (D95):

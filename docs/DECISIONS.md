@@ -2821,3 +2821,15 @@ Ein / Ruhe / Aus), the product owner settled the Bf 109 panel's controls:
 - the strip is drawn as a trim indicator, moved down;
 - the trim marks are + and − rather than words: the window is too narrow for words to be read;
 - the labels Fine and Coarse are in English, as the product owner asked.
+
+## D96. Joystick buttons for propeller pitch fine and coarse (1 Nov 2026, plan approved by the product owner)
+
+At the product owner's request the joystick panel (J) offers two more buttons, **Propeller pitch fine (hold)** and
+**Propeller pitch coarse (hold)** (`pitchFine`, `pitchCoarse` in `src/input/joystick.js`; mapping version 5).
+- **Defaults:** the Extreme 3D Pro's unused buttons 7 and 9 (as printed on the stick).
+- **Saved mappings:** a mapping saved before keeps every button the owner chose and gains the two new ones. One whose
+  default number the owner already uses for another button starts unassigned. Every button list now has a "none"
+  choice, and an unassigned button never fires.
+- **What they do while held:** on the Bf 109 and Bf 110 (manually pitched VDM airscrews) they work the pitch thumb
+  switch, as the E and D keys do, so the Bf 109's pitch lever (D95) follows. On the RAF fighters (constant-speed
+  airscrews) they move the rpm lever up or down at the keyboard's rate.

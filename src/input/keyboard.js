@@ -17,7 +17,7 @@ import { clamp } from '../physics/interp.js';
 
 const STICK_RATE = 2.5; // full deflection in 0.4 s
 const CENTRE_RATE = 4;
-const LEVER_RATE = 0.4; // full travel in 2.5 s
+export const LEVER_RATE = 0.4; // full travel in 2.5 s
 const RUDDER_TRIM_RATE = 0.25; // full travel in 8 s
 
 /**

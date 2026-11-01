@@ -11,7 +11,7 @@ const FUNCTIONS = [['roll', 'Roll'], ['pitch', 'Pitch (pull back = +)'], ['yaw',
 const BUTTONS = [
   ['trimUp', 'Elevator trim nose up (hold)'], ['trimDown', 'Elevator trim nose down (hold)'], ['brake', 'Brakes (hold)'],
   ['flapsUp', 'Flaps up a stop'], ['flapsDown', 'Flaps down a stop'], ['gear', 'Undercarriage'], ['view', 'Cockpit / outside'],
-  ['bailOut', 'Bail out (hold 1 s)'],
+  ['bailOut', 'Bail out (hold 1 s)'], ['pitchFine', 'Propeller pitch fine (hold)'], ['pitchCoarse', 'Propeller pitch coarse (hold)'],
 ];
 // Sensitivity choices, each with what half stick gives.
 const sensitivityOptions = SENSITIVITIES.map(([name, k]) => `<option value="${k}">${name} (half stick ${Math.round(100 * 0.5 ** k)}%)</option>`).join('');
@@ -21,8 +21,9 @@ const AXES = 10; // axis rows drawn (those the joystick lacks are hidden)
 const HAT_NAMES = ['up', 'up-right', 'right', 'down-right', 'down', 'down-left', 'left', 'up-left'];
 
 const options = (n) => [...Array(n).keys()].map((i) => `<option value="${i}">${i}</option>`).join('');
-// Buttons are listed by the number printed on the stick (one more than the browser's index).
-const buttonOptions = (n) => [...Array(n).keys()].map((i) => `<option value="${i}">${i + 1}</option>`).join('');
+// Buttons are listed by the number printed on the stick (one more than the browser's index), with "none" (-1) to leave
+// one unassigned (D96).
+const buttonOptions = (n) => `<option value="-1">none</option>${[...Array(n).keys()].map((i) => `<option value="${i}">${i + 1}</option>`).join('')}`;
 
 export class JoystickPanel {
   constructor(joystick) {

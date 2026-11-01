@@ -20,7 +20,7 @@
 // 0.00 to 0.17). Outside the band the travel is stretched, so full stick still gives full control.
 
 import { clamp } from '../physics/interp.js';
-import { stepFlaps } from './keyboard.js';
+import { stepFlaps, LEVER_RATE } from './keyboard.js';
 
 const STORAGE_KEY = 'bob1940.joystick';
 const DEADZONE = 0.05; // the default dead zone
@@ -35,8 +35,9 @@ export const FLIGHT_AXES = ['roll', 'pitch', 'yaw'];
 // Buttons are numbered from 0 here, one less than the number the J panel shows (the number printed on the
 // stick). By the panel's numbers: trim nose up 5, trim nose down 3, flaps up 4, flaps down 6, brakes 12,
 // undercarriage 11, cockpit view 10; the trigger (1) fires the machine guns and the thumb button (2) the cannon (D67);
-// button 8, held, bails out (D80).
-export const MAPPING_VERSION = 4;
+// button 8, held, bails out (D80); buttons 7 and 9, held, turn the propeller to fine and coarse pitch (D96). A button
+// set to -1 is unassigned.
+export const MAPPING_VERSION = 5;
 export const DEFAULT_MAPPING = {
   version: MAPPING_VERSION,
   roll: { axis: 0, invert: false, curve: 1, deadzone: DEADZONE },
@@ -44,7 +45,7 @@ export const DEFAULT_MAPPING = {
   yaw: { axis: 5, invert: false, curve: 1, deadzone: DEADZONE },
   throttle: { axis: 6, invert: true },
   hat: { axis: 9 },
-  buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1, bailOut: 7 },
+  buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1, bailOut: 7, pitchFine: 6, pitchCoarse: 8 },
   centres: {}, // the reading of each calibrated axis at its neutral, by axis number (D70)
 };
 
@@ -72,13 +73,18 @@ function loadMapping() {
     if (saved && saved.roll && saved.pitch && saved.yaw && saved.throttle) {
       const mapping = { ...structuredClone(DEFAULT_MAPPING), ...saved };
       // Mappings saved before the version 2 button layout keep their axes but take the new hat and buttons; later ones
-      // keep their buttons and gain any added since (the firing buttons in version 3, bail out in version 4).
+      // keep their buttons and gain any added since (the firing buttons in version 3, bail out in version 4, propeller
+      // pitch fine and coarse in version 5). An added button whose default number the owner already uses for another
+      // starts unassigned (-1).
       const version = saved.version ?? 1;
       if (version < 2) {
         mapping.hat = structuredClone(DEFAULT_MAPPING.hat);
         mapping.buttons = structuredClone(DEFAULT_MAPPING.buttons);
       } else if (version < MAPPING_VERSION) {
-        mapping.buttons = { ...structuredClone(DEFAULT_MAPPING.buttons), ...saved.buttons };
+        const taken = new Set(Object.values(saved.buttons ?? {}));
+        const added = Object.entries(DEFAULT_MAPPING.buttons).filter(([key]) => !(key in (saved.buttons ?? {})))
+          .map(([key, b]) => [key, taken.has(b) ? -1 : b]);
+        mapping.buttons = { ...Object.fromEntries(added), ...saved.buttons };
       }
       mapping.version = MAPPING_VERSION;
       return mapping;
@@ -200,6 +206,11 @@ export class Joystick {
     if (this.held('fireMg')) input.fireMg = true;
     if (this.held('fireCannon')) input.fireCannon = true;
     if (this.held('bailOut')) input.bailOut = true;
+    // Propeller pitch, held (D96): the thumb switch of a manually pitched airscrew, or the rpm lever of a constant-speed
+    // one (finer pitch = higher rpm), at the keyboard's rate.
+    const pitch = (this.held('pitchCoarse') ? 1 : 0) - (this.held('pitchFine') ? 1 : 0);
+    if (pitch && ac.propeller.type === 'constantSpeed') input.rpm = clamp(input.rpm - pitch * LEVER_RATE * dt, 0, 1);
+    else if (pitch) input.pitchSwitch = pitch;
     return { hat: hatDirection(this.pad.axes[this.mapping.hat.axis]), view: this.pressed('view') };
   }
 }

@@ -467,3 +467,65 @@ describe('joystick bail-out button (D80)', () => {
     expect(input.bailOut).toBe(true);
   });
 });
+
+describe('joystick propeller pitch buttons (D96)', () => {
+  const v4 = (buttons) => ({
+    version: 4, roll: { axis: 0, invert: false }, pitch: { axis: 1, invert: false }, yaw: { axis: 5, invert: false },
+    throttle: { axis: 6, invert: true }, hat: { axis: 9 }, buttons,
+  });
+  const ownButtons = { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1, bailOut: 7 };
+  const joystickWith = (saved) => {
+    globalThis.localStorage = { getItem: () => (saved ? JSON.stringify(saved) : null), setItem() {} };
+    return new Joystick();
+  };
+  const press = (joy, ...names) => {
+    const buttons = Array.from({ length: 12 }, () => ({ pressed: false }));
+    for (const n of names) buttons[joy.mapping.buttons[n]].pressed = true;
+    joy.poll = () => (joy.pad = { axes: [0, 0, 0, 0, 0, 0, -1, 0, 0, 1.2857], buttons });
+  };
+
+  it('a version-4 mapping keeps its buttons and gains fine (7) and coarse (9); taken numbers start unassigned', () => {
+    const joy = joystickWith(v4(ownButtons));
+    expect(joy.mapping.buttons.trimUp).toBe(4);
+    expect(joy.mapping.buttons.pitchFine).toBe(6); // printed 7
+    expect(joy.mapping.buttons.pitchCoarse).toBe(8); // printed 9
+    const busy = joystickWith(v4({ ...ownButtons, brake: 6 }));
+    expect(busy.mapping.buttons.brake).toBe(6);
+    expect(busy.mapping.buttons.pitchFine).toBe(-1);
+    expect(busy.mapping.buttons.pitchCoarse).toBe(8);
+  });
+
+  it('holding fine or coarse works the Bf 109\'s pitch switch, and moves the Spitfire\'s rpm lever', () => {
+    const joy = joystickWith(null);
+    press(joy, 'pitchFine');
+    const input = { flaps: 0, gear: 0, throttle: 0.5, pitchSwitch: 0, rpm: 0.8 };
+    joy.update(input, aircraftById.bf109e4, 0.1);
+    expect(input.pitchSwitch).toBe(-1);
+    press(joy, 'pitchCoarse');
+    joy.update(input, aircraftById.bf109e4, 0.1);
+    expect(input.pitchSwitch).toBe(1);
+    const raf = { flaps: 0, gear: 0, throttle: 0.5, pitchSwitch: 0, rpm: 0.8 };
+    press(joy, 'pitchFine');
+    joy.update(raf, aircraftById.spitfire, 0.1);
+    expect(raf.rpm).toBeGreaterThan(0.8);
+    press(joy, 'pitchCoarse');
+    joy.update(raf, aircraftById.spitfire, 0.5);
+    expect(raf.rpm).toBeLessThan(0.8);
+    expect(raf.pitchSwitch).toBe(0);
+    press(joy);
+    const idle = { flaps: 0, gear: 0, throttle: 0.5, pitchSwitch: -1, rpm: 0.8 }; // the keyboard's E held
+    joy.update(idle, aircraftById.bf109e4, 0.1);
+    expect(idle.pitchSwitch).toBe(-1);
+  });
+
+  it('an unassigned button never fires; the panel lists both buttons', async () => {
+    const joy = joystickWith(null);
+    joy.mapping.buttons.pitchFine = -1;
+    joy.pad = { axes: [], buttons: Array.from({ length: 12 }, () => ({ pressed: true })) };
+    expect(joy.held('pitchFine')).toBe(false);
+    const source = (await import('node:fs')).readFileSync(new URL('../../src/ui/joystickPanel.js', import.meta.url), 'utf8');
+    expect(source).toMatch(/\['pitchFine', 'Propeller pitch fine \(hold\)'\]/);
+    expect(source).toMatch(/\['pitchCoarse', 'Propeller pitch coarse \(hold\)'\]/);
+    expect(source).toMatch(/value="-1">none/);
+  });
+});
