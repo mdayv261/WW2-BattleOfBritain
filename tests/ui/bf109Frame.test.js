@@ -8,7 +8,8 @@ import * as THREE from 'three';
 import { FRAME, FLASH_TIME, archAngles, archPoint, sideX, postX, flashPoint, mgFlashes } from '../../src/ui/bf109Frame.js';
 import { REVI } from '../../src/ui/reviSight.js';
 import { Simulation } from '../../src/core/simulation.js';
-import { BF109_PANEL, BF109_AIM, plateTop } from '../../src/ui/bf109Panel.js';
+import { BF109_PANEL, BF109_AIM, FUSELAGE_CENTRE_OFFSET, plateTop } from '../../src/ui/bf109Panel.js';
+import { panelRadius } from '../../src/ui/instruments.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 
 const L = BF109_PANEL;
@@ -155,6 +156,35 @@ describe('the 3D cockpit while the front frame shows (D90)', () => {
     v.showSight2D(false); // looking round
     v.update(sim, 1, 0.01);
     expect(shown(true)).toEqual([true, true]);
+  });
+
+  it('draws the airscrew on the drawn fuselage centre line in the front view, back on the true one looking round (D98)', () => {
+    for (const [w, h] of [[2560, 1259], [1280, 720]]) {
+      const v = view('bf109e4');
+      const cam = v.rig.camera;
+      cam.fov = 70;
+      cam.aspect = w / h;
+      cam.updateProjectionMatrix();
+      v.rig.shiftPicture(v.rig.aim);
+      v.showSight2D(true);
+      v.showParts(true, { width: w, height: h });
+      // The hub seen from the eye, the camera looking along the nose (body axes as world axes here).
+      const eye = new THREE.Vector3(aircraftById.bf109e4.eye.x, aircraftById.bf109e4.eye.y, 0);
+      cam.position.copy(eye);
+      cam.lookAt(eye.clone().add(new THREE.Vector3(1, 0, 0)));
+      cam.updateMatrixWorld();
+      const hub = v.aircraft.screws[0].group.position.clone().project(cam);
+      const r = panelRadius(BF109_PANEL, w, h);
+      expect(((hub.x + 1) / 2) * w, `${w}x${h}`).toBeCloseTo(w / 2 + FUSELAGE_CENTRE_OFFSET * r, 0);
+      expect(v.aircraft.screws[0].spinner.visible).toBe(false); // no floating spinner without the nose
+      v.showSight2D(false);
+      v.showParts(true, { width: w, height: h });
+      expect(v.aircraft.screws[0].group.position.z).toBe(0);
+    }
+    const s = view('spitfire');
+    s.showSight2D(true);
+    s.showParts(true, { width: 2560, height: 1259 });
+    expect(s.aircraft.screws[0].group.position.z).toBe(0);
   });
 
   it('keeps a lost wing hidden, and leaves the Spitfire\'s view as it was', () => {

@@ -2855,3 +2855,20 @@ At the product owner's request the joystick panel (J) offers two more buttons, *
   - rounds left.
 
   It shows only in the outside views; the F2 strip and F3 overlay are unchanged.
+
+## D98. The Bf 109's propeller arc centred on the drawn fuselage centre (1 Nov 2026, plan approved by the product owner)
+
+The product owner saw the propeller arc (D97) off centre to the right in the Bf 109's front view and asked for it to be
+centred on the fuselage centre.
+
+**Why it was off:** the drawn cockpit follows the photographs, with the Revi right of the panel's centre (D89). The
+3D view is centred on the guns' line through the Revi, so the drawn windscreen and panel centre stands about 1.7 dial
+radii left of the screen's middle (`FUSELAGE_CENTRE_OFFSET`), while the 3D airscrew sat straight ahead at the middle.
+
+**The change:** in the front view only, the airscrew is drawn shifted sideways so that its hub falls on the drawn
+fuselage centre on any screen (`screwShift` in `src/render/testView.js`). Its spinner is hidden there: with the nose
+hidden it would float on its own. Looking round and in the outside views the airscrew is back in its true place. The
+guns, the reticle and the physics are unchanged.
+
+**Deviation, flagged:** on the real aircraft the pilot sits on the centre line, so the arc would centre on the guns'
+line. Here the arc follows the drawing.

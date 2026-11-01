@@ -38,6 +38,13 @@ export const GLASS_ABOVE = 4.1;
  */
 export const BF109_AIM = 0.3;
 
+/**
+ * The drawn fuselage centre line (the windscreen's centre, between the posts of src/ui/bf109Frame.js) across from the
+ * Revi's axis, in dial radii: left of it, as the photographed Revi stands right of the panel's centre (D89). The
+ * airscrew is drawn on it in the front view (D98).
+ */
+export const FUSELAGE_CENTRE_OFFSET = (583 - AXIS) / PX;
+
 /** A picture point in dial radii from the Revi's axis at the top of the upper plate. */
 export const P = (px, py) => [(px - AXIS) / PX, (py - TOP) / PX];
 

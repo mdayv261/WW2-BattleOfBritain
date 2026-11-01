@@ -102,7 +102,7 @@ function airscrew(ac, hub, bladeColour) {
   const tips = new THREE.Mesh(new THREE.RingGeometry(radius * 0.88, radius, 48).rotateY(Math.PI / 2),
     new THREE.MeshBasicMaterial({ color: 0x2c2c2c, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }));
   group.add(spinner, blades, disc, tips);
-  return { group, blades, disc, tips };
+  return { group, blades, disc, tips, spinner };
 }
 
 /** A main undercarriage leg and wheel, folding about its top: { pivot, axis }. */

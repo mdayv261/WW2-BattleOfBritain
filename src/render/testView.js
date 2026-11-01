@@ -10,7 +10,8 @@ import { buildAircraftModel } from './models/aircraftModel.js';
 import { DESIGNS } from './models/designs.js';
 import { buildMuzzleFlashes } from './projectiles.js';
 import { hideLost } from './wrecks.js';
-import { BF109_AIM } from '../ui/bf109Panel.js';
+import { BF109_AIM, BF109_PANEL, FUSELAGE_CENTRE_OFFSET } from '../ui/bf109Panel.js';
+import { panelRadius } from '../ui/instruments.js';
 
 export class TestView {
   constructor(scene, camera, sea) {
@@ -33,12 +34,32 @@ export class TestView {
     this.frontView = on && this.frameDrawn;
   }
 
-  /** Shows or hides the parts seen from the cockpit (`inside`): the cockpit frame, and the parts the front view hides. */
-  showParts(inside) {
+  /**
+   * Shows or hides the parts seen from the cockpit (`inside`): the cockpit frame, and the parts the front view hides. In
+   * the Bf 109's front view the airscrew is drawn on the drawn fuselage centre line (D98) on a screen `width` x `height`.
+   */
+  showParts(inside, { width = globalThis.innerWidth ?? 1600, height = globalThis.innerHeight ?? 900 } = {}) {
     const front = inside && this.frontView;
     this.model.getObjectByName('fuselage').visible = !inside;
     this.cockpit.visible = inside && !front;
     for (const part of this.frontHidden) part.visible = !front && !this.lost.has(part.name);
+    const shift = front ? this.screwShift(width, height) : 0;
+    this.aircraft.screws.forEach((s, i) => {
+      s.group.position.z = this.screwHome[i] + shift;
+      s.spinner.visible = !front; // with the nose hidden, the spinner alone would float ahead of the panel
+    });
+  }
+
+  /**
+   * How far sideways (m, body axes) the airscrew is drawn in the Bf 109's front view so that its hub falls on the drawn
+   * fuselage centre line, FUSELAGE_CENTRE_OFFSET dial radii from the guns' line (D98): the drawn offset in pixels over
+   * the view's pixels per radian, at the hub's distance ahead of the eye.
+   */
+  screwShift(width, height) {
+    const offset = FUSELAGE_CENTRE_OFFSET * panelRadius(BF109_PANEL, width, height);
+    const perRadian = height / 2 / Math.tan((this.rig.camera.fov * Math.PI) / 360);
+    const ahead = this.aircraft.screws[0].group.position.x - this.eyeX;
+    return (offset / perRadian) * ahead;
   }
 
   setAircraft(ac) {
@@ -52,6 +73,8 @@ export class TestView {
     // The wings hide in the front view; the airscrew stays, its arc spinning ahead of the panel (D97).
     this.frontHidden = [this.model.getObjectByName('wingLeft'), this.model.getObjectByName('wingRight')];
     this.lost = new Set();
+    this.screwHome = this.aircraft.screws.map((s) => s.group.position.z);
+    this.eyeX = ac.eye.x;
     // The AI-only He 111 has no pilot's sight. The RAF's is drawn square-on in front of the panel while the pilot looks
     // ahead (src/ui/reflectorSight.js, D87): showSight2D hides these 3D parts meanwhile.
     this.sight3D = ac.sight ? [buildSightBody(ac), buildReticle(ac)] : [];

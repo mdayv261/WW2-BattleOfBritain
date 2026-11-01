@@ -18,6 +18,11 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 109 propeller arc centred (1 Nov 2026)
+
+**Done** (D98): in the front view the propeller arc is centred on the drawn fuselage centre (between the windscreen
+posts); the floating spinner is hidden there.
+
 ## Propeller arc; HUD and reticle in the outside views (1 Nov 2026)
 
 **Done** (D97): a spinning propeller arc from the cockpit (the Bf 109's airscrew shows in its front view again); in the
