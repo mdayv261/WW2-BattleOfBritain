@@ -2977,8 +2977,8 @@ with the minor differences of their picture #29. #29 is a screenshot of a Spitfi
 The long canopy bows and the dark lip of D99 are gone.
 
 **The look of both RAF fighters' frames:** at the product owner's request, the windscreen frames, struts, mirror stem,
-fuselage side frames and coaming of the Hurricane and Spitfire are drawn in the Bf 109 frames' style (D103), in a darker
-grey: a band with a dark outline, a lit edge on the outside, a shaded edge and a row of rivets. Their shapes, rounded
+fuselage side frames and coaming of the Hurricane and Spitfire are drawn in the Bf 109 frames' style (D103), in dark
+green (a darker grey at first): a band with a dark outline, a lit edge on the outside, a shaded edge and a row of rivets. Their shapes, rounded
 corners included, are unchanged. The fuselage's inside walls below the side frames are in the instrument panel's
 colour (product owner).
 

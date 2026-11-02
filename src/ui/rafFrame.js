@@ -18,9 +18,9 @@ import { SPITFIRE_PANEL } from './rafPanel.js';
 import { C } from './panelParts.js';
 
 const AXIS = 946; // the GM 2's axis on the panel picture: its centre line
-// The windscreen frames, struts and fuselage side frames in the Bf 109 frames' style (D103), darker grey (product owner,
-// D102): the band with a dark outline, a lit edge on the outside, a shaded edge, and rivets.
-const DARK = { band: '#5d6266', lit: '#8d9296', shade: '#373b3e', rivet: '#464a4d', outline: '#1d1f21' };
+// The windscreen frames, struts, fuselage side frames and coaming in the Bf 109 frames' style (D103), dark green (product
+// owner, D102): the band with a dark outline, a lit edge on the outside, a shaded edge, and rivets.
+const DARK = { band: '#3f5236', lit: '#66795a', shade: '#27331f', rivet: '#2f3d28', outline: '#151c11' };
 const FAR = 4000; // picture pixels: far enough to run off any screen
 
 export const RAF_FRAMES = {
