@@ -18,6 +18,12 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Welded cockpit frames (2 Nov 2026)
+
+**Done** (D104): every front-view frame joint blends as welded (outlines drawn first, joining bars over the bars they
+meet, their edges trimmed); RAF frames dark green with panel-coloured inside walls, Bf 109 frames dark grey; tests in
+`tests/ui/frameBars.test.js`.
+
 ## RAF frames in the Bf 109's style (1 Nov 2026)
 
 **Done** (D102): the Hurricane's and Spitfire's windscreen, coaming and fuselage side frames in the Bf 109 frames' style,

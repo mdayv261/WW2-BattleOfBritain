@@ -3022,3 +3022,20 @@ feet, cross bar and side windows keep the photograph's proportions.
 dark grey (light, then medium grey at first): a band with a dark outline, a lit edge and a shaded edge, and a row of rivets.
 
 **Unchanged:** the propeller arc (D98), the MG 17 flashes on the coaming (D94), the Revi and the panel.
+
+## D104. Welded cockpit frames (2 Nov 2026, product owner)
+
+At the product owner's request every aircraft's front-view frame joints look welded, not bolted. The Bf 109's frames
+(dark grey) and the Hurricane's and Spitfire's (dark green) are drawn by one routine (`drawFrames`, `src/ui/frameBars.js`)
+in passes:
+- **Outlines:** every bar's dark outline first, so no outline crosses a joint.
+- **Bands:** each bar's band, edges and rivets next, in order. A bar that ends on another comes after it, so its band
+  covers the other's edge where they meet.
+- **Trimming:** each bar's own lit and shaded edges and rivets stop at the other bar's side.
+- **Feet:** the RAF fighters' windscreen frames carry their feet down into the coaming, so they join it without a seam.
+- **Unchanged:** the Bf 109's corner braces still lie over its posts where they cross.
+
+Earlier colour changes the product owner asked for:
+- the Hurricane's and Spitfire's frames and coaming in dark green;
+- their fuselage inside walls in the instrument panel's colour (D102);
+- the Bf 109's frames and coaming in dark grey (D103).
