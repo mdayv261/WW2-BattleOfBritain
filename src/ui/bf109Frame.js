@@ -61,8 +61,8 @@ export function flashPoint(side) {
 const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
 const CENTRE = 583; // the windscreen's centre, the fuselage's centre line
-// All the frames in the coaming's style, medium grey (product owner, D103): the band, a lit edge, a shaded edge, rivets.
-const GREY = { band: '#8c9195', lit: '#bfc3c6', shade: '#55595c', rivet: '#6a6f72', outline: '#2e3134' };
+// All the frames in the coaming's style, dark grey (product owner, D103): the band, a lit edge, a shaded edge, rivets.
+const GREY = { band: '#4c5054', lit: '#7a7f83', shade: '#2c2f31', rivet: '#3a3d40', outline: '#17191a' };
 
 /** The hood's side's x at height y (`side` -1 left, +1 right), from the top frame's corner outward going down. */
 export const hoodX = (side, y) => CENTRE + side * (FRAME.top.half + FRAME.hood.slope * (y - FRAME.top.y));
