@@ -18,6 +18,17 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C speed card and flap placard (3 Nov 2026)
+
+**Done** (D116):
+- the pilot's speed card below the trim gauge (155, 132, 170, 160, 220 km/h);
+- the flap placard below the flap lever (250 km/h, take-off 0°, landing 50°), white on black;
+- the pitch indicators at the clock's size.
+
+The product owner considers the Bf 110 C panel finished (3 Nov 2026).
+
+**Left:** the rest of the Bf 110's cockpit view (its frame), then Phase 6 checkpoint 5 after a plan.
+
 ## Bf 110 C coolant thermometers (3 Nov 2026)
 
 **Done** (D115):

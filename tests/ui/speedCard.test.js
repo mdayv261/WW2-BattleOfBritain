@@ -9,6 +9,10 @@ import { SIGHT, sightPlacement } from '../../src/ui/reflectorSight.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
+import { UNIT } from '../../src/core/constants.js';
+import { stallSpeed, bestClimb } from '../../src/physics/performance.js';
+import { equivalentAirspeed } from '../../src/physics/atmosphere.js';
+import { takeoffTest } from '../../src/dev/groundTests.js';
 
 const values = (id) => pilotCard(aircraftById[id], aircraftById[id].side === 'RAF').entries.map((e) => Number(e.value));
 
@@ -47,8 +51,29 @@ describe('pilot\'s speed card figures (D91)', () => {
   });
 
   it('is not on the aircraft without one', () => {
-    expect(pilotCard(aircraftById.bf110c4, false)).toBeNull();
+    expect(pilotCard(aircraftById.he111h, false)).toBeNull();
   });
+
+  it('gives the Bf 110 its own rows in the product owner\'s words and order, sourced or measured on the model (D116)', () => {
+    const card = pilotCard(aircraftById.bf110c4, false);
+    expect(card.entries.map((e) => e.label)).toEqual(['Stall Speed Flaps Up', 'Stall Speed Flaps Down', 'Take-off Speed',
+      'Final Approach Speed', 'Best ROC Speed']);
+    expect(card.entries.map((e) => e.value)).toEqual(['155', '132', '170', '160', '220']);
+    expect(card.unit).toBe('km/h');
+    expect(card.flapLimit).toBe(250); // S24
+  });
+
+  it('keeps the Bf 110\'s measured figures within 5 km/h of what its flight model gives (D116)', () => {
+    const ac = aircraftById.bf110c4;
+    const kmh = (v) => v / UNIT.KMH;
+    const off = { speed: ac.propeller.rpmMax, throttle: 0 };
+    expect(Math.abs(kmh(equivalentAirspeed(stallSpeed(ac, off, 0), 0)) - kmh(ac.pilotCard.stallClean))).toBeLessThanOrEqual(5);
+    expect(Math.abs(kmh(equivalentAirspeed(stallSpeed(ac, off, 0, { flaps: 1, gear: 1 }), 0)) - kmh(ac.pilotCard.stallFlaps)))
+      .toBeLessThanOrEqual(5);
+    const climb = bestClimb(ac, { speed: 2300 * UNIT.RPM, map: 1.2 * UNIT.ATA }, 0);
+    expect(Math.abs(kmh(climb.speed) - kmh(ac.pilotCard.climb))).toBeLessThanOrEqual(5);
+    expect(Math.abs(kmh(takeoffTest(ac).liftOffEas) - kmh(ac.pilotCard.takeoff))).toBeLessThanOrEqual(5);
+  }, 60000);
 });
 
 describe('pilot\'s speed card on the panels (D91)', () => {

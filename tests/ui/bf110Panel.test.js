@@ -11,6 +11,7 @@ import { BF110_PANEL, AXIS, bf110Panel } from '../../src/ui/bf110Panel.js';
 /** The right-hand dials' places on #31 before the section moved out (D111). */
 const OLD_X = { rpmLeft: 589, rpmRight: 660, ataLeft: 602, ataRight: 673, pitchLeft: 585, pitchRight: 643, clock: 583 };
 import { ammoFractions, switchPosition, gearLightState, AMMO_COLUMNS, tBar, T_STEM } from '../../src/ui/bf110Fittings.js';
+import { flapPlacard, flapPlacardLines, speedPlacard } from '../../src/ui/bf110Placards.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { LUMINOUS, INK, HAND, paint } from '../../src/ui/lwStyle.js';
 import { Simulation } from '../../src/core/simulation.js';
@@ -150,7 +151,11 @@ describe('Bf 110 luminous dials (D105)', () => {
   it('draws all but the fuel gauge\'s markings and hands in luminous yellow, and restores the colours', () => {
     const g = draw();
     const colourOf = (s) => g.texts.filter((t) => t.s === s).map((t) => t.c);
-    for (const w of ['km/h', 'U/min', 'ata', 'm/s', 'DREHT', '12', 'Kühlst.']) expect(colourOf(w).every((c) => c === LUMINOUS), w).toBe(true);
+    const dials = (w) => colourOf(w).filter((c) => c !== '#e9e6dc'); // not the speed card's print (D116)
+    for (const w of ['km/h', 'U/min', 'ata', 'm/s', 'DREHT', '12', 'Kühlst.']) {
+      expect(dials(w).length, w).toBeGreaterThan(0);
+      expect(dials(w).every((c) => c === LUMINOUS), w).toBe(true);
+    }
     expect(colourOf('Liter')).toEqual([INK]); // the fuel gauge stays white
     expect(paint).toEqual({ ink: INK, hand: HAND });
   });
@@ -195,6 +200,7 @@ describe('Bf 110 C airscrew pitch indicators (D109)', () => {
     const v = instrumentReadings(sim);
     expect(v.engines[1].pitchClock.minutes).not.toBeCloseTo(v.engines[0].pitchClock.minutes, 3);
     for (const side of ['Left', 'Right']) {
+      expect(L.dials[`pitch${side}`].slice(2)).toEqual(L.dials.clock.slice(2)); // the clock's size (D116)
       expect(L.dials[`pitch${side}`][0]).toBeCloseTo(L.dials[`rpm${side}`][0], -2); // above its rev counter
       expect(L.dials[`pitch${side}`][1]).toBeLessThan(L.dials[`rpm${side}`][1]);
     }
@@ -285,5 +291,46 @@ describe('Bf 110 C coolant thermometers (D115)', () => {
     const g = draw();
     expect(g.texts.filter((t) => t.s === 'Kühlst.')).toHaveLength(2);
     expect(g.texts.some((t) => t.s === 'Kühl.')).toBe(false); // the oil and coolant gauges are gone
+  });
+});
+
+describe('Bf 110 C speed card and flap placard (D116)', () => {
+  it('letters the speed card below the trim gauge and the flap placard below the flap lever', () => {
+    const words = new Set(draw().texts.map((t) => t.s));
+    for (const w of ['SPEEDS', 'Stall Speed Flaps Up', 'Best ROC Speed', '155', '220', 'Achtung!', 'Max Flap Speed', '250 km/hr',
+      'Take-off 0°', 'Landing 50°']) expect(words.has(w), w).toBe(true);
+    expect(words.has('Achtung Fahrwerk')).toBe(false);
+    const [l, t, r] = L.boxes.speedCard;
+    const [tx, ty, , to] = L.dials.trim;
+    expect(t).toBeGreaterThan(ty + to); // below the trim gauge
+    expect(t).toBe(L.dials.climb[1] - L.dials.climb[3]); // level with the climb indicator's top
+    expect(l).toBeLessThan(tx);
+    expect(r).toBeGreaterThan(tx);
+    const [px, top, bottom] = [L.switches.flaps[0], L.boxes.placard[1], L.switches.flaps[2]];
+    expect(top).toBeGreaterThan(bottom); // below the flap lever
+    expect(L.boxes.placard[0]).toBeLessThan(px);
+    expect(L.boxes.placard[2]).toBeGreaterThan(px);
+  });
+});
+
+describe('Bf 110 C placards\' lettering (D116)', () => {
+  it('letters both placards white on black in one font size, the speed card no wider than its lettering needs', () => {
+    const fonts = [];
+    const fills = [];
+    const g = new Proxy({}, {
+      get: (t, p) => (p === 'fillText' ? (s) => fills.push({ s, font: t.font, c: t.fillStyle })
+        : p === 'fillRect' ? (...a) => fills.push({ rect: a, c: t.fillStyle }) : p in t ? t[p] : () => {}),
+      set: (t, p, v) => { if (p === 'font') fonts.push(v); t[p] = v; return true; },
+    });
+    const v = readings();
+    flapPlacard(g, { x: 0, y: 0, w: 64, h: 72 }, flapPlacardLines(v), 7);
+    const plate = speedPlacard(g, 300, 0, v.pilotCard, 7);
+    const texts = fills.filter((f) => f.s);
+    expect(new Set(texts.map((f) => f.font)).size).toBe(1); // one font size
+    expect(texts.every((f) => f.c === '#e9e6dc')).toBe(true); // white
+    expect(fills.filter((f) => f.rect).every((f) => f.c === '#0c0c0c')).toBe(true); // on black
+    const longest = Math.max(...v.pilotCard.entries.map((e) => (e.label.length + e.value.length) * 0.6 * 7));
+    expect(plate.w).toBeLessThan(longest + 7 * 4); // the lettering plus a bit
+    expect(plate.w).toBeGreaterThan(longest);
   });
 });

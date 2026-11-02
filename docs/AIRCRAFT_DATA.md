@@ -1119,6 +1119,12 @@ Bf 109's (same designer, engine and airscrew).
 | Reflector gunsight ring, angular diameter (`sight.ringMils`) | 100 | mils | — | ASSUMPTION | estimate | Revi sight (S25: thinner lines than the GM 2); the ring size is an open gap, as for the Bf 109. |
 | Pilot's eye, ahead of the centre of gravity (`eye.x`) | 1.0 | m | — | ASSUMPTION | estimate | The pilot sits ahead of the wing; S24 praises the view ahead. |
 | Pilot's eye, height (`eye.y`) | 0.9 | m | — | ASSUMPTION | estimate | No source found; typical of the period. |
+| Speed card: stalling speed, flaps up (`pilotCard.stallClean`) | 43.06 | m/s | 155 km/h ASI | ASSUMPTION | estimate | No source found (S24 gives none). The flight model's power-off 1 g stall, flaps and undercarriage up, at sea level (153 km/h), to the nearest 5 (product owner, D116). |
+| Speed card: stalling speed, flaps down (`pilotCard.stallFlaps`) | 36.67 | m/s | 132 km/h at 6,530 kg | S23 | medium | S23's landing speed (C-2); the model's flaps-down stall is fitted to it. |
+| Speed card: take-off speed (`pilotCard.takeoff`) | 47.22 | m/s | 170 km/h | ASSUMPTION | estimate | No source found. The flight model's lift-off speed in the standard take-off without flap (168 km/h), to the nearest 5 (D116). |
+| Speed card: best rate-of-climb speed (`pilotCard.climb`) | 61.11 | m/s | 220 km/h at sea level | ASSUMPTION | estimate | No source found. The flight model's best-climb speed at sea level at 2300 rpm, 1.2 ata (219 km/h), to the nearest 5 (D116). |
+| Speed card: final approach speed (`pilotCard.approach`) | 44.44 | m/s | 160 km/h ASI (100 mph) | S24 | medium | Best approach speed, determined by RAE pilots. |
+| Flap placard: maximum speed with flaps down (`pilotCard.flapLimit`) | 69.44 | m/s | 250 km/h ASI (155 mph) | S24 | medium | Maximum speed with flaps and undercarriage down. |
 
 ### Cooling and structural limits (Phase 5, D62)
 

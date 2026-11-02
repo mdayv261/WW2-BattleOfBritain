@@ -145,6 +145,17 @@ export const bf110c4 = {
   },
   // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
   sight: { type: 'Revi C/12C', ringMils: 100 },
+  // The pilot's speed card and flap placard (D116), indicated airspeeds (m/s). Stall with flaps down: S23's landing speed;
+  // approach and the flap limit: S24. Stall with flaps up, take-off and best climb: measured on this flight model (no
+  // source found), to the nearest 5 km/h.
+  pilotCard: {
+    stallClean: 155 * UNIT.KMH,
+    stallFlaps: 132 * UNIT.KMH,
+    takeoff: 170 * UNIT.KMH,
+    climb: 220 * UNIT.KMH,
+    approach: 160 * UNIT.KMH,
+    flapLimit: 250 * UNIT.KMH,
+  },
   eye: { x: 1.0, y: 0.9 },
   // Crew (Phase 6, D80): where each sits (m, body axes; estimates on the model) and how long after deciding to bail
   // out he is clear of the aircraft (s, estimates: hood or hatch, harness, over the side; one after another).

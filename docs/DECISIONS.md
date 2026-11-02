@@ -3301,3 +3301,47 @@ The tests are restored with it and read the Bf 110's guns.
 
 **Flagged:** the Bf 110 panel no longer shows the oil temperatures. They were the left half of each of the two-scale
 gauges (D63), which these thermometers replace.
+
+## D116. The Bf 110 C's pilot's speed card and flap placard (3 Nov 2026, plan approved by the product owner)
+
+**The request:**
+- A pilot's speed card in the clear space below the trim gauge, its rows in this order: Stall Speed Flaps Up, Stall
+  Speed Flaps Down, Take-off Speed, Final Approach Speed, Best ROC Speed.
+- The placard beneath the flap lever (it read "Achtung Fahrwerk") to read "Achtung! Max Flap Speed 250 km/hr", with the
+  take-off and landing flap angles.
+- Refinements given in the session:
+  - the card white on black, in the flap placard's font size, as narrow as its lettering;
+  - its top level with the climb indicator's;
+  - the pitch indicators the clock's size.
+
+**The product owner's answers:**
+- **Speeds without a source:** use the flight model's own figures, recorded as estimates.
+- **Flap angles:** the sourced ones, 0° for take-off and 50° for landing (they had written 10° and 40°).
+
+**Figures** (`pilotCard` in `src/aircraft/bf110c4.js`, indicated km/h):
+
+| Row | Figure | Where it comes from |
+|---|---|---|
+| Stall Speed Flaps Up | 155 | The model's power-off stall, flaps and undercarriage up (153), to the nearest 5 (estimate) |
+| Stall Speed Flaps Down | 132 | S23's landing speed |
+| Take-off Speed | 170 | The model's lift-off speed in the standard take-off without flap (168), to the nearest 5 (estimate) |
+| Final Approach Speed | 160 | S24 |
+| Best ROC Speed | 220 | The model's best-climb speed at sea level, 2300 rpm and 1.2 ata (219), to the nearest 5 (estimate) |
+
+- **Model figures under test:** a test keeps each within 5 km/h of what the flight model gives, so a later change to the
+  model that moves them is caught.
+- **Flap placard:** "Achtung!", "Max Flap Speed", "250 km/hr" (S24, `pilotCard.flapLimit`), "Take-off 0°",
+  "Landing 50°" (S24, from the flap data).
+
+**Drawing** (`src/ui/bf110Placards.js`):
+- **Look:** both placards white on black with a light border, in one font size (`PLACARD_FONT`, 5.2 px on #31, the
+  largest at which the flap placard's widest line fits).
+- **Speed card:** centred under the trim gauge with its top level with the climb indicator's, as wide as its lettering
+  plus a margin. Labels sit on the left and figures on the right.
+- **Flap placard:** widened to 48 px on #31.
+
+**Pitch indicators:** now the clock's size (face 20, mounting 24); D109 had kept the photographed gauges' size.
+
+**Flagged:**
+- three of the card's figures are the flight model's, not a source's;
+- the card's lettering is English, in the product owner's words, on a Luftwaffe panel.

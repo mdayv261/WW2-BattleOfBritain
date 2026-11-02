@@ -38,6 +38,7 @@ import { REVI, shortRevi } from './reviParts.js';
 import { SPITFIRE_PANEL } from './rafPanel.js';
 import { rafTrimGauge } from './rafPanelDials.js';
 import { bezel, dialScrews } from './panelParts.js';
+import { PLACARD_FONT, speedPlacard } from './bf110Placards.js';
 
 const PX = 30; // picture pixels per dial radius: the big dials' faces
 const TOP = 57; // the panel's top edge
@@ -185,7 +186,7 @@ export const BF110_PANEL = {
       clock: [583, 112, 20, 24], trim: [510, 112, 20, 24], // the Spitfire's trim gauge at the clock's size (D110)
     }),
     // Each engine pair moved out close to the sloping right-hand edge (product owner, D112).
-    ...toEdge('pitch', [585, 175, 18, 22], [643, 175, 18, 22]), // the photographed gauges' size (D109)
+    ...toEdge('pitch', [585, 175, 20, 24], [643, 175, 20, 24]), // the clock's size (product owner, D116)
     ...toEdge('rpm', [589, 243, 29, 33], [660, 243, 29, 33]),
     ...toEdge('ata', [602, 318, 28, 32], [673, 318, 28, 32]),
     // Each engine's coolant thermometer, the Bf 109's at its size, either side of the fuel gauge at the same size (D115).
@@ -196,7 +197,11 @@ export const BF110_PANEL = {
   boxes: {
     ammo: [260, 60, 367, 128.5], // the Bf 109's counter, at its shape (D113), clear of the Revi (D107)
     lights: [145, 152, 190, 196], flapLabel: [100, 228, 152, 240], gearLabel: [86, 345, 146, 357],
-    magnetos: [86, 256, 148, 333], placard: [152, 258, 190, 312], // lights and placard trimmed for the T levers (D114)
+    magnetos: [86, 256, 148, 333], // the light box trimmed for the T levers (D114); the flap placard widened (D116)
+    placard: [150, 258, 198, 312],
+    // The space for the pilot's speed card below the trim gauge, its top level with the climb indicator's: drawn centred
+    // under the trim gauge, as wide as its lettering (D116).
+    speedCard: [480, UPPER.climb[1] - UPPER.climb[3], 600, 246],
   },
   knobs: {
     redButton: [231, 108, 11],
@@ -251,6 +256,8 @@ export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
   bezel(g, tx, ty, tf, to);
   dialScrews(g, tx, ty, to, (to * 8) / SPITFIRE_PANEL.dials.trim[3]); // screws in proportion, as the Spitfire's
   rafTrimGauge(g, tx, ty, tf, v);
+  // The pilot's speed card, centred under the trim gauge at the top of its space, level with the climb indicator (D116).
+  speedPlacard(g, tx, at.box(L.boxes.speedCard).y, v.pilotCard, at.len(PLACARD_FONT));
   const dial = (name) => at.dial(L.dials[name]).slice(0, 3);
   luminous(() => {
     lwClock(g, ...dial('clock'), now);

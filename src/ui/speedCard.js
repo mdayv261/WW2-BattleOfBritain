@@ -1,12 +1,21 @@
 // The pilot's speed card (D91): a white card on the panel giving the stalling speeds with the flaps up and down, the
 // take-off speed, the best rate-of-climb speed and the final approach speed, as the airspeed indicator reads them, in
-// the side's units. RAF: left of the GM 2 sight; Bf 109: right of the manifold pressure gauge. The figures are aircraft
+// the side's units. RAF: left of the GM 2 sight; Bf 109: right of the manifold pressure gauge; Bf 110: below the trim
+// gauge (D116). The figures are aircraft
 // data (`pilotCard` in src/aircraft/*.js): the period sources' where found, the product owner's otherwise.
 
 import { UNIT } from '../core/constants.js';
 
 const INK = '#141414';
 const PAPER = '#eceae2';
+
+/** Cards with their own rows, [label, pilotCard key] in order: the Bf 110's in the product owner's words (D116). */
+const OWN_ROWS = {
+  bf110c4: [
+    ['Stall Speed Flaps Up', 'stallClean'], ['Stall Speed Flaps Down', 'stallFlaps'], ['Take-off Speed', 'takeoff'],
+    ['Final Approach Speed', 'approach'], ['Best ROC Speed', 'climb'],
+  ],
+};
 
 /**
  * The card's lines for an aircraft (null without a card): { title, unit, entries: [{ label, value }] }, the values whole
@@ -18,14 +27,17 @@ export function pilotCard(ac, raf) {
   const read = (ms) => Math.round(ms / (raf ? UNIT.MPH : UNIT.KMH));
   const travel = Math.round(ac.controls.flapTravel / UNIT.DEG);
   const takeoffFlap = Math.round((ac.controls.flapTravel * ac.controls.flapTakeoff) / UNIT.DEG);
-  const labels = raf
+  const own = OWN_ROWS[ac.id];
+  const labels = own ? own.map(([label]) => label) : raf
     ? ['Stall, flaps up', 'Stall, flaps down', 'Take-off', 'Best ROC', 'Final approach']
     : ['Stall, no flap', `Stall, flap ${travel}°`, `Take-off, flap ${takeoffFlap}°`, 'Best ROC', 'Final approach'];
-  const values = [c.stallClean, c.stallFlaps, c.takeoff, c.climb, c.approach].map(read);
+  const keys = own ? own.map(([, key]) => key) : ['stallClean', 'stallFlaps', 'takeoff', 'climb', 'approach'];
+  const values = keys.map((key) => read(c[key]));
   return {
     title: 'SPEEDS',
     unit: raf ? 'M.P.H. I.A.S.' : 'km/h',
     entries: labels.map((label, i) => ({ label, value: String(values[i]) })),
+    flapLimit: c.flapLimit ? read(c.flapLimit) : null, // the flap placard's limit, where the aircraft has one (D116)
   };
 }
 

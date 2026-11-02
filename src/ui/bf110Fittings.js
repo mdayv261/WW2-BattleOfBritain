@@ -3,14 +3,15 @@
 // left MG 17 pair, both MG FF, the right MG 17 pair); the EIN/AUS undercarriage
 // lights (EIN red with it up, AUS green with it down, as the Bf 109's, D95); the Landeklappe and Fahrwerk Ein/Aus
 // switches following the flaps and the undercarriage; the radiator flap switches following the radiator; and, shown
-// only, the red push button, the magneto switches, placards, the hydraulic pressure gauge, knobs, warning lamps and the
-// fuel tank selector at 1.
+// only, the red push button, the magneto switches, the flap placard (D116), placards, the hydraulic pressure gauge,
+// knobs, warning lamps and the fuel tank selector at 1.
 
 import { placard } from './luftwaffeDials.js';
 import { DEG, at as polar, font, centred, tick, lwFace, lwHand, screw } from './lwStyle.js';
 import { lens, text } from './panelParts.js';
 import { BLACK, INK, centre, plain, roundKnob } from './bf109Fittings.js';
 import { ammoCounter, counterState } from './ammoCounter.js';
+import { PLACARD_FONT, flapPlacard, flapPlacardLines } from './bf110Placards.js';
 
 const PLATE = { top: '#a2adab', foot: '#8f9a98', edge: '#3a4140' };
 
@@ -49,7 +50,7 @@ export function drawBf110Fittings(g, at, L, v) {
   placard(g, ...centre(B('flapLabel')), { lines: ['Landeklappe'] });
   placard(g, ...centre(B('gearLabel')), { lines: ['Fahrwerk'] });
   magnetos(g, B('magnetos'), s);
-  placard(g, ...centre(B('placard')), { lines: ['Achtung Fahrwerk'], scribbles: 5 });
+  flapPlacard(g, B('placard'), flapPlacardLines(v), at.len(PLACARD_FONT)); // below the flap lever (D116)
   hydraulic(g, ...at.dial(L.dials.hydraulic));
   for (const k of ['knobLeft', 'knobRight']) roundKnob(g, ...at.knob(L.knobs[k]));
   for (const k of ['lampTempL1', 'lampTempL2', 'lampTempR1', 'lampTempR2']) {
