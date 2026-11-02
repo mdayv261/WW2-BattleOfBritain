@@ -1,142 +1,144 @@
-// Bf 110 instrument panel laid out after the product owner's photograph of a preserved Bf 110 cockpit (D39). Positions
-// and sizes are measured on the photograph (pixels, 30 to a dial radius) from the panel's centre and its top edge.
-//   Flying instruments on the left: airspeed, the artificial horizon and the climb indicator above; the altimeter, the
-//   repeater compass and the clock below, the turn and bank under the clock. Their faces follow the product owner's
-//   reference drawings (D43); everything sits on an even grid with the same gap between mountings (D44).
-//   Engine instruments on the right in two columns, the left engine's on the left and the right engine's on the right
-//   (product owner, D46): rev counter, manifold pressure, airscrew pitch indicator (the C-4's pitch is set by hand,
-//   S24), the fuel quantity in that wing's tanks (D45) and a combined oil and coolant temperature gauge, oil on the left
-//   and coolant on the right, the normal ranges in green (product owner, D63).
-//   Bottom left: the undercarriage display and the upright flap position indicator (D34, D44). Right of the turn and
-//   bank: the elevator trim display (product owner, D74).
+// Bf 110 C instrument panel (D106), redrawn in code after the product owner's picture of a Bf 110 C panel (#31), with
+// details from their picture of the cockpit (#32). The pictures are layout references only: nothing of them is copied
+// into the game. Positions and sizes are measured on #31 in its pixels (PX to a dial radius) from the turn and bank
+// indicator's column (where the Revi stands above it in #32, the middle of the screen) and the panel's top edge.
+//   Top: the ammunition counter (three tall windows, as #32, in place of #31's box of lamps and knobs: product owner),
+//   a red push button, the "4 MG / 2 MG" strip, the "L ... R" instrument and the strip under it, the elevator trim
+//   indicator (D106, in place of a pasted photograph) and the clock.
+//   Upper row: the repeater compass (Patin), the "00 00" instrument, turn and bank, climb indicator; under them the
+//   "Umschalterstellung links / rechts" strip. Lower row: the strip compass in its recess, the fine altimeter, the
+//   artificial horizon and the airspeed indicator.
+//   Right, a column per engine (left engine on the left): the fuel and oil pressure gauge, the rev counter (to 3,600
+//   rpm, as photographed), the manifold pressure gauge in its red ring.
+//   Bottom centre: oil and coolant temperatures for each engine either side of the fuel contents gauge, four warning
+//   lamps; under them the radiator flap switches either side of the fuel tank selector.
+//   Left: the EIN/AUS undercarriage lights, the Landeklappe (flap) and Fahrwerk (undercarriage) switches, the magneto
+//   switches, placards, the hydraulic pressure gauge and two knobs.
+// Working: the flying and engine instruments, the clock, the ammunition counter, the flap and undercarriage switches
+// and lights, the radiator switches, the trim indicator and the fuel gauge (the tank the selector chooses, full: fuel
+// use is not modelled). The rest shows normal operation. The dials carry radium luminous paint, but for the fuel gauge
+// (D105).
 
-import { undercarriageDisplay, flapDisplay, trimDisplay } from './panelControls.js';
-
-export { gearLampState } from './panelControls.js';
-import { millibarWindow } from './altimeters.js';
-import { mount, lwRpm, lwAta, lwClock, lwPitchIndicator, twoScaleGauge } from './luftwaffeDials.js';
-import { luminous } from './lwStyle.js';
+import { drawBf110Fittings } from './bf110Fittings.js';
+import {
+  mount, lwRpm, lwAta, lwClock, twoScaleGauge, pressureGauge, lwFuelGauge, lwStripCompass, RPM_110,
+} from './luftwaffeDials.js';
 import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
-import { ringGauge, redRing } from './bf110Dials.js';
+import { luminous } from './lwStyle.js';
+import { redRing } from './bf110Dials.js';
+import { millibarWindow } from './altimeters.js';
 
-const PX = 30; // photograph pixels per dial radius
-const CENTRE = 241; // the panel's centre on the photograph
-const TOP = 334; // its top edge
+const PX = 30; // picture pixels per dial radius: the big dials' faces
+const AXIS = 428; // the turn and bank indicator's column on #31: the middle of the screen
+const TOP = 57; // the panel's top edge
+const FOOT = 475; // its lowest point
 
-const P = (px, py) => [(px - CENTRE) / PX, (py - TOP) / PX];
-const size = (px) => px / PX;
+/** A picture point in dial radii from the axis at the panel's top. */
+export const P = (px, py) => [(px - AXIS) / PX, (py - TOP) / PX];
 
+// The panel's outline traced on #31: the raised top section, the right section, the bottom centre extension, the gap
+// beside it, the left wing.
+const OUTLINE = [
+  [263, 57], [613, 58], [633, 117], [667, 147], [690, 180], [710, 227], [723, 273], [733, 327], [733, 350], [722, 360],
+  [548, 360], [544, 400], [538, 455], [528, 472], [338, 475], [326, 462], [312, 420], [302, 384], [292, 370], [205, 370],
+  [188, 384], [180, 420], [176, 452], [166, 462], [66, 462], [57, 448], [60, 380], [63, 333], [70, 280], [83, 250],
+  [93, 227], [110, 200], [130, 167], [147, 150], [157, 140], [177, 133], [193, 128], [202, 120], [210, 97], [223, 80],
+  [240, 64],
+];
 
-export const BF110_LAYOUT = {
-  width: 15.7, height: 9.55, screenShare: 0.54, ownBackground: true,
-  // Sized like the Bf 109's earlier panel (D64), whose size it keeps until its own redraw (D89): that panel's large dial
-  // faces were 23 of 25 photograph pixels to a radius, these 30 of 30.
-  sizeAs: { width: 14.6, height: 9.45, screenShare: 0.42, factor: 23 / 25 },
-  outline: [[12, 600], [12, 380], [28, 350], [50, 340], [300, 335], [306, 340], [462, 340], [471, 350], [471, 620],
-    [300, 620]].map(([x, y]) => P(x, y)),
-  // Dial centres, face radii and mounting half-widths, in photograph pixels. The instruments sit on an even grid with
-  // the same gap (GAP) between every pair of mountings, none touching (product owner, D44): the flying instruments in
-  // 80-pixel cells (three columns, the turn and bank below the clock), the engine instruments in 55-pixel cells (a
-  // column per engine).
+/**
+ * Everything on the panel, in picture pixels: the outline; dials [x, y, face radius, mounting half-width]; boxes
+ * [left, top, right, bottom]; knobs and lamps [x, y, radius]; switches [x, top, bottom] (the knob's travel).
+ */
+export const BF110_PANEL = {
+  width: (2 * Math.max(AXIS - 57, 733 - AXIS)) / PX + 0.2,
+  height: (FOOT - TOP) / PX + 0.1,
+  screenShare: 0.45, // as the RAF panel: below the Revi in the middle of the view
+  ownBackground: true,
+  outline: OUTLINE,
   dials: {
-    airspeed: [70, 382, 30, 37], horizon: [150, 382, 30, 37], climb: [230, 382, 30, 37],
-    altimeter: [70, 462, 30, 37], compass: [150, 462, 30, 37], clock: [230, 462, 30, 37], turn: [230, 542, 30, 37],
-    rpmLeft: [360, 370, 19, 24.5], rpmRight: [415, 370, 19, 24.5], ataLeft: [360, 425, 19, 24.5], ataRight: [415, 425, 19, 24.5],
-    pitchLeft: [360, 480, 19, 24.5], pitchRight: [415, 480, 19, 24.5], tankLeft: [360, 535, 18.5, 24.5], tankRight: [415, 535, 18.5, 24.5],
-    tempLeft: [360, 590, 19, 24.5], tempRight: [415, 590, 19, 24.5],
+    lr: [428, 93, 28, 33], clock: [583, 112, 20, 24],
+    compass: [250, 185, 40, 47], counter: [343, 193, 27, 32], turn: [428, 193, 28, 33], climb: [513, 192, 28, 33],
+    stripCompass: [255, 287, 27, 32], altimeter: [343, 297, 27, 32], horizon: [428, 297, 31, 37], airspeed: [513, 297, 28, 33],
+    pressureLeft: [585, 175, 18, 22], pressureRight: [643, 175, 18, 22],
+    rpmLeft: [589, 243, 29, 33], rpmRight: [660, 243, 29, 33],
+    ataLeft: [602, 318, 28, 32], ataRight: [673, 318, 28, 32],
+    tempLeft: [345, 381, 20, 24], fuel: [428, 381, 20, 24], tempRight: [511, 381, 20, 24],
+    radiatorLeft: [365, 438, 18, 22], selector: [428, 438, 18, 22], radiatorRight: [491, 438, 18, 22],
+    hydraulic: [118, 395, 18, 22],
   },
-  plates: [],
-  gear: { from: [33, 505], to: [107, 579] },
-  flaps: { from: [113, 505], to: [187, 579] },
-  // Elevator trim display (D74): right of the turn and bank, from its top to near the panel's foot, the usual gap from
-  // it and from the engine instruments.
-  trim: { from: [273, 505], to: [329.5, 614] },
+  boxes: {
+    ammo: [275, 62, 382, 125], mgStrip: [298, 133, 385, 152], courseStrip: [391, 130, 470, 154],
+    trim: [492, 82, 528, 150], umschalter: [394, 229, 462, 248],
+    lights: [145, 152, 190, 200], flapLabel: [100, 228, 152, 240], gearLabel: [86, 345, 146, 357],
+    magnetos: [86, 256, 148, 333], placard: [152, 258, 190, 322], recess: [205, 250, 298, 335],
+  },
+  knobs: {
+    redButton: [249, 108, 11], umLeft: [383, 239, 7], umRight: [473, 239, 7],
+    lampTempL1: [386, 368, 6], lampTempL2: [386, 396, 6], lampTempR1: [470, 368, 6], lampTempR2: [470, 396, 6],
+    knobLeft: [77, 434, 17], knobRight: [136, 434, 17],
+  },
+  switches: { flaps: [168, 213, 245], gear: [163, 330, 362] },
 };
 
-/** The undercarriage display's words (product owner, D66): OBEN (up) and UNTEN (down), titled GEAR. */
-export const GEAR_LABELS = { title: 'GEAR', up: 'OBEN', down: 'UNTEN' };
-
-/** The gap between neighbouring mountings and plates, photograph pixels (D44). */
-export const GAP = 6;
-
-/** Draws the panel with its top centre at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
-export function bf110Panel(g, x0, y0, r, v) {
-  const L = BF110_LAYOUT;
+/** A layout entry in canvas pixels, given the axis at the panel's top (x0, y0) and dial radius r. */
+export function placer(x0, y0, r) {
   const xy = ([px, py]) => {
     const [dx, dy] = P(px, py);
     return [x0 + dx * r, y0 + dy * r];
   };
-  const box = ({ from, to }) => {
-    const [ax, ay] = xy(from);
-    const [bx, by] = xy(to);
-    return { x: (ax + bx) / 2, y: (ay + by) / 2, w: bx - ax, h: by - ay };
+  const len = (px) => (px / PX) * r;
+  const dial = ([px, py, face, outer]) => [...xy([px, py]), len(face), len(outer)];
+  const box = ([l, t, rt, b]) => {
+    const [ax, ay] = xy([l, t]);
+    const [bx, by] = xy([rt, b]);
+    return { x: ax, y: ay, w: bx - ax, h: by - ay };
   };
-  const dial = (name) => {
-    const [px, py, face] = L.dials[name];
-    return [...xy([px, py]), size(face) * r];
-  };
-  const blackPlate = (b) => {
-    g.fillStyle = '#121314';
-    g.fillRect(b.x - b.w / 2, b.y - b.h / 2, b.w, b.h);
-    g.fillStyle = '#8a8270';
-    for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) disc(g, b.x + sx * (b.w / 2 - r * 0.12), b.y + sy * (b.h / 2 - r * 0.12), r * 0.05);
-  };
+  const knob = ([px, py, rad]) => [...xy([px, py]), len(rad)];
+  return { xy, len, dial, box, knob };
+}
 
-  // The blue-grey panel, cover plates, knobs and mountings.
-  g.fillStyle = '#7c8594';
-  g.strokeStyle = '#596170';
-  g.lineWidth = 2;
-  g.beginPath();
-  L.outline.forEach(([dx, dy], i) => (i ? g.lineTo(x0 + dx * r, y0 + dy * r) : g.moveTo(x0 + dx * r, y0 + dy * r)));
-  g.closePath();
-  g.fill();
-  g.stroke();
-  for (const p of L.plates) blackPlate(box(p));
-  // Mountings on the even grid; no tabs or knobs below them, which would close the gaps (D44).
-  for (const [px, py, , half] of Object.values(L.dials)) mount(g, ...xy([px, py]), size(half) * r);
+/** The dials drawn by the fittings (src/ui/bf110Fittings.js), not given a mounting here. */
+const FITTED = ['lr', 'counter', 'hydraulic', 'radiatorLeft', 'radiatorRight', 'selector'];
 
-  // Flying instruments.
-  // The flying and engine instruments carry radium luminous paint, their markings and hands light yellow (product owner,
-  // D105): all but the fuel gauges.
-  luminous(() => lwAirspeed(g, ...dial('airspeed'), v.airspeed));
-  luminous(() => lwHorizon(g, ...dial('horizon'), v.bank, v.pitch));
-  luminous(() => lwVario(g, ...dial('climb'), v.climb));
-  const [ax, ay, ar] = dial('altimeter');
-  luminous(() => lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013)));
-  luminous(() => lwPatinCompass(g, ...dial('compass'), v.heading));
-  luminous(() => lwClock(g, ...dial('clock'), new Date()));
-  luminous(() => lwTurnBank(g, ...dial('turn'), v.turnRate, v.sideG));
-
-  // Engine instruments: left engine on the left.
+/** Draws the panel with the axis at its top at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
+export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
+  const L = BF110_PANEL;
+  const at = placer(x0, y0, r);
+  drawBf110Fittings(g, at, L, v);
+  for (const [name, entry] of Object.entries(L.dials)) {
+    if (FITTED.includes(name)) continue;
+    const [x, y, , outer] = at.dial(entry);
+    mount(g, x, y, outer);
+  }
+  const dial = (name) => at.dial(L.dials[name]).slice(0, 3);
+  luminous(() => {
+    lwClock(g, ...dial('clock'), now);
+    lwPatinCompass(g, ...dial('compass'), v.heading);
+    lwTurnBank(g, ...dial('turn'), v.turnRate, v.sideG);
+    lwVario(g, ...dial('climb'), v.climb);
+    lwStripCompass(g, ...dial('stripCompass'), v.heading);
+    const [ax, ay, ar] = dial('altimeter');
+    lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013));
+    lwHorizon(g, ...dial('horizon'), v.bank, v.pitch);
+    lwAirspeed(g, ...dial('airspeed'), v.airspeed);
+  });
   ['Left', 'Right'].forEach((side, i) => {
     const e = v.engines[i] ?? v.engines[0];
     const [rx, ry, rr] = dial(`rpm${side}`);
-    redRing(g, rx, ry, rr);
-    luminous(() => lwRpm(g, rx, ry, rr, e.rpm));
     const [mx, my, mr] = dial(`ata${side}`);
     redRing(g, mx, my, mr);
-    luminous(() => lwAta(g, mx, my, mr, e.manifold));
-    // Fuel quantity in this wing's tanks, litres (D45).
-    const tank = v.fuelTanks[i];
-    ringGauge(g, ...dial(`tank${side}`), {
-      min: 0, max: 700, labels: [0, 300, 600], ring: '#c9ad2a', value: tank.litres, text: `FUEL ${side === 'Left' ? 'L' : 'R'}\nLiter`,
-    });
-    const [px, py, pr] = dial(`pitch${side}`);
-    luminous(() => lwPitchIndicator(g, px, py, pr, e.pitchClock));
-    // Oil (left half) and coolant (right half) temperatures, °C, normal ranges in green (D63).
     const scale = { min: 0, max: 130, step: 10, majorStep: 50 };
-    luminous(() => twoScaleGauge(g, ...dial(`temp${side}`), { ...scale, value: e.oil, normal: v.normalTemps.oil },
-      { ...scale, value: e.coolant, normal: v.normalTemps.coolant }, { labels: ['Öl', 'Kühl.'] }));
+    luminous(() => {
+      if (v.pressures) pressureGauge(g, ...dial(`pressure${side}`), v.pressures.fuel, v.pressures.oil, { ring: null });
+      lwRpm(g, rx, ry, rr, e.rpm, v.rpmLimit, RPM_110);
+      lwAta(g, mx, my, mr, e.manifold);
+      // Oil (left half) and coolant (right half) temperatures, °C, normal ranges in green (D63).
+      twoScaleGauge(g, ...dial(`temp${side}`), { ...scale, value: e.oil, normal: v.normalTemps.oil },
+        { ...scale, value: e.coolant, normal: v.normalTemps.coolant }, { labels: ['Öl', 'Kühl.'] });
+    });
   });
-
-  // Undercarriage display and flap position.
-  undercarriageDisplay(g, box(L.gear), r, v, GEAR_LABELS.title, GEAR_LABELS);
-  flapDisplay(g, box(L.flaps), r, v, 'KLAPPEN');
-  trimDisplay(g, box(L.trim), r, v);
-}
-
-function disc(g, x, y, radius) {
-  g.beginPath();
-  g.arc(x, y, radius, 0, Math.PI * 2);
-  g.fill();
+  // The fuel contents of the tank the selector chooses (front left, at 1), white (D105).
+  const tank = v.fuelSelected;
+  lwFuelGauge(g, ...dial('fuel'), tank ? tank.litres : 0, tank ? tank.capacity : 0);
 }

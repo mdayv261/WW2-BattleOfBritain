@@ -9,28 +9,33 @@ export { mount } from './lwStyle.js';
 export { lwAirspeed, lwAirspeedAngle, lwFineAltimeter, lwTurnBank } from './lwFlightDials.js';
 
 /**
- * Rev counter, 600-3,400 rpm, as photographed on the restored Bf 109 E panel (#17, D89): 600 at about half past seven,
- * 2,000 at twelve, 3,400 at about half past four, figures every 400 (6 to 34).
+ * Rev counter, U/min x 100. The Bf 109 E's (#17, D89): 600-3,400 rpm, 600 at about half past seven, 2,000 at twelve,
+ * 3,400 at about half past four, figures every 400 (6 to 34). The Bf 110's (#31, D106): 800-3,600, figures 8 to 36.
+ * `range` is { min, max } in rpm; the scale runs 315 degrees between them.
  */
-export const lwRpmAngle = (rpm) => (Math.max(500, Math.min(3500, rpm)) - 2000) * 0.1125 * DEG;
+export const RPM_109 = { min: 600, max: 3400 };
+export const RPM_110 = { min: 800, max: 3600 };
+export const lwRpmAngle = (rpm, { min, max } = RPM_109) =>
+  (Math.max(min - 100, Math.min(max + 100, rpm)) - (min + max) / 2) * (315 / (max - min)) * DEG;
 
 /** `limit` (rpm), when given, is marked in red at the edge of the scale. */
-export function lwRpm(g, x, y, r, rpm, limit = null) {
+export function lwRpm(g, x, y, r, rpm, limit = null, range = RPM_109) {
+  const angle = (v) => lwRpmAngle(v, range);
   lwFace(g, x, y, r);
   centred(g);
-  for (let v = 600; v <= 3400; v += 100) tick(g, x, y, r, lwRpmAngle(v), 0.95, v % 200 === 0 ? 0.8 : 0.87, v % 200 === 0 ? 2 : 1.2);
+  for (let v = range.min; v <= range.max; v += 100) tick(g, x, y, r, angle(v), 0.95, v % 200 === 0 ? 0.8 : 0.87, v % 200 === 0 ? 2 : 1.2);
   if (limit) {
     g.strokeStyle = '#d8402e';
-    tick(g, x, y, r, lwRpmAngle(limit), 1.0, 0.86, Math.max(2.5, r * 0.08));
+    tick(g, x, y, r, angle(limit), 1.0, 0.86, Math.max(2.5, r * 0.08));
     centred(g);
   }
   font(g, r * 0.19);
-  for (let v = 6; v <= 34; v += 4) g.fillText(String(v), ...at(x, y, lwRpmAngle(v * 100), r * 0.62));
+  for (let v = range.min / 100; v <= range.max / 100; v += 4) g.fillText(String(v), ...at(x, y, angle(v * 100), r * 0.62));
   font(g, r * 0.17, true);
   g.fillText('U/min', x, y + r * 0.3);
   font(g, r * 0.1);
   g.fillText('x 100', x, y + r * 0.45);
-  lwHand(g, x, y, r, lwRpmAngle(rpm));
+  lwHand(g, x, y, r, angle(rpm));
 }
 
 /** Manifold pressure, 0.6-1.8 ata: 0.6 at half past seven, 1.2 at twelve. */

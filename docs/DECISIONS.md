@@ -863,6 +863,8 @@ are not on the E panel. The panel takes up to half the screen height (the RAF pa
 
 ## D39. Bf 110 panel after the product owner's photograph; upright flap indicator on the Bf 109 (26 Oct 2026)
 
+**The Bf 110 panel superseded by D106 (2 Nov 2026).**
+
 **Bf 109 flap indicator:** at the product owner's request it now stands upright, 0° at the top and 40° at the
 bottom, with START and LANDUNG marked beside the track (`flapIndicatorVertical` in `src/ui/dials.js`). The RAF
 panels keep the horizontal one.
@@ -3054,3 +3056,53 @@ the fuel and oil pressure gauge stay white.
 
 The Luftwaffe dial drawings, shared with the Bf 109, take their colours from `paint`. `luminous(draw)` sets it to the
 luminous yellow for the dials drawn inside it and then restores it, so each panel chooses which of its dials are luminous.
+
+## D106. The Bf 110 C panel from the product owner's pictures (2 Nov 2026, plan approved by the product owner)
+
+**The pictures** (layout references only: redrawn in code, nothing copied):
+- **#31 ("BF110C panel.jpg"):** the panel's shape and instrument positions.
+- **#32 ("Bf110C cockpit view_1.jpg"):** details. Its large compass on the right is ignored, at the product owner's
+  request.
+
+**The product owner's answers:**
+- The ammunition counter of #32 (three tall windows with a red strip below) replaces #31's box of lamps and knobs at the
+  top.
+- The added flap indicator, OBEN/UNTEN lever with GEAR lamps and elevator trim display are removed. The panel's own
+  Landeklappe and Fahrwerk Ein/Aus switches work instead, and a trim indicator goes in a free space.
+
+**The panel** (`src/ui/bf110Panel.js`, fittings in `src/ui/bf110Fittings.js`), measured on #31 and traced on its
+outline, the turn and bank's column on the middle of the screen:
+
+| Area | Items |
+|---|---|
+| Top | Ammunition counter, red push button, "4 MG / 2 MG" strip, "L … R" instrument and strip, trim indicator, clock |
+| Upper row | Patin repeater compass, the "00 00" instrument, turn and bank, climb |
+| Middle | The "Umschalterstellung" strip |
+| Lower row | Strip compass in its recess, fine altimeter, horizon, airspeed |
+| Right, per engine | Fuel and oil pressure gauge, rev counter, manifold pressure in its red ring |
+| Bottom centre | Each engine's oil and coolant temperatures either side of the fuel gauge; four warning lamps; the radiator flap switches either side of the fuel tank selector |
+| Left | The EIN/AUS undercarriage lights, the Landeklappe and Fahrwerk switches, magneto switches, placards, the hydraulic pressure gauge, two knobs |
+
+**Working:**
+- **Instruments:** the flying and engine instruments and the clock.
+- **Ammunition counter:** the left MG 17 pair, both MG FF and the right MG 17 pair, each tape dropping as its guns fire.
+- **Flap and undercarriage switches:** Aus with the flaps or undercarriage selected down, Ein with them up.
+- **Undercarriage lights:** EIN red with it up, AUS green with it down, dark while it moves.
+- **Radiator switches:** Auf or Zu with key O.
+- **Trim indicator:** as the Bf 109's.
+- **Fuel gauge:** the front left main tank, the selector at 1: 375 L, full.
+
+The rest shows normal operation. All the dials but the fuel gauge carry luminous paint (D105).
+
+**Data added:** `fuel.main` 375 L and `fuel.reserve` 260 L for each wing (S24, S25).
+
+**Deviations, flagged:**
+- **Rev counters:** to 3,600 rpm as photographed (the Bf 109's run to 3,400). The red mark stays at the DB 601A's
+  2,400 rpm limit.
+- **Additions to #31:** the ammunition counter (from #32) and the trim indicator, which stands where #31 has a pasted
+  photograph.
+- **Tank selector:** fixed at 1.
+- **Unidentified, shown only:** the "00 00" instrument and the "L … R" instrument (a homing indicator; the game has no
+  radio aids).
+- **Removed:** the Bf 110's earlier grid panel (D39, D44, D46), its added displays (D34, D66, D74 on the Bf 110) and the
+  sizing matched to the Bf 109's old panel (D64).

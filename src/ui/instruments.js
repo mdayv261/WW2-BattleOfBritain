@@ -2,7 +2,7 @@
 // readings that drive them. The 3D cockpits come in Phase 7.
 //   Hurricane and Spitfire: the Spitfire I panel of the product owner's reference picture, src/ui/rafPanel.js (D86).
 //   Bf 109: the restored Bf 109 E panel of the product owner's pictures, src/ui/bf109Panel.js (D89).
-//   Bf 110: its own module, src/ui/bf110Panel.js (D39).
+//   Bf 110: the Bf 110 C panel of the product owner's pictures, src/ui/bf110Panel.js (D106).
 
 import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
@@ -11,7 +11,7 @@ import { BF109_PANEL, bf109Panel } from './bf109Panel.js';
 import { TRIM_SCALE } from './panelControls.js';
 import { pilotCard } from './speedCard.js';
 import { SPITFIRE_PANEL, rafPanel } from './rafPanel.js';
-import { BF110_LAYOUT, bf110Panel } from './bf110Panel.js';
+import { BF110_PANEL, bf110Panel } from './bf110Panel.js';
 
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
@@ -85,6 +85,11 @@ export function instrumentReadings(sim) {
     // Fuel in each tank, litres (fuel use is not modelled yet: full tanks): each wing's on the Bf 110, the one tank on
     // the Bf 109 (D89).
     fuelTanks: fuelTanks(ac),
+    // The Bf 110's fuel gauge: the tank its selector chooses, at 1 the front left main tank, full (D106).
+    fuelSelected: ac.fuel?.main ? { litres: ac.fuel.main * 1000, capacity: ac.fuel.main * 1000 } : null,
+    radiatorOpen: sim.input ? !!sim.input.radiator : false, // the Bf 110's radiator flap switches (D106)
+    // Each gun's rounds left and loaded, by gun, for the Bf 110's ammunition counter (D106).
+    rounds: Object.fromEntries((sim.armament ?? []).map((gun) => [gun.id, { rounds: gun.rounds, capacity: gun.capacity }])),
     gearSelected: sim.input ? !!sim.input.gear : plane.surfaces.gear > 0.5, // the undercarriage lever: down
     pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, plane.omega / UNIT.RPM) : null,
     // The RAF oil pressure gauge, lb/sq in (D86): the Merlin's normal pressure while it turns, rising from nothing as it
@@ -113,14 +118,9 @@ function fittedRadius(L, width, height) {
   return Math.min(66, (width * 0.96) / L.width, (height * (L.screenShare ?? 0.4)) / L.height);
 }
 
-/**
- * A panel's dial radius (screen pixels) on a screen `width` x `height`. A layout with `sizeAs` { width, height,
- * screenShare, factor } takes that panel's fitted radius times the factor, but never more than fits: the Bf 110 keeps
- * the size of the Bf 109's earlier panel (D64) until its own redraw (D89).
- */
+/** A panel's dial radius (screen pixels) on a screen `width` x `height`: as large as fits, capped. */
 export function panelRadius(L, width, height) {
-  const r = fittedRadius(L, width, height);
-  return L.sizeAs ? Math.min(r, fittedRadius(L.sizeAs, width, height) * L.sizeAs.factor) : r;
+  return fittedRadius(L, width, height);
 }
 
 /** Whether the panel hides: looking away (D58), after bailing out, or in the outside views (D97). */
@@ -165,7 +165,7 @@ export class InstrumentPanel {
     const v = instrumentReadings(sim);
     const width = window.innerWidth;
     const twin = sim.ac.id === 'bf110c4';
-    const L = v.raf ? SPITFIRE_PANEL : twin ? BF110_LAYOUT : BF109_PANEL;
+    const L = v.raf ? SPITFIRE_PANEL : twin ? BF110_PANEL : BF109_PANEL;
     const r = panelRadius(L, width, window.innerHeight);
     const height = L.height * r + 6;
     const g = this.context(width, height);
@@ -174,7 +174,7 @@ export class InstrumentPanel {
       g.fillRect((width - L.width * r) / 2, 0, L.width * r, height);
     }
     if (v.raf) rafPanel(g, width / 2, 0, r, v);
-    else if (twin) bf110Panel(g, width / 2, 0, r, v);
+    else if (twin) bf110Panel(g, width / 2, 3, r, v);
     else bf109Panel(g, width / 2, 6, r, v); // the margin above, for the coaming's lip over its top (D90)
   }
 }

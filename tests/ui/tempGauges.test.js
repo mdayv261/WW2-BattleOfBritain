@@ -1,21 +1,10 @@
 // Coolant and oil temperature gauges on the panels (product owner's placements, D63), and the readings that drive them.
 import { describe, it, expect } from 'vitest';
-import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
-import { BF110_LAYOUT } from '../../src/ui/bf110Panel.js';
+import { instrumentReadings } from '../../src/ui/instruments.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 
 describe('temperature gauges (D63)', () => {
-  it('Bf 110: a combined gauge below each engine\'s fuel gauge, inside the panel', () => {
-    const d = BF110_LAYOUT.dials;
-    for (const side of ['Left', 'Right']) {
-      expect(d[`temp${side}`][0]).toBe(d[`tank${side}`][0]);
-      expect(d[`temp${side}`][1]).toBeGreaterThan(d[`tank${side}`][1]);
-    }
-    const bottom = Math.max(...BF110_LAYOUT.outline.map(([, y]) => y));
-    expect(bottom).toBeGreaterThan((d.tempLeft[1] + d.tempLeft[3] - 334) / 30);
-  });
-
   it('reads each engine\'s temperatures, and the DB 601A\'s normal ranges for the green bands', () => {
     const sim = new Simulation(aircraftById.bf110c4, 'air');
     sim.plane.engines[1].heat.coolant = 101;
@@ -37,14 +26,5 @@ describe('temperature gauges (D63)', () => {
   it('has no ammunition counter: the Bf 109 E had none (product owner, D89)', () => {
     expect(instrumentReadings(new Simulation(aircraftById.bf109e4, 'air')).ammoCounters).toBeUndefined();
     expect(aircraftById.bf109e4.ammoCounter).toBeUndefined();
-  });
-
-  it('keeps the Bf 110\'s large dials the size of the Bf 109\'s earlier panel (D64) until its redraw (D89)', () => {
-    const before = { width: 14.6, height: 9.45, screenShare: 0.42 }; // the Bf 109's panel of D41-D88
-    for (const [w, h] of [[1548, 784], [1920, 1080], [1280, 720], [2560, 1259]]) {
-      const big109 = Math.min(66, (w * 0.96) / before.width, (h * before.screenShare) / before.height) * (23 / 25);
-      const big110 = panelRadius(BF110_LAYOUT, w, h) * (BF110_LAYOUT.dials.airspeed[2] / 30);
-      expect(big110, `${w}x${h}`).toBeCloseTo(big109, 6);
-    }
   });
 });

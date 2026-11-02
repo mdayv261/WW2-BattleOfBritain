@@ -269,7 +269,7 @@ export const trimPointer = (degrees) => 0.5 - Math.max(-1, Math.min(1, degrees /
  * (neutral) in the middle, + (nose up) at the top and − (nose down) at the bottom, and a white pointer moving with the
  * trim on the trim display's ±15° scale (D74).
  */
-function trimIndicator(g, b, s, v) {
+export function trimIndicator(g, b, s, v) {
   plain(g, b, s, '#2a2d30');
   const w = { x: b.x + b.w * 0.42, y: b.y + b.h * 0.08, w: b.w * 0.4, h: b.h * 0.84 };
   g.fillStyle = '#16140f';

@@ -1,6 +1,6 @@
-// The undercarriage indicators' words (product owner, D66): the Bf 110's panel reads OBEN (up) and UNTEN (down) and is
-// labelled GEAR; the RAF panels keep UP, DOWN and UNDERCARRIAGE; the Bf 109's has the real selector's words (D89). Each panel is drawn on a stand-in canvas that records
-// the text it writes.
+// The undercarriage indicators' words (product owner, D66): the RAF panels keep UP, DOWN and UNDERCARRIAGE; the Bf
+// 109's (D89) and the Bf 110's (D106) have their real switches' words, Ein and Aus, in place of the added OBEN, UNTEN and
+// GEAR. Each panel is drawn on a stand-in canvas that records the text it writes.
 import { describe, it, expect } from 'vitest';
 import { bf109Panel } from '../../src/ui/bf109Panel.js';
 import { bf110Panel } from '../../src/ui/bf110Panel.js';
@@ -40,11 +40,11 @@ describe('undercarriage indicator words (D66)', () => {
     for (const word of ['OBEN', 'UNTEN', 'GEAR', 'DOWN']) expect(g.texts, word).not.toContain(word);
   });
 
-  it('Bf 110: OBEN, UNTEN and GEAR, and no EIN, AUS, UP, DOWN or FAHRWERK', () => {
+  it('Bf 110: the Fahrwerk Ein/Aus switch and EIN/AUS lights since D106, not OBEN, UNTEN or GEAR', () => {
     const g = recordingContext();
     bf110Panel(g, 500, 0, 40, readings('bf110c4'));
-    for (const word of ['OBEN', 'UNTEN', 'GEAR']) expect(g.texts, word).toContain(word);
-    for (const word of ['EIN', 'AUS', 'UP', 'DOWN', 'FAHRWERK']) expect(g.texts, word).not.toContain(word);
+    for (const word of ['Fahrwerk', 'Ein', 'Aus', 'EIN', 'AUS']) expect(g.texts, word).toContain(word);
+    for (const word of ['OBEN', 'UNTEN', 'GEAR', 'UP', 'DOWN']) expect(g.texts, word).not.toContain(word);
   });
 
   it('RAF: still UP, DOWN and UNDERCARRIAGE', () => {

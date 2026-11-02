@@ -1,10 +1,10 @@
 // The elevator trim display (product owner, D74): an upright ±15° scale graduated every degree, NOSE UP at the top and
-// NOSE DOWN at the bottom; left of the flaps on the RAF panels and right of the Bf 110's turn and bank. Taken off the
-// Bf 109's panel with its redraw (D89).
+// NOSE DOWN at the bottom; left of the flaps on the RAF panels. Taken off the Bf 109's panel with its redraw (D89) and
+// the Bf 110's with its redraw (D106), which show the trim on a small +/0/- indicator instead.
 import { describe, it, expect } from 'vitest';
 import { instrumentReadings } from '../../src/ui/instruments.js';
 import { BF109_PANEL, bf109Panel } from '../../src/ui/bf109Panel.js';
-import { BF110_LAYOUT, bf110Panel } from '../../src/ui/bf110Panel.js';
+import { BF110_PANEL, bf110Panel } from '../../src/ui/bf110Panel.js';
 import { trimDisplay, trimLayout, trimY, TRIM_SCALE, TRIM_WORDS } from '../../src/ui/panelControls.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
@@ -90,12 +90,11 @@ describe('elevator trim display (D74)', () => {
     expect(g.texts.some((t) => t.t === 'ELEVATOR')).toBe(false);
   });
 
-  it('Bf 110: right of the turn and bank, inside the panel', () => {
-    const [tx, ty, , half] = BF110_LAYOUT.dials.turn;
-    expect(BF110_LAYOUT.trim.from[0]).toBeGreaterThan(tx + half);
-    expect(BF110_LAYOUT.trim.from[1]).toBe(ty - half);
+  it('Bf 110: the trim indicator (+ / 0 / -) since D106, not the trim display', () => {
+    expect(BF110_PANEL.boxes.trim).toBeDefined();
     const g = recordingContext();
     bf110Panel(g, 500, 0, 40, instrumentReadings(new Simulation(aircraftById.bf110c4, 'air')));
-    expect(g.texts.some((t) => t.t === TRIM_WORDS.title)).toBe(true);
+    expect(g.texts.some((t) => t.t === TRIM_WORDS.title)).toBe(false);
+    expect(g.texts.some((t) => t.t === '+')).toBe(true);
   });
 });

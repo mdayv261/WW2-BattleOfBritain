@@ -18,6 +18,20 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C panel from the product owner's pictures (2 Nov 2026)
+
+**Done** (D106): the Bf 110 C panel redrawn from #31 and #32, on its own outline. Working:
+- the ammunition counter;
+- the Landeklappe and Fahrwerk switches;
+- the EIN/AUS lights;
+- the radiator switches;
+- the trim indicator;
+- the fuel gauge (front left tank).
+
+The rev counters read to 3,600. The added flap, undercarriage and trim displays are gone.
+
+**Left:** the Bf 110's cockpit view (frame, Revi), from the product owner's pictures.
+
 ## Luftwaffe luminous dials (2 Nov 2026)
 
 **Done** (D105): the Bf 110's and Bf 109's dials with light yellow (radium luminous) markings and hands: all but the

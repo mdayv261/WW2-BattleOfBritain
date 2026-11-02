@@ -135,7 +135,7 @@ export const bf110c4 = {
   },
   // Fuel in each wing (m^3): main and reserve tanks together, for the cockpit's fuel quantity gauges. Fuel use is not
   // modelled yet, so the gauges show full tanks.
-  fuel: { wingTank: 0.635 },
+  fuel: { wingTank: 0.635, main: 0.375, reserve: 0.26 }, // each wing; main and reserve tanks (S24), the panel's gauge (D106)
   // The rear gunner's MG 15 (Phase 6, D77-D78): pivot (m, body axes), arc (rad, written in degrees: azimuth from the
   // nose, + right, aft = 180; elevation + up), drums (the one on the gun and the spares). S25: about 30° either side of
   // the centre line, up to 60°, nothing below the horizontal; 10 spare 75-round magazines. Position an estimate; the
