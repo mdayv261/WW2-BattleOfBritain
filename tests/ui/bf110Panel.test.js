@@ -1,7 +1,7 @@
 // The Bf 110 C panel after the product owner's pictures (D106): the variometer's scale; every dial, plate and knob inside
 // the traced outline, none touching; the panel below the guns' line on every screen; each engine on its own gauges; the
 // ammunition counter, the Ein/Aus switches and lights, the radiator switches, the trim indicator, the rev counter to
-// 3,600 rpm and the fuel gauge working; the old added displays gone; the luminous dials (D105); and the flying
+// 3,600 rpm and the fuel gauge working (the trim on the Spitfire's gauge since D110); the old added displays gone; the luminous dials (D105); and the flying
 // instruments as the product owner arranged them (D108).
 import { describe, it, expect } from 'vitest';
 import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
@@ -134,7 +134,7 @@ describe('Bf 110 C panel instruments (D106)', () => {
   it('letters the panel\'s words; the old flap, undercarriage and trim displays are gone', () => {
     const words = new Set(draw().texts.map((t) => t.s));
     for (const w of ['Landeklappe', 'Fahrwerk', 'Ein', 'Aus', 'EIN', 'AUS', 'Umschalter', 'Schalter f. Kühlkl.', 'Zu', 'Auf',
-      '+', '0', '−', 'Liter']) {
+      'NOSE', 'UP', 'DOWN', '0', 'Liter']) {
       expect(words.has(w), w).toBe(true);
     }
     for (const w of ['OBEN', 'UNTEN', 'GEAR', 'KLAPPEN', 'ELEVATOR TRIM', 'TAKEOFF']) expect(words.has(w), w).toBe(false);

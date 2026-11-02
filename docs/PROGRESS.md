@@ -18,6 +18,11 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C trim gauge (3 Nov 2026)
+
+**Done** (D110): the Bf 110's trim indicator is now the Spitfire's trim gauge, at the clock's size. It is not original
+to the Bf 110; the product owner chose it.
+
 ## Bf 110 C airscrew pitch indicators (2 Nov 2026)
 
 **Done** (D109): the two gauges above the rev counters are now the Bf 109's airscrew pitch indicators, one for each

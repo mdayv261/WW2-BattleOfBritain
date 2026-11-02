@@ -2,15 +2,14 @@
 // cockpit): the light grey-green plate on its traced outline; the ammunition counter (three tall windows, a white tape
 // in each dropping as its guns fire: the left MG 17 pair, both MG FF, the right MG 17 pair); the EIN/AUS undercarriage
 // lights (EIN red with it up, AUS green with it down, as the Bf 109's, D95); the Landeklappe and Fahrwerk Ein/Aus
-// switches following the flaps and the undercarriage; the radiator flap switches following the radiator; the elevator
-// trim indicator (as the Bf 109's, D95); and, shown only, the red push button, the magneto switches, placards, the
-// hydraulic pressure gauge, knobs, warning lamps and the fuel tank selector at 1.
+// switches following the flaps and the undercarriage; the radiator flap switches following the radiator; and, shown
+// only, the red push button, the magneto switches, placards, the hydraulic pressure gauge, knobs, warning lamps and the
+// fuel tank selector at 1.
 
 import { placard } from './luftwaffeDials.js';
 import { DEG, at as polar, font, centred, tick, lwFace, lwHand, screw } from './lwStyle.js';
 import { lens, text } from './panelParts.js';
 import { BLACK, INK, centre, plain, roundKnob } from './bf109Fittings.js';
-import { trimIndicator } from './bf109Lower.js';
 
 const PLATE = { top: '#a2adab', foot: '#8f9a98', edge: '#3a4140' };
 
@@ -36,7 +35,6 @@ export function drawBf110Fittings(g, at, L, v) {
   outlinePlate(g, at, L.outline);
   ammoCounter(g, B('ammo'), s, ammoFractions(v));
   pushButton(g, ...at.knob(L.knobs.redButton));
-  trimIndicator(g, B('trim'), s, v);
   gearLights(g, B('lights'), s, v);
   einAus(g, at, L.switches.flaps, switchPosition.flaps(v), s);
   einAus(g, at, L.switches.gear, switchPosition.gear(v), s);

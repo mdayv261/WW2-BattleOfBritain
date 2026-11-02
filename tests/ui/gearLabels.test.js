@@ -44,7 +44,9 @@ describe('undercarriage indicator words (D66)', () => {
     const g = recordingContext();
     bf110Panel(g, 500, 0, 40, readings('bf110c4'));
     for (const word of ['Fahrwerk', 'Ein', 'Aus', 'EIN', 'AUS']) expect(g.texts, word).toContain(word);
-    for (const word of ['OBEN', 'UNTEN', 'GEAR', 'UP', 'DOWN']) expect(g.texts, word).not.toContain(word);
+    // UP and DOWN appear only on the Spitfire trim gauge's NOSE UP / NOSE DOWN (D110).
+    for (const word of ['OBEN', 'UNTEN', 'GEAR']) expect(g.texts, word).not.toContain(word);
+    expect(g.texts.filter((t) => t === 'UP' || t === 'DOWN')).toHaveLength(2);
   });
 
   it('RAF: still UP, DOWN and UNDERCARRIAGE', () => {

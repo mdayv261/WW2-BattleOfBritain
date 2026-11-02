@@ -54,7 +54,7 @@ export function drawRafDials(g, at, L, v, now) {
   mounted('radTemp', (x, y, f) => radTempGauge(g, x, y, f, v));
   mounted('clock', (x, y, f) => clock(g, x, y, f, now));
   knob(g, ...at.knob(L.knobs.clockSet), '#3a3a3a');
-  mounted('trim', (x, y, f) => trimGauge(g, x, y, f, v, at));
+  mounted('trim', (x, y, f) => rafTrimGauge(g, x, y, f, v, at));
   mounted('brakes', (x, y, f) => brakeGauge(g, x, y, f));
   mounted('oxygenDelivery', (x, y, f) => oxygenDial(g, x, y, f, DELIVERY_SCALE, 8, 'delivery'), { screws: false });
   mounted('oxygenSupply', (x, y, f) => oxygenDial(g, x, y, f, SUPPLY_SCALE, 1, 'supply'), { screws: false });
@@ -247,8 +247,11 @@ function clock(g, x, y, f, now) {
 /** The trim gauge's needle angle (rad, from pointing right, + nose down) for a trim setting in display degrees. */
 export const trimNeedle = (trimDegrees) => (-Math.max(-15, Math.min(15, trimDegrees)) / 15) * TRIM_SWING * (Math.PI / 180);
 
-/** The trim gauge: a needle pivoted at the left over an arc on the right, NOSE UP above and NOSE DOWN below. */
-function trimGauge(g, x, y, f, v, at) {
+/**
+ * The trim gauge: a needle pivoted at the left over an arc on the right, NOSE UP above and NOSE DOWN below. Also on the
+ * Bf 110's panel (product owner, D110).
+ */
+export function rafTrimGauge(g, x, y, f, v, at) {
   const px = x - f * 0.75;
   const py = y + f * 0.03;
   const R = f * 1.63;

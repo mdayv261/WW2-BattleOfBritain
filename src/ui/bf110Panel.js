@@ -4,7 +4,8 @@
 // indicator's column (where the Revi stands above it in #32, the middle of the screen) and the panel's top edge.
 //   Top: the ammunition counter (three tall windows, as #32, in place of #31's box of lamps and knobs: product owner),
 //   a red push button, the Revi standing on the panel in the middle (in place of the "L ... R" instrument and the strip
-//   under it, D107), the elevator trim indicator (D106, in place of a pasted photograph) and the clock.
+//   under it, D107), the Spitfire's elevator trim gauge (product owner, D110: not original to the Bf 110; where #31 has
+//   a pasted photograph) and the clock.
 //   The flying instruments as the product owner arranged them (D108), each row's bottoms aligned: in the upper row the
 //   repeater compass (Patin), turn and bank and climb indicator (under the Revi); in the lower row the strip compass,
 //   the artificial horizon (the Patin compass's size), the airspeed indicator and the fine altimeter. The "00 00"
@@ -19,7 +20,7 @@
 //   Left: the EIN/AUS undercarriage lights, the Landeklappe (flap) and Fahrwerk (undercarriage) switches, the magneto
 //   switches, placards, the hydraulic pressure gauge and two knobs.
 // Working: the flying and engine instruments, the clock, the ammunition counter, the flap and undercarriage switches
-// and lights, the radiator switches, the trim indicator and the fuel gauge (the tank the selector chooses, full: fuel
+// and lights, the radiator switches, the trim gauge and the fuel gauge (the tank the selector chooses, full: fuel
 // use is not modelled). The rest shows normal operation. The dials carry radium luminous paint, but for the fuel gauge
 // (D105).
 
@@ -33,6 +34,9 @@ import { redRing } from './bf110Dials.js';
 import { millibarWindow } from './altimeters.js';
 import { BF109_PANEL, BF109_PX, redBezel, settingKnob } from './bf109Panel.js';
 import { REVI, shortRevi } from './reviParts.js';
+import { SPITFIRE_PANEL } from './rafPanel.js';
+import { rafTrimGauge } from './rafPanelDials.js';
+import { bezel, dialScrews } from './panelParts.js';
 
 const PX = 30; // picture pixels per dial radius: the big dials' faces
 const AXIS = 428; // the turn and bank indicator's column on #31: the middle of the screen
@@ -123,7 +127,7 @@ export const BF110_PANEL = {
   ownBackground: true,
   outline: OUTLINE,
   dials: {
-    clock: [583, 112, 20, 24],
+    clock: [583, 112, 20, 24], trim: [510, 112, 20, 24], // the Spitfire's trim gauge at the clock's size (D110)
     compass: PATIN, ...UPPER, climb: CLIMB, ...LOWER,
     pitchLeft: [585, 175, 18, 22], pitchRight: [643, 175, 18, 22], // the photographed gauges' size: the Bf 109's won't fit (D109)
     rpmLeft: [589, 243, 29, 33], rpmRight: [660, 243, 29, 33],
@@ -134,7 +138,6 @@ export const BF110_PANEL = {
   },
   boxes: {
     ammo: [257, 62, 364, 125], // moved clear of the Revi (D107)
-    trim: [492, 82, 528, 150],
     lights: [145, 152, 190, 200], flapLabel: [100, 228, 152, 240], gearLabel: [86, 345, 146, 357],
     magnetos: [86, 256, 148, 333], placard: [152, 258, 190, 322],
   },
@@ -169,7 +172,7 @@ export function placer(x0, y0, r) {
 }
 
 /** The dials drawn by the fittings (src/ui/bf110Fittings.js), not given a mounting here. */
-const FITTED = ['hydraulic', 'radiatorLeft', 'radiatorRight', 'selector'];
+const FITTED = ['trim', 'hydraulic', 'radiatorLeft', 'radiatorRight', 'selector'];
 
 /** The Bf 109's instruments with its red bezels (D107). */
 const RED_BEZELS = ['altimeter', 'airspeed'];
@@ -186,6 +189,11 @@ export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
     else mount(g, x, y, outer);
   }
   for (const name of ['setAltimeter', 'setAirspeed']) settingKnob(g, ...at.knob(L.knobs[name]));
+  // The Spitfire's trim gauge in its RAF bezel with four screws, as on its panel, at the clock's size (D110).
+  const [tx, ty, tf, to] = at.dial(L.dials.trim);
+  bezel(g, tx, ty, tf, to);
+  dialScrews(g, tx, ty, to, (to * 8) / SPITFIRE_PANEL.dials.trim[3]); // screws in proportion, as the Spitfire's
+  rafTrimGauge(g, tx, ty, tf, v);
   const dial = (name) => at.dial(L.dials[name]).slice(0, 3);
   luminous(() => {
     lwClock(g, ...dial('clock'), now);

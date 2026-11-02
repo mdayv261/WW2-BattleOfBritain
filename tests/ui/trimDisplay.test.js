@@ -1,11 +1,13 @@
 // The elevator trim display (product owner, D74): an upright ±15° scale graduated every degree, NOSE UP at the top and
 // NOSE DOWN at the bottom; left of the flaps on the RAF panels. Taken off the Bf 109's panel with its redraw (D89) and
-// the Bf 110's with its redraw (D106), which show the trim on a small +/0/- indicator instead.
+// the Bf 110's with its redraw (D106), which showed the trim on a small +/0/- indicator, now the Spitfire's trim gauge
+// (product owner, D110).
 import { describe, it, expect } from 'vitest';
 import { instrumentReadings } from '../../src/ui/instruments.js';
 import { BF109_PANEL, bf109Panel } from '../../src/ui/bf109Panel.js';
 import { BF110_PANEL, bf110Panel } from '../../src/ui/bf110Panel.js';
 import { trimDisplay, trimLayout, trimY, TRIM_SCALE, TRIM_WORDS } from '../../src/ui/panelControls.js';
+import { trimNeedle } from '../../src/ui/rafPanelDials.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 import { Keyboard } from '../../src/input/keyboard.js';
@@ -90,11 +92,15 @@ describe('elevator trim display (D74)', () => {
     expect(g.texts.some((t) => t.t === 'ELEVATOR')).toBe(false);
   });
 
-  it('Bf 110: the trim indicator (+ / 0 / -) since D106, not the trim display', () => {
-    expect(BF110_PANEL.boxes.trim).toBeDefined();
+  it('Bf 110: the Spitfire\'s trim gauge at the clock\'s size since D110, not the trim display or the +/0/- indicator', () => {
+    expect(BF110_PANEL.boxes.trim).toBeUndefined();
+    expect(BF110_PANEL.dials.trim.slice(2)).toEqual(BF110_PANEL.dials.clock.slice(2));
     const g = recordingContext();
     bf110Panel(g, 500, 0, 40, instrumentReadings(new Simulation(aircraftById.bf110c4, 'air')));
     expect(g.texts.some((t) => t.t === TRIM_WORDS.title)).toBe(false);
-    expect(g.texts.some((t) => t.t === '+')).toBe(true);
+    expect(g.texts.some((t) => t.t === '+')).toBe(false);
+    expect(g.texts.filter((t) => t.t === 'NOSE')).toHaveLength(2);
+    expect(trimNeedle(15)).toBeCloseTo(-trimNeedle(-15), 9); // the needle swings with the trim, up for nose up
+    expect(trimNeedle(15)).toBeLessThan(0);
   });
 });

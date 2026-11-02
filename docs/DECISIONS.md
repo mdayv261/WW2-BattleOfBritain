@@ -3201,3 +3201,20 @@ panel. They were the fuel and oil pressure gauges.
   sloping top-right edge.
 - **Fuel and oil pressure gauges:** no longer on the Bf 110 panel. They showed normal operation only, since the pressures
   are not modelled (D63).
+
+## D110. The Spitfire's trim gauge on the Bf 110 C panel (3 Nov 2026, plan approved by the product owner)
+
+**The request:**
+- Replace the Bf 110's elevator trim indicator (the small +/0/− strip taken from the Bf 109, D106) with the Spitfire's
+  trim dial. The product owner noted it is "not strictly original but it looks more authentic".
+- Then: reduce it to the clock's size.
+
+**The change** (`src/ui/bf110Panel.js`):
+- **Drawing:** the Spitfire's trim gauge (`rafTrimGauge`, src/ui/rafPanelDials.js, unchanged for the Spitfire): the
+  needle pivoted on the left over an arc, with NOSE UP above and NOSE DOWN below.
+- **Finish:** its RAF bezel, with its four screws in proportion.
+- **Reading:** the Bf 110's trim (`trimDegrees`, keys T and G).
+- **Size and place:** the clock's size (face 20, mounting 24 on #31's pixels), level with the clock at (510, 112) on
+  #31, where the trim strip stood.
+
+**Flagged:** an RAF instrument with English words on a Luftwaffe panel (the product owner's choice).
