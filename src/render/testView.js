@@ -48,7 +48,7 @@ export class TestView {
     const shift = front ? this.screwShift(width, height) : 0;
     this.aircraft.screws.forEach((s, i) => {
       s.group.position.z = this.screwHome[i] + shift;
-      s.spinner.visible = !front; // with the nose hidden, the spinner alone would float ahead of the panel
+      s.spinner.visible = !front || !this.noseHidden; // with the nose hidden, the spinner alone would float ahead of the panel
     });
   }
 
@@ -70,14 +70,16 @@ export class TestView {
     this.aircraft = buildAircraftModel(ac, DESIGNS[ac.id]);
     this.model = this.aircraft.group;
     this.cockpit = buildCockpitFrame(ac);
-    // The Bf 109's, Hurricane's and Spitfire's front frames are drawn with their panels (D90, D99).
-    this.frameDrawn = ['bf109e4', 'hurricane', 'spitfire'].includes(ac.id);
+    // The Bf 109's, Bf 110's, Hurricane's and Spitfire's front frames are drawn with their panels (D90, D99, D117).
+    this.frameDrawn = ['bf109e4', 'bf110c4', 'hurricane', 'spitfire'].includes(ac.id);
     this.fuselageOffset = ac.id === 'bf109e4' ? FUSELAGE_CENTRE_OFFSET : 0; // the RAF's GM 2 is on the centre line
     // The guns' line above the middle of the screen for the Bf 109 (D93), the RAF fighters (D101) and the Bf 110 (D107).
     this.rig.aim = { bf109e4: BF109_AIM, bf110c4: BF110_AIM }[ac.id] ?? RAF_AIM[ac.id] ?? 0.5;
     this.frontView = false;
     // The wings hide in the front view; the airscrew stays, its arc spinning ahead of the panel (D97).
-    this.frontHidden = [this.model.getObjectByName('wingLeft'), this.model.getObjectByName('wingRight')];
+    // The Bf 110's wings and engines stay, seen beside its drawn frame (D117).
+    this.frontHidden = ac.id === 'bf110c4' ? [] : [this.model.getObjectByName('wingLeft'), this.model.getObjectByName('wingRight')];
+    this.noseHidden = ac.id !== 'bf110c4'; // its airscrews are on the engines, not ahead of the panel
     this.lost = new Set();
     this.screwHome = this.aircraft.screws.map((s) => s.group.position.z);
     this.eyeX = ac.eye.x;

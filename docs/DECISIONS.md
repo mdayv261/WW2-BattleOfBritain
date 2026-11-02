@@ -3345,3 +3345,36 @@ gauges (D63), which these thermometers replace.
 **Flagged:**
 - three of the card's figures are the flight model's, not a source's;
 - the card's lettering is English, in the product owner's words, on a Luftwaffe panel.
+
+## D117. The Bf 110 C's drawn cockpit view from the product owner's photograph (3 Nov 2026, plan approved by the product owner)
+
+**The request:** redesign the Bf 110 C's cockpit view, taking the Bf 109's drawn windscreen, fuselage frames and coaming
+(D90, D103, D104) as the starting point and replicating the product owner's photograph "Bf110C cockpit view_1.jpg"
+(#32). The photograph is a layout reference only; everything is redrawn in code.
+
+**The frame** (`src/ui/bf110Frame.js`):
+- **Scale:** sizes are in the Bf 110 panel's picture pixels, measured on #32 at about 1.12 times its pixels from the
+  Revi's axis.
+- **Outer canopy frame:** the flat top bar with rounded corners. Its side posts lean out going down (0.16, as #32), as
+  the Bf 109's hood sides and fuselage frames do, and pass behind the panel to the foot of the screen.
+- **Cross bar:** spans between the outer posts, as the Bf 109's. Below it, the armoured windscreen's posts lean in
+  going down (0.14), with a ledge across their feet, two knobs, and gussets in the upper corners.
+- **Shown only:** two loop grab handles behind the top bar, and the bracket with the red-knobbed handle.
+- **Coaming:** two grey padded crash pads, one either side of the Revi, with a stitched seam. They lie along the
+  panel's top and shoulders, as the Bf 109's coaming lip, thick by the Revi and thinner outward.
+- **Cockpit sides:** dark round the panel between the outer posts (drawn on the panel's canvas).
+- **Drawing:** all the bars are welded as D104 and dark grey as the Bf 109's.
+
+**Placement:**
+- The frame is placed on the panel. The windscreen is raised above #32's proportions, so its cross bar clears the
+  Revi's glass, which is drawn larger than #32's. The guns' line stays at 0.41 of the screen (D107).
+- The Revi is drawn in front of the frame, as before.
+
+**3D view** (`src/render/testView.js`):
+- Looking ahead, the 3D cockpit frame hides and the drawn one shows; looking round, the 3D frame returns.
+- Unlike the Bf 109, the Bf 110's wings, engines and spinning airscrews stay in view beside the frame.
+
+**Flagged:**
+- the windscreen is taller relative to the panel than in #32;
+- the side posts are straight;
+- the crash pads follow the panel's outline, not #32's straighter slopes.

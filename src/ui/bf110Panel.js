@@ -39,6 +39,7 @@ import { SPITFIRE_PANEL } from './rafPanel.js';
 import { rafTrimGauge } from './rafPanelDials.js';
 import { bezel, dialScrews } from './panelParts.js';
 import { PLACARD_FONT, speedPlacard } from './bf110Placards.js';
+import { drawBf110Interior } from './bf110Frame.js';
 
 const PX = 30; // picture pixels per dial radius: the big dials' faces
 const TOP = 57; // the panel's top edge
@@ -216,6 +217,9 @@ export const BF110_PANEL = {
 /** The Bf 110's Revi for reviPlacement (src/ui/reviSight.js): on its guns' line, at the Bf 109's size, no cable (D107). */
 export const BF110_REVI = { panel: BF110_PANEL, aim: BF110_AIM, scale: BF109_SCALE, parts: REVI_110, cable: false };
 
+/** The panel's top edge on a screen `height` px high at dial radius r, as InstrumentPanel draws it (3 px down its canvas). */
+export const panelTop110 = (height, r) => height - (BF110_PANEL.height * r + 6) + 3;
+
 /** A layout entry in canvas pixels, given the axis at the panel's top (x0, y0) and dial radius r. */
 export function placer(x0, y0, r) {
   const xy = ([px, py]) => {
@@ -243,6 +247,7 @@ const RED_BEZELS = ['altimeter', 'airspeed'];
 export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
   const L = BF110_PANEL;
   const at = placer(x0, y0, r);
+  drawBf110Interior(g, at); // the cockpit's sides round the panel, below the drawn front frame (D117)
   drawBf110Fittings(g, at, L, v);
   for (const [name, entry] of Object.entries(L.dials)) {
     if (FITTED.includes(name)) continue;

@@ -16,7 +16,8 @@ import { roundRect, text } from './panelParts.js';
 import { drawReticle } from './reticle.js';
 import { reviPlacement, drawRevi } from './reviSight.js';
 import { BF109_PANEL, placer, plateTop } from './bf109Panel.js';
-import { BF110_REVI } from './bf110Panel.js';
+import { BF110_PANEL, BF110_REVI, panelTop110, placer as placer110 } from './bf110Panel.js';
+import { drawBf110Frame } from './bf110Frame.js';
 import { drawFrontFrame } from './bf109Frame.js';
 import { RAF_FRAMES, RAF_AIM, drawRafFrame } from './rafFrame.js';
 import { placer as rafPlacer } from './rafPanel.js';
@@ -291,7 +292,12 @@ export class ReflectorSight {
       if (aim) drawReticle(g, aim.x, aim.y, aim.ring, reticleStyle(ac));
       return;
     }
-    if (ac?.id === 'bf110c4') drawRevi(g, reviPlacement(width, height, BF110_REVI), aim); // on its panel (D107)
+    if (ac?.id === 'bf110c4') {
+      // The Bf 110's front frame round its panel (D117), then its Revi on the panel (D107).
+      const r = panelRadius(BF110_PANEL, width, height);
+      drawBf110Frame(g, placer110(width / 2, panelTop110(height, r), r), width, height);
+      drawRevi(g, reviPlacement(width, height, BF110_REVI), aim);
+    }
     else if (ac && squareOnSight(ac) === 'Revi') {
       // The Bf 109's front frame on the panel's top, then the Revi in front of it (D90).
       const r = panelRadius(BF109_PANEL, width, height);

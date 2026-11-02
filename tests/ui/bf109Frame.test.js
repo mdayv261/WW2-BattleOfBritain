@@ -276,7 +276,7 @@ describe('the 3D cockpit while the front frame shows (D90)', () => {
     expect(s.aircraft.screws[0].group.position.z).toBe(0);
   });
 
-  it('keeps a lost wing hidden, and leaves the Bf 110\'s view as it was (the RAF fighters\' have frames too, D99)', () => {
+  it('keeps a lost wing hidden; the Bf 110\'s drawn frame hides its 3D frame, not its wings, engines or spinners (D117)', () => {
     const v = view('bf109e4');
     v.lost = new Set(['wingLeft']);
     v.showSight2D(false);
@@ -285,7 +285,11 @@ describe('the 3D cockpit while the front frame shows (D90)', () => {
     const s = view('bf110c4');
     s.showSight2D(true);
     s.showParts(true);
-    expect(s.cockpit.visible).toBe(true);
+    expect(s.cockpit.visible).toBe(false); // the drawn frame instead
     expect(s.model.getObjectByName('wingLeft').visible).toBe(true);
+    expect(s.aircraft.screws.every((sc) => sc.spinner.visible)).toBe(true);
+    s.showSight2D(false); // looking round
+    s.showParts(true);
+    expect(s.cockpit.visible).toBe(true);
   });
 });

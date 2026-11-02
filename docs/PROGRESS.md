@@ -18,6 +18,15 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C cockpit view (3 Nov 2026)
+
+**Done** (D117): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code.
+- **Frame:** the outer canopy frame with grab handles and the red knob, the armoured windscreen and its posts, crash
+  pads either side of the Revi, and the dark cockpit sides.
+- **3D:** the 3D frame hides looking ahead; the wings, engines and airscrews stay in view.
+
+**Left:** the product owner's review of the cockpit view, then Phase 6 checkpoint 5 after a plan.
+
 ## Bf 110 C speed card and flap placard (3 Nov 2026)
 
 **Done** (D116):
@@ -26,8 +35,6 @@ Read this at the start of every session.
 - the pitch indicators at the clock's size.
 
 The product owner considers the Bf 110 C panel finished (3 Nov 2026).
-
-**Left:** the rest of the Bf 110's cockpit view (its frame), then Phase 6 checkpoint 5 after a plan.
 
 ## Bf 110 C coolant thermometers (3 Nov 2026)
 
