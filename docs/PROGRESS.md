@@ -18,6 +18,16 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 109 instruments and Revi on the Bf 110 C panel (2 Nov 2026)
+
+**Done** (D107):
+- the Bf 110's airspeed indicator, altimeter, turn and bank and strip compass are now the Bf 109's, at its size on
+  screen, with red bezels and setting knobs;
+- the "L … R" instrument is replaced by the Bf 109's Revi, its body 20% shorter, standing above the turn and bank;
+- the guns' line is raised to 0.41 of the screen to meet the Revi's glass.
+
+**Left:** the rest of the Bf 110's cockpit view (its frame), when the product owner asks.
+
 ## Bf 110 C panel from the product owner's pictures (2 Nov 2026)
 
 **Done** (D106): the Bf 110 C panel redrawn from #31 and #32, on its own outline. Working:

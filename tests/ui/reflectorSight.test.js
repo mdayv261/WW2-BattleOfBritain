@@ -102,17 +102,18 @@ describe('when the GM 2 shows (D87)', () => {
   const sim = (id, jumper = null) => ({ ac: aircraftById[id], playerJumper: jumper });
   const rig = (inCockpit, lookingAway) => ({ inCockpit, lookingAway });
 
-  it('shows in the RAF fighters\' and the Bf 109\'s cockpits looking ahead; not looking away, outside, in the Bf 110 or after bailing out', () => {
+  it('shows in the RAF fighters\', the Bf 109\'s and the Bf 110\'s cockpits looking ahead; not looking away, outside or after bailing out', () => {
     expect(showSight(sim('spitfire'), rig(true, false))).toBe(true);
     expect(showSight(sim('hurricane'), rig(true, false))).toBe(true);
     expect(showSight(sim('bf109e4'), rig(true, false))).toBe(true); // the Revi (D89)
     expect(showSight(sim('spitfire'), rig(true, true))).toBe(false);
     expect(showSight(sim('spitfire'), rig(false, false))).toBe(false);
     expect(showSight(sim('bf109e4'), rig(true, true))).toBe(false);
-    expect(showSight(sim('bf110c4'), rig(true, false))).toBe(false); // keeps its 3D Revi until its redraw
+    expect(showSight(sim('bf110c4'), rig(true, false))).toBe(true); // its Revi on its panel (D107)
     expect(showSight(sim('spitfire', {}), rig(true, false))).toBe(false);
     expect(squareOnSight(aircraftById.spitfire)).toBe('GM2');
     expect(squareOnSight(aircraftById.bf109e4)).toBe('Revi');
+    expect(squareOnSight(aircraftById.bf110c4)).toBe('Revi');
     expect(squareOnSight(aircraftById.he111h)).toBeNull();
   });
 });

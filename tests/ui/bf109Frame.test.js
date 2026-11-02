@@ -9,6 +9,7 @@ import { FRAME, FLASH_TIME, archAngles, coamingAngles, archPoint, sideX, postX, 
 import { REVI, reviPlacement } from '../../src/ui/reviSight.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { BF109_PANEL, BF109_AIM, FUSELAGE_CENTRE_OFFSET, plateTop } from '../../src/ui/bf109Panel.js';
+import { BF110_AIM } from '../../src/ui/bf110Panel.js';
 import { panelRadius } from '../../src/ui/instruments.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 
@@ -218,7 +219,8 @@ describe('the 3D cockpit while the front frame shows (D90)', () => {
   it('raises the guns\' line to BF109_AIM of the screen in the Bf 109 cockpit by a lens shift, the middle in others (D93)', () => {
     const v = view('bf109e4');
     expect(v.rig.aim).toBe(BF109_AIM);
-    expect(view('bf110c4').rig.aim).toBe(0.5); // the Bf 110 keeps the middle (the RAF fighters are raised, D101, D102)
+    expect(view('bf110c4').rig.aim).toBe(BF110_AIM); // raised to its Revi on its panel (D107)
+    expect(view('he111h').rig.aim).toBe(0.5); // the middle without a pilot's sight
     const cam = v.rig.camera;
     cam.position.set(0, 0, 0);
     cam.lookAt(1, 0, 0);

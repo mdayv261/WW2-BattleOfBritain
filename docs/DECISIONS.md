@@ -3106,3 +3106,50 @@ The rest shows normal operation. All the dials but the fuel gauge carry luminous
   radio aids).
 - **Removed:** the Bf 110's earlier grid panel (D39, D44, D46), its added displays (D34, D66, D74 on the Bf 110) and the
   sizing matched to the Bf 109's old panel (D64).
+
+## D107. The Bf 109's instruments and Revi on the Bf 110 C panel (2 Nov 2026, plan approved by the product owner)
+
+**The request:**
+- **Instruments:** the Bf 110 C panel's airspeed indicator, altimeter, turn and bank and "G4" compass become the
+  Bf 109's instruments exactly. The product owner named the "G4" compass as the strip compass in the recess; the big
+  Patin compass stays.
+- **Revi:** the instrument under the reticle (the "L … R" homing indicator) is replaced by the Bf 109's Revi, its body
+  20% shorter, standing on the panel above the turn and bank.
+
+**The instruments** (`src/ui/bf110Panel.js`):
+- **Size:** the same on screen as on the Bf 109 (product owner). One Bf 109 dial radius is `BF109_SCALE` (1.18) Bf 110
+  radii on every screen tested, all of which are limited by their height. Each face and mounting is the Bf 109's
+  layout entry scaled by it.
+- **Finish:** the Bf 109's red bezels and knurled setting knobs on the airspeed indicator and altimeter, and square
+  mountings on the turn and bank and the strip compass.
+- **Recess:** the strip compass's recess is gone, as on the Bf 109.
+
+**Moved to make room** (on #31's pixels):
+- the airspeed indicator, 2 px left;
+- the strip compass, 3 px left;
+- the "Umschalterstellung" strip and its knobs, 9 px down;
+- the "4 MG / 2 MG" strip, 3 px up;
+- the ammunition counter and the red push button, 18 px left.
+
+**Removed:** the "L … R" instrument and the strip under it, where the Revi's block and knob now stand.
+
+**The Revi** (`REVI_110`, `BF110_REVI`; the parts in `src/ui/reviParts.js`):
+- **Drawing:** the Bf 109's sight at its size on screen.
+- **Shorter body:** the body is 3.2 units tall instead of 4.0 (`shortRevi`).
+  - The pad, the lever and its pivot are pressed down to fit.
+  - The block and knob move up 0.8 units.
+  - The glasses and housing are unchanged.
+- **Cable:** left off, since it would hang across the turn and bank.
+- **Placement:** the knob's foot stands just above the turn and bank's mounting, so the guns' line is 4.3 Bf 110 radii
+  above the panel's top.
+- **Guns' line:** raised to `BF110_AIM` (0.41 of the screen from the top, was 0.5) by the same lens shift as the
+  Bf 109's (D93), so the reticle falls on the glass. The panel keeps its 45% share of the screen.
+- **3D sight:** the 2D Revi replaces the 3D sight while looking ahead, as on the Bf 109; the 3D one shows when looking
+  round.
+
+**Flagged:**
+- the moves above;
+- the cable left off;
+- the Bf 110's guns' line now above the middle of the screen.
+
+No aircraft data changed.

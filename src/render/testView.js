@@ -13,6 +13,7 @@ import { hideLost } from './wrecks.js';
 import { BF109_AIM, BF109_PANEL, FUSELAGE_CENTRE_OFFSET } from '../ui/bf109Panel.js';
 import { panelRadius } from '../ui/instruments.js';
 import { RAF_AIM } from '../ui/rafFrame.js';
+import { BF110_AIM } from '../ui/bf110Panel.js';
 
 export class TestView {
   constructor(scene, camera, sea) {
@@ -72,8 +73,8 @@ export class TestView {
     // The Bf 109's, Hurricane's and Spitfire's front frames are drawn with their panels (D90, D99).
     this.frameDrawn = ['bf109e4', 'hurricane', 'spitfire'].includes(ac.id);
     this.fuselageOffset = ac.id === 'bf109e4' ? FUSELAGE_CENTRE_OFFSET : 0; // the RAF's GM 2 is on the centre line
-    // The guns' line above the middle of the screen for the Bf 109 (D93) and the Hurricane (D101).
-    this.rig.aim = ac.id === 'bf109e4' ? BF109_AIM : RAF_AIM[ac.id] ?? 0.5;
+    // The guns' line above the middle of the screen for the Bf 109 (D93), the RAF fighters (D101) and the Bf 110 (D107).
+    this.rig.aim = { bf109e4: BF109_AIM, bf110c4: BF110_AIM }[ac.id] ?? RAF_AIM[ac.id] ?? 0.5;
     this.frontView = false;
     // The wings hide in the front view; the airscrew stays, its arc spinning ahead of the panel (D97).
     this.frontHidden = [this.model.getObjectByName('wingLeft'), this.model.getObjectByName('wingRight')];

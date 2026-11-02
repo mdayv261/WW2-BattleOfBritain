@@ -3,11 +3,14 @@
 // into the game. Positions and sizes are measured on #31 in its pixels (PX to a dial radius) from the turn and bank
 // indicator's column (where the Revi stands above it in #32, the middle of the screen) and the panel's top edge.
 //   Top: the ammunition counter (three tall windows, as #32, in place of #31's box of lamps and knobs: product owner),
-//   a red push button, the "4 MG / 2 MG" strip, the "L ... R" instrument and the strip under it, the elevator trim
-//   indicator (D106, in place of a pasted photograph) and the clock.
+//   a red push button, the "4 MG / 2 MG" strip, the Revi standing on the panel above the turn and bank (in place of the
+//   "L ... R" instrument and the strip under it, D107), the elevator trim indicator (D106, in place of a pasted
+//   photograph) and the clock.
 //   Upper row: the repeater compass (Patin), the "00 00" instrument, turn and bank, climb indicator; under them the
-//   "Umschalterstellung links / rechts" strip. Lower row: the strip compass in its recess, the fine altimeter, the
-//   artificial horizon and the airspeed indicator.
+//   "Umschalterstellung links / rechts" strip. Lower row: the strip compass, the fine altimeter, the artificial horizon
+//   and the airspeed indicator.
+//   The airspeed indicator, altimeter, turn and bank and strip compass are the Bf 109's exactly, at its size on screen,
+//   red bezels and setting knobs included (product owner, D107); the strip compass has no recess.
 //   Right, a column per engine (left engine on the left): the fuel and oil pressure gauge, the rev counter (to 3,600
 //   rpm, as photographed), the manifold pressure gauge in its red ring.
 //   Bottom centre: oil and coolant temperatures for each engine either side of the fuel contents gauge, four warning
@@ -27,11 +30,46 @@ import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurn
 import { luminous } from './lwStyle.js';
 import { redRing } from './bf110Dials.js';
 import { millibarWindow } from './altimeters.js';
+import { BF109_PANEL, BF109_PX, redBezel, settingKnob } from './bf109Panel.js';
+import { REVI, shortRevi } from './reviParts.js';
 
 const PX = 30; // picture pixels per dial radius: the big dials' faces
 const AXIS = 428; // the turn and bank indicator's column on #31: the middle of the screen
 const TOP = 57; // the panel's top edge
 const FOOT = 475; // its lowest point
+const HEIGHT = (FOOT - TOP) / PX + 0.1; // the panel's height in dial radii
+const SHARE = 0.45; // the share of the screen's height it takes: as the RAF panel
+
+/**
+ * The Bf 109's dial radius in the Bf 110's (D107): the two panels fill their shares of the screen's height (every
+ * screen tested is limited by its height), so the Bf 109's instruments and Revi are drawn at their own size on screen.
+ */
+export const BF109_SCALE = (BF109_PANEL.screenShare / BF109_PANEL.height) / (SHARE / HEIGHT);
+const FROM_109 = (BF109_SCALE * PX) / BF109_PX; // the Bf 109's picture pixels to the Bf 110's
+
+/** A Bf 109 instrument (its BF109_PANEL entry `name`) at (x, y) on the Bf 110's picture, its size as on the Bf 109. */
+function as109(name, x, y) {
+  const [, , face, outer] = BF109_PANEL.dials[name];
+  return [x, y, face * FROM_109, outer * FROM_109];
+}
+
+/** The Bf 109's setting knob `knob` below its dial `dial`, under the same dial standing at (x, y) on the Bf 110's. */
+function knob109(knob, dial, x, y) {
+  const [, ky, rad] = BF109_PANEL.knobs[knob];
+  return [x, y + (ky - BF109_PANEL.dials[dial][1]) * FROM_109, rad * FROM_109];
+}
+
+/** The Revi on the Bf 110 (D107): the Bf 109's, its body 20% shorter, its knob's foot just above the turn and bank. */
+export const REVI_110 = shortRevi(REVI, 0.8);
+const KNOB_FOOT = 144; // on #31, the turn and bank's mounting's top at about 150 (the panel is drawn 3 px below the canvas's top)
+/** The guns' line above the panel's top, in dial radii: the Revi's knob's foot below it, at its size. */
+export const GLASS_ABOVE_110 = REVI_110.knob.y[1] * BF109_SCALE - (KNOB_FOOT - TOP) / PX;
+/**
+ * Where the guns' line stands looking ahead in the Bf 110's cockpit, as a fraction of the screen's height from its top:
+ * GLASS_ABOVE_110 above the panel, which stands on the screen's foot (D107). The camera's picture is shifted to match
+ * (`CameraRig.aim`, as the Bf 109's, D93).
+ */
+export const BF110_AIM = 1 - (SHARE * (HEIGHT + GLASS_ABOVE_110)) / HEIGHT;
 
 /** A picture point in dial radii from the axis at the panel's top. */
 export const P = (px, py) => [(px - AXIS) / PX, (py - TOP) / PX];
@@ -52,14 +90,15 @@ const OUTLINE = [
  */
 export const BF110_PANEL = {
   width: (2 * Math.max(AXIS - 57, 733 - AXIS)) / PX + 0.2,
-  height: (FOOT - TOP) / PX + 0.1,
-  screenShare: 0.45, // as the RAF panel: below the Revi in the middle of the view
+  height: HEIGHT,
+  screenShare: SHARE,
   ownBackground: true,
   outline: OUTLINE,
   dials: {
-    lr: [428, 93, 28, 33], clock: [583, 112, 20, 24],
-    compass: [250, 185, 40, 47], counter: [343, 193, 27, 32], turn: [428, 193, 28, 33], climb: [513, 192, 28, 33],
-    stripCompass: [255, 287, 27, 32], altimeter: [343, 297, 27, 32], horizon: [428, 297, 31, 37], airspeed: [513, 297, 28, 33],
+    clock: [583, 112, 20, 24],
+    compass: [250, 185, 40, 47], counter: [343, 193, 27, 32], turn: as109('turn', 428, 193), climb: [513, 192, 28, 33],
+    stripCompass: as109('compass', 252, 287), altimeter: as109('altimeter', 343, 297), horizon: [428, 297, 31, 37],
+    airspeed: as109('airspeed', 511, 297),
     pressureLeft: [585, 175, 18, 22], pressureRight: [643, 175, 18, 22],
     rpmLeft: [589, 243, 29, 33], rpmRight: [660, 243, 29, 33],
     ataLeft: [602, 318, 28, 32], ataRight: [673, 318, 28, 32],
@@ -68,18 +107,22 @@ export const BF110_PANEL = {
     hydraulic: [118, 395, 18, 22],
   },
   boxes: {
-    ammo: [275, 62, 382, 125], mgStrip: [298, 133, 385, 152], courseStrip: [391, 130, 470, 154],
-    trim: [492, 82, 528, 150], umschalter: [394, 229, 462, 248],
+    ammo: [257, 62, 364, 125], mgStrip: [298, 130, 385, 149], // moved clear of the Revi and the turn and bank (D107)
+    trim: [492, 82, 528, 150], umschalter: [394, 238, 462, 257],
     lights: [145, 152, 190, 200], flapLabel: [100, 228, 152, 240], gearLabel: [86, 345, 146, 357],
-    magnetos: [86, 256, 148, 333], placard: [152, 258, 190, 322], recess: [205, 250, 298, 335],
+    magnetos: [86, 256, 148, 333], placard: [152, 258, 190, 322],
   },
   knobs: {
-    redButton: [249, 108, 11], umLeft: [383, 239, 7], umRight: [473, 239, 7],
+    redButton: [231, 108, 11], umLeft: [383, 247, 7], umRight: [473, 247, 7],
+    setAltimeter: knob109('setAltimeter', 'altimeter', 343, 297), setAirspeed: knob109('setAirspeed', 'airspeed', 511, 297),
     lampTempL1: [386, 368, 6], lampTempL2: [386, 396, 6], lampTempR1: [470, 368, 6], lampTempR2: [470, 396, 6],
     knobLeft: [77, 434, 17], knobRight: [136, 434, 17],
   },
   switches: { flaps: [168, 213, 245], gear: [163, 330, 362] },
 };
+
+/** The Bf 110's Revi for reviPlacement (src/ui/reviSight.js): on its guns' line, at the Bf 109's size, no cable (D107). */
+export const BF110_REVI = { panel: BF110_PANEL, aim: BF110_AIM, scale: BF109_SCALE, parts: REVI_110, cable: false };
 
 /** A layout entry in canvas pixels, given the axis at the panel's top (x0, y0) and dial radius r. */
 export function placer(x0, y0, r) {
@@ -99,7 +142,10 @@ export function placer(x0, y0, r) {
 }
 
 /** The dials drawn by the fittings (src/ui/bf110Fittings.js), not given a mounting here. */
-const FITTED = ['lr', 'counter', 'hydraulic', 'radiatorLeft', 'radiatorRight', 'selector'];
+const FITTED = ['counter', 'hydraulic', 'radiatorLeft', 'radiatorRight', 'selector'];
+
+/** The Bf 109's instruments with its red bezels (D107). */
+const RED_BEZELS = ['altimeter', 'airspeed'];
 
 /** Draws the panel with the axis at its top at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
 export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
@@ -109,8 +155,10 @@ export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
   for (const [name, entry] of Object.entries(L.dials)) {
     if (FITTED.includes(name)) continue;
     const [x, y, , outer] = at.dial(entry);
-    mount(g, x, y, outer);
+    if (RED_BEZELS.includes(name)) redBezel(g, x, y, outer);
+    else mount(g, x, y, outer);
   }
+  for (const name of ['setAltimeter', 'setAirspeed']) settingKnob(g, ...at.knob(L.knobs[name]));
   const dial = (name) => at.dial(L.dials[name]).slice(0, 3);
   luminous(() => {
     lwClock(g, ...dial('clock'), now);

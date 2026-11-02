@@ -27,6 +27,8 @@ import { millibarWindow } from './altimeters.js';
 import { luminous } from './lwStyle.js';
 
 const PX = 45; // picture pixels per dial radius: the airspeed indicator's face
+/** The layout's picture pixels per dial radius, for panels that take the Bf 109's instruments (the Bf 110's, D107). */
+export const BF109_PX = PX;
 const AXIS = 660; // the Revi's axis on the picture: the guns' line, the middle of the screen
 const TOP = 227; // the top of the upper plate
 const FOOT = 868; // the bottom of the lower plate's wings
@@ -155,7 +157,7 @@ export function bf109Panel(g, x0, y0, r, v, now = new Date()) {
 }
 
 /** The round red bezel of the altimeter, manifold pressure and airspeed indicators, with a dark rim. */
-function redBezel(g, x, y, outer) {
+export function redBezel(g, x, y, outer) {
   g.fillStyle = '#0d0d0d';
   g.beginPath();
   g.arc(x, y, outer * 1.04, 0, Math.PI * 2);
@@ -167,7 +169,7 @@ function redBezel(g, x, y, outer) {
 }
 
 /** A knurled black setting knob below a dial. */
-function settingKnob(g, x, y, rad) {
+export function settingKnob(g, x, y, rad) {
   g.fillStyle = '#0c0c0c';
   g.beginPath();
   g.arc(x, y, rad, 0, Math.PI * 2);

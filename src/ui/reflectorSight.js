@@ -16,6 +16,7 @@ import { roundRect, text } from './panelParts.js';
 import { drawReticle } from './reticle.js';
 import { reviPlacement, drawRevi } from './reviSight.js';
 import { BF109_PANEL, placer, plateTop } from './bf109Panel.js';
+import { BF110_REVI } from './bf110Panel.js';
 import { drawFrontFrame } from './bf109Frame.js';
 import { RAF_FRAMES, RAF_AIM, drawRafFrame } from './rafFrame.js';
 import { placer as rafPlacer } from './rafPanel.js';
@@ -84,8 +85,8 @@ export function chaseAim(camera, position, quaternion, ac, width, height) {
 /** The reticle pattern of an aircraft's sight: the GM 2's for the RAF, the Revi's for the Luftwaffe. */
 export const reticleStyle = (ac) => (ac.side === 'RAF' ? 'GM2' : 'Revi');
 
-/** The sight drawn square-on for an aircraft: the GM 2 (RAF), the Revi (Bf 109, D89), or null (a 3D sight only). */
-export const squareOnSight = (ac) => (!ac.sight ? null : ac.side === 'RAF' ? 'GM2' : ac.id === 'bf109e4' ? 'Revi' : null);
+/** The sight drawn square-on for an aircraft: the GM 2 (RAF), the Revi (Bf 109, D89; Bf 110, D107), or null. */
+export const squareOnSight = (ac) => (!ac.sight ? null : ac.side === 'RAF' ? 'GM2' : ['bf109e4', 'bf110c4'].includes(ac.id) ? 'Revi' : null);
 
 /** Whether the 2D sight shows: an aircraft with one, the cockpit view, looking ahead, the pilot still aboard. */
 export const showSight = (sim, rig) => !!squareOnSight(sim.ac) && rig.inCockpit && !rig.lookingAway && !sim.playerJumper;
@@ -290,7 +291,8 @@ export class ReflectorSight {
       if (aim) drawReticle(g, aim.x, aim.y, aim.ring, reticleStyle(ac));
       return;
     }
-    if (ac && squareOnSight(ac) === 'Revi') {
+    if (ac?.id === 'bf110c4') drawRevi(g, reviPlacement(width, height, BF110_REVI), aim); // on its panel (D107)
+    else if (ac && squareOnSight(ac) === 'Revi') {
       // The Bf 109's front frame on the panel's top, then the Revi in front of it (D90).
       const r = panelRadius(BF109_PANEL, width, height);
       drawFrontFrame(g, placer(width / 2, plateTop(height, r), r), flashes);
