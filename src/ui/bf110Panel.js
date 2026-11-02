@@ -1,7 +1,8 @@
 // Bf 110 C instrument panel (D106), redrawn in code after the product owner's picture of a Bf 110 C panel (#31), with
 // details from their picture of the cockpit (#32). The pictures are layout references only: nothing of them is copied
-// into the game. Positions and sizes are measured on #31 in its pixels (PX to a dial radius) from the turn and bank
-// indicator's column (where the Revi stands above it in #32, the middle of the screen) and the panel's top edge.
+// into the game. Positions and sizes are measured on #31 in its pixels (PX to a dial radius) from the climb indicator's
+// column (AXIS: the Revi stands above it in the middle of the screen) and the panel's top edge. The flying instruments
+// stand an even gap apart, the right-hand section moved out to make room (product owner, D111).
 //   Top: the ammunition counter (three tall windows, as #32, in place of #31's box of lamps and knobs: product owner),
 //   a red push button, the Revi standing on the panel in the middle (in place of the "L ... R" instrument and the strip
 //   under it, D107), the Spitfire's elevator trim gauge (product owner, D110: not original to the Bf 110; where #31 has
@@ -39,7 +40,6 @@ import { rafTrimGauge } from './rafPanelDials.js';
 import { bezel, dialScrews } from './panelParts.js';
 
 const PX = 30; // picture pixels per dial radius: the big dials' faces
-const AXIS = 428; // the turn and bank indicator's column on #31: the middle of the screen
 const TOP = 57; // the panel's top edge
 const FOOT = 475; // its lowest point
 const HEIGHT = (FOOT - TOP) / PX + 0.1; // the panel's height in dial radii
@@ -66,9 +66,10 @@ function knob109(knob, dial, x, y) {
 
 /**
  * Flying instruments standing in a row on a common foot (picture y), left to right from `left` with GAP between their
- * mountings: `entries` are [name, [face, mounting half-width]]. Returns their dial entries by name (D108).
+ * mountings: `entries` are [name, [face, mounting half-width]]. Returns their dial entries by name (D108). The gap is
+ * one even amount for all of them, widened from 3 px (D111).
  */
-const GAP = 3;
+const GAP = 10;
 function row(foot, left, entries) {
   const out = {};
   let x = left;
@@ -82,9 +83,19 @@ const size = (entry) => entry.slice(2);
 const PATIN = [250, 185, 40, 47]; // the repeater compass, unmoved
 const UPPER_FOOT = PATIN[1] + PATIN[3];
 const LOWER_FOOT = 334;
-const UPPER = row(UPPER_FOOT, PATIN[0] + PATIN[3] + GAP, [['turn', size(as109('turn', 0, 0))]]);
-const CLIMB = [AXIS, UPPER_FOOT - 33, 28, 33]; // in the middle, under the Revi
-const LOWER = row(LOWER_FOOT, 194, [
+const UPPER = row(UPPER_FOOT, PATIN[0] + PATIN[3] + GAP, [['turn', size(as109('turn', 0, 0))], ['climb', [28, 33]]]);
+/**
+ * The panel's middle line on #31's pixels: the climb indicator's column, under the Revi in the middle of the screen
+ * (D108, D111; it was the turn and bank's at 428 on #31).
+ */
+export const AXIS = UPPER.climb[0];
+const LOWER_LEFT = PATIN[0] - PATIN[3]; // the strip compass's left edge under the Patin compass's (D111; 194 before)
+/**
+ * How far the panel's right-hand section stands out from #31's (D111): the lower row's three gaps widened from 3 px and
+ * its start moved from 194 to LOWER_LEFT.
+ */
+const WIDEN = 3 * (GAP - 3) + (LOWER_LEFT - 194);
+const LOWER = row(LOWER_FOOT, LOWER_LEFT, [
   ['stripCompass', size(as109('compass', 0, 0))], ['horizon', size(PATIN)], ['airspeed', size(as109('airspeed', 0, 0))],
   ['altimeter', size(as109('altimeter', 0, 0))],
 ]);
@@ -108,30 +119,40 @@ export const P = (px, py) => [(px - AXIS) / PX, (py - TOP) / PX];
 
 // The panel's outline traced on #31: the raised top section, the right section, the bottom centre extension, the gap
 // beside it, the left wing.
+// The right-hand section stands WIDEN further out (D111).
+const RIGHT = [[613, 58], [633, 117], [667, 147], [690, 180], [710, 227], [723, 273], [733, 327], [733, 350], [722, 360]];
 const OUTLINE = [
-  [263, 57], [613, 58], [633, 117], [667, 147], [690, 180], [710, 227], [723, 273], [733, 327], [733, 350], [722, 360],
+  [263, 57], ...RIGHT.map(([x, y]) => [x + WIDEN, y]),
   [548, 360], [544, 400], [538, 455], [528, 472], [338, 475], [326, 462], [312, 420], [302, 384], [292, 370], [205, 370],
   [188, 384], [180, 420], [176, 452], [166, 462], [66, 462], [57, 448], [60, 380], [63, 333], [70, 280], [83, 250],
   [93, 227], [110, 200], [130, 167], [147, 150], [157, 140], [177, 133], [193, 128], [202, 120], [210, 97], [223, 80],
   [240, 64],
 ];
 
+/** Dial entries moved out WIDEN with the right-hand section (D111). */
+function right(dials) {
+  return Object.fromEntries(Object.entries(dials).map(([name, [x, ...rest]]) => [name, [x + WIDEN, ...rest]]));
+}
+
 /**
  * Everything on the panel, in picture pixels: the outline; dials [x, y, face radius, mounting half-width]; boxes
  * [left, top, right, bottom]; knobs and lamps [x, y, radius]; switches [x, top, bottom] (the knob's travel).
  */
 export const BF110_PANEL = {
-  width: (2 * Math.max(AXIS - 57, 733 - AXIS)) / PX + 0.2,
+  width: (2 * Math.max(...OUTLINE.map(([x]) => Math.abs(x - AXIS)))) / PX + 0.2,
   height: HEIGHT,
   screenShare: SHARE,
   ownBackground: true,
   outline: OUTLINE,
   dials: {
-    clock: [583, 112, 20, 24], trim: [510, 112, 20, 24], // the Spitfire's trim gauge at the clock's size (D110)
-    compass: PATIN, ...UPPER, climb: CLIMB, ...LOWER,
-    pitchLeft: [585, 175, 18, 22], pitchRight: [643, 175, 18, 22], // the photographed gauges' size: the Bf 109's won't fit (D109)
-    rpmLeft: [589, 243, 29, 33], rpmRight: [660, 243, 29, 33],
-    ataLeft: [602, 318, 28, 32], ataRight: [673, 318, 28, 32],
+    compass: PATIN, ...UPPER, ...LOWER,
+    // The right-hand side, moved out WIDEN with its section of the outline (D111).
+    ...right({
+      clock: [583, 112, 20, 24], trim: [510, 112, 20, 24], // the Spitfire's trim gauge at the clock's size (D110)
+      pitchLeft: [585, 175, 18, 22], pitchRight: [643, 175, 18, 22], // the photographed gauges' size (D109)
+      rpmLeft: [589, 243, 29, 33], rpmRight: [660, 243, 29, 33],
+      ataLeft: [602, 318, 28, 32], ataRight: [673, 318, 28, 32],
+    }),
     tempLeft: [345, 381, 20, 24], fuel: [428, 381, 20, 24], tempRight: [511, 381, 20, 24],
     radiatorLeft: [365, 438, 18, 22], selector: [428, 438, 18, 22], radiatorRight: [491, 438, 18, 22],
     hydraulic: [118, 395, 18, 22],

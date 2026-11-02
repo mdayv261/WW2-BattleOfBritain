@@ -18,6 +18,14 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C even instrument gaps (3 Nov 2026)
+
+**Done** (D111):
+- one even 10 px gap between the flying instruments in both rows;
+- the strip compass's left edge lined up with the Patin compass's;
+- the panel's right-hand side moved out 30 px to make room;
+- the Revi stays above the climb indicator.
+
 ## Bf 110 C trim gauge (3 Nov 2026)
 
 **Done** (D110): the Bf 110's trim indicator is now the Spitfire's trim gauge, at the clock's size. It is not original

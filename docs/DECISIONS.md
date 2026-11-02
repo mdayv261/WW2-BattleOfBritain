@@ -3218,3 +3218,25 @@ panel. They were the fuel and oil pressure gauges.
   #31, where the trim strip stood.
 
 **Flagged:** an RAF instrument with English words on a Luftwaffe panel (the product owner's choice).
+
+## D111. Even, wider gaps between the Bf 110's flying instruments (3 Nov 2026, plan approved by the product owner)
+
+**The request:**
+- Extend the panel's right-hand side so the gaps between the flying instruments can be widened to one even amount.
+- Then: extend it a bit more, so the strip (horizontal) compass's left edge lines up with the Patin (vertical)
+  compass's, keeping the gaps between the horizon, airspeed indicator and altimeter.
+
+**Layout** (`src/ui/bf110Panel.js`):
+- **Gaps:** one 10 px gap on #31 (was 3) between neighbouring flying instruments, in both rows.
+- **Upper row:** the Patin compass is unmoved; the turn and bank (350) and the climb indicator (437) follow it.
+- **Lower row:** the strip compass's left edge is under the Patin compass's (203, was 194); the horizon (347), the
+  airspeed indicator (446) and the altimeter (542) follow it.
+- **Bottoms:** still aligned in each row.
+- **Middle line (`AXIS`):** now the climb indicator's column, so the Revi still stands above it in the middle of the
+  screen. The panel shows 9 px further left on screen. The guns' line is unchanged (0.41).
+- **Right-hand side:** moved out 30 px (`WIDEN`: 21 for the wider gaps, 9 for the compass alignment). This covers the
+  outline's right section, the clock, the trim gauge, the pitch indicators, the rev counters and the manifold pressure
+  gauges.
+- **Unchanged:** the left side and the bottom centre.
+
+**Flagged:** the panel is now wider than the photographed one (#31) by 30 px on its pixels.

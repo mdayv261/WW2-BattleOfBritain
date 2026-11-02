@@ -6,7 +6,10 @@
 import { describe, it, expect } from 'vitest';
 import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
-import { BF110_PANEL, bf110Panel } from '../../src/ui/bf110Panel.js';
+import { BF110_PANEL, AXIS, bf110Panel } from '../../src/ui/bf110Panel.js';
+
+/** The right-hand dials' places on #31 before the section moved out (D111). */
+const OLD_X = { rpmLeft: 589, rpmRight: 660, ataLeft: 602, ataRight: 673, pitchLeft: 585, pitchRight: 643, clock: 583 };
 import { ammoFractions, switchPosition, gearLightState, AMMO_COLUMNS } from '../../src/ui/bf110Fittings.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { LUMINOUS, INK, HAND, paint } from '../../src/ui/lwStyle.js';
@@ -162,7 +165,7 @@ describe('Bf 110 C flying instruments as the product owner arranged them (D108)'
   it('stands the Patin compass, turn and bank and climb indicator side by side, their bottoms aligned', () => {
     const upper = [D.compass, D.turn, D.climb];
     for (let i = 1; i < upper.length; i += 1) {
-      expect(left(upper[i])).toBeGreaterThan(right(upper[i - 1]));
+      expect(left(upper[i]) - right(upper[i - 1])).toBeCloseTo(10, 9); // one even gap, widened from 3 (D111)
       expect(foot(upper[i])).toBeCloseTo(foot(upper[0]), 9);
     }
     expect(D.counter).toBeUndefined();
@@ -173,13 +176,13 @@ describe('Bf 110 C flying instruments as the product owner arranged them (D108)'
   it('stands the strip compass, horizon, airspeed indicator and altimeter side by side below, their bottoms aligned', () => {
     const lower = [D.stripCompass, D.horizon, D.airspeed, D.altimeter];
     for (let i = 1; i < lower.length; i += 1) {
-      expect(left(lower[i])).toBeGreaterThan(right(lower[i - 1]));
+      expect(left(lower[i]) - right(lower[i - 1])).toBeCloseTo(10, 9); // the same gap as the upper row (D111)
       expect(foot(lower[i])).toBeCloseTo(foot(lower[0]), 9);
     }
     expect(D.stripCompass[1] - D.stripCompass[3]).toBeGreaterThan(foot(D.compass)); // below the upper row
     expect(D.horizon.slice(2)).toEqual(D.compass.slice(2)); // the Patin compass's size
-    expect(D.airspeed[0]).toBeLessThan(D.climb[0]); // below the climb indicator, a little to its left
-    expect(D.climb[0] - D.airspeed[0]).toBeLessThan(D.climb[3]);
+    expect(left(D.stripCompass)).toBeCloseTo(left(D.compass), 9); // left edges aligned (D111)
+    expect(Math.abs(D.airspeed[0] - D.climb[0])).toBeLessThan(D.climb[3]); // below the climb indicator
     expect(L.knobs.setAirspeed[0]).toBe(D.airspeed[0]);
     expect(L.knobs.setAltimeter[0]).toBe(D.altimeter[0]);
   });
@@ -199,5 +202,18 @@ describe('Bf 110 C airscrew pitch indicators (D109)', () => {
     expect(g.texts.filter((t) => t.s === 'Luftschrauben-')).toHaveLength(2);
     expect(g.texts.filter((t) => t.s === 'stellung').every((t) => t.c === LUMINOUS)).toBe(true);
     expect(g.texts.some((t) => t.s === 'Kraftst.')).toBe(false); // the fuel and oil pressure gauges are gone
+  });
+});
+
+describe('Bf 110 C right-hand side moved out for even gaps (D111)', () => {
+  it('keeps the climb indicator on the axis, the engine gauges clear of the altimeter, the panel on every screen', () => {
+    const P2 = BF110_PANEL;
+    expect(P2.dials.climb[0]).toBe(AXIS);
+    const [ax, , , ao] = P2.dials.altimeter;
+    for (const n of ['rpmLeft', 'ataLeft', 'pitchLeft']) expect(P2.dials[n][0] - P2.dials[n][3], n).toBeGreaterThan(ax + ao);
+    for (const n of ['rpmLeft', 'rpmRight', 'ataLeft', 'ataRight', 'pitchLeft', 'pitchRight', 'clock']) {
+      expect(P2.dials[n][0], n).toBeGreaterThan(OLD_X[n]); // moved out with the right-hand section
+    }
+    for (const [w, h] of SCREENS) expect(P2.width * panelRadius(P2, w, h), `${w}x${h}`).toBeLessThanOrEqual(0.96 * w + 1e-6);
   });
 });

@@ -4,7 +4,7 @@
 // round the guns' line at BF110_AIM.
 import { describe, it, expect } from 'vitest';
 import {
-  BF110_PANEL, BF110_REVI, BF110_AIM, BF109_SCALE, GLASS_ABOVE_110, REVI_110, bf110Panel, placer,
+  BF110_PANEL, BF110_REVI, BF110_AIM, BF109_SCALE, GLASS_ABOVE_110, REVI_110, AXIS, bf110Panel, placer,
 } from '../../src/ui/bf110Panel.js';
 import { BF109_PANEL, BF109_PX } from '../../src/ui/bf109Panel.js';
 import { REVI, shortRevi } from '../../src/ui/reviParts.js';
@@ -16,7 +16,6 @@ import { aircraftById } from '../../src/aircraft/index.js';
 const L = BF110_PANEL;
 const SCREENS = [[1548, 784], [1920, 1080], [1280, 720], [2560, 1259], [2560, 1203]];
 const PX = 30; // the Bf 110 layout's picture pixels per dial radius
-const AXIS = 428;
 const TOP = 57;
 
 /** A canvas that records lettering, the colours filled and the curves drawn. */
