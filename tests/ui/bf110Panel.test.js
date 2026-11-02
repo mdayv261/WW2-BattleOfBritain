@@ -184,3 +184,20 @@ describe('Bf 110 C flying instruments as the product owner arranged them (D108)'
     expect(L.knobs.setAltimeter[0]).toBe(D.altimeter[0]);
   });
 });
+
+describe('Bf 110 C airscrew pitch indicators (D109)', () => {
+  it('shows each engine\'s blade angle on its own indicator above its rev counter, in luminous paint', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    sim.plane.engines[1].beta += 5 * Math.PI / 180;
+    const v = instrumentReadings(sim);
+    expect(v.engines[1].pitchClock.minutes).not.toBeCloseTo(v.engines[0].pitchClock.minutes, 3);
+    for (const side of ['Left', 'Right']) {
+      expect(L.dials[`pitch${side}`][0]).toBeCloseTo(L.dials[`rpm${side}`][0], -2); // above its rev counter
+      expect(L.dials[`pitch${side}`][1]).toBeLessThan(L.dials[`rpm${side}`][1]);
+    }
+    const g = draw(v);
+    expect(g.texts.filter((t) => t.s === 'Luftschrauben-')).toHaveLength(2);
+    expect(g.texts.filter((t) => t.s === 'stellung').every((t) => t.c === LUMINOUS)).toBe(true);
+    expect(g.texts.some((t) => t.s === 'Kraftst.')).toBe(false); // the fuel and oil pressure gauges are gone
+  });
+});

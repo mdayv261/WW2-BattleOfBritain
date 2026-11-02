@@ -18,6 +18,11 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C airscrew pitch indicators (2 Nov 2026)
+
+**Done** (D109): the two gauges above the rev counters are now the Bf 109's airscrew pitch indicators, one for each
+engine. They replace the fuel and oil pressure gauges.
+
 ## Bf 110 C flying instruments rearranged (2 Nov 2026)
 
 **Done** (D108):

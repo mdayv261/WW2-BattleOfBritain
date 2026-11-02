@@ -11,8 +11,9 @@
 //   instrument, the "4 MG / 2 MG" strip and the "Umschalterstellung" strip are gone.
 //   The airspeed indicator, altimeter, turn and bank and strip compass are the Bf 109's exactly, at its size on screen,
 //   red bezels and setting knobs included (product owner, D107); the strip compass has no recess.
-//   Right, a column per engine (left engine on the left): the fuel and oil pressure gauge, the rev counter (to 3,600
-//   rpm, as photographed), the manifold pressure gauge in its red ring.
+//   Right, a column per engine (left engine on the left): the airscrew pitch indicator (the Bf 109's, in place of the
+//   fuel and oil pressure gauge: product owner, D109), the rev counter (to 3,600 rpm, as photographed), the manifold
+//   pressure gauge in its red ring.
 //   Bottom centre: oil and coolant temperatures for each engine either side of the fuel contents gauge, four warning
 //   lamps; under them the radiator flap switches either side of the fuel tank selector.
 //   Left: the EIN/AUS undercarriage lights, the Landeklappe (flap) and Fahrwerk (undercarriage) switches, the magneto
@@ -24,7 +25,7 @@
 
 import { drawBf110Fittings } from './bf110Fittings.js';
 import {
-  mount, lwRpm, lwAta, lwClock, twoScaleGauge, pressureGauge, lwFuelGauge, lwStripCompass, RPM_110,
+  mount, lwRpm, lwAta, lwClock, twoScaleGauge, lwPitchIndicator, lwFuelGauge, lwStripCompass, RPM_110,
 } from './luftwaffeDials.js';
 import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
 import { luminous } from './lwStyle.js';
@@ -124,7 +125,7 @@ export const BF110_PANEL = {
   dials: {
     clock: [583, 112, 20, 24],
     compass: PATIN, ...UPPER, climb: CLIMB, ...LOWER,
-    pressureLeft: [585, 175, 18, 22], pressureRight: [643, 175, 18, 22],
+    pitchLeft: [585, 175, 18, 22], pitchRight: [643, 175, 18, 22], // the photographed gauges' size: the Bf 109's won't fit (D109)
     rpmLeft: [589, 243, 29, 33], rpmRight: [660, 243, 29, 33],
     ataLeft: [602, 318, 28, 32], ataRight: [673, 318, 28, 32],
     tempLeft: [345, 381, 20, 24], fuel: [428, 381, 20, 24], tempRight: [511, 381, 20, 24],
@@ -204,7 +205,7 @@ export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
     redRing(g, mx, my, mr);
     const scale = { min: 0, max: 130, step: 10, majorStep: 50 };
     luminous(() => {
-      if (v.pressures) pressureGauge(g, ...dial(`pressure${side}`), v.pressures.fuel, v.pressures.oil, { ring: null });
+      if (e.pitchClock) lwPitchIndicator(g, ...dial(`pitch${side}`), e.pitchClock); // each engine's blade angle (D109)
       lwRpm(g, rx, ry, rr, e.rpm, v.rpmLimit, RPM_110);
       lwAta(g, mx, my, mr, e.manifold);
       // Oil (left half) and coolant (right half) temperatures, °C, normal ranges in green (D63).

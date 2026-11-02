@@ -3184,3 +3184,20 @@ No aircraft data changed.
 - the space where the climb indicator was is left empty;
 - the Revi's knob stays where D107 put it, so the guns' line keeps its approved place (0.41 of the screen). That leaves a
   small gap above the climb indicator.
+
+## D109. Airscrew pitch indicators on the Bf 110 C panel (2 Nov 2026, plan approved by the product owner)
+
+**The request:** the two small gauges above the rev counters become propeller pitch indicators, as on the Bf 109's
+panel. They were the fuel and oil pressure gauges.
+
+**The change** (`src/ui/bf110Panel.js`):
+- **Instrument:** the Bf 109's airscrew pitch indicator (`lwPitchIndicator`: ten minutes to a degree of blade angle,
+  S32), in luminous paint (D105).
+- **One per engine:** each indicator reads its own engine's blade angle (`engines[i].pitchClock`).
+- **Place and size:** where the photographed gauges stand (585 and 643, 175 on #31), at their size.
+
+**Flagged:**
+- **Size:** smaller than the Bf 109's indicator. At the Bf 109's size, the right one would stick out past the panel's
+  sloping top-right edge.
+- **Fuel and oil pressure gauges:** no longer on the Bf 110 panel. They showed normal operation only, since the pressures
+  are not modelled (D63).
