@@ -217,3 +217,20 @@ describe('Bf 109 panel drawing (D89)', () => {
     expect(readings({ flapSelected: 1 }).flapSelected).toBe(1);
   });
 });
+
+describe('Bf 109 luminous dials (D105)', () => {
+  it('draws the flying and engine dials, clock and thermometers in luminous yellow; the fuel and pressure gauges in white', async () => {
+    const { LUMINOUS, INK } = await import('../../src/ui/lwStyle.js');
+    const texts = [];
+    const g = new Proxy({}, {
+      get: (t, p) => (p === 'fillText' ? (s) => texts.push({ s: String(s), c: t.fillStyle }) : p in t ? t[p] : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t, p, v) => { t[p] = v; return true; },
+    });
+    bf109Panel(g, 1000, 0, 40, readings());
+    const colourOf = (s) => texts.filter((t) => t.s === s).map((t) => t.c);
+    for (const w of ['700', 'U/min', 'ata', 'DREHT', '°C', 'Kühlst.']) // '700' the airspeed's (the speed card also says km/h)
+      expect(colourOf(w).every((c) => c === LUMINOUS), w).toBe(true);
+    expect(colourOf('Liter')).toEqual([INK]);
+    expect(colourOf('Kraftst.')).toEqual([INK]);
+  });
+});

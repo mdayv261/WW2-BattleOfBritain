@@ -24,6 +24,7 @@ import {
   pressureGauge, lwThermometer, lwFuelGauge,
 } from './luftwaffeDials.js';
 import { millibarWindow } from './altimeters.js';
+import { luminous } from './lwStyle.js';
 
 const PX = 45; // picture pixels per dial radius: the airspeed indicator's face
 const AXIS = 660; // the Revi's axis on the picture: the guns' line, the middle of the screen
@@ -131,20 +132,24 @@ export function bf109Panel(g, x0, y0, r, v, now = new Date()) {
     else mount(g, x, y, outer, name === 'clock' ? 'screw' : null);
   }
   const dial = (name) => at.dial(L.dials[name]).slice(0, 3);
-  lwClock(g, ...dial('clock'), now);
   const [ax, ay, ar] = dial('altimeter');
-  lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013));
-  lwStripCompass(g, ...dial('compass'), v.heading);
-  lwAta(g, ...dial('ata'), v.manifold);
-  lwAirspeed(g, ...dial('airspeed'), v.airspeed);
-  lwTurnBank(g, ...dial('turn'), v.turnRate, v.sideG);
-  lwRpm(g, ...dial('rpm'), v.rpm, v.rpmLimit);
-  lwPitchIndicator(g, ...dial('pitch'), v.pitchClock);
+  // The flying and engine instruments, clock and thermometers carry radium luminous paint, their markings and hands light
+  // yellow (product owner, D105); the fuel and pressure gauges stay white.
+  luminous(() => {
+    lwClock(g, ...dial('clock'), now);
+    lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013));
+    lwStripCompass(g, ...dial('compass'), v.heading);
+    lwAta(g, ...dial('ata'), v.manifold);
+    lwAirspeed(g, ...dial('airspeed'), v.airspeed);
+    lwTurnBank(g, ...dial('turn'), v.turnRate, v.sideG);
+    lwRpm(g, ...dial('rpm'), v.rpm, v.rpmLimit);
+    lwPitchIndicator(g, ...dial('pitch'), v.pitchClock);
+    lwThermometer(g, ...dial('oilTemp'), v.oil, { label: 'Öl' });
+    lwThermometer(g, ...dial('coolTemp'), v.coolant, { label: 'Kühlst.', ring: '#2f8a96' });
+  });
   if (v.pressures) pressureGauge(g, ...dial('pressure'), v.pressures.fuel, v.pressures.oil, { ring: null });
   const tank = v.fuelTanks?.[0];
   lwFuelGauge(g, ...dial('fuel'), tank ? tank.litres : 0, tank ? tank.capacity : 0, { ring: '#c9b52c' });
-  lwThermometer(g, ...dial('oilTemp'), v.oil, { label: 'Öl' });
-  lwThermometer(g, ...dial('coolTemp'), v.coolant, { label: 'Kühlst.', ring: '#2f8a96' });
   for (const name of ['setAltimeter', 'setAta', 'setAirspeed']) settingKnob(g, ...at.knob(L.knobs[name]));
   speedCard(g, at.box(L.boxes.speedCard), v.pilotCard);
 }

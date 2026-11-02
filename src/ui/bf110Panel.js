@@ -96,15 +96,15 @@ export function bf110Panel(g, x0, y0, r, v) {
   for (const [px, py, , half] of Object.values(L.dials)) mount(g, ...xy([px, py]), size(half) * r);
 
   // Flying instruments.
-  // The airspeed, climb, altimeter and turn and bank indicators, the rev counters, manifold pressure gauges and pitch
-  // indicators carry radium luminous paint: their markings and hands light yellow (product owner, D105).
+  // The flying and engine instruments carry radium luminous paint, their markings and hands light yellow (product owner,
+  // D105): all but the fuel gauges.
   luminous(() => lwAirspeed(g, ...dial('airspeed'), v.airspeed));
-  lwHorizon(g, ...dial('horizon'), v.bank, v.pitch);
+  luminous(() => lwHorizon(g, ...dial('horizon'), v.bank, v.pitch));
   luminous(() => lwVario(g, ...dial('climb'), v.climb));
   const [ax, ay, ar] = dial('altimeter');
   luminous(() => lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013)));
-  lwPatinCompass(g, ...dial('compass'), v.heading);
-  lwClock(g, ...dial('clock'), new Date());
+  luminous(() => lwPatinCompass(g, ...dial('compass'), v.heading));
+  luminous(() => lwClock(g, ...dial('clock'), new Date()));
   luminous(() => lwTurnBank(g, ...dial('turn'), v.turnRate, v.sideG));
 
   // Engine instruments: left engine on the left.
@@ -125,8 +125,8 @@ export function bf110Panel(g, x0, y0, r, v) {
     luminous(() => lwPitchIndicator(g, px, py, pr, e.pitchClock));
     // Oil (left half) and coolant (right half) temperatures, °C, normal ranges in green (D63).
     const scale = { min: 0, max: 130, step: 10, majorStep: 50 };
-    twoScaleGauge(g, ...dial(`temp${side}`), { ...scale, value: e.oil, normal: v.normalTemps.oil },
-      { ...scale, value: e.coolant, normal: v.normalTemps.coolant }, { labels: ['Öl', 'Kühl.'] });
+    luminous(() => twoScaleGauge(g, ...dial(`temp${side}`), { ...scale, value: e.oil, normal: v.normalTemps.oil },
+      { ...scale, value: e.coolant, normal: v.normalTemps.coolant }, { labels: ['Öl', 'Kühl.'] }));
   });
 
   // Undercarriage display and flap position.

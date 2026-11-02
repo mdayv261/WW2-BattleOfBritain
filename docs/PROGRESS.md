@@ -18,10 +18,10 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
-## Bf 110 luminous dials (2 Nov 2026)
+## Luftwaffe luminous dials (2 Nov 2026)
 
-**Done** (D105): the Bf 110's airspeed, altimeter, climb, turn and bank, rev counters, manifold pressure and pitch
-indicators with light yellow (radium luminous) markings and hands.
+**Done** (D105): the Bf 110's and Bf 109's dials with light yellow (radium luminous) markings and hands: all but the
+fuel gauges (and the Bf 109's fuel and oil pressure gauge).
 
 ## Welded cockpit frames (2 Nov 2026)
 

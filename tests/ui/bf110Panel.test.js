@@ -105,7 +105,7 @@ describe('Bf 110 fuel quantity gauges (D45)', () => {
 });
 
 describe('Bf 110 luminous dials (D105)', () => {
-  it('draws the listed dials\' markings and hands in luminous yellow, the others in white, and restores the colours', async () => {
+  it('draws all but the fuel gauges\' markings and hands in luminous yellow, and restores the colours', async () => {
     const { bf110Panel } = await import('../../src/ui/bf110Panel.js');
     const { LUMINOUS, INK, HAND, paint } = await import('../../src/ui/lwStyle.js');
     const { instrumentReadings: readings } = await import('../../src/ui/instruments.js');
@@ -123,7 +123,9 @@ describe('Bf 110 luminous dials (D105)', () => {
     expect(colourOf('ata').every((c) => c === LUMINOUS)).toBe(true);
     expect(colourOf('m/s')).toEqual([LUMINOUS]); // climb
     expect(colourOf('DREHT')).toEqual([LUMINOUS]); // turn and bank
-    expect(colourOf('12')).toContain(INK); // the clock stays white
+    expect(colourOf('12').every((c) => c === LUMINOUS)).toBe(true); // the clock too
+    expect(colourOf('Öl').every((c) => c === LUMINOUS)).toBe(true); // the temperature gauges
+    expect(colourOf('FUEL L\nLiter').every((c) => c !== LUMINOUS)).toBe(true); // the fuel gauges stay white
     expect(paint).toEqual({ ink: INK, hand: HAND }); // restored afterwards
   });
 });
