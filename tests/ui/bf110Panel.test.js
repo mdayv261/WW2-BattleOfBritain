@@ -10,7 +10,7 @@ import { BF110_PANEL, AXIS, bf110Panel } from '../../src/ui/bf110Panel.js';
 
 /** The right-hand dials' places on #31 before the section moved out (D111). */
 const OLD_X = { rpmLeft: 589, rpmRight: 660, ataLeft: 602, ataRight: 673, pitchLeft: 585, pitchRight: 643, clock: 583 };
-import { ammoFractions, switchPosition, gearLightState, AMMO_COLUMNS } from '../../src/ui/bf110Fittings.js';
+import { ammoFractions, switchPosition, gearLightState, AMMO_COLUMNS, tBar, T_STEM } from '../../src/ui/bf110Fittings.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { LUMINOUS, INK, HAND, paint } from '../../src/ui/lwStyle.js';
 import { Simulation } from '../../src/core/simulation.js';
@@ -242,6 +242,34 @@ describe('Bf 110 C right shoulder and side (D112)', () => {
       // The edge at the mounting's top: on the side below the shoulder's foot, on the shoulder above it.
       const edge = top >= y0 ? x0 + (top - y0) / Math.tan(75 * Math.PI / 180) : null;
       if (edge !== null) expect(edge - (x + o), n).toBeCloseTo(8, 6);
+    }
+  });
+});
+
+describe('Bf 110 C flap and undercarriage levers (D114)', () => {
+  it('ends each lever in an upright T: a stem rising to a bar across its top, clear of the lights and placard', () => {
+    const rects = [];
+    const bars = [];
+    const g = new Proxy({}, {
+      get: (t, p) => (p === 'fillRect' ? (...a) => rects.push(a) : p === 'roundRect' ? (...a) => bars.push(a) : p in t ? t[p] : () => {}),
+      set: (t, p, v) => { t[p] = v; return true; },
+    });
+    tBar(g, 100, 200, 30);
+    const [sx, sy, sw, sh] = rects[0]; // the stem: upright, from the foot up
+    expect(sh).toBeGreaterThan(2 * sw);
+    expect(sy + sh).toBeCloseTo(200, 9);
+    const [bx, by, bw, bh] = bars[0]; // the bar: across, on the stem's top
+    expect(bw).toBeGreaterThan(3 * bh);
+    expect(by + bh / 2).toBeCloseTo(sy, 9);
+    expect(bx + bw / 2).toBeCloseTo(sx + sw / 2, 9);
+    // At Ein, each bar stays below the box above its switch.
+    const PXR = 30;
+    for (const [sw2, above] of [['flaps', 'lights'], ['gear', 'placard']]) {
+      const [x, top] = L.switches[sw2];
+      const barTop = top - T_STEM * PXR - 0.07 * PXR;
+      const [l, , r, b] = L.boxes[above];
+      const crosses = x + 0.275 * PXR > l && x - 0.275 * PXR < r;
+      if (crosses) expect(barTop, sw2).toBeGreaterThan(b);
     }
   });
 });

@@ -115,15 +115,16 @@ function gearLights(g, b, s, v) {
   }
 }
 
-/** An Ein/Aus switch: a slot with Ein at the top and Aus at the bottom, a lever and a white knob at `position` (0-1). */
+/**
+ * An Ein/Aus switch: a slot with Ein at the top and Aus at the bottom, and a lever at `position` (0-1): an upright T, its
+ * stem rising from the slot behind the Ein and Aus discs, its bar across the top (product owner, D114).
+ */
 function einAus(g, at, [px, top, bottom], position, s) {
   const [x, y0] = at.xy([px, top]);
   const [, y1] = at.xy([px, bottom]);
   g.fillStyle = BLACK;
   g.fillRect(x - s * 0.1, y0, s * 0.2, y1 - y0);
-  const ky = y0 + (y1 - y0) * position;
-  g.fillStyle = '#16181a';
-  g.fillRect(x - s * 0.55, ky - s * 0.09, s * 0.55, s * 0.18);
+  tBar(g, x, y0 + (y1 - y0) * position, s);
   for (const [word, wy, on] of [['Ein', y0, position === 0], ['Aus', y1, position === 1]]) {
     g.fillStyle = on ? '#f2efe6' : '#bfbcb2';
     g.beginPath();
@@ -131,7 +132,25 @@ function einAus(g, at, [px, top, bottom], position, s) {
     g.fill();
     text(g, word, x + s * 0.02, wy, s * 0.2, '#1a1a1a', { bold: on });
   }
-  roundKnob(g, x - s * 0.55, ky, s * 0.14);
+}
+
+/** The lever's T: a black stem rising T_STEM from its foot at (x, y) to a bar across its top, the bar lit along its top. */
+export const T_STEM = 0.45; // dial radii: the bar clears the Ein and Aus discs (0.3)
+export function tBar(g, x, y, s) {
+  const top = y - s * T_STEM;
+  const w = s * 0.55;
+  const h = s * 0.14;
+  g.fillStyle = '#0e0f10';
+  g.fillRect(x - s * 0.05, top, s * 0.1, y - top);
+  g.beginPath();
+  g.roundRect(x - w / 2, top - h / 2, w, h, h / 2);
+  g.fill();
+  g.strokeStyle = 'rgba(200, 205, 210, 0.45)';
+  g.lineWidth = Math.max(1, h * 0.18);
+  g.beginPath();
+  g.moveTo(x - w / 2 + h * 0.5, top - h * 0.22);
+  g.lineTo(x + w / 2 - h * 0.5, top - h * 0.22);
+  g.stroke();
 }
 
 /** The magneto switches for both engines: two black switch boxes, each a lever at M1+2 and the settings beside it. */

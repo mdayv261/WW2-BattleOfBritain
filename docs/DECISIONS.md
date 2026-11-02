@@ -3274,3 +3274,15 @@ slight curve.
   Revi.
 
 The tests are restored with it and read the Bf 110's guns.
+
+## D114. T-bar flap and undercarriage levers on the Bf 110 C panel (3 Nov 2026, product owner)
+
+**The request:** the Landeklappe and Fahrwerk levers are a "T" bar shape: an upright T, not one on its side.
+
+**The change** (`tBar` in `src/ui/bf110Fittings.js`):
+- **Shape:** each lever is a black upright T. Its stem rises from the slot at the lever's position, behind the Ein and
+  Aus discs, to a bar across its top that is lit along its upper edge.
+- **Removed:** the old sideways arm and its round knob.
+- **Movement:** the T moves along the slot with the flaps and undercarriage selection, as before (D106).
+- **Room for the bar at Ein:** the EIN/AUS light box is trimmed 4 px at its foot and the "Achtung Fahrwerk" placard
+  10 px at its foot (#31's pixels).
