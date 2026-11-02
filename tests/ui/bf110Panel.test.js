@@ -103,3 +103,27 @@ describe('Bf 110 fuel quantity gauges (D45)', () => {
     expect(BF110_LAYOUT.dials.tankRight).toBeDefined();
   });
 });
+
+describe('Bf 110 luminous dials (D105)', () => {
+  it('draws the listed dials\' markings and hands in luminous yellow, the others in white, and restores the colours', async () => {
+    const { bf110Panel } = await import('../../src/ui/bf110Panel.js');
+    const { LUMINOUS, INK, HAND, paint } = await import('../../src/ui/lwStyle.js');
+    const { instrumentReadings: readings } = await import('../../src/ui/instruments.js');
+    const { Simulation: Sim } = await import('../../src/core/simulation.js');
+    const { aircraftById: byId } = await import('../../src/aircraft/index.js');
+    const texts = [];
+    const g = new Proxy({}, {
+      get: (t, p) => (p === 'fillText' ? (s) => texts.push({ s: String(s), c: t.fillStyle }) : p in t ? t[p] : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t, p, v) => { t[p] = v; return true; },
+    });
+    bf110Panel(g, 1000, 0, 40, readings(new Sim(byId.bf110c4, 'air')));
+    const colourOf = (s) => texts.filter((t) => t.s === s).map((t) => t.c);
+    expect(colourOf('km/h')).toEqual([LUMINOUS]); // airspeed
+    expect(colourOf('U/min').every((c) => c === LUMINOUS)).toBe(true); // both rev counters
+    expect(colourOf('ata').every((c) => c === LUMINOUS)).toBe(true);
+    expect(colourOf('m/s')).toEqual([LUMINOUS]); // climb
+    expect(colourOf('DREHT')).toEqual([LUMINOUS]); // turn and bank
+    expect(colourOf('12')).toContain(INK); // the clock stays white
+    expect(paint).toEqual({ ink: INK, hand: HAND }); // restored afterwards
+  });
+});

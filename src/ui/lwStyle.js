@@ -6,6 +6,22 @@
 export const DEG = Math.PI / 180;
 export const INK = '#f1f1ec'; // white markings
 export const HAND = '#ece59c'; // pale yellow hands
+/** The light yellow of radium luminous paint, for the dials that carry it (the Bf 110's, product owner, D105). */
+export const LUMINOUS = '#e6dc96';
+/** The markings' and hands' colours the dials are drawn in now: white and pale yellow unless `luminous` is drawing. */
+export const paint = { ink: INK, hand: HAND };
+
+/** Draws dials (in `draw`) with their markings and hands in luminous paint, then restores the usual colours. */
+export function luminous(draw) {
+  const was = { ...paint };
+  paint.ink = LUMINOUS;
+  paint.hand = LUMINOUS;
+  try {
+    draw();
+  } finally {
+    Object.assign(paint, was);
+  }
+}
 const MOUNT = '#2a2c2e';
 
 export const at = (x, y, a, d) => [x + Math.sin(a) * d, y - Math.cos(a) * d];
@@ -14,7 +30,7 @@ export const font = (g, size, bold = false) => {
   g.font = `${bold ? 'bold ' : ''}${Math.max(6, Math.round(size))}px "Helvetica Neue", Arial, sans-serif`;
 };
 
-export const centred = (g, colour = INK) => {
+export const centred = (g, colour = paint.ink) => {
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.fillStyle = colour;
@@ -105,7 +121,7 @@ export function lwFace(g, x, y, r) {
  * The hand: a thin pale yellow pointer from the hub, with a dark counterweight sector on the hub opposite it and a
  * grey hub button. `length` is a fraction of r.
  */
-export function lwHand(g, x, y, r, angle, { length = 0.84, colour = HAND, counterweight = true } = {}) {
+export function lwHand(g, x, y, r, angle, { length = 0.84, colour = paint.hand, counterweight = true } = {}) {
   g.save();
   g.translate(x, y);
   g.rotate(angle);

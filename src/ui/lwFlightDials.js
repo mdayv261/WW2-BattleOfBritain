@@ -3,7 +3,7 @@
 //   descent), Wendezeiger Fl. 22402 (turn and bank), Führertochterkompass "Patin" Fl. 23338 (repeater compass) and
 //   Wendehorizont Fl. 22427 (artificial horizon). Scales are read from the drawings. Angles: radians, 0 up, clockwise.
 
-import { DEG, INK, at, font, centred, tick, tableAngle, lwFace, lwHand, screw } from './lwStyle.js';
+import { DEG, paint, at, font, centred, tick, tableAngle, lwFace, lwHand, screw } from './lwStyle.js';
 
 // Airspeed scale read from the drawing: 200 km/h at about eight o'clock, 400 just left of twelve, 600 at a quarter
 // to three, 700 at about four; the low speeds crowd toward six o'clock.
@@ -117,7 +117,7 @@ export function lwTurnBank(g, x, y, r, turnRate, sideG) {
     screw(g, ...at(x, y, s * 138 * DEG, r * 0.66), r * 0.045);
   }
   // The fixed index above the window, and the line across the foot of the face.
-  g.fillStyle = INK;
+  g.fillStyle = paint.ink;
   g.fillRect(x - r * 0.07, y - r * 0.84, r * 0.14, r * 0.11);
   g.strokeStyle = '#6b6e71';
   g.lineWidth = 1;
@@ -128,7 +128,7 @@ export function lwTurnBank(g, x, y, r, turnRate, sideG) {
   // The ball tube: a broad white band sagging a little in the middle, with a cage round the ball.
   const R = r * 3;
   const cy = y + r * 0.25 - R;
-  g.strokeStyle = INK;
+  g.strokeStyle = paint.ink;
   g.lineWidth = r * 0.16;
   g.lineCap = 'round';
   g.beginPath();
@@ -149,7 +149,7 @@ export function lwTurnBank(g, x, y, r, turnRate, sideG) {
   g.save();
   g.translate(x, y + r * 0.9);
   g.rotate(swing);
-  g.fillStyle = INK;
+  g.fillStyle = paint.ink;
   g.fillRect(-r * 0.015, -r * 1.58, r * 0.03, r * 1.58);
   g.fillRect(-r * 0.06, -r * 1.58, r * 0.12, r * 0.2);
   g.restore();
@@ -184,7 +184,7 @@ export function lwPatinCompass(g, x, y, r, heading) {
     g.restore();
   }
   // Fixed index bars at the top and bottom, and the two small squares either side of the top.
-  g.fillStyle = INK;
+  g.fillStyle = paint.ink;
   g.fillRect(x - r * 0.04, y - r * 0.66, r * 0.08, r * 0.2);
   g.fillRect(x - r * 0.008, y + r * 0.46, r * 0.016, r * 0.2);
   for (const s of [-1, 1]) g.fillRect(...at(x, y, s * 26 * DEG, r * 0.6).map((c) => c - r * 0.025), r * 0.05, r * 0.05);
@@ -237,11 +237,11 @@ export function lwHorizon(g, x, y, r, bank, pitch) {
   g.translate(x, y);
   g.rotate(-bank);
   const shift = Math.max(-r * 0.6, Math.min(r * 0.6, pitch * r * 2));
-  g.fillStyle = INK;
+  g.fillStyle = paint.ink;
   g.fillRect(-r * 0.8, shift - r * 0.025, r * 1.6, r * 0.05);
   g.restore();
   // The fixed small aircraft.
-  g.fillStyle = INK;
+  g.fillStyle = paint.ink;
   g.beginPath();
   g.arc(x, y - r * 0.01, r * 0.05, Math.PI, 0);
   g.fill();

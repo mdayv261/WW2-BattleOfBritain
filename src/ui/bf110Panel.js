@@ -15,6 +15,7 @@ import { undercarriageDisplay, flapDisplay, trimDisplay } from './panelControls.
 export { gearLampState } from './panelControls.js';
 import { millibarWindow } from './altimeters.js';
 import { mount, lwRpm, lwAta, lwClock, lwPitchIndicator, twoScaleGauge } from './luftwaffeDials.js';
+import { luminous } from './lwStyle.js';
 import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
 import { ringGauge, redRing } from './bf110Dials.js';
 
@@ -95,31 +96,33 @@ export function bf110Panel(g, x0, y0, r, v) {
   for (const [px, py, , half] of Object.values(L.dials)) mount(g, ...xy([px, py]), size(half) * r);
 
   // Flying instruments.
-  lwAirspeed(g, ...dial('airspeed'), v.airspeed);
+  // The airspeed, climb, altimeter and turn and bank indicators, the rev counters, manifold pressure gauges and pitch
+  // indicators carry radium luminous paint: their markings and hands light yellow (product owner, D105).
+  luminous(() => lwAirspeed(g, ...dial('airspeed'), v.airspeed));
   lwHorizon(g, ...dial('horizon'), v.bank, v.pitch);
-  lwVario(g, ...dial('climb'), v.climb);
+  luminous(() => lwVario(g, ...dial('climb'), v.climb));
   const [ax, ay, ar] = dial('altimeter');
-  lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013));
+  luminous(() => lwFineAltimeter(g, ax, ay, ar, v.altitude, (x, wy) => millibarWindow(g, x, wy, ar, 1013)));
   lwPatinCompass(g, ...dial('compass'), v.heading);
   lwClock(g, ...dial('clock'), new Date());
-  lwTurnBank(g, ...dial('turn'), v.turnRate, v.sideG);
+  luminous(() => lwTurnBank(g, ...dial('turn'), v.turnRate, v.sideG));
 
   // Engine instruments: left engine on the left.
   ['Left', 'Right'].forEach((side, i) => {
     const e = v.engines[i] ?? v.engines[0];
     const [rx, ry, rr] = dial(`rpm${side}`);
     redRing(g, rx, ry, rr);
-    lwRpm(g, rx, ry, rr, e.rpm);
+    luminous(() => lwRpm(g, rx, ry, rr, e.rpm));
     const [mx, my, mr] = dial(`ata${side}`);
     redRing(g, mx, my, mr);
-    lwAta(g, mx, my, mr, e.manifold);
+    luminous(() => lwAta(g, mx, my, mr, e.manifold));
     // Fuel quantity in this wing's tanks, litres (D45).
     const tank = v.fuelTanks[i];
     ringGauge(g, ...dial(`tank${side}`), {
       min: 0, max: 700, labels: [0, 300, 600], ring: '#c9ad2a', value: tank.litres, text: `FUEL ${side === 'Left' ? 'L' : 'R'}\nLiter`,
     });
     const [px, py, pr] = dial(`pitch${side}`);
-    lwPitchIndicator(g, px, py, pr, e.pitchClock);
+    luminous(() => lwPitchIndicator(g, px, py, pr, e.pitchClock));
     // Oil (left half) and coolant (right half) temperatures, °C, normal ranges in green (D63).
     const scale = { min: 0, max: 130, step: 10, majorStep: 50 };
     twoScaleGauge(g, ...dial(`temp${side}`), { ...scale, value: e.oil, normal: v.normalTemps.oil },

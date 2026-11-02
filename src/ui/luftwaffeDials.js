@@ -3,7 +3,7 @@
 // pitch indicator (Luftschraubenstellung), the fuel and oil pressure gauge, thermometers, the fuel contents gauge and
 // placards. The flying instruments are in src/ui/lwFlightDials.js. Angles are in radians, 0 straight up, clockwise.
 
-import { DEG, INK, at, font, centred, tick, lwFace, lwHand } from './lwStyle.js';
+import { DEG, paint, at, font, centred, tick, lwFace, lwHand } from './lwStyle.js';
 
 export { mount } from './lwStyle.js';
 export { lwAirspeed, lwAirspeedAngle, lwFineAltimeter, lwTurnBank } from './lwFlightDials.js';
@@ -74,7 +74,7 @@ export function lwStripCompass(g, x, y, r, heading) {
     }
   }
   g.restore();
-  g.strokeStyle = INK;
+  g.strokeStyle = paint.ink;
   g.lineWidth = Math.max(1.5, r * 0.04);
   g.beginPath();
   g.moveTo(x, y - r * 0.7);

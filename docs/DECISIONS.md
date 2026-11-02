@@ -3039,3 +3039,13 @@ Earlier colour changes the product owner asked for:
 - the Hurricane's and Spitfire's frames and coaming in dark green;
 - their fuselage inside walls in the instrument panel's colour (D102);
 - the Bf 109's frames and coaming in dark grey (D103).
+
+## D105. Radium luminous paint on the Bf 110's dials (2 Nov 2026, product owner)
+
+At the product owner's request these Bf 110 dials have their markings and hands in light yellow, for radium luminous
+paint: the airspeed indicator, the altimeter, the climb indicator (VSI), the turn and bank indicator, and each engine's
+rev counter, manifold pressure gauge and pitch indicator. The yellow is the RAF panel's luminous colour (`LUMINOUS`,
+`src/ui/lwStyle.js`). The horizon, compass, clock, fuel and temperature gauges stay white.
+
+The Luftwaffe dial drawings, shared with the Bf 109, take their colours from `paint`. `luminous(draw)` sets it to the
+luminous yellow for the dials drawn inside it and then restores it, so the Bf 109's panel is unchanged.

@@ -18,6 +18,11 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 luminous dials (2 Nov 2026)
+
+**Done** (D105): the Bf 110's airspeed, altimeter, climb, turn and bank, rev counters, manifold pressure and pitch
+indicators with light yellow (radium luminous) markings and hands.
+
 ## Welded cockpit frames (2 Nov 2026)
 
 **Done** (D104): every front-view frame joint blends as welded (outlines drawn first, joining bars over the bars they
