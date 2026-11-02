@@ -18,6 +18,14 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C right shoulder and side (3 Nov 2026)
+
+**Done** (D112):
+- the right shoulder mirrors the left, and the top edge ends over the clock;
+- the right-hand side leans out at 75°;
+- the engine gauges stand close by that edge;
+- the lower row's gaps are 15 px.
+
 ## Bf 110 C even instrument gaps (3 Nov 2026)
 
 **Done** (D111):

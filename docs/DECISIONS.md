@@ -3240,3 +3240,22 @@ panel. They were the fuel and oil pressure gauges.
 - **Unchanged:** the left side and the bottom centre.
 
 **Flagged:** the panel is now wider than the photographed one (#31) by 30 px on its pixels.
+
+## D112. The Bf 110 C panel's right shoulder and side, engine gauges by the edge, a wider lower row (3 Nov 2026)
+These are the product owner's follow-on refinements to D111, given in the session.
+
+**Right shoulder:**
+- The left shoulder is mirrored on the right, and the top edge ends over the clock's 12 o'clock.
+- The right-hand side then leans out at 75° from the horizontal, as on #31 (product owner: "angled about 75 degrees not
+  vertical").
+- The section's bottom edge is lengthened to meet it (to about 795 on #31's pixels).
+
+**Engine gauges:**
+- The pitch indicators, rev counters and manifold pressure gauges each move right as a pair.
+- Each right-hand gauge's mounting comes 8 px (on #31) inside the sloping edge at its top corner (`toEdge`).
+
+**Lower row:** the gaps between the strip compass, horizon, airspeed indicator and altimeter widen from 10 to 15 px
+(`LOWER_GAP`). The strip compass's left edge stays under the Patin compass's.
+
+**Flagged:** the panel's right-hand part is wider than on #31, and its side is straight instead of the photograph's
+slight curve.

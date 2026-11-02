@@ -176,7 +176,7 @@ describe('Bf 110 C flying instruments as the product owner arranged them (D108)'
   it('stands the strip compass, horizon, airspeed indicator and altimeter side by side below, their bottoms aligned', () => {
     const lower = [D.stripCompass, D.horizon, D.airspeed, D.altimeter];
     for (let i = 1; i < lower.length; i += 1) {
-      expect(left(lower[i]) - right(lower[i - 1])).toBeCloseTo(10, 9); // the same gap as the upper row (D111)
+      expect(left(lower[i]) - right(lower[i - 1])).toBeCloseTo(15, 9); // one even gap, a little wider than above (D112)
       expect(foot(lower[i])).toBeCloseTo(foot(lower[0]), 9);
     }
     expect(D.stripCompass[1] - D.stripCompass[3]).toBeGreaterThan(foot(D.compass)); // below the upper row
@@ -215,5 +215,33 @@ describe('Bf 110 C right-hand side moved out for even gaps (D111)', () => {
       expect(P2.dials[n][0], n).toBeGreaterThan(OLD_X[n]); // moved out with the right-hand section
     }
     for (const [w, h] of SCREENS) expect(P2.width * panelRadius(P2, w, h), `${w}x${h}`).toBeLessThanOrEqual(0.96 * w + 1e-6);
+  });
+});
+
+describe('Bf 110 C right shoulder and side (D112)', () => {
+  const O = BF110_PANEL.outline;
+  const D = BF110_PANEL.dials;
+
+  it('ends the top edge over the clock\'s 12 o\'clock and mirrors the left shoulder', () => {
+    expect(O[1][0]).toBe(D.clock[0]);
+    expect(O[1][1]).toBe(O[0][1]);
+    const leftEnd = O.slice(-9).reverse(); // the left shoulder, from the top edge down
+    for (let i = 0; i < leftEnd.length; i += 1) {
+      expect(O[i + 2][0] - O[1][0]).toBeCloseTo(O[0][0] - leftEnd[i][0], 9);
+      expect(O[i + 2][1]).toBe(leftEnd[i][1]);
+    }
+  });
+
+  it('leans the right-hand side out at 75 degrees, as #31, with the engine gauges close inside it', () => {
+    const [x0, y0] = O[10];
+    const [x1, y1] = O[11];
+    expect(Math.atan2(y1 - y0, x1 - x0) * (180 / Math.PI)).toBeCloseTo(75, 6);
+    for (const n of ['pitchRight', 'rpmRight', 'ataRight']) {
+      const [x, y, , o] = D[n];
+      const top = y - o;
+      // The edge at the mounting's top: on the side below the shoulder's foot, on the shoulder above it.
+      const edge = top >= y0 ? x0 + (top - y0) / Math.tan(75 * Math.PI / 180) : null;
+      if (edge !== null) expect(edge - (x + o), n).toBeCloseTo(8, 6);
+    }
   });
 });

@@ -65,17 +65,18 @@ function knob109(knob, dial, x, y) {
 }
 
 /**
- * Flying instruments standing in a row on a common foot (picture y), left to right from `left` with GAP between their
- * mountings: `entries` are [name, [face, mounting half-width]]. Returns their dial entries by name (D108). The gap is
- * one even amount for all of them, widened from 3 px (D111).
+ * Flying instruments standing in a row on a common foot (picture y), left to right from `left` with `gap` between their
+ * mountings: `entries` are [name, [face, mounting half-width]]. Returns their dial entries by name (D108). Each row's
+ * gaps are one even amount: GAP in the upper row (widened from 3 px, D111), LOWER_GAP in the lower (D112).
  */
 const GAP = 10;
-function row(foot, left, entries) {
+const LOWER_GAP = 15;
+function row(foot, left, entries, gap = GAP) {
   const out = {};
   let x = left;
   for (const [name, [face, outer]] of entries) {
     out[name] = [x + outer, foot - outer, face, outer];
-    x += 2 * outer + GAP;
+    x += 2 * outer + gap;
   }
   return out;
 }
@@ -91,14 +92,14 @@ const UPPER = row(UPPER_FOOT, PATIN[0] + PATIN[3] + GAP, [['turn', size(as109('t
 export const AXIS = UPPER.climb[0];
 const LOWER_LEFT = PATIN[0] - PATIN[3]; // the strip compass's left edge under the Patin compass's (D111; 194 before)
 /**
- * How far the panel's right-hand section stands out from #31's (D111): the lower row's three gaps widened from 3 px and
- * its start moved from 194 to LOWER_LEFT.
+ * How far the panel's right-hand section (its clock and trim gauge) stands out from #31's (D111): the lower row's three
+ * gaps widened from 3 to 10 px and its start moved from 194 to LOWER_LEFT. The engine gauges stand by the edge (D112).
  */
-const WIDEN = 3 * (GAP - 3) + (LOWER_LEFT - 194);
+const WIDEN = 3 * (10 - 3) + (LOWER_LEFT - 194);
 const LOWER = row(LOWER_FOOT, LOWER_LEFT, [
   ['stripCompass', size(as109('compass', 0, 0))], ['horizon', size(PATIN)], ['airspeed', size(as109('airspeed', 0, 0))],
   ['altimeter', size(as109('altimeter', 0, 0))],
-]);
+], LOWER_GAP);
 
 /** The Revi on the Bf 110 (D107): the Bf 109's, its body 20% shorter, standing on the panel above the climb indicator. */
 export const REVI_110 = shortRevi(REVI, 0.8);
@@ -119,19 +120,52 @@ export const P = (px, py) => [(px - AXIS) / PX, (py - TOP) / PX];
 
 // The panel's outline traced on #31: the raised top section, the right section, the bottom centre extension, the gap
 // beside it, the left wing.
-// The right-hand section stands WIDEN further out (D111).
-const RIGHT = [[613, 58], [633, 117], [667, 147], [690, 180], [710, 227], [723, 273], [733, 327], [733, 350], [722, 360]];
+// The left shoulder traced on #31, from the top edge's left end down to the left wing.
+const LEFT_SHOULDER = [[263, 57], [240, 64], [223, 80], [210, 97], [202, 120], [193, 128], [177, 133], [157, 140], [147, 150], [130, 167]];
+const CLOCK_X = 583 + WIDEN; // the clock's column (its 12 o'clock), moved out with the right-hand side
+const SIDE_ANGLE = 75 * (Math.PI / 180); // the right-hand side's slope from the horizontal, as on #31 (D112)
+const SIDE_FOOT = 350; // where the right-hand side meets the rounded corner above the section's bottom edge (360)
+/**
+ * The right shoulder: the left one mirrored, the top edge ending over the clock's 12 o'clock (product owner, D112), then
+ * the right-hand side leaning out at SIDE_ANGLE down to the bottom edge, which is lengthened to meet it.
+ */
+const SHOULDER = LEFT_SHOULDER.map(([x, y]) => [CLOCK_X + (LEFT_SHOULDER[0][0] - x), y]);
+const [SIDE_X, SIDE_Y] = SHOULDER[SHOULDER.length - 1];
+const SIDE_X_FOOT = SIDE_X + (SIDE_FOOT - SIDE_Y) / Math.tan(SIDE_ANGLE);
+const RIGHT = [...SHOULDER, [SIDE_X_FOOT, SIDE_FOOT], [SIDE_X_FOOT - 11, 360]];
 const OUTLINE = [
-  [263, 57], ...RIGHT.map(([x, y]) => [x + WIDEN, y]),
+  LEFT_SHOULDER[0], ...RIGHT,
   [548, 360], [544, 400], [538, 455], [528, 472], [338, 475], [326, 462], [312, 420], [302, 384], [292, 370], [205, 370],
   [188, 384], [180, 420], [176, 452], [166, 462], [66, 462], [57, 448], [60, 380], [63, 333], [70, 280], [83, 250],
-  [93, 227], [110, 200], [130, 167], [147, 150], [157, 140], [177, 133], [193, 128], [202, 120], [210, 97], [223, 80],
-  [240, 64],
+  [93, 227], [110, 200], ...LEFT_SHOULDER.slice(1).reverse(),
 ];
 
 /** Dial entries moved out WIDEN with the right-hand section (D111). */
 function right(dials) {
   return Object.fromEntries(Object.entries(dials).map(([name, [x, ...rest]]) => [name, [x + WIDEN, ...rest]]));
+}
+
+const EDGE_MARGIN = 8; // picture px between the right-hand gauges' mountings and the panel's edge (D112)
+
+/** The panel's right-hand edge (picture x) at height y, along the right shoulder and side. */
+function edgeAt(y) {
+  for (let i = 1; i < RIGHT.length; i += 1) {
+    const [x0, y0] = RIGHT[i - 1];
+    const [x1, y1] = RIGHT[i];
+    if (y >= y0 && y <= y1) return y1 === y0 ? Math.max(x0, x1) : x0 + ((y - y0) / (y1 - y0)) * (x1 - x0);
+  }
+  return RIGHT[RIGHT.length - 1][0];
+}
+
+/**
+ * An engine pair (`name`Left and `name`Right, as photographed on #31) moved right together until the right one's
+ * mounting comes EDGE_MARGIN inside the edge at its top corner, the nearer one since the side leans out (D112).
+ */
+function toEdge(name, left, right) {
+  const [rx, ry, , ro] = right;
+  const shift = edgeAt(ry - ro) - EDGE_MARGIN - (rx + ro);
+  const moved = ([x, ...rest]) => [x + shift, ...rest];
+  return { [`${name}Left`]: moved(left), [`${name}Right`]: moved(right) };
 }
 
 /**
@@ -149,10 +183,11 @@ export const BF110_PANEL = {
     // The right-hand side, moved out WIDEN with its section of the outline (D111).
     ...right({
       clock: [583, 112, 20, 24], trim: [510, 112, 20, 24], // the Spitfire's trim gauge at the clock's size (D110)
-      pitchLeft: [585, 175, 18, 22], pitchRight: [643, 175, 18, 22], // the photographed gauges' size (D109)
-      rpmLeft: [589, 243, 29, 33], rpmRight: [660, 243, 29, 33],
-      ataLeft: [602, 318, 28, 32], ataRight: [673, 318, 28, 32],
     }),
+    // Each engine pair moved out close to the sloping right-hand edge (product owner, D112).
+    ...toEdge('pitch', [585, 175, 18, 22], [643, 175, 18, 22]), // the photographed gauges' size (D109)
+    ...toEdge('rpm', [589, 243, 29, 33], [660, 243, 29, 33]),
+    ...toEdge('ata', [602, 318, 28, 32], [673, 318, 28, 32]),
     tempLeft: [345, 381, 20, 24], fuel: [428, 381, 20, 24], tempRight: [511, 381, 20, 24],
     radiatorLeft: [365, 438, 18, 22], selector: [428, 438, 18, 22], radiatorRight: [491, 438, 18, 22],
     hydraulic: [118, 395, 18, 22],
