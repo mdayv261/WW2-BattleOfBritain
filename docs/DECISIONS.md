@@ -3286,3 +3286,18 @@ The tests are restored with it and read the Bf 110's guns.
 - **Movement:** the T moves along the slot with the flaps and undercarriage selection, as before (D106).
 - **Room for the bar at Ein:** the EIN/AUS light box is trimmed 4 px at its foot and the "Achtung Fahrwerk" placard
   10 px at its foot (#31's pixels).
+
+## D115. The Bf 109's coolant thermometers on the Bf 110 C panel; the fuel gauge to match (3 Nov 2026, product owner)
+
+**The request:**
+- The engine temperature gauges either side of the fuel gauge become the Bf 109's coolant temperature gauge.
+- Then: match the fuel gauge's size to them.
+
+**The change** (`src/ui/bf110Panel.js`):
+- **Thermometers:** each engine's coolant temperature is shown on the Bf 109's thermometer (`lwThermometer`: 0–130 °C,
+  its blue ring, "Kühlst.", luminous paint), at the Bf 109's size on screen.
+- **Placement:** the thermometers sit either side of the fuel gauge, at 347 and 509 on #31's pixels.
+- **Fuel gauge:** now the same size (the Bf 109's fuel gauge size), still white and without the Bf 109's yellow ring.
+
+**Flagged:** the Bf 110 panel no longer shows the oil temperatures. They were the left half of each of the two-scale
+gauges (D63), which these thermometers replace.

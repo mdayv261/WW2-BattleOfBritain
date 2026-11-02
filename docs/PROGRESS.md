@@ -18,6 +18,12 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C coolant thermometers (3 Nov 2026)
+
+**Done** (D115):
+- the Bf 109's coolant thermometer for each engine, either side of the fuel gauge, which is now the same size;
+- the oil temperatures are no longer shown.
+
 ## Bf 110 C T-bar levers (3 Nov 2026)
 
 **Done** (D114): the flap and undercarriage levers are upright T bars.

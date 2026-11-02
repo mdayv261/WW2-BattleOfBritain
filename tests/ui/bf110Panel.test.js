@@ -150,7 +150,7 @@ describe('Bf 110 luminous dials (D105)', () => {
   it('draws all but the fuel gauge\'s markings and hands in luminous yellow, and restores the colours', () => {
     const g = draw();
     const colourOf = (s) => g.texts.filter((t) => t.s === s).map((t) => t.c);
-    for (const w of ['km/h', 'U/min', 'ata', 'm/s', 'DREHT', '12', 'Kühl.']) expect(colourOf(w).every((c) => c === LUMINOUS), w).toBe(true);
+    for (const w of ['km/h', 'U/min', 'ata', 'm/s', 'DREHT', '12', 'Kühlst.']) expect(colourOf(w).every((c) => c === LUMINOUS), w).toBe(true);
     expect(colourOf('Liter')).toEqual([INK]); // the fuel gauge stays white
     expect(paint).toEqual({ ink: INK, hand: HAND });
   });
@@ -271,5 +271,19 @@ describe('Bf 110 C flap and undercarriage levers (D114)', () => {
       const crosses = x + 0.275 * PXR > l && x - 0.275 * PXR < r;
       if (crosses) expect(barTop, sw2).toBeGreaterThan(b);
     }
+  });
+});
+
+describe('Bf 110 C coolant thermometers (D115)', () => {
+  it('draws each engine\'s coolant temperature on the Bf 109\'s thermometer, at its size', () => {
+    for (const side of ['Left', 'Right']) {
+      const [, , face, outer] = BF110_PANEL.dials[`temp${side}`];
+      expect(face / outer).toBeCloseTo(32 / 40, 9); // the Bf 109's coolTemp proportions
+    }
+    expect(BF110_PANEL.dials.tempLeft[0] + BF110_PANEL.dials.tempRight[0]).toBe(2 * BF110_PANEL.dials.fuel[0]);
+    expect(BF110_PANEL.dials.fuel.slice(2)).toEqual(BF110_PANEL.dials.tempLeft.slice(2)); // the fuel gauge the same size
+    const g = draw();
+    expect(g.texts.filter((t) => t.s === 'Kühlst.')).toHaveLength(2);
+    expect(g.texts.some((t) => t.s === 'Kühl.')).toBe(false); // the oil and coolant gauges are gone
   });
 });

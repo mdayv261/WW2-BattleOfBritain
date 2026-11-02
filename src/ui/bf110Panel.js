@@ -16,7 +16,7 @@
 //   Right, a column per engine (left engine on the left): the airscrew pitch indicator (the Bf 109's, in place of the
 //   fuel and oil pressure gauge: product owner, D109), the rev counter (to 3,600 rpm, as photographed), the manifold
 //   pressure gauge in its red ring.
-//   Bottom centre: oil and coolant temperatures for each engine either side of the fuel contents gauge, four warning
+//   Bottom centre: each engine's coolant thermometer (the Bf 109's, D115) either side of the fuel contents gauge, four warning
 //   lamps; under them the radiator flap switches either side of the fuel tank selector.
 //   Left: the EIN/AUS undercarriage lights, the Landeklappe (flap) and Fahrwerk (undercarriage) switches, the magneto
 //   switches, placards, the hydraulic pressure gauge and two knobs.
@@ -27,7 +27,7 @@
 
 import { drawBf110Fittings } from './bf110Fittings.js';
 import {
-  mount, lwRpm, lwAta, lwClock, twoScaleGauge, lwPitchIndicator, lwFuelGauge, lwStripCompass, RPM_110,
+  mount, lwRpm, lwAta, lwClock, lwThermometer, lwPitchIndicator, lwFuelGauge, lwStripCompass, RPM_110,
 } from './luftwaffeDials.js';
 import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
 import { luminous } from './lwStyle.js';
@@ -188,7 +188,8 @@ export const BF110_PANEL = {
     ...toEdge('pitch', [585, 175, 18, 22], [643, 175, 18, 22]), // the photographed gauges' size (D109)
     ...toEdge('rpm', [589, 243, 29, 33], [660, 243, 29, 33]),
     ...toEdge('ata', [602, 318, 28, 32], [673, 318, 28, 32]),
-    tempLeft: [345, 381, 20, 24], fuel: [428, 381, 20, 24], tempRight: [511, 381, 20, 24],
+    // Each engine's coolant thermometer, the Bf 109's at its size, either side of the fuel gauge at the same size (D115).
+    tempLeft: as109('coolTemp', 347, 381), fuel: as109('fuel', 428, 381), tempRight: as109('coolTemp', 509, 381),
     radiatorLeft: [365, 438, 18, 22], selector: [428, 438, 18, 22], radiatorRight: [491, 438, 18, 22],
     hydraulic: [118, 395, 18, 22],
   },
@@ -267,14 +268,12 @@ export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
     const [rx, ry, rr] = dial(`rpm${side}`);
     const [mx, my, mr] = dial(`ata${side}`);
     redRing(g, mx, my, mr);
-    const scale = { min: 0, max: 130, step: 10, majorStep: 50 };
     luminous(() => {
       if (e.pitchClock) lwPitchIndicator(g, ...dial(`pitch${side}`), e.pitchClock); // each engine's blade angle (D109)
       lwRpm(g, rx, ry, rr, e.rpm, v.rpmLimit, RPM_110);
       lwAta(g, mx, my, mr, e.manifold);
-      // Oil (left half) and coolant (right half) temperatures, °C, normal ranges in green (D63).
-      twoScaleGauge(g, ...dial(`temp${side}`), { ...scale, value: e.oil, normal: v.normalTemps.oil },
-        { ...scale, value: e.coolant, normal: v.normalTemps.coolant }, { labels: ['Öl', 'Kühl.'] });
+      // The engine's coolant temperature, °C, on the Bf 109's thermometer with its blue ring (D89, D115).
+      lwThermometer(g, ...dial(`temp${side}`), e.coolant, { label: 'Kühlst.', ring: '#2f8a96' });
     });
   });
   // The fuel contents of the tank the selector chooses (front left, at 1), white (D105).
