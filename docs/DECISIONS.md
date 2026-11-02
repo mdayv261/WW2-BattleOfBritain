@@ -3377,4 +3377,31 @@ gauges (D63), which these thermometers replace.
 **Flagged:**
 - the windscreen is taller relative to the panel than in #32;
 - the side posts are straight;
-- the crash pads follow the panel's outline, not #32's straighter slopes.
+- the crash pads follow the panel's outline, not #32's straighter slopes (made straight in D118).
+
+## D118. The Bf 110 C's crash pads as straight slopes (3 Nov 2026, product owner's request)
+
+**The request:** "Make the crash pads straight slopes like the photo" (#32).
+
+**The change** (`src/ui/bf110Frame.js`, `FRAME_110.pads`):
+- **Shape:** each pad is now a straight wedge, from beside the Revi down and out to the outer post. Its lower edge
+  slopes about 0.28 px down for each px out, as on #32; its upper edge about 0.23.
+- **Thickness:** 52 px by the Revi and 64 px at the post. Like #32, the pad thickens outward, where D117's thinned
+  outward.
+- **Height:** the lower edge runs from 20 px by the Revi to 88 px at the post. It passes just above the panel's top
+  corners, so no dial or plate is covered.
+- **Underneath:** the gap between the pads and the panel's top is the dark cockpit colour.
+- **Windscreen ledge:** raised from 6 px to -10 px, so its two knobs sit on the pads' top, as on #32. Most of the
+  ledge is now behind the pads and the Revi.
+
+**Flagged:**
+- On #32 the pads lie over the top of the panel. Here they sit above it, because our panel's dials and the ammunition
+  counter reach its top edge.
+- The ledge is straight, not curved as on #32.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each pad:
+- is a four-cornered straight wedge;
+- has its slope within 0.2-0.35;
+- thickens outward;
+- ends under its outer post;
+- has its lower edge above every corner of the panel's outline it crosses.

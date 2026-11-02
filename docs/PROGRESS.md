@@ -20,7 +20,8 @@ Read this at the start of every session.
 
 ## Bf 110 C cockpit view (3 Nov 2026)
 
-**Done** (D117): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code.
+**Done** (D117, D118): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code; the crash pads made
+straight slopes like #32 (D118).
 - **Frame:** the outer canopy frame with grab handles and the red knob, the armoured windscreen and its posts, crash
   pads either side of the Revi, and the dark cockpit sides.
 - **3D:** the 3D frame hides looking ahead; the wings, engines and airscrews stay in view.

@@ -1,7 +1,7 @@
 // The Bf 110 C's drawn front frame after the product owner's photograph (#32, D117): symmetric about the panel's axis;
 // the outer posts leaning out going down and the windscreen's posts leaning in, as photographed; the top bar on every
-// screen; the windscreen's opening round the Revi's glass and the guns' line; the crash pads clear of every dial and
-// plate on the panel.
+// screen; the windscreen's opening round the Revi's glass and the guns' line; the crash pads straight wedges sloping down
+// and out to the outer posts, as photographed, above the panel's top and clear of every dial and plate on it.
 import { describe, it, expect } from 'vitest';
 import { FRAME_110, outerX, innerX, outerPath, padPath, frameBars110 } from '../../src/ui/bf110Frame.js';
 import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
@@ -45,7 +45,25 @@ describe('Bf 110 C front frame (D117)', () => {
     }
   });
 
-  it('lays the crash pads on the panel\'s top beside the Revi, clear of every dial and plate', () => {
+  it('makes the crash pads straight wedges sloping down and out to the outer posts, as #32, above the panel\'s top', () => {
+    for (const side of [-1, 1]) {
+      const [lowIn, lowOut, upOut, upIn] = padPath(side);
+      expect(padPath(side)).toHaveLength(4);
+      const slope = (a, b) => (b[1] - a[1]) / Math.abs(b[0] - a[0]);
+      expect(slope(lowIn, lowOut)).toBeGreaterThan(0.2); // #32: about 0.28
+      expect(slope(lowIn, lowOut)).toBeLessThan(0.35);
+      expect(slope(upIn, upOut)).toBeGreaterThan(0);
+      expect(lowOut[1] - upOut[1]).toBeGreaterThan(lowIn[1] - upIn[1]); // thickening outward, as #32
+      expect(Math.abs(lowOut[0] - outerX(side, lowOut[1]))).toBeLessThan(FRAME_110.posts.width / 2); // under the post
+      // The lower edge passes above every corner of the panel's outline it crosses.
+      for (const [x, y] of L.outline) {
+        const f = (x - lowIn[0]) / (lowOut[0] - lowIn[0]);
+        if (f >= 0 && f <= 1) expect(lowIn[1] + f * (lowOut[1] - lowIn[1]), `${side} ${x}`).toBeLessThan(y);
+      }
+    }
+  });
+
+  it('lays the crash pads beside the Revi, clear of every dial and plate', () => {
     const inside = (px, py, poly) => {
       let hit = false;
       for (let i = 0, j = poly.length - 1; i < poly.length; j = i, i += 1) {
