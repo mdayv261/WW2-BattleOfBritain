@@ -3153,3 +3153,34 @@ The rest shows normal operation. All the dials but the fuel gauge carry luminous
 - the Bf 110's guns' line now above the middle of the screen.
 
 No aircraft data changed.
+
+## D108. The Bf 110 C's flying instruments rearranged (2 Nov 2026, plan approved by the product owner)
+
+**The request:**
+- **Removed:**
+  - the "00 00" instrument right of the Patin (vertical) compass;
+  - the "4 MG / 2 MG" strip above it.
+- **Upper row:** the turn and bank goes right of the Patin compass, with their bottoms aligned, and the climb indicator
+  right of the turn and bank.
+- **Lower row:**
+  - the artificial horizon goes right of the strip (horizontal) compass, enlarged to the Patin compass's size;
+  - the airspeed indicator goes below the climb indicator, a little to its left;
+  - the altimeter goes right of the airspeed indicator.
+
+**The product owner's answers:**
+- **Revi:** it stays in the middle of the screen, so it stands above the climb indicator, which sits on the axis.
+- **"Umschalterstellung links / rechts" strip:** removed, with its two knobs.
+
+**Layout** (`src/ui/bf110Panel.js`, on #31's pixels):
+- **Upper row:** the Patin compass (250, 185, unmoved), the turn and bank (343, 189) and the climb indicator (428, 199).
+  Their bottoms are on 232.
+- **Lower row:** the strip compass (237, 291), the horizon (331, 287; face 40, mounting 47, as the Patin compass), the
+  airspeed indicator (423, 291) and the altimeter (512, 291). Their bottoms are on 334.
+- **Spacing:** 3 px between mountings. The rows are built by `row()`, so the alignment is exact.
+
+**My choices, flagged:**
+- the lower row's bottoms aligned as well as the upper row's;
+- the 3 px gaps;
+- the space where the climb indicator was is left empty;
+- the Revi's knob stays where D107 put it, so the guns' line keeps its approved place (0.41 of the screen). That leaves a
+  small gap above the climb indicator.

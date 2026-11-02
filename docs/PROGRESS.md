@@ -18,6 +18,14 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C flying instruments rearranged (2 Nov 2026)
+
+**Done** (D108):
+- **Removed:** the "00 00" instrument and the "4 MG / 2 MG" and "Umschalterstellung" strips.
+- **Upper row:** the Patin compass, the turn and bank and the climb indicator (under the Revi), their bottoms aligned.
+- **Lower row:** the strip compass, the enlarged horizon, the airspeed indicator and the altimeter, their bottoms
+  aligned.
+
 ## Bf 109 instruments and Revi on the Bf 110 C panel (2 Nov 2026)
 
 **Done** (D107):

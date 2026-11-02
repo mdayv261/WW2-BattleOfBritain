@@ -1,11 +1,10 @@
 // The Bf 110 C panel's plate and fittings (D106), after the product owner's pictures (#31, the panel; #32, the
-// cockpit): the light grey-green plate on its traced outline; the ammunition counter
-// (three tall windows, a white tape in each dropping as its guns fire: the left MG 17 pair, both MG FF, the right MG 17
-// pair); the EIN/AUS undercarriage lights (EIN red with it up, AUS green with it down, as the Bf 109's, D95); the
-// Landeklappe and Fahrwerk Ein/Aus switches following the flaps and the undercarriage; the radiator flap switches
-// following the radiator; the elevator trim indicator (as the Bf 109's, D95); and, shown only, the red push button, the
-// "4 MG / 2 MG" strip, the "00 00" instrument, the magneto switches, placards, the hydraulic pressure gauge, knobs,
-// warning lamps and the fuel tank selector at 1.
+// cockpit): the light grey-green plate on its traced outline; the ammunition counter (three tall windows, a white tape
+// in each dropping as its guns fire: the left MG 17 pair, both MG FF, the right MG 17 pair); the EIN/AUS undercarriage
+// lights (EIN red with it up, AUS green with it down, as the Bf 109's, D95); the Landeklappe and Fahrwerk Ein/Aus
+// switches following the flaps and the undercarriage; the radiator flap switches following the radiator; the elevator
+// trim indicator (as the Bf 109's, D95); and, shown only, the red push button, the magneto switches, placards, the
+// hydraulic pressure gauge, knobs, warning lamps and the fuel tank selector at 1.
 
 import { placard } from './luftwaffeDials.js';
 import { DEG, at as polar, font, centred, tick, lwFace, lwHand, screw } from './lwStyle.js';
@@ -37,11 +36,7 @@ export function drawBf110Fittings(g, at, L, v) {
   outlinePlate(g, at, L.outline);
   ammoCounter(g, B('ammo'), s, ammoFractions(v));
   pushButton(g, ...at.knob(L.knobs.redButton));
-  strip(g, B('mgStrip'), s, ['4', 'MG'], ['2', 'MG']);
-  counter(g, ...at.dial(L.dials.counter));
   trimIndicator(g, B('trim'), s, v);
-  umschalter(g, B('umschalter'));
-  for (const k of ['umLeft', 'umRight']) roundKnob(g, ...at.knob(L.knobs[k]));
   gearLights(g, B('lights'), s, v);
   einAus(g, at, L.switches.flaps, switchPosition.flaps(v), s);
   einAus(g, at, L.switches.gear, switchPosition.gear(v), s);
@@ -112,32 +107,6 @@ function pushButton(g, x, y, rad) {
   g.fill();
 }
 
-/** A black strip with a narrow window, and figure-and-word labels at its ends ("4 MG", "2 MG"). */
-function strip(g, b, s, left, right) {
-  plain(g, b, s);
-  const inset = b.w * 0.16;
-  g.fillStyle = '#1d1f20';
-  g.fillRect(b.x + inset, b.y + b.h * 0.25, b.w - 2 * inset, b.h * 0.5);
-  g.fillStyle = '#d8d6cc';
-  g.fillRect(b.x + b.w / 2 - b.w * 0.015, b.y + b.h * 0.3, b.w * 0.03, b.h * 0.4);
-  for (const [label, fx] of [[left, 0.08], [right, 0.92]]) {
-    text(g, label[0], b.x + b.w * fx, b.y + b.h * 0.32, b.h * 0.34, INK, { bold: true });
-    text(g, label[1], b.x + b.w * fx, b.y + b.h * 0.7, b.h * 0.3, INK, { bold: true });
-  }
-}
-
-/** The "00 00" instrument (not identified, shown only): two pairs of figures in windows and two knobs below. */
-function counter(g, x, y, face, outer) {
-  squareMount(g, x, y, outer);
-  lwFace(g, x, y, face);
-  for (const dx of [-0.38, 0.38]) {
-    g.fillStyle = '#0a0a0a';
-    g.fillRect(x + dx * face - face * 0.3, y - face * 0.2, face * 0.6, face * 0.36);
-    text(g, '00', x + dx * face, y - face * 0.02, face * 0.32, INK, { bold: true });
-  }
-  for (const dx of [-0.25, 0.25]) roundKnob(g, x + dx * face, y + face * 0.58, face * 0.16);
-}
-
 /** A square black mounting with a screw in each corner. */
 function squareMount(g, x, y, half) {
   g.fillStyle = '#16181a';
@@ -145,13 +114,6 @@ function squareMount(g, x, y, half) {
   g.roundRect(x - half, y - half, 2 * half, 2 * half, half * 0.3);
   g.fill();
   for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) screw(g, x + sx * half * 0.78, y + sy * half * 0.78, half * 0.1);
-}
-
-/** The "Umschalterstellung links / rechts" placard strip. */
-function umschalter(g, b) {
-  placard(g, ...centre(b), { lines: ['Umschalterstellung'] });
-  text(g, 'links', b.x + b.w * 0.18, b.y + b.h * 0.78, b.h * 0.28, INK, { align: 'center' });
-  text(g, 'rechts', b.x + b.w * 0.82, b.y + b.h * 0.78, b.h * 0.28, INK, { align: 'center' });
 }
 
 /** Which undercarriage lights glow: the EIN pair red with it fully up, the AUS pair green with it down (D95, D106). */

@@ -79,7 +79,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
     expect(shortRevi(REVI, 1)).toEqual(REVI);
   });
 
-  it('stands its knob just above the turn and bank on every screen, the guns\' line at BF110_AIM inside the glass', () => {
+  it('stands its knob just above the climb indicator (D108) on every screen, the guns\' line at BF110_AIM inside the glass', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);
       const p = reviPlacement(w, h, BF110_REVI);
@@ -87,11 +87,12 @@ describe('the Bf 110\'s Revi (D107)', () => {
       expect(p.glass.y).toBeLessThan(p.y);
       expect(p.glass.y + p.glass.h).toBeGreaterThan(p.y);
       const panelTop = h - (L.height * r + 6) + 3; // as InstrumentPanel draws it
-      const [, turnY, , turnOuter] = L.dials.turn;
-      const mountTop = panelTop + ((turnY - turnOuter - TOP) / PX) * r;
+      const [climbX, climbY, , climbOuter] = L.dials.climb;
+      expect(climbX).toBe(AXIS); // under the Revi in the middle
+      const mountTop = panelTop + ((climbY - climbOuter - TOP) / PX) * r;
       const knobFoot = p.y + REVI_110.knob.y[1] * p.r;
       expect(knobFoot, `${w}x${h}`).toBeLessThan(mountTop);
-      expect(mountTop - knobFoot, `${w}x${h}`).toBeLessThan(0.3 * r);
+      expect(mountTop - knobFoot, `${w}x${h}`).toBeLessThan(r);
     }
     expect(BF110_AIM).toBeGreaterThan(0.35);
     expect(BF110_AIM).toBeLessThan(0.5);

@@ -1,7 +1,8 @@
 // The Bf 110 C panel after the product owner's pictures (D106): the variometer's scale; every dial, plate and knob inside
 // the traced outline, none touching; the panel below the guns' line on every screen; each engine on its own gauges; the
 // ammunition counter, the Ein/Aus switches and lights, the radiator switches, the trim indicator, the rev counter to
-// 3,600 rpm and the fuel gauge working; the old added displays gone; and the luminous dials (D105).
+// 3,600 rpm and the fuel gauge working; the old added displays gone; the luminous dials (D105); and the flying
+// instruments as the product owner arranged them (D108).
 import { describe, it, expect } from 'vitest';
 import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
@@ -132,11 +133,13 @@ describe('Bf 110 C panel instruments (D106)', () => {
 
   it('letters the panel\'s words; the old flap, undercarriage and trim displays are gone', () => {
     const words = new Set(draw().texts.map((t) => t.s));
-    for (const w of ['Landeklappe', 'Fahrwerk', 'Ein', 'Aus', 'EIN', 'AUS', 'Umschalterstellung', 'links', 'rechts', 'MG',
-      'Umschalter', 'Schalter f. Kühlkl.', 'Zu', 'Auf', '+', '0', '−', 'Liter']) {
+    for (const w of ['Landeklappe', 'Fahrwerk', 'Ein', 'Aus', 'EIN', 'AUS', 'Umschalter', 'Schalter f. Kühlkl.', 'Zu', 'Auf',
+      '+', '0', '−', 'Liter']) {
       expect(words.has(w), w).toBe(true);
     }
     for (const w of ['OBEN', 'UNTEN', 'GEAR', 'KLAPPEN', 'ELEVATOR TRIM', 'TAKEOFF']) expect(words.has(w), w).toBe(false);
+    // The "00 00" instrument, the "4 MG / 2 MG" strip and the "Umschalterstellung" strip are gone (D108).
+    for (const w of ['00', 'MG', 'Umschalterstellung', 'links', 'rechts']) expect(words.has(w), w).toBe(false);
   });
 });
 
@@ -147,5 +150,37 @@ describe('Bf 110 luminous dials (D105)', () => {
     for (const w of ['km/h', 'U/min', 'ata', 'm/s', 'DREHT', '12', 'Kühl.']) expect(colourOf(w).every((c) => c === LUMINOUS), w).toBe(true);
     expect(colourOf('Liter')).toEqual([INK]); // the fuel gauge stays white
     expect(paint).toEqual({ ink: INK, hand: HAND });
+  });
+});
+
+describe('Bf 110 C flying instruments as the product owner arranged them (D108)', () => {
+  const D = L.dials;
+  const left = ([x, , , o]) => x - o;
+  const right = ([x, , , o]) => x + o;
+  const foot = ([, y, , o]) => y + o;
+
+  it('stands the Patin compass, turn and bank and climb indicator side by side, their bottoms aligned', () => {
+    const upper = [D.compass, D.turn, D.climb];
+    for (let i = 1; i < upper.length; i += 1) {
+      expect(left(upper[i])).toBeGreaterThan(right(upper[i - 1]));
+      expect(foot(upper[i])).toBeCloseTo(foot(upper[0]), 9);
+    }
+    expect(D.counter).toBeUndefined();
+    expect(L.boxes.mgStrip).toBeUndefined();
+    expect(L.boxes.umschalter).toBeUndefined();
+  });
+
+  it('stands the strip compass, horizon, airspeed indicator and altimeter side by side below, their bottoms aligned', () => {
+    const lower = [D.stripCompass, D.horizon, D.airspeed, D.altimeter];
+    for (let i = 1; i < lower.length; i += 1) {
+      expect(left(lower[i])).toBeGreaterThan(right(lower[i - 1]));
+      expect(foot(lower[i])).toBeCloseTo(foot(lower[0]), 9);
+    }
+    expect(D.stripCompass[1] - D.stripCompass[3]).toBeGreaterThan(foot(D.compass)); // below the upper row
+    expect(D.horizon.slice(2)).toEqual(D.compass.slice(2)); // the Patin compass's size
+    expect(D.airspeed[0]).toBeLessThan(D.climb[0]); // below the climb indicator, a little to its left
+    expect(D.climb[0] - D.airspeed[0]).toBeLessThan(D.climb[3]);
+    expect(L.knobs.setAirspeed[0]).toBe(D.airspeed[0]);
+    expect(L.knobs.setAltimeter[0]).toBe(D.altimeter[0]);
   });
 });

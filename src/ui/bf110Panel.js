@@ -3,12 +3,12 @@
 // into the game. Positions and sizes are measured on #31 in its pixels (PX to a dial radius) from the turn and bank
 // indicator's column (where the Revi stands above it in #32, the middle of the screen) and the panel's top edge.
 //   Top: the ammunition counter (three tall windows, as #32, in place of #31's box of lamps and knobs: product owner),
-//   a red push button, the "4 MG / 2 MG" strip, the Revi standing on the panel above the turn and bank (in place of the
-//   "L ... R" instrument and the strip under it, D107), the elevator trim indicator (D106, in place of a pasted
-//   photograph) and the clock.
-//   Upper row: the repeater compass (Patin), the "00 00" instrument, turn and bank, climb indicator; under them the
-//   "Umschalterstellung links / rechts" strip. Lower row: the strip compass, the fine altimeter, the artificial horizon
-//   and the airspeed indicator.
+//   a red push button, the Revi standing on the panel in the middle (in place of the "L ... R" instrument and the strip
+//   under it, D107), the elevator trim indicator (D106, in place of a pasted photograph) and the clock.
+//   The flying instruments as the product owner arranged them (D108), each row's bottoms aligned: in the upper row the
+//   repeater compass (Patin), turn and bank and climb indicator (under the Revi); in the lower row the strip compass,
+//   the artificial horizon (the Patin compass's size), the airspeed indicator and the fine altimeter. The "00 00"
+//   instrument, the "4 MG / 2 MG" strip and the "Umschalterstellung" strip are gone.
 //   The airspeed indicator, altimeter, turn and bank and strip compass are the Bf 109's exactly, at its size on screen,
 //   red bezels and setting knobs included (product owner, D107); the strip compass has no recess.
 //   Right, a column per engine (left engine on the left): the fuel and oil pressure gauge, the rev counter (to 3,600
@@ -59,9 +59,36 @@ function knob109(knob, dial, x, y) {
   return [x, y + (ky - BF109_PANEL.dials[dial][1]) * FROM_109, rad * FROM_109];
 }
 
-/** The Revi on the Bf 110 (D107): the Bf 109's, its body 20% shorter, its knob's foot just above the turn and bank. */
+/**
+ * Flying instruments standing in a row on a common foot (picture y), left to right from `left` with GAP between their
+ * mountings: `entries` are [name, [face, mounting half-width]]. Returns their dial entries by name (D108).
+ */
+const GAP = 3;
+function row(foot, left, entries) {
+  const out = {};
+  let x = left;
+  for (const [name, [face, outer]] of entries) {
+    out[name] = [x + outer, foot - outer, face, outer];
+    x += 2 * outer + GAP;
+  }
+  return out;
+}
+const size = (entry) => entry.slice(2);
+const PATIN = [250, 185, 40, 47]; // the repeater compass, unmoved
+const UPPER_FOOT = PATIN[1] + PATIN[3];
+const LOWER_FOOT = 334;
+const UPPER = row(UPPER_FOOT, PATIN[0] + PATIN[3] + GAP, [['turn', size(as109('turn', 0, 0))]]);
+const CLIMB = [AXIS, UPPER_FOOT - 33, 28, 33]; // in the middle, under the Revi
+const LOWER = row(LOWER_FOOT, 194, [
+  ['stripCompass', size(as109('compass', 0, 0))], ['horizon', size(PATIN)], ['airspeed', size(as109('airspeed', 0, 0))],
+  ['altimeter', size(as109('altimeter', 0, 0))],
+]);
+
+/** The Revi on the Bf 110 (D107): the Bf 109's, its body 20% shorter, standing on the panel above the climb indicator. */
 export const REVI_110 = shortRevi(REVI, 0.8);
-const KNOB_FOOT = 144; // on #31, the turn and bank's mounting's top at about 150 (the panel is drawn 3 px below the canvas's top)
+// The knob's foot on #31: above the climb indicator's mounting (D108; the guns' line kept where the product owner
+// approved it, D107). The panel is drawn 3 px below its canvas's top.
+const KNOB_FOOT = 144;
 /** The guns' line above the panel's top, in dial radii: the Revi's knob's foot below it, at its size. */
 export const GLASS_ABOVE_110 = REVI_110.knob.y[1] * BF109_SCALE - (KNOB_FOOT - TOP) / PX;
 /**
@@ -96,9 +123,7 @@ export const BF110_PANEL = {
   outline: OUTLINE,
   dials: {
     clock: [583, 112, 20, 24],
-    compass: [250, 185, 40, 47], counter: [343, 193, 27, 32], turn: as109('turn', 428, 193), climb: [513, 192, 28, 33],
-    stripCompass: as109('compass', 252, 287), altimeter: as109('altimeter', 343, 297), horizon: [428, 297, 31, 37],
-    airspeed: as109('airspeed', 511, 297),
+    compass: PATIN, ...UPPER, climb: CLIMB, ...LOWER,
     pressureLeft: [585, 175, 18, 22], pressureRight: [643, 175, 18, 22],
     rpmLeft: [589, 243, 29, 33], rpmRight: [660, 243, 29, 33],
     ataLeft: [602, 318, 28, 32], ataRight: [673, 318, 28, 32],
@@ -107,14 +132,15 @@ export const BF110_PANEL = {
     hydraulic: [118, 395, 18, 22],
   },
   boxes: {
-    ammo: [257, 62, 364, 125], mgStrip: [298, 130, 385, 149], // moved clear of the Revi and the turn and bank (D107)
-    trim: [492, 82, 528, 150], umschalter: [394, 238, 462, 257],
+    ammo: [257, 62, 364, 125], // moved clear of the Revi (D107)
+    trim: [492, 82, 528, 150],
     lights: [145, 152, 190, 200], flapLabel: [100, 228, 152, 240], gearLabel: [86, 345, 146, 357],
     magnetos: [86, 256, 148, 333], placard: [152, 258, 190, 322],
   },
   knobs: {
-    redButton: [231, 108, 11], umLeft: [383, 247, 7], umRight: [473, 247, 7],
-    setAltimeter: knob109('setAltimeter', 'altimeter', 343, 297), setAirspeed: knob109('setAirspeed', 'airspeed', 511, 297),
+    redButton: [231, 108, 11],
+    setAltimeter: knob109('setAltimeter', 'altimeter', ...LOWER.altimeter),
+    setAirspeed: knob109('setAirspeed', 'airspeed', ...LOWER.airspeed),
     lampTempL1: [386, 368, 6], lampTempL2: [386, 396, 6], lampTempR1: [470, 368, 6], lampTempR2: [470, 396, 6],
     knobLeft: [77, 434, 17], knobRight: [136, 434, 17],
   },
@@ -142,7 +168,7 @@ export function placer(x0, y0, r) {
 }
 
 /** The dials drawn by the fittings (src/ui/bf110Fittings.js), not given a mounting here. */
-const FITTED = ['counter', 'hydraulic', 'radiatorLeft', 'radiatorRight', 'selector'];
+const FITTED = ['hydraulic', 'radiatorLeft', 'radiatorRight', 'selector'];
 
 /** The Bf 109's instruments with its red bezels (D107). */
 const RED_BEZELS = ['altimeter', 'airspeed'];
