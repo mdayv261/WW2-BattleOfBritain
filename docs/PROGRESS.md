@@ -18,6 +18,11 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C ammunition counter (3 Nov 2026)
+
+**Done** (D113): the Bf 110's ammunition counter is now the one first built for the Bf 109 (D64, D65): spinning
+windows, tapes, red lights when empty, and the EIN/AUS switch.
+
 ## Bf 110 C right shoulder and side (3 Nov 2026)
 
 **Done** (D112):

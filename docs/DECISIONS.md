@@ -3259,3 +3259,18 @@ These are the product owner's follow-on refinements to D111, given in the sessio
 
 **Flagged:** the panel's right-hand part is wider than on #31, and its side is straight instead of the photograph's
 slight curve.
+
+## D113. The Bf 109's ammunition counter on the Bf 110 C panel (3 Nov 2026, product owner)
+
+**The request:** the Bf 110's ammunition counter becomes exactly the counter built for the Bf 109 in its earlier panel
+(D64, D65), which was taken off the Bf 109 with its redraw (D89).
+
+**The counter** (`src/ui/ammoCounter.js`, restored unchanged from that version but for its header):
+- **Layout:** the dark plate with the guns' EIN/AUS switch on the left, then three columns. Each column has a round
+  window that turns with every round counted, a scale marked 500 with a white tape showing the rounds left, and a plate
+  at its foot that lights red when the guns are empty.
+- **Columns:** the left MG 17 pair, both MG FF and the right MG 17 pair, as before (D106) (`ammoColumns`).
+- **Box:** the old Bf 109 counter's shape (57 × 36.5), 107 × 68.5 on #31's pixels, in the old box's place, clear of the
+  Revi.
+
+The tests are restored with it and read the Bf 110's guns.

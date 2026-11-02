@@ -193,7 +193,7 @@ export const BF110_PANEL = {
     hydraulic: [118, 395, 18, 22],
   },
   boxes: {
-    ammo: [257, 62, 364, 125], // moved clear of the Revi (D107)
+    ammo: [260, 60, 367, 128.5], // the Bf 109's counter, at its shape (D113), clear of the Revi (D107)
     lights: [145, 152, 190, 200], flapLabel: [100, 228, 152, 240], gearLabel: [86, 345, 146, 357],
     magnetos: [86, 256, 148, 333], placard: [152, 258, 190, 322],
   },

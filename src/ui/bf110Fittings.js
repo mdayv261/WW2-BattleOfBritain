@@ -1,6 +1,6 @@
 // The Bf 110 C panel's plate and fittings (D106), after the product owner's pictures (#31, the panel; #32, the
-// cockpit): the light grey-green plate on its traced outline; the ammunition counter (three tall windows, a white tape
-// in each dropping as its guns fire: the left MG 17 pair, both MG FF, the right MG 17 pair); the EIN/AUS undercarriage
+// cockpit): the light grey-green plate on its traced outline; the ammunition counter (the Bf 109's of D64/D65, D113: the
+// left MG 17 pair, both MG FF, the right MG 17 pair); the EIN/AUS undercarriage
 // lights (EIN red with it up, AUS green with it down, as the Bf 109's, D95); the Landeklappe and Fahrwerk Ein/Aus
 // switches following the flaps and the undercarriage; the radiator flap switches following the radiator; and, shown
 // only, the red push button, the magneto switches, placards, the hydraulic pressure gauge, knobs, warning lamps and the
@@ -10,20 +10,27 @@ import { placard } from './luftwaffeDials.js';
 import { DEG, at as polar, font, centred, tick, lwFace, lwHand, screw } from './lwStyle.js';
 import { lens, text } from './panelParts.js';
 import { BLACK, INK, centre, plain, roundKnob } from './bf109Fittings.js';
+import { ammoCounter, counterState } from './ammoCounter.js';
 
 const PLATE = { top: '#a2adab', foot: '#8f9a98', edge: '#3a4140' };
 
 /** The ammunition counter's columns, left to right: the guns each one counts (product owner, D106). */
 export const AMMO_COLUMNS = [['mg17UpperLeft', 'mg17LowerLeft'], ['cannonLeft', 'cannonRight'], ['mg17UpperRight', 'mg17LowerRight']];
 
-/** Each column's rounds left as a fraction of its load (1 full, 0 empty), from the readings' `rounds` by gun. */
-export function ammoFractions(v) {
+/**
+ * Each column's counter state (src/ui/ammoCounter.js: tape fraction, window angle, empty light) from its guns' rounds
+ * left and loaded, from the readings' `rounds` by gun; full and still for a column with no guns.
+ */
+export function ammoColumns(v) {
   return AMMO_COLUMNS.map((ids) => {
     const guns = ids.map((id) => v.rounds?.[id]).filter(Boolean);
     const capacity = guns.reduce((s, x) => s + x.capacity, 0);
-    return capacity ? guns.reduce((s, x) => s + x.rounds, 0) / capacity : 1;
+    return capacity ? counterState(guns.reduce((s, x) => s + x.rounds, 0), capacity) : { fraction: 1, angle: 0, empty: false };
   });
 }
+
+/** Each column's rounds left as a fraction of its load (1 full, 0 empty). */
+export const ammoFractions = (v) => ammoColumns(v).map((c) => c.fraction);
 
 /** Where an Ein/Aus switch's knob stands along its travel (0 at Ein, the top; 1 at Aus, the bottom). */
 export const switchPosition = { flaps: (v) => ((v.flapSelected ?? 0) > 0 ? 1 : 0), gear: (v) => (v.gearSelected ? 1 : 0) };
@@ -33,7 +40,8 @@ export function drawBf110Fittings(g, at, L, v) {
   const s = at.len(30); // one dial radius in pixels
   const B = (name) => at.box(L.boxes[name]);
   outlinePlate(g, at, L.outline);
-  ammoCounter(g, B('ammo'), s, ammoFractions(v));
+  const ammo = B('ammo');
+  ammoCounter(g, { x: ammo.x + ammo.w / 2, y: ammo.y + ammo.h / 2, w: ammo.w, h: ammo.h }, s, ammoColumns(v)); // as the Bf 109's (D113)
   pushButton(g, ...at.knob(L.knobs.redButton));
   gearLights(g, B('lights'), s, v);
   einAus(g, at, L.switches.flaps, switchPosition.flaps(v), s);
@@ -68,29 +76,6 @@ function outlinePlate(g, at, outline) {
   g.closePath();
   g.fill();
   g.stroke();
-}
-
-/**
- * The ammunition counter (as #32): a black box with three tall windows, a white tape in each standing as high as its
- * guns' rounds left, a knob under each window and a red strip along the foot.
- */
-function ammoCounter(g, b, s, fractions) {
-  plain(g, b, s);
-  const X = (f) => b.x + b.w * f;
-  const Y = (f) => b.y + b.h * f;
-  fractions.forEach((f, i) => {
-    const x0 = X(0.12 + i * 0.28);
-    const w = b.w * 0.18;
-    const [top, foot] = [Y(0.08), Y(0.62)];
-    g.fillStyle = '#060606';
-    g.fillRect(x0, top, w, foot - top);
-    const fill = Math.max(0, Math.min(1, f)) * (foot - top);
-    g.fillStyle = '#e8e6dc';
-    g.fillRect(x0 + w * 0.3, foot - fill, w * 0.4, fill);
-    roundKnob(g, x0 + w / 2, Y(0.72), w * 0.36);
-  });
-  g.fillStyle = '#b8332a';
-  g.fillRect(X(0.08), Y(0.84), b.w * 0.84, b.h * 0.1);
 }
 
 /** The red push button in its ring. */
