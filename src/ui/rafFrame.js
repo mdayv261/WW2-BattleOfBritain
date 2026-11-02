@@ -15,6 +15,7 @@
 // when the pilot looks round.
 
 import { SPITFIRE_PANEL } from './rafPanel.js';
+import { C } from './panelParts.js';
 
 const AXIS = 946; // the GM 2's axis on the panel picture: its centre line
 // The windscreen frames, struts and fuselage side frames in the Bf 109 frames' style (D103), darker grey (product owner,
@@ -36,7 +37,7 @@ export const RAF_FRAMES = {
     mirror: { w: 130, h: 34, stem: 40 },
     coaming: { half: 774, width: 56, overlap: 6 },
     sills: { slope: 1.156, width: 70, wall: 0.45 },
-    wallColour: '#8d9295',
+    wallColour: C.panelTop, // as the instrument panel (product owner, D102)
     interiorColour: '#2a2c2e',
   },
   hurricane: {
@@ -56,7 +57,7 @@ export const RAF_FRAMES = {
     // The sills: from the outer legs' feet outward `slope` for each pixel down (the Bf 109's side frames', D90); the
     // band's width. The side walls' inner edge leaves the feet at `wall` across for each pixel down.
     sills: { slope: 1.156, width: 70, wall: 0.45 },
-    wallColour: '#7f8774',
+    wallColour: C.panelTop, // as the instrument panel (product owner, D102)
     interiorColour: '#2d2f2c',
   },
 };
