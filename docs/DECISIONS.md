@@ -3692,3 +3692,21 @@ To keep the sight above the climb indicator, the sight and the guns' line move d
 **Tests:** tests/ui/bf110Revi.test.js checks that there is no block or knob, and that the sight still stands where the
 knob's foot stood above the climb indicator on every screen.
 
+## D133. The Revi-110 standing on the panel's top; its sun filter lever removed (3 Nov 2026, product owner's request)
+
+**The request:** raise the bottom of the gunsight to the level of the panel's top, and remove the black rectangle on the
+left of the gunsight's body.
+
+**The change:**
+- **Position** (src/ui/bf110Panel.js): the Revi-110 is raised so its body's foot (the bottom of the brown pad body) stands
+  on the panel's top edge on every screen. `GLASS_ABOVE_110` now comes from the body's foot rather than the old knob's
+  foot (D108, D132).
+- **Lever removed** (src/ui/reviParts.js, src/ui/reviSight.js): the Revi-110 has no sun filter lever or pivot, the
+  black rectangle on the body's left. The Bf 109's Revi keeps its lever.
+
+**Flagged: the guns' line moves up.** It goes from 0.474 of the screen's height (D131) to 0.447. The camera's picture is
+shifted to match, so the reticle still marks where the guns point.
+
+**Tests:** tests/ui/bf110Revi.test.js checks that the body's foot lies on the panel's top on every tested screen, and
+that there is no lever or pivot.
+

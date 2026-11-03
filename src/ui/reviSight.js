@@ -90,10 +90,12 @@ export function drawRevi(g, p, aim) {
   g.fillStyle = shade;
   roundRect(g, ...body, r * 0.25);
   g.fill();
-  g.fillStyle = '#1d1f21';
-  roundRect(g, ...part(R.lever), r * 0.1);
-  g.fill();
-  disc(g, X(R.pivot[0]), Y(R.pivot[1]), r * 0.08, '#6d7073');
+  if (R.lever) { // none on the Revi-110 (D133)
+    g.fillStyle = '#1d1f21';
+    roundRect(g, ...part(R.lever), r * 0.1);
+    g.fill();
+    disc(g, X(R.pivot[0]), Y(R.pivot[1]), r * 0.08, '#6d7073');
+  }
   const post = R.post;
   if (post) {
     g.fillStyle = '#121314';

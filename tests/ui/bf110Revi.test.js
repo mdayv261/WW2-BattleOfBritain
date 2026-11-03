@@ -1,6 +1,6 @@
 // The Bf 109's instruments and the Revi-110 on the Bf 110 C panel (D107, D130): the airspeed indicator, altimeter, turn
 // and bank and strip compass at the Bf 109's size on screen, with its red bezels and setting knobs; the "L ... R"
-// instrument gone; the Revi-110, its body 20% shorter, standing on the panel above the climb indicator, clear of
+// instrument gone; the Revi-110, its body cut to its pad, its foot on the panel's top above the climb indicator, clear of
 // everything on it, its round glass (as wide as the body, in a holder of the body's width) round the guns' line at
 // BF110_AIM.
 import { describe, it, expect } from 'vitest';
@@ -78,12 +78,11 @@ describe('the Bf 110\'s Revi (D107)', () => {
     expect(width(REVI_110.body)).toBeCloseTo(width(REVI.pad), 9);
     // Everything below the body raised by the same lift as the pad.
     const lift = short.pad.y[0] - REVI_110.pad.y[0];
-    expect(REVI_110.foot).toBeCloseTo(short.knob.y[1] - lift, 9); // where the knob's foot stood
     expect(REVI_110.block).toBeNull(); // no mounting block or knob (D132)
     expect(REVI_110.knob).toBeNull();
-    expect(REVI_110.lever.x[1]).toBeGreaterThan(REVI_110.body.x[0]); // against its left side
-    expect(REVI_110.lever.x[0]).toBeLessThan(REVI_110.body.x[0]);
-    expect(REVI_110.lever.y[1]).toBeLessThanOrEqual(REVI_110.body.y[1]);
+    expect(lift).toBeGreaterThan(0);
+    expect(REVI_110.lever).toBeNull(); // no sun filter lever beside the body (D133)
+    expect(REVI_110.pivot).toBeNull();
     expect(REVI.body.y).toEqual([1.6, 5.6]);
     expect(shortRevi(REVI, 1)).toEqual(REVI);
   });
@@ -136,7 +135,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
     expect(b.radii.some((x) => x > r)).toBe(false); // no large round glass on the Bf 109's
   });
 
-  it('stands where its knob\'s foot stood above the climb indicator (D108, D132), the guns\' line inside the glass', () => {
+  it('stands its body\'s foot on the panel\'s top on every screen (D133), the guns\' line inside the glass', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);
       const p = reviPlacement(w, h, BF110_REVI);
@@ -144,18 +143,14 @@ describe('the Bf 110\'s Revi (D107)', () => {
       expect(p.glass.y).toBeLessThan(p.y);
       expect(p.glass.y + p.glass.h).toBeGreaterThan(p.y);
       const panelTop = panelTop110(h, r); // as InstrumentPanel draws it
-      const [climbX, climbY, , climbOuter] = L.dials.climb;
-      expect(climbX).toBe(AXIS); // under the Revi in the middle
-      const mountTop = panelTop + ((climbY - climbOuter - TOP) / PX) * r;
-      const knobFoot = p.y + REVI_110.foot * p.r;
-      expect(knobFoot, `${w}x${h}`).toBeLessThan(mountTop);
-      expect(mountTop - knobFoot, `${w}x${h}`).toBeLessThan(r);
+      expect(L.dials.climb[0]).toBe(AXIS); // above the climb indicator, in the middle
+      expect(p.y + REVI_110.body.y[1] * p.r, `${w}x${h}`).toBeCloseTo(panelTop, 6);
     }
     expect(BF110_AIM).toBeGreaterThan(0.35);
     expect(BF110_AIM).toBeLessThan(0.5);
   });
 
-  it('keeps the body and lever clear of every dial and plate on the panel', () => {
+  it('keeps the body clear of every dial and plate on the panel', () => {
     // The Revi's parts in the layout's picture pixels: the guns' line GLASS_ABOVE_110 radii above the panel's top.
     const toPicture = ({ x: [x0, x1], y: [y0, y1] }) => {
       const u = BF109_SCALE * PX;
@@ -167,7 +162,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
       ...Object.entries(L.dials).map(([n, [x, y, , o]]) => [n, [x - o, y - o, x + o, y + o]]),
       ...Object.entries(L.boxes),
     ];
-    for (const part of ['body', 'lever']) {
+    for (const part of ['body']) {
       for (const [name, square] of things) expect(overlap(toPicture(REVI_110[part]), square), `${part} / ${name}`).toBe(false);
     }
   });

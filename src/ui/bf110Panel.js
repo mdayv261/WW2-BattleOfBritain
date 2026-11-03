@@ -108,16 +108,13 @@ const LOWER = row(LOWER_FOOT, LOWER_LEFT, [
 ], LOWER_GAP);
 
 /**
- * The Revi-110 on the Bf 110 (D107, D130-D132): the Bf 109's Revi, its body cut to its brown pad, with a round glass as
- * wide as the body in a holder frame of the body's width, standing in front of the panel's top above the climb
- * indicator. No mounting block or knob below it (D132).
+ * The Revi-110 on the Bf 110 (D107, D130-D133): the Bf 109's Revi, its body cut to its brown pad, with a round glass as
+ * wide as the body in a holder frame of the body's width, its body's foot standing on the panel's top above the climb
+ * indicator (D133). No mounting block, knob or sun filter lever (D132, D133).
  */
 export const REVI_110 = revi110(REVI);
-// Where the knob's foot stood on #31: above the climb indicator's mounting (D108). The sight's height is still set from
-// it with the knob gone (D132; the guns' line kept where D131 left it). The panel is drawn 3 px below its canvas's top.
-const KNOB_FOOT = 144;
-/** The guns' line above the panel's top, in dial radii: the Revi-110's `foot` (the knob's foot) below it, at its size. */
-export const GLASS_ABOVE_110 = REVI_110.foot * BF109_SCALE - (KNOB_FOOT - TOP) / PX;
+/** The guns' line above the panel's top, in dial radii: the Revi-110's body's foot on the panel's top (D133). */
+export const GLASS_ABOVE_110 = REVI_110.body.y[1] * BF109_SCALE;
 /**
  * Where the guns' line stands looking ahead in the Bf 110's cockpit, as a fraction of the screen's height from its top:
  * GLASS_ABOVE_110 above the panel, which stands SINK below the screen's foot (D107, D129). The camera's picture is
