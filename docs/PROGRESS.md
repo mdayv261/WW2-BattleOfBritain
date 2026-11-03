@@ -79,6 +79,7 @@ Read this at the start of every session.
 - D188: the pitch control switches show a white knob at Automatik or Hand; Shift+P toggles them (Automatik is the
   automatic pitch, Hand is E/D).
 - D189: the pitch levers' knobs in the Heizung knob's green.
+- D190: the pitch levers' knobs 25 px across.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

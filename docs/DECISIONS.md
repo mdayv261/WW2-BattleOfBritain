@@ -4762,3 +4762,13 @@ function.
 
 **Tests:** tests/ui/bf110Panel.test.js checks three knobs use the green: the Heizung knob and both lever knobs.
 
+## D190. The Bf 110 C's pitch levers' knobs 25 px across (3 Nov 2026, product owner's request)
+
+**The request:** make the pitch control knobs 25 px.
+
+**The change** (src/ui/bf110Fittings.js, `LEVER_KNOB`): the two green knobs on the pitch levers (D189) are now 25 screen
+px across on the product owner's 2560 × 1259 screen (they were 17.3), scaling with the panel on other screens. They
+stay clear of each other (37 px apart) and inside the lever box.
+
+**Tests:** tests/ui/bf110Panel.test.js checks the 25 px size on a 2560 × 1259 screen.
+

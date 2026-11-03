@@ -8,7 +8,7 @@ import { lwVarioAngle, lwHorizon } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
 import {
-  switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS, GEAR_HOUSING, pitchKnobY, PITCH_KNOB,
+  switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS, GEAR_HOUSING, pitchKnobY, PITCH_KNOB, LEVER_KNOB,
 } from '../../src/ui/bf110Fittings.js';
 import {
   cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
@@ -399,6 +399,7 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     });
     bf110Panel(g, 0, 0, 30, readings());
     expect(stops.filter((c) => c === GREEN_KNOB[0])).toHaveLength(3); // the Heizung knob and both levers' knobs
+    expect(LEVER_KNOB * panelRadius(L, 2560, 1259)).toBeCloseTo(25, 1); // 25 px across on a 2560 x 1259 screen (D190)
   });
 
   it('reads the fuel gauge from the front left main tank, 375 L full (S24), and the radiator from key O', () => {

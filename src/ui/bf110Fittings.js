@@ -110,6 +110,8 @@ function gearLights(g, b, s, v) {
  */
 export const pitchKnobY = (automatik) => (automatik ? 0.175 : 0.255);
 export const PITCH_KNOB = 10 / 40.37; // dial radii: 10 px where a dial radius is 40.37 px (2560 × 1259)
+/** The pitch levers' knobs' diameter (D190): 25 screen px on the product owner's 2560 × 1259 screen, in dial radii. */
+export const LEVER_KNOB = 25 / 40.37;
 
 /**
  * The airscrew lever box: the Automatik and Hand plates over two rocker switches for the pitch control, their white
@@ -136,7 +138,7 @@ function leverBox(g, b, s, v) {
     text(g, 'kleiner', x, b.y + b.h * 0.8, b.h * 0.03, INK);
     g.fillStyle = '#0d0e0f';
     g.fillRect(x - b.w * 0.03, b.y + b.h * 0.5, b.w * 0.06, b.h * 0.27); // the lever's slot
-    greenKnob(g, x, b.y + b.h * 0.6, b.w * 0.07); // its knob, mid-travel, the Heizung knob's green (D189)
+    greenKnob(g, x, b.y + b.h * 0.6, (LEVER_KNOB * s) / 2); // its knob, mid-travel, the Heizung knob's green (D189)
   }
   text(g, 'Drehzahl', b.x + b.w / 2, b.y + b.h * 0.88, b.h * 0.03, INK);
 }
