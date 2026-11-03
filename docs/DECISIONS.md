@@ -4298,3 +4298,15 @@ left corner.
 **Tests:** tests/ui/bf110Panel.test.js checks that the box is square, all four lamps lie inside the rim, and the housing
 is drawn as a circle of the box's half-width.
 
+## D158. The Bf 110 C's undercarriage lights housing the round counter's size (3 Nov 2026, product owner's request)
+
+**The request:** make the undercarriage lights housing's diameter the same as the cannon round counter's.
+
+**The change** (src/ui/bf110Layout.js): the round housing (D157) is now 150 of #34's pixels across, the round counter's
+flange diameter (twice its 75 half-width), where it was 115. It stays centred where it was, at (277.5, 387.5). It still
+clears the clock, the repeater compass, the Fahrwerk switch's lever and the panel's left edge. The lamps and lettering
+grow with it.
+
+**Tests:** tests/ui/bf110Panel.test.js checks that its width equals the round counter's diameter. The layout checks keep
+it inside the outline and clear of every dial and box.
+

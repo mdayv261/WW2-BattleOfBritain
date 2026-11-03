@@ -233,6 +233,7 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
   it('houses the undercarriage lights in a round housing, all four lamps inside it (D157)', () => {
     const [l, top, r, b] = L.boxes.gearLights;
     expect(r - l).toBeCloseTo(b - top, 6); // a square box for a round housing
+    expect(r - l).toBeCloseTo(2 * L.dials.counter[3], 6); // as wide as the round counter (D158)
     for (const [fx, fy] of GEAR_LAMPS.lamps) {
       expect(Math.hypot(fx, fy) + GEAR_LAMPS.radius * 1.15).toBeLessThan(0.94); // inside the rim, lens ring and all
     }
