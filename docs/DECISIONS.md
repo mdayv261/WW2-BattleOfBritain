@@ -4444,3 +4444,13 @@ indicator's left side, and a very short pointer.
 **Tests:** tests/ui/bf110Panel.test.js checks the move on a 2560 px screen (107.5 px), that the left engine's gauges
 stay, and that the gauges stay inside the recess and the outline.
 
+## D166. The Bf 110 C's left engine gauges moved 15 mm right (3 Nov 2026, product owner's request)
+
+**The request:** move the left rev counter and left manifold pressure gauge 15 mm to the right.
+
+**The change** (src/ui/bf110Layout.js, `LEFT_MOVE`): the left engine's rev counter and manifold pressure gauge, with
+their correction cards, now stand 104.2 of #34's pixels further right. That is 64.5 screen px on a 2560 × 1259 screen,
+taking 10 mm as 43 px as in D154. The recess's left edge moves with them.
+
+**Tests:** tests/ui/bf110Panel.test.js checks the move on a 2560 px screen.
+

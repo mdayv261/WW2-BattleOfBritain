@@ -100,7 +100,9 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
       expect(screenPx(L.dials[n][0] - at34), n).toBeCloseTo(43 * 2.5, 0); // 10 mm taken as 43 px (D154)
       expect(L.dials[n][0] + L.dials[n][3], n).toBeLessThan(L.boxes.ataBox[2] + (n === 'rpmRight' ? 1e3 : 0));
     }
-    expect(L.dials.rpmLeft[0]).toBeCloseTo(440 + (1265 - 882) * 0.46, 9); // the left engine's stay
+    for (const n of ['rpmLeft', 'ataLeft']) { // the left engine's 15 mm (D166)
+      expect(screenPx(L.dials[n][0] - (440 + (1265 - 882) * 0.46)), n).toBeCloseTo(43 * 1.5, 0);
+    }
   });
 
   it('keeps the dial radius on screen as before (D106), so the Bf 109\'s instruments keep their size; fits every screen', () => {
