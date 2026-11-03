@@ -34,7 +34,8 @@ Read this at the start of every session.
 - D143: the windscreen frame group is raised so the reticle is in the windscreen's middle; the panel and the gunsight
   stay.
 - D144: the dash covers end at the Revi's brown pad, and the panel's top is filled up to them.
-- D145: the panel's top is widened on the right to the right dash cover.
+- D145, replaced by D146: the panel's own right corner now runs level to the right dash cover, along its edge to the
+  post, then down.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

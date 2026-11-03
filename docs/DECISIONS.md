@@ -4064,3 +4064,31 @@ tested screen, and that the fill runs along the covers' front edges and the pad'
 **Tests:** tests/ui/bf110Frame.test.js checks that the widened top reaches the cover's front edge and its foot, its
 lower edge is level at the foot's height, and it starts on the panel's top edge.
 
+## D146. The Bf 110 C panel's right corner reaches the right dash cover (3 Nov 2026, product owner's request)
+
+**The request:** extend the panel's top horizontally to touch the bottom of the right dash cover. The panel's right
+corner should follow the cover's angle, then angle down as in the panel picture (#34).
+
+**The change** (src/ui/bf110Layout.js, `RIGHT_CORNER`):
+- **Outline:** the panel's own outline now does this, replacing D145's fill.
+  - **Top edge:** it runs on level to the right cover's front edge (1250.7 on #34's pixels, x +170 from the axis).
+  - **Along the cover:** it follows the cover's front edge down to where the cover meets the right outer post's inner
+    edge (1541.8, 194.8 on #34).
+  - **Side:** it angles down and slightly out, inside the post, to the right section's foot (1570, 895).
+  - **Replaced:** #34's rounded right shoulder and its stepped side.
+- **Recess:** the manifold pressure gauges' recess is 5 px narrower on the right, to stay inside the new side.
+- **Frame and cover meeting:**
+  - The corner points were worked out from the cover and post geometry and set in #34's pixels.
+  - A test checks they stay on the cover's edge and the post's inner edge.
+  - Where the corner meets the cover's foot, it hides the lower end of the right lower frame (D135) behind the panel.
+- **Posts' end:** now measured on the left side only (D140's rule otherwise). The right post touches the corner and runs
+  on past it, so both posts still end where the panel's left side reaches the left post.
+- **Removed:** D145's shoulder fill (`shoulderPath`), which this replaces.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that:
+- the top edge runs level to the cover's front edge;
+- the corner follows that edge to the right post's inner edge;
+- the side angles down and out, staying inside the post.
+
+The posts and lower frame checks allow for the corner's touch.
+

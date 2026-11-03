@@ -24,11 +24,15 @@ const knob = (X, Y, rad) => [...pt(X, Y), len(rad)];
 const slot = (X, top, bottom) => [pt(X, top)[0], pt(X, top)[1], pt(X, bottom)[1]];
 
 // The outline on #34, levelled, clockwise from the clock's bracket: its slanted top over the panel's top edge, the long
-// top edge, the right shoulder and side, the manifold pressure gauges' box, the bottom centre section, the gap beside
+// top edge, the right corner and side, the manifold pressure gauges' box, the bottom centre section, the gap beside
 // it and the left wing with the airscrew lever box. Below the screen's foot it only closes the shape (D129).
+// The right corner (product owner, D146): the top edge carried on level to the right dash cover's front edge, along that
+// edge down to where the cover meets the right outer post's inner edge, then angling down to the right section's foot.
+// Worked out from the cover and the post (src/ui/bf110Covers.js, src/ui/bf110Frame.js) and set here in #34's pixels;
+// tests/ui/bf110Frame.test.js keeps the two together.
+const RIGHT_CORNER = [[1250.7, 132], [1541.8, 194.8]];
 const OUTLINE_34 = [
-  [255, 165], [295, 128], [447, 100], [455, 132], [1200, 132], [1245, 150], [1300, 190], [1330, 240], [1345, 285],
-  [1380, 320], [1460, 380], [1510, 500], [1565, 600], [1570, 895], [1160, 895], [1160, 1080], [1130, 1120], [640, 1120],
+  [255, 165], [295, 128], [447, 100], [455, 132], ...RIGHT_CORNER, [1570, 895], [1160, 895], [1160, 1080], [1130, 1120], [640, 1120],
   [608, 1090], [605, 835], [345, 835], [335, 960], [320, 1120], [55, 1120], [35, 1100], [35, 460], [200, 450],
   [205, 320], [222, 300], [258, 295],
 ];
@@ -111,7 +115,7 @@ export const LAYOUT = {
     skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: box(790, 312, 975, 382),
     heizung: box(1187, 245, 1320, 352), gearLights: box(220, 330, 335, 445), levers: box(40, 465, 240, 855),
     achtung: box(250, 590, 345, 730), course: box(352, 550, 594, 830), dive: box(615, 578, 735, 620),
-    umschalt: box(806, 576, 959, 603), window: box(1042, 590, 1122, 630), ataBox: box(1172, 700, 1565, 893),
+    umschalt: box(806, 576, 959, 603), window: box(1042, 590, 1122, 630), ataBox: box(1172, 700, 1560, 893),
     fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(245, 870, 318, 892),
   },
   // The "d 30′ 5′" correction cards above the engine gauges and the "Km" cards above the coolant thermometers: shown

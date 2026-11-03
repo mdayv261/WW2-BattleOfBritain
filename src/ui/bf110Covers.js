@@ -1,12 +1,12 @@
-// The Bf 110 C's dash covers (D136-D138) and the panel's top round them (D144, D145), drawn on the sight's canvas
+// The Bf 110 C's dash covers (D136-D138) and the panel's top round them (D144), drawn on the sight's canvas
 // over the panel's top and under the front frame's bars (src/ui/bf110Frame.js), raised with the frame (D143): two
 // padded grey covers either side of the Revi after the product owner's photograph (#33), their inner feet at the Revi's
-// brown pad; the panel's top filled up to them and under the Revi; and the panel's top widened on the right to the
-// right cover.
+// brown pad; and the panel's top filled up to them and under the Revi. (The panel's right corner reaches the right cover
+// itself, D146.)
 
-import { AXIS, OUTLINE, BRACKET, BF109_SCALE, REVI_110, REVI_RAISE, PX } from './bf110Layout.js';
+import { AXIS, BRACKET, BF109_SCALE, REVI_110, REVI_RAISE, PX } from './bf110Layout.js';
 import {
-  FRAME_110, FRAME_SHIFT, TOP_Y, PANEL_TOP, GREY, framePlacer, ledgePath, lowerFramePath, panelPath,
+  FRAME_110, TOP_Y, GREY, framePlacer, ledgePath, lowerFramePath, panelPath,
 } from './bf110Frame.js';
 
 const PLATE_TOP = '#4d524c'; // the panel's plate at its top (src/ui/bf110Fittings.js)
@@ -54,35 +54,12 @@ export function coamingPath() {
 }
 
 /**
- * The panel's top widened on the right to the right cover (D145), in the panel's picture pixels: from the top edge's
- * right end up to the cover's front edge, along it to the cover's foot on the outer post, level from there back to the
- * panel's right shoulder, and up the shoulder to the top edge. Filled in the plate's colour over the dark cockpit side.
- */
-export function shoulderPath() {
-  const toPanel = ([x, y]) => [x, y + FRAME_SHIFT];
-  const [inner, foot] = dashCoverPath(1).slice(-2).map(toPanel);
-  const edgeY = (x) => inner[1] + ((foot[1] - inner[1]) * (x - inner[0])) / (foot[0] - inner[0]); // the front edge
-  // The right shoulder from the top edge's right end down to the cover's foot's height.
-  const start = OUTLINE.findIndex(([x, y], i) => y === PANEL_TOP && OUTLINE[i + 1][1] > PANEL_TOP);
-  const shoulder = [OUTLINE[start]];
-  for (let i = start + 1; OUTLINE[i - 1][1] < foot[1]; i += 1) {
-    const [x0, y0] = OUTLINE[i - 1];
-    const [x1, y1] = OUTLINE[i];
-    if (y1 < foot[1]) shoulder.push(OUTLINE[i]);
-    else shoulder.push([x0 + ((x1 - x0) * (foot[1] - y0)) / (y1 - y0), foot[1]]);
-  }
-  const [endX] = shoulder[0];
-  return [[endX, edgeY(endX)], foot, ...shoulder.reverse()];
-}
-
-/**
  * The covers and the panel's top round them, on the sight's canvas before the front frame. `panelAt` is the panel's
  * placer; `width`, `height` the canvas.
  */
 export function drawBf110Covers(g, panelAt, width, height) {
   const at = framePlacer(panelAt); // raised with the frame (D143)
   coaming(g, at, panelAt, width, height);
-  shoulder(g, panelAt);
   for (const side of [-1, 1]) dashCover(g, at, panelAt, side); // over the panel's top, under the bars
 }
 
@@ -99,22 +76,6 @@ function coaming(g, at, panelAt, width, height) {
   g.closePath();
   g.fill();
   g.restore();
-}
-
-/** The panel's top widened on the right to the cover (D145): the plate's colour, its new lower edge lined as the plate's. */
-function shoulder(g, panelAt) {
-  const pts = shoulderPath().map((p) => panelAt.xy(p));
-  g.fillStyle = PLATE_TOP;
-  g.beginPath();
-  pts.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p)));
-  g.closePath();
-  g.fill();
-  g.strokeStyle = '#1d1f1d';
-  g.lineWidth = Math.max(1.5, panelAt.len(2));
-  g.beginPath();
-  g.moveTo(...pts[1]);
-  g.lineTo(...pts[2]);
-  g.stroke();
 }
 
 /**

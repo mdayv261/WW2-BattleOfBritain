@@ -85,16 +85,16 @@ export function panelEdgeX(side, y) {
 /** An outer post's middle line at height y (`side` -1 left, +1 right): out from the top bar's corner going down. */
 export const outerX = (side, y) => AXIS + side * (FRAME_110.top.half + FRAME_110.posts.slope * (y - FRAME_110.top.y));
 /**
- * Where the posts end (D120, D140, D143), in the frame's picture pixels: the highest point at which the panel's edge
- * reaches either post's inner edge (the left side below the clock's bracket on #34's panel; the right side stays inside
- * its post), both posts ending there.
+ * Where the posts end (D120, D140, D143, D146), in the frame's picture pixels: the highest point at which the panel's
+ * left side reaches the left post's inner edge (below the clock's bracket on #34's panel), both posts ending there. The
+ * panel's right corner only touches the right post where the right dash cover meets it (D146), and the post runs on past.
  */
 FRAME_110.posts.foot = (() => {
   const reaches = (side, y) => {
     const edge = panelEdgeX(side, y + FRAME_SHIFT); // the panel's edge level with this point of the post
     return edge !== null && side * (edge - (outerX(side, y) - (side * FRAME_110.posts.width) / 2)) >= 0;
   };
-  for (let y = TOP_Y; y < 2000; y += 0.5) if (reaches(-1, y) || reaches(1, y)) return y;
+  for (let y = TOP_Y; y < 2000; y += 0.5) if (reaches(-1, y)) return y;
   return TOP_Y;
 })();
 /**
