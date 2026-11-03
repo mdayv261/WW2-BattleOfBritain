@@ -36,6 +36,7 @@ Read this at the start of every session.
 - D144: the dash covers end at the Revi's brown pad, and the panel's top is filled up to them.
 - D145, D146, replaced by D147: the panel's right corner ends just past the Heizung placard, drops a little, then
   angles down to touch the right fuselage side.
+- D148: the windscreen's base is widened by two frame widths, its top unchanged.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

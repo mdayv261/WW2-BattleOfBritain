@@ -34,8 +34,8 @@ export const FRAME_110 = {
   // its top corners just touch the grab handles (D125).
   crossBar: { y: -181 },
   // The armoured windscreen's posts: `half` apart at height `at`, in this many pixels for each pixel down, from the top
-  // bar down to the ledge's ends; the width of its posts and top bar.
-  inner: { half: 207, at: -164, lean: 0.14, width: 20 },
+  // bar down to the ledge's ends; the width of its posts and top bar. `lean` is set below (D148).
+  inner: { half: 207, at: -164, lean: null, width: 20 },
   // The bars each side from the windscreen's top corner out and slightly down to the outer post: their middle line's
   // height at the outer post, just below the grab handles' feet (about 13 degrees; the tubes clear by under 1 px; D126,
   // D127). As wide as the windscreen's posts.
@@ -113,6 +113,18 @@ export const fuselagePath = (side) => {
   return [[fuselageX(side, foot), foot], [fuselageX(side, FAR), FAR]];
 };
 /** A windscreen post's middle line at height y: in from the cross bar going down. */
+/**
+ * The windscreen's posts' lean (D148): D117's 0.14 in going down, less enough that their feet at the ledge's ends stand
+ * one post's width further out each side, the base two widths wider, their tops at the top bar unchanged.
+ */
+{
+  const { crossBar, inner, ledge } = FRAME_110;
+  const foot = ledge.y + ledge.sag; // the ledge's ends
+  const lean117 = 0.14;
+  inner.half = 207 - lean117 * (crossBar.y + 164); // D117's half-width at the top bar
+  inner.at = crossBar.y;
+  inner.lean = lean117 - inner.width / (foot - crossBar.y);
+}
 export const innerX = (side, y) => {
   const { half, lean, at } = FRAME_110.inner;
   return AXIS + side * (half - lean * (y - at));
