@@ -33,6 +33,8 @@ Read this at the start of every session.
 - D142: the Preßluft gauge reads 0 with the engines stopped and 150 with them running.
 - D143: the windscreen frame group is raised so the reticle is in the windscreen's middle; the panel and the gunsight
   stay.
+- D144: the dash covers end at the Revi's brown pad, and the panel's top is filled up to them.
+- D145: the panel's top is widened on the right to the right dash cover.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

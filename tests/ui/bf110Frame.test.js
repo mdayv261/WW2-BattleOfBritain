@@ -12,9 +12,10 @@
 import { describe, it, expect } from 'vitest';
 import {
   FRAME_110, outerX, fuselageX, fuselagePath, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths,
-  sideBarPath, ledgePath, lowerFramePath, dashCoverPath, frameBars110, panelEdgeX, FRAME_SHIFT, framePlacer,
+  sideBarPath, ledgePath, lowerFramePath, frameBars110, panelEdgeX, FRAME_SHIFT, framePlacer,
 } from '../../src/ui/bf110Frame.js';
 import { BRACKET } from '../../src/ui/bf110Layout.js';
+import { dashCoverPath, coamingPath, shoulderPath } from '../../src/ui/bf110Covers.js';
 import {
   AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, BF109_SCALE, REVI_110, placer, panelTop110,
 } from '../../src/ui/bf110Panel.js';
@@ -245,7 +246,14 @@ describe('Bf 110 C front frame (D117)', () => {
       const inner = top[top.length - 1];
       expect(side * (bodySide - inner[0])).toBeGreaterThan(0); // just inside the gunsight body's side
       expect(side * (bodySide - inner[0])).toBeLessThan(5);
-      expect(footInner).toEqual([inner[0], 57 - FRAME_SHIFT]); // on the panel's top, the frame raised over it (D143) // down to its foot on the panel's top
+      // At the brown pad's lower corner (D144): on every screen, level with the Revi's body's foot.
+      expect(footInner[0]).toBe(inner[0]);
+      for (const [w, h] of SCREENS) {
+        const r = panelRadius(L, w, h);
+        const at = framePlacer(placer(w / 2, panelTop110(h, r), r));
+        const p = reviPlacement(w, h, BF110_REVI);
+        expect(at.xy(footInner)[1], `${w}x${h}`).toBeCloseTo(p.y + REVI_110.body.y[1] * p.r, 6);
+      } // down to its foot on the panel's top
       const [, foot] = lowerFramePath(side);
       expect(footOuter).toEqual(foot); // the front edge to the lower frame's foot on the outer post
       // Mirror images about the axis.
@@ -256,6 +264,29 @@ describe('Bf 110 C front frame (D117)', () => {
         expect(y).toBeCloseTo(pts[i][1], 9);
       });
     }
+  });
+
+  it('fills the panel\'s top up to the covers and under the Revi in the plate\'s colour (D144)', () => {
+    const path = coamingPath();
+    const [lInner, lOuter] = dashCoverPath(-1).slice(-2);
+    const [rInner, rOuter] = dashCoverPath(1).slice(-2);
+    expect(path.slice(0, 4)).toEqual([lOuter, lInner, rInner, rOuter]); // along the covers' front edges and the pad's foot
+    const top = 57 - FRAME_SHIFT; // the panel's top edge in the frame's picture
+    expect(path.slice(4)).toEqual([[rInner[0], top], [lInner[0], top]]); // down to the panel's top under the Revi
+    expect(lInner[1]).toBeLessThan(top); // the pad's foot above the panel's top: a strip to fill
+  });
+
+  it('widens the panel\'s top on the right to the right cover\'s front edge and foot (D145)', () => {
+    const path = shoulderPath();
+    const toPanel = ([x, y]) => [x, y + FRAME_SHIFT];
+    const [inner, foot] = dashCoverPath(1).slice(-2).map(toPanel);
+    const onEdge = ([x, y]) => (x - inner[0]) * (foot[1] - inner[1]) - (y - inner[1]) * (foot[0] - inner[0]);
+    expect(onEdge(path[0])).toBeCloseTo(0, 6); // up to the cover's front edge
+    expect(path[0][0]).toBe(path[path.length - 1][0]); // above the top edge's right end
+    expect(path[path.length - 1][1]).toBe(57); // on the panel's top edge
+    expect(path[1]).toEqual(foot); // along the cover to its foot on the outer post
+    expect(path[2][1]).toBeCloseTo(foot[1], 9); // level back to the panel's shoulder
+    expect(path[2][0]).toBeLessThan(foot[0]);
   });
 
   it('has no canopy latch and lever on the top bar and no knobs on the ledge (D125)', () => {

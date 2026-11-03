@@ -4033,3 +4033,34 @@ they are, so the gunsight's reticle is in the middle of the front windscreen.
 
 The on-screen checks use the raised frame.
 
+## D144. The Bf 110 C's dash covers end at the Revi's brown pad; the panel's top filled up to them (3 Nov 2026, product owner's request)
+
+**The request:** move the dash covers' lower inner end point, which touched the bottom of the gunsight, up to touch the
+brown rectangular pad. This exposes more of the panel's top, which should be filled in the panel's colour.
+
+**The change** (src/ui/bf110Covers.js, new; the covers moved out of src/ui/bf110Frame.js to keep it under 400 lines):
+- **Inner foot:** each cover's inner foot is now the brown pad's lower corner (the Revi's body foot, REVI_RAISE above
+  the panel's top, D141). Its front edge runs straight from there to the lower frame's foot on the outer post.
+- **Fill (`coamingPath`):** the panel's top uncovered by this, and the strip under the Revi between the pad and the
+  panel's top, is filled in the plate's top colour.
+  - The fill is kept outside the panel's outline, so no dial or plate is covered.
+  - It is drawn on the sight's canvas before the covers and the frame.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each cover's inner foot lies level with the Revi's body foot on every
+tested screen, and that the fill runs along the covers' front edges and the pad's foot down to the panel's top.
+
+## D145. The Bf 110 C panel's top widened on the right to the right dash cover (3 Nov 2026, product owner's request)
+
+**The request:** extend the panel's top on the right to touch the bottom of the right dash cover.
+
+**The change** (`shoulderPath` in src/ui/bf110Covers.js):
+- **Fill:** the dark gap between the panel's right shoulder and the right cover is filled in the plate's colour. It runs
+  from the top edge's right end up to the cover's front edge, along it to the cover's foot on the right outer post,
+  level from there back to the shoulder, and up the shoulder.
+- **Lower edge:** the new level lower edge is lined as the plate's edge. Below it the dark cockpit side continues
+  between the panel and the post.
+- **Order:** it is drawn over the dark cockpit side and under the cover and the frame.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that the widened top reaches the cover's front edge and its foot, its
+lower edge is level at the foot's height, and it starts on the panel's top edge.
+

@@ -18,6 +18,7 @@ import { reviPlacement, drawRevi } from './reviSight.js';
 import { BF109_PANEL, placer, plateTop } from './bf109Panel.js';
 import { BF110_PANEL, BF110_REVI, panelTop110, placer as placer110 } from './bf110Panel.js';
 import { drawBf110Frame } from './bf110Frame.js';
+import { drawBf110Covers } from './bf110Covers.js';
 import { drawFrontFrame } from './bf109Frame.js';
 import { RAF_FRAMES, RAF_AIM, drawRafFrame } from './rafFrame.js';
 import { placer as rafPlacer } from './rafPanel.js';
@@ -295,7 +296,9 @@ export class ReflectorSight {
     if (ac?.id === 'bf110c4') {
       // The Bf 110's front frame round its panel (D117), then its Revi on the panel (D107).
       const r = panelRadius(BF110_PANEL, width, height);
-      drawBf110Frame(g, placer110(width / 2, panelTop110(height, r), r), width, height);
+      const at110 = placer110(width / 2, panelTop110(height, r), r);
+      drawBf110Covers(g, at110, width, height); // the dash covers and the panel's top round them (D136-D145)
+      drawBf110Frame(g, at110, width, height);
       drawRevi(g, reviPlacement(width, height, BF110_REVI), aim);
     }
     else if (ac && squareOnSight(ac) === 'Revi') {

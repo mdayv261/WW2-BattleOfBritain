@@ -1,32 +1,23 @@
 // The Bf 110 C's front cockpit frame (D117), drawn square-on with the panel while the pilot looks ahead, after the
 // product owner's photograph of a Bf 110 C cockpit (#32, a layout reference only: redrawn in code), starting from the
 // Bf 109's drawn frame (src/ui/bf109Frame.js, D90, D103) and its welded bars (src/ui/frameBars.js, D104):
-//   the canopy's outer front frame, a wide flat top bar with rounded corners and side posts leaning out going down to
-//   the panel's top corners (as the Bf 109's hood sides; product owner, D120), and the fuselage frames, thin sheets from
-//   the posts' outside edges there down to the foot of the screen at 70 degrees (product owner, D121, D139), kept
-//   behind the panel;
-//   the armoured windscreen's frame below the top bar, its top bar between its own posts only (product owner, D122) and
-//   its posts leaning in a little going down, with an arched ledge across their feet (its ends lowered a little; product
-//   owner, D128), its top bar raised until its top corners
-//   just touch the grab handles (product owner, D125); a bar each side from its top corner out and slightly down to the
-//   outer post just below the grab handle (product owner, D126, D127); a thin post from each of its top corners
-//   to the outer frame's top corner, as thin as the grab handles (product owner, D123); and below it, a lower frame each
-//   side from the windscreen frame's lower corner down and out to the outer post, level with the red button
-//   (product owner, D134, D135); the dash covers: a padded grey cover each side, after the product owner's photograph
-//   of them (#33), its top edge along the windscreen ledge's lower edge (an arc) from the lower frame to the gunsight's
-//   body, its
-//   front edge straight from the body's foot down to the lower frame's foot on the outer post, lying over the panel's
-//   top, stitched along both edges (product owner, D136, D137);
-//   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119); no canopy
-//   latch or lever on the top bar, and no knobs on the ledge (product owner, D125);
-//   and the cockpit's dark sides round the panel, between the posts and the fuselage frames. No covers over the panel's
-//   top yet (D119).
-// Sizes are in picture pixels of the Bf 110 panel's layout (#31, src/ui/bf110Panel.js), measured on #32 at about 1.12
-// times its pixels from the Revi's axis, the windscreen raised to clear the Revi's larger glass. The 3D cockpit frame is
-// hidden meanwhile (src/render/testView.js) and shows again when the pilot looks round; the wings and engines stay.
+//   the canopy's outer front frame: a wide flat top bar with rounded corners, a grab handle arcing round each top
+//   corner (D119), and side posts leaning out going down until the panel reaches them (D120, D140); from their feet,
+//   thin fuselage sheets down to the foot of the screen at 70 degrees (D121, D139); all kept behind the panel;
+//   the armoured windscreen's frame: its top bar between its own posts (D122), raised until its corners touch the grab
+//   handles (D125); its posts leaning in a little going down to an arched ledge (D128); a thin post from each top corner
+//   to the outer frame's corner, behind the handles (D123, D124); a bar each side from its top corner out to the outer
+//   post below the handle (D126, D127); and a lower frame each side from its lower corner out to the outer post (D134,
+//   D135); no canopy latch, lever or ledge knobs (D125);
+//   and the cockpit's dark sides between the posts and the sheets, from the panel's top down.
+// The whole group stands FRAME_SHIFT above its place on the panel, so the guns' line falls in the middle of the
+// windscreen (product owner, D143). The dash covers and the panel's top round them are in src/ui/bf110Covers.js.
+// Sizes are in picture pixels of the Bf 110 panel's layout (src/ui/bf110Layout.js), measured on #32 at about 1.12 times
+// its pixels from the Revi's axis. The 3D cockpit frame is hidden meanwhile (src/render/testView.js) and shows again when
+// the pilot looks round; the wings and engines stay.
 
 import { drawFrames } from './frameBars.js';
-import { AXIS, OUTLINE, LAYOUT, BRACKET, BF109_SCALE, REVI_110, GUNS_Y } from './bf110Layout.js';
+import { AXIS, OUTLINE, LAYOUT, GUNS_Y } from './bf110Layout.js';
 
 export const FRAME_110 = {
   // The outer top bar: its middle line's height, half its length to the corners' centres, its width and corner radius.
@@ -58,8 +49,8 @@ export const FRAME_110 = {
 };
 const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
-const GREY = { band: '#4c5054', lit: '#7a7f83', shade: '#2c2f31', rivet: '#3a3d40', outline: '#17191a' };
-const PANEL_TOP = 57;
+export const GREY = { band: '#4c5054', lit: '#7a7f83', shade: '#2c2f31', rivet: '#3a3d40', outline: '#17191a' };
+export const PANEL_TOP = 57;
 /**
  * How far the frame stands above its D139 place on the panel, picture pixels (negative: up), so the guns' line falls in
  * the middle of the windscreen's opening, between its top bar's lower edge and the ledge's upper edge at the middle
@@ -69,13 +60,12 @@ const PANEL_TOP = 57;
 const OPENING = [FRAME_110.crossBar.y + FRAME_110.inner.width / 2, FRAME_110.ledge.y - FRAME_110.ledge.width / 2];
 export const FRAME_SHIFT = GUNS_Y - (OPENING[0] + OPENING[1]) / 2;
 /** The panel's top edge in the frame's picture pixels. */
-const TOP_Y = PANEL_TOP - FRAME_SHIFT;
+export const TOP_Y = PANEL_TOP - FRAME_SHIFT;
 
 /** The panel's placer `at` (src/ui/bf110Panel.js) for the frame's points: raised FRAME_SHIFT (D143). */
 export function framePlacer(at) {
   return { ...at, xy: ([x, y]) => at.xy([x, y + FRAME_SHIFT]) };
 }
-const PX_110 = 30; // the Bf 110 layout's picture pixels per dial radius (src/ui/bf110Panel.js)
 
 /**
  * The panel's outermost edge on `side` (-1 left, +1 right) at height y: the furthest of its outline's crossings there,
@@ -225,32 +215,6 @@ export function lowerFramePath(side) {
   return [ledge[side < 0 ? 0 : ledge.length - 1], [outerX(side, y), y]];
 }
 
-/**
- * A dash cover's outline (`side` -1 left, +1 right; D136-D138), after the product owner's photograph (#33): its top edge
- * along the windscreen ledge's lower edge, an arc, from the ledge's end (under the windscreen post and the lower frame)
- * in to the gunsight's body; down the body's side (behind it) to its foot on the panel's top; then its front edge
- * straight down and out to the lower frame's foot on the outer post, and back up the lower frame (under it). Points: the
- * top edge, outer to inner, then the foot inner and the foot outer.
- */
-export function dashCoverPath(side) {
-  const [, foot] = lowerFramePath(side);
-  const { y, sag, width } = FRAME_110.ledge;
-  const arc = ledgePath();
-  const half = AXIS - arc[0][0];
-  const radius = (half * half + sag * sag) / (2 * sag);
-  const centre = [AXIS, y + radius];
-  const k = (radius - width / 2) / radius; // the arc's lower edge, toward its centre
-  const lower = arc.map(([px, py]) => [centre[0] + (px - centre[0]) * k, centre[1] + (py - centre[1]) * k]);
-  // A little inside the body's side, so the cover runs on behind the Revi.
-  const sight = AXIS + side * (Math.abs(REVI_110.body.x[side < 0 ? 0 : 1]) * BF109_SCALE * PX_110 - 3);
-  const ours = (side < 0 ? lower : [...lower].reverse()).filter(([px]) => side * (px - sight) > 0);
-  const last = ours[ours.length - 1];
-  const next = (side < 0 ? lower : [...lower].reverse())[ours.length];
-  const t = (sight - last[0]) / (next[0] - last[0]);
-  const top = [...ours, [sight, last[1] + (next[1] - last[1]) * t]];
-  return [...top, [sight, TOP_Y], foot]; // its inner foot on the panel's top, the frame raised over it (D143)
-}
-
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
 export function frameBars110(at) {
   const w = (px) => at.len(px);
@@ -271,7 +235,7 @@ export function frameBars110(at) {
 }
 
 /** The panel's outline as a path (canvas px), for keeping the frame behind it. */
-function panelPath(g, at) {
+export function panelPath(g, at) {
   OUTLINE.forEach((p, i) => (i ? g.lineTo(...at.xy(p)) : g.moveTo(...at.xy(p))));
   g.closePath();
 }
@@ -304,7 +268,6 @@ export function drawBf110Interior(g, panelAt) {
  */
 export function drawBf110Frame(g, panelAt, width, height) {
   const at = framePlacer(panelAt); // the frame raised over the panel (D143)
-  for (const side of [-1, 1]) dashCover(g, at, panelAt, side); // over the panel's top, under the bars
   g.save();
   g.beginPath();
   g.rect(0, 0, width, height);
@@ -313,49 +276,6 @@ export function drawBf110Frame(g, panelAt, width, height) {
   handles(g, at);
   sheets(g, at);
   drawFrames(g, frameBars110(at), GREY, { join: 'round' });
-  g.restore();
-}
-
-/**
- * A dash cover (D136, D137): padded grey, lighter at the back, with its dark outline, and a stitched seam a little inside
- * its top and front edges, as photographed (#33). The bars are drawn over its edge along the lower frame.
- */
-function dashCover(g, at, panelAt, side) {
-  g.save();
-  // The clock's bracket stands proud of the panel, in front of the cover (D140).
-  g.beginPath();
-  g.rect(-1e5, -1e5, 2e5, 2e5);
-  BRACKET.forEach((p, i) => (i ? g.lineTo(...panelAt.xy(p)) : g.moveTo(...panelAt.xy(p))));
-  g.closePath();
-  g.clip('evenodd');
-  const pts = dashCoverPath(side).map((p) => at.xy(p));
-  const top = pts.slice(0, -2);
-  const [footInner, footOuter] = pts.slice(-2);
-  const shade = g.createLinearGradient(0, Math.min(...top.map(([, y]) => y)), 0, footOuter[1]);
-  shade.addColorStop(0, GREY.lit);
-  shade.addColorStop(1, GREY.band);
-  g.fillStyle = shade;
-  g.strokeStyle = GREY.outline;
-  g.lineWidth = Math.max(1, at.len(2));
-  g.beginPath();
-  pts.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p)));
-  g.closePath();
-  g.fill();
-  g.stroke();
-  // The stitching: dashed, light, a few pixels in from the top and front edges.
-  const inset = at.len(6);
-  g.strokeStyle = 'rgba(205, 208, 210, 0.75)';
-  g.lineWidth = Math.max(1, at.len(1.5));
-  g.setLineDash?.([at.len(4), at.len(3)]);
-  g.beginPath();
-  top.forEach(([x, y], i) => (i ? g.lineTo(x, y + inset) : g.moveTo(x, y + inset)));
-  const [ex, ey] = [footOuter[0] - footInner[0], footOuter[1] - footInner[1]];
-  const n = Math.hypot(ex, ey);
-  const [dx, dy] = [(side * ey * inset) / n, (-side * ex * inset) / n]; // inside (above) the front edge
-  g.moveTo(footInner[0] + dx, footInner[1] + dy);
-  g.lineTo(footOuter[0] + dx, footOuter[1] + dy);
-  g.stroke();
-  g.setLineDash?.([]);
   g.restore();
 }
 
