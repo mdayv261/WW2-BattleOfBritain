@@ -4649,3 +4649,13 @@ knob moves with it. Everything stays clear of its neighbours and inside the pane
 **Tests:** tests/ui/bf110Panel.test.js checks that the horizon draws two level marks at ±0.74 of its radius and no
 lettering.
 
+## D182. The Bf 110 C's engine gauge sizes and the gunsight's place kept (3 Nov 2026, product owner's decisions)
+
+**Decisions on D177 and D180:**
+- **Engine gauges:** the rev counters and manifold pressure gauges keep their own size: face 35.88, mounting 39.56
+  picture px, as measured on #34. They are not matched to the airspeed indicator.
+- **Gunsight:** it stays where it is. The Revi, the guns' line and the windscreen frame stay on the panel's middle line,
+  5 mm left of the turn and slip indicator (D180).
+
+No code changes.
+

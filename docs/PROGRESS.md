@@ -64,13 +64,13 @@ Read this at the start of every session.
 - D173-D175: the turn and slip indicator, the elevator trim indicator and the climb indicator the airspeed indicator's
   size.
 - D176: the two-bar window above the altimeter 2 mm up.
-- D177: the artificial horizon 15% larger than the airspeed indicator. The engine gauges are not the airspeed
-  indicator's size (decision pending).
+- D177: the artificial horizon 15% larger than the airspeed indicator.
 - D178: the Heizung placard lined up with the outside air thermometer.
 - D179: the altimeter raised level with the trim indicator.
-- D180: the Kurs strip, turn and slip, horizon, altimeter, climb indicator and round counter 5 mm right (the turn and
-  slip no longer under the Revi, flagged).
+- D180: the Kurs strip, turn and slip, horizon, altimeter, climb indicator and round counter 5 mm right.
 - D181: the artificial horizon has a round glass face, level marks at 9 and 3 o'clock, and no L or R.
+- D182: the engine gauges keep their own size, and the gunsight stays on the panel's middle line, 5 mm left of the
+  turn and slip (product owner's decisions).
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 
