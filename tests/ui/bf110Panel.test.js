@@ -8,7 +8,9 @@ import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
 import { switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS } from '../../src/ui/bf110Fittings.js';
-import { cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle } from '../../src/ui/bf110Gauges.js';
+import {
+  cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle,
+} from '../../src/ui/bf110Gauges.js';
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { atmosphere } from '../../src/physics/atmosphere.js';
@@ -218,6 +220,25 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     expect(clockwise(pressluftAngle(125))).toBeCloseTo(0, 6);
   });
 
+  it('reads the elevator trim below the airspeed indicator: 0 at 9 o\'clock, nose up above, nose down below (D161)', () => {
+    expect(clockwise(trimAngle(0))).toBeCloseTo(270, 6); // horizontal, pointing left
+    expect(clockwise(trimAngle(10))).toBeGreaterThan(270); // above: towards 12 o'clock
+    expect(clockwise(trimAngle(-10))).toBeLessThan(270); // below: towards 6 o'clock
+    expect(trimAngle(30)).toBe(trimAngle(15)); // held at the scale's end
+    const [tx, ty] = L.dials.trim;
+    const [ax, ay, , ao] = L.dials.airspeed;
+    expect(ty).toBeGreaterThan(ay + ao); // below the airspeed indicator
+    expect(Math.abs(tx - ax)).toBeLessThan(ao);
+    expect(L.dials.aeg).toBeUndefined();
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    sim.plane.surfaces.trim = 0.5;
+    const v = instrumentReadings(sim);
+    expect(v.trimDegrees).toBeCloseTo(7.5, 9);
+    const words = draw(v).texts.map((t) => t.s);
+    for (const w of ['+15', '-15', 'Höhen-', 'trimmung']) expect(words, w).toContain(w);
+    expect(words).not.toContain('AEG');
+  });
+
   it('reads the coolant thermometers 40 to 120 °C, 80 straight up', () => {
     expect(coolantAngle(80)).toBe(0);
     expect(coolantAngle(120)).toBeCloseTo(-coolantAngle(40), 9);
@@ -296,8 +317,8 @@ describe('Bf 110 C placards with the sourced figures (S24, D140)', () => {
 });
 
 describe('Bf 110 C items taken off for #34 (D140)', () => {
-  it('has no trim gauge, speed card, flap placard, strip compass, magnetos, hydraulic gauge or ammunition counter', () => {
-    for (const n of ['trim', 'stripCompass', 'hydraulic']) expect(L.dials[n], n).toBeUndefined();
+  it('has no Spitfire trim gauge, speed card, flap placard, strip compass, magnetos, hydraulic gauge or old counter', () => {
+    for (const n of ['stripCompass', 'hydraulic']) expect(L.dials[n], n).toBeUndefined(); // (trim: its own, D161)
     for (const n of ['speedCard', 'placard', 'magnetos', 'ammo']) expect(L.boxes[n], n).toBeUndefined();
     const words = new Set(draw().texts.map((t) => t.s));
     for (const w of ['SPEEDS', 'NOSE', 'Achtung!', 'M1+2', 'Fahrwerk ', 'Kühlst.']) expect(words.has(w), w).toBe(false);

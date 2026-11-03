@@ -6,7 +6,8 @@
 //   indicator, the round counter for the two MG FF/M cannon (Durchladen) and the Heizung placard.
 //   Middle: the repeater compass, the 2 MG / 4 MG switch and the Kurs strip; the airspeed indicator, turn and bank (under
 //   the Revi) and climb indicator; the outside air thermometer and the two airscrew pitch indicators (kept, D109); the
-//   Siemens course box, the AEG indicator, the horizon and the altimeter.
+//   Siemens course box, the elevator trim indicator (in #34's AEG indicator's place, D161), the horizon and the
+//   altimeter.
 //   Right: each engine's rev counter and manifold pressure gauge, with their correction cards.
 //   Bottom centre: each engine's coolant thermometer either side of the fuel gauge and its tank lamps, their bottoms on
 //   the screen's foot (D141); below them, out of sight, the radiator flap switches either side of the tank selector.
@@ -30,7 +31,7 @@ import {
   PX, TOP, AXIS, OUTLINE, HEIGHT, ABOVE, SINK, SHARE, BF109_SCALE, LAYOUT, REVI_RAISE, REVI_110, GLASS_ABOVE_110,
 } from './bf110Layout.js';
 import {
-  airThermometer, autopilotIndicator, aegIndicator, cannonCounter, coolantGauge, correctionCard, pressluftGauge, pressluftReading,
+  airThermometer, autopilotIndicator, trimIndicator, cannonCounter, coolantGauge, correctionCard, pressluftGauge, pressluftReading,
   radiatorSwitch, roundCounter, tankSelector,
 } from './bf110Gauges.js';
 
@@ -125,7 +126,7 @@ function drawPanel(g, x0, y0, r, v, now) {
     lwAirspeed(g, ...face('airspeed'), v.airspeed);
     airThermometer(g, ...face('airTemp'), v.airTemp);
     autopilotIndicator(g, ...face('autopilot'));
-    aegIndicator(g, ...face('aeg'));
+    trimIndicator(g, ...face('trim'), v.trimDegrees); // the elevator trim, in the AEG indicator's place (D161)
     pressluftGauge(g, ...dial('pressluft'), pressluftReading(v)); // 0 stopped, 150 running (D142)
     radiatorSwitch(g, ...dial('radiatorLeft'), !!v.radiatorOpen);
     radiatorSwitch(g, ...dial('radiatorRight'), !!v.radiatorOpen);

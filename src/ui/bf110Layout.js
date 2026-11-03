@@ -111,7 +111,7 @@ export const LAYOUT = {
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
     // two the Bf 109's); the AEG indicator, horizon and altimeter (the Bf 109's) below.
     compass: dial(470, 418, 92, 110), airspeed: as109('airspeed', 690, 480), turn: as109('turn', 882, 480),
-    climb: dial(1082, 480, 76, 84), aeg: dial(680, 705, 68, 79), horizon: dial(880, 712, 85, 104), altimeter,
+    climb: dial(1082, 480, 76, 84), trim: dial(680, 705, 68, 79), horizon: dial(880, 712, 85, 104), altimeter,
     // The outside air thermometer, and the two airscrew pitch indicators kept beside it (product owner, D109, D140).
     airTemp: dial(1250, 440, 52, 60), pitchLeft: dial(1350, 455, 30, 36), pitchRight: dial(1426, 455, 30, 36),
     // Each engine's rev counter and manifold pressure gauge.

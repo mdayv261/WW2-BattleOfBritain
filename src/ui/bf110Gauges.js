@@ -1,7 +1,7 @@
 // The Bf 110 C panel's own gauges after the product owner's picture (#34, D140), in the look of the Luftwaffe dials
 // (src/ui/lwStyle.js): the round counter for the two MG FF/M cannon (Durchladen), the outside air thermometer, the coolant
 // thermometers in their green rings, the radiator flap switches and the tank selector, and, shown only, the Kurssteuerung
-// indicator, the AEG indicator and the correction cards; the Preßluft gauge above the engine gauges. Angles are in
+// indicator and the correction cards; the elevator trim indicator (D161); the Preßluft gauge above the engine gauges. Angles are in
 // radians, 0 straight up, clockwise.
 
 import { DEG, at, font, centred, tick, lwFace, lwHand, screw, paint } from './lwStyle.js';
@@ -152,18 +152,28 @@ export function autopilotIndicator(g, x, y, face) {
   g.fillRect(x - face * 0.1, y + face * 0.12, face * 0.85, face * 0.18); // the switch lever
 }
 
-/** The AEG indicator, shown only: its marks down the left, L and R, its needle upright. */
-export function aegIndicator(g, x, y, face) {
+/**
+ * The elevator trim indicator's hand (product owner, D161): 0° straight out to 9 o'clock, nose-up trim (positive
+ * degrees) above it and nose-down below, 5 degrees of arc for each degree of trim, held at the ±15° scale's ends (D74).
+ */
+export const TRIM_RANGE = 15;
+export const trimAngle = (deg) => (-90 + Math.max(-TRIM_RANGE, Math.min(TRIM_RANGE, deg)) * 5) * DEG;
+
+/** The elevator trim indicator (D161), in place of #34's AEG indicator: its scale round the left half, figures every 5°. */
+export function trimIndicator(g, x, y, face, degrees) {
   lwFace(g, x, y, face);
   centred(g);
-  for (const k of [-2, -1, 0, 1, 2]) tick(g, x, y, face, (-90 + k * 25) * DEG, 0.9, 0.78, 2);
-  font(g, face * 0.24, true);
-  g.fillText('L', x + face * 0.05, y + face * 0.32);
-  g.fillText('R', x + face * 0.62, y + face * 0.32);
-  font(g, face * 0.13, true);
-  g.fillText('AEG', x, y + face * 0.72);
-  g.fillStyle = paint.ink;
-  g.fillRect(x + face * 0.3, y + face * 0.1, face * 0.1, face * 0.32);
+  for (let d = -TRIM_RANGE; d <= TRIM_RANGE; d += 1) {
+    const major = d % 5 === 0;
+    tick(g, x, y, face, trimAngle(d), 0.95, major ? 0.78 : 0.88, major ? 1.8 : 1);
+  }
+  font(g, face * 0.2, true);
+  for (const d of [-15, -10, -5, 0, 5, 10, 15]) g.fillText(d > 0 ? `+${d}` : String(d), ...at(x, y, trimAngle(d), face * 0.6));
+  font(g, face * 0.15, true);
+  g.fillText('Höhen-', x + face * 0.38, y - face * 0.12);
+  g.fillText('trimmung', x + face * 0.38, y + face * 0.06);
+  g.fillText('Grad', x + face * 0.38, y + face * 0.26);
+  lwHand(g, x, y, face, trimAngle(degrees), { counterweight: false });
 }
 
 /**

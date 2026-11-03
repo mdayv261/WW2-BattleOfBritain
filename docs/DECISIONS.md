@@ -4344,3 +4344,26 @@ hide white markings, and #34's dials are black with white markings.
 **Tests:** tests/ui/bf110Panel.test.js checks that the dials' lettering is white, not luminous, and that the paint is
 restored. It also checks that every screw is shaded black on the Bf 110 panel and grey again afterwards.
 
+## D161. An elevator trim indicator below the Bf 110 C's airspeed indicator (3 Nov 2026, product owner's request)
+
+**The request:** make the gauge below the airspeed indicator an elevator trim indicator. The needle points horizontally
+at 9 o'clock for a neutral 0° trim setting, with positive degrees above the 0 and negative degrees below.
+
+**The change** (src/ui/bf110Gauges.js `trimIndicator`, `trimAngle`; layout entry `trim` in src/ui/bf110Layout.js):
+- **Replaced:** #34's AEG L/R indicator (shown only, D140) at the same place and size.
+- **Scale:** round the dial's left half, 5° of arc for each degree of trim.
+  - 0 at 9 o'clock (the needle horizontal, pointing left).
+  - +5, +10, +15 above it and −5, −10, −15 below, with ticks every degree.
+  - Lettered "Höhentrimmung" and "Grad" in the right half.
+- **Working:** it reads the elevator trim setting (`trimDegrees`) on the ±15° display scale used by the other panels'
+  trim displays (D74), nose-up trim positive. The needle is held at the scale's ends.
+
+**Flagged:**
+- The trim indicator is not on #34. It is the product owner's addition, replacing the AEG indicator.
+- The ±15° figures are the display scale of D74, not a sourced trim range.
+
+**Tests:**
+- tests/ui/bf110Panel.test.js checks that 0 points to 9 o'clock, positive is above and negative below, the needle is held
+  at the ends, the indicator is below the airspeed indicator, it reads the trim, and it is lettered.
+- tests/ui/trimDisplay.test.js now expects the Bf 110's trim indicator.
+

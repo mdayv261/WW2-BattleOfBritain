@@ -91,9 +91,9 @@ describe('elevator trim display (D74)', () => {
     expect(g.texts.some((t) => t.t === 'ELEVATOR')).toBe(false);
   });
 
-  it('Bf 110: no trim display since D140 (the Spitfire\'s trim gauge of D110 removed with the panel of #34)', () => {
+  it('Bf 110: its own elevator trim indicator since D161, not the Spitfire\'s gauge (D110, removed in D140)', () => {
     expect(BF110_PANEL.boxes.trim).toBeUndefined();
-    expect(BF110_PANEL.dials.trim).toBeUndefined();
+    expect(BF110_PANEL.dials.trim).toBeDefined();
     const g = recordingContext();
     bf110Panel(g, 500, 0, 40, instrumentReadings(new Simulation(aircraftById.bf110c4, 'air')));
     expect(g.texts.some((t) => t.t === TRIM_WORDS.title)).toBe(false);
