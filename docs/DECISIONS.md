@@ -3594,3 +3594,30 @@ little.
 - every point lies on one circle, falling away from the middle both ways;
 - the windscreen posts reach the ledge's ends.
 
+## D129. The Bf 110 C's panel lowered so the lowest gauges are half shown (3 Nov 2026, product owner's request)
+
+**The request:** lower the instrument panel so only half of the lowest gauges are visible.
+
+**The change:**
+- **Panel** (`src/ui/bf110Panel.js`): the panel now stands `SINK` below the screen's foot. That is 1.33 dial radii,
+  from FOOT 475 to the lowest gauges' centres at y 438, plus the 0.1 radius margin. The screen's foot crosses the
+  centres of the radiator flap switches and the tank selector, so only their upper halves show.
+  - The two round knobs at the bottom left are also cut about half way.
+  - The panel's size on screen is unchanged.
+- **Canvas** (`src/ui/instruments.js`): `BF110_PANEL.sink` cuts the panel's canvas at that line, keeping its 3 px top
+  margin.
+- **Panel's top** (`panelTop110`): it is worked out from the cut, so the frame (D117-D128) and the cockpit sides move
+  down with the panel.
+
+**Flagged: the guns' line moves.** The Revi stands on the panel (its knob just above the climb indicator, D108), so it
+moves down with it.
+- The guns' line looking ahead (`BF110_AIM`) moves from 0.408 of the screen's height, approved in D107, to 0.450.
+- The camera's picture is shifted to match, as before, so the reticle still marks where the guns point.
+- There is more sky above the windscreen and less panel.
+
+**Tests:**
+- tests/ui/bf110Panel.test.js checks that the switches and selector are the lowest dials, and that their centres lie on
+  the screen's foot on every tested screen.
+- tests/ui/bf110Revi.test.js now takes the panel's top from `panelTop110`. Its knob-above-the-climb-indicator check still
+  passes.
+

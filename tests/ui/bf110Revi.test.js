@@ -4,7 +4,7 @@
 // round the guns' line at BF110_AIM.
 import { describe, it, expect } from 'vitest';
 import {
-  BF110_PANEL, BF110_REVI, BF110_AIM, BF109_SCALE, GLASS_ABOVE_110, REVI_110, AXIS, bf110Panel, placer,
+  BF110_PANEL, BF110_REVI, BF110_AIM, BF109_SCALE, GLASS_ABOVE_110, REVI_110, AXIS, bf110Panel, placer, panelTop110,
 } from '../../src/ui/bf110Panel.js';
 import { BF109_PANEL, BF109_PX } from '../../src/ui/bf109Panel.js';
 import { REVI, shortRevi } from '../../src/ui/reviParts.js';
@@ -85,7 +85,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
       expect(p.y).toBeCloseTo(BF110_AIM * h, 6);
       expect(p.glass.y).toBeLessThan(p.y);
       expect(p.glass.y + p.glass.h).toBeGreaterThan(p.y);
-      const panelTop = h - (L.height * r + 6) + 3; // as InstrumentPanel draws it
+      const panelTop = panelTop110(h, r); // as InstrumentPanel draws it
       const [climbX, climbY, , climbOuter] = L.dials.climb;
       expect(climbX).toBe(AXIS); // under the Revi in the middle
       const mountTop = panelTop + ((climbY - climbOuter - TOP) / PX) * r;

@@ -46,6 +46,10 @@ const TOP = 57; // the panel's top edge
 const FOOT = 475; // its lowest point
 const HEIGHT = (FOOT - TOP) / PX + 0.1; // the panel's height in dial radii
 const SHARE = 0.45; // the share of the screen's height it takes: as the RAF panel
+// The panel lowered until the screen's foot crosses the lowest gauges' centres (the radiator flap switches and the tank
+// selector), so only their upper halves show (product owner, D129): its foot this many dial radii below the screen's.
+const LOWEST = 438;
+const SINK = (FOOT - LOWEST) / PX + 0.1; // HEIGHT - SINK reaches from the top edge to LOWEST
 
 /**
  * The Bf 109's dial radius in the Bf 110's (D107): the two panels fill their shares of the screen's height (every
@@ -112,10 +116,10 @@ const KNOB_FOOT = 144;
 export const GLASS_ABOVE_110 = REVI_110.knob.y[1] * BF109_SCALE - (KNOB_FOOT - TOP) / PX;
 /**
  * Where the guns' line stands looking ahead in the Bf 110's cockpit, as a fraction of the screen's height from its top:
- * GLASS_ABOVE_110 above the panel, which stands on the screen's foot (D107). The camera's picture is shifted to match
- * (`CameraRig.aim`, as the Bf 109's, D93).
+ * GLASS_ABOVE_110 above the panel, which stands SINK below the screen's foot (D107, D129). The camera's picture is
+ * shifted to match (`CameraRig.aim`, as the Bf 109's, D93).
  */
-export const BF110_AIM = 1 - (SHARE * (HEIGHT + GLASS_ABOVE_110)) / HEIGHT;
+export const BF110_AIM = 1 - (SHARE * (HEIGHT - SINK + GLASS_ABOVE_110)) / HEIGHT;
 
 /** A picture point in dial radii from the axis at the panel's top. */
 export const P = (px, py) => [(px - AXIS) / PX, (py - TOP) / PX];
@@ -178,6 +182,7 @@ export const BF110_PANEL = {
   width: (2 * Math.max(...OUTLINE.map(([x]) => Math.abs(x - AXIS)))) / PX + 0.2,
   height: HEIGHT,
   screenShare: SHARE,
+  sink: SINK, // dial radii below the screen's foot (D129)
   ownBackground: true,
   outline: OUTLINE,
   dials: {
@@ -217,8 +222,11 @@ export const BF110_PANEL = {
 /** The Bf 110's Revi for reviPlacement (src/ui/reviSight.js): on its guns' line, at the Bf 109's size, no cable (D107). */
 export const BF110_REVI = { panel: BF110_PANEL, aim: BF110_AIM, scale: BF109_SCALE, parts: REVI_110, cable: false };
 
-/** The panel's top edge on a screen `height` px high at dial radius r, as InstrumentPanel draws it (3 px down its canvas). */
-export const panelTop110 = (height, r) => height - (BF110_PANEL.height * r + 6) + 3;
+/**
+ * The panel's top edge on a screen `height` px high at dial radius r, as InstrumentPanel draws it: 3 px down its canvas,
+ * which is cut at the lowest gauges' centres, on the screen's foot (D129).
+ */
+export const panelTop110 = (height, r) => height - (BF110_PANEL.height - SINK) * r;
 
 /** A layout entry in canvas pixels, given the axis at the panel's top (x0, y0) and dial radius r. */
 export function placer(x0, y0, r) {

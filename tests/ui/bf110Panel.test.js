@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
-import { BF110_PANEL, AXIS, bf110Panel } from '../../src/ui/bf110Panel.js';
+import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
 
 /** The right-hand dials' places on #31 before the section moved out (D111). */
 const OLD_X = { rpmLeft: 589, rpmRight: 660, ataLeft: 602, ataRight: 673, pitchLeft: 585, pitchRight: 643, clock: 583 };
@@ -85,6 +85,25 @@ describe('Bf 110 C panel layout (D106)', () => {
       const r = panelRadius(L, w, h);
       expect(L.height * r, `${w}x${h}`).toBeLessThanOrEqual(0.45 * h + 1e-6);
       expect(L.width * r, `${w}x${h}`).toBeLessThanOrEqual(0.96 * w + 1e-6);
+    }
+  });
+
+  it('sits low enough that the screen\'s foot crosses the lowest gauges\' centres, so half of each shows (D129)', () => {
+    const lowest = ['radiatorLeft', 'selector', 'radiatorRight'];
+    const lowestY = L.dials.selector[1];
+    for (const [name, [, y]] of Object.entries(L.dials)) {
+      if (lowest.includes(name)) expect(y, name).toBe(lowestY);
+      else expect(y, name).toBeLessThan(lowestY);
+    }
+    expect(L.sink).toBeGreaterThan(0);
+    for (const [w, h] of [[1548, 784], [1920, 1080], [1280, 720], [2560, 1259], [2560, 1203]]) {
+      const r = panelRadius(L, w, h);
+      const at = placer(w / 2, panelTop110(h, r), r);
+      for (const name of lowest) {
+        const [, y, face] = at.dial(L.dials[name]);
+        expect(y, `${w}x${h} ${name}`).toBeCloseTo(h, 6); // the centre on the foot
+        expect(face).toBeGreaterThan(0);
+      }
     }
   });
 });

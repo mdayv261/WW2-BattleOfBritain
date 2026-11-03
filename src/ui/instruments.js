@@ -167,7 +167,8 @@ export class InstrumentPanel {
     const twin = sim.ac.id === 'bf110c4';
     const L = v.raf ? SPITFIRE_PANEL : twin ? BF110_PANEL : BF109_PANEL;
     const r = panelRadius(L, width, window.innerHeight);
-    const height = L.height * r + 6;
+    // A panel set below the screen's foot (the Bf 110's, D129) is cut there: its 3 px top margin and no foot margin.
+    const height = L.sink ? (L.height - L.sink) * r + 3 : L.height * r + 6;
     const g = this.context(width, height);
     if (!L.ownBackground) {
       g.fillStyle = 'rgba(18, 18, 16, 0.94)';
