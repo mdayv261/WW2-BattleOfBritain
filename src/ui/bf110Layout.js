@@ -122,7 +122,8 @@ export const LAYOUT = {
     // two the Bf 109's); the elevator trim indicator (D161), horizon and altimeter (the Bf 109's) below.
     compass: dial(470, 418, 92, 110), airspeed: as109('airspeed', 690, 480),
     turn: [...pt(882, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size exactly (D173)
-    climb: dial(1082, 480, 76, 84), trim: dial(680, 705, 68, 79), horizon: dial(880, 712, 85, 104), altimeter,
+    // The elevator trim indicator at the airspeed indicator's size, a little lower to clear the dive placard (D174).
+    climb: dial(1082, 480, 76, 84), trim: [...pt(680, 716), ...as109('airspeed', 0, 0).slice(2)], horizon: dial(880, 712, 85, 104), altimeter,
     // The outside air thermometer (the airscrew pitch indicators of D109 removed: the Bf 110 C had none, D163).
     // Its left edge in line with the left manifold pressure gauge's, 5 mm up (product owner, D169).
     airTemp: dial(1265 + LEFT_MOVE - 86 + 60, 440 - ENGINE_UP, 52, 60),

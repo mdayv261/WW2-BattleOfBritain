@@ -4530,3 +4530,14 @@ wider one (55 against the airspeed indicator's 54), and is now 0.8 px narrower e
 
 **Tests:** tests/ui/bf110Panel.test.js and tests/ui/bf110Revi.test.js check that the two are the same size.
 
+## D174. The Bf 110 C's elevator trim indicator the airspeed indicator's size (3 Nov 2026, product owner's request)
+
+**The request:** make the elevator trim indicator the same size as the airspeed indicator.
+
+**The change** (src/ui/bf110Layout.js): the trim indicator (D161, D164) now takes the airspeed indicator's face and
+mounting sizes. Its face is 34.7 picture px, was 31.3; its mounting 42.6, was 36.3. It stands 11 of #34's pixels lower
+(716) so its mounting clears the dive placard above it.
+
+**Tests:** tests/ui/bf110Panel.test.js checks it is the airspeed indicator's size. The layout checks keep it clear of
+the placard, the course box and the horizon.
+
