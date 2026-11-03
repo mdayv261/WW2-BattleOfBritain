@@ -2,7 +2,7 @@
 // product owner's photograph of a Bf 110 C cockpit (#32, a layout reference only: redrawn in code), starting from the
 // Bf 109's drawn frame (src/ui/bf109Frame.js, D90, D103) and its welded bars (src/ui/frameBars.js, D104):
 //   the canopy's outer front frame, a wide flat top bar with rounded corners and side posts leaning out going down to
-//   the foot of the screen (as the Bf 109's hood sides and fuselage frames), passing behind the panel;
+//   the panel's top corners (as the Bf 109's hood sides; product owner, D120), kept behind the panel;
 //   the bar across between the outer posts (as the Bf 109's cross bar) with the armoured windscreen's posts below it,
 //   leaning in a little going down, a ledge across their feet, and small gussets in the corners;
 //   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119), and the
@@ -18,8 +18,9 @@ import { AXIS, BF110_PANEL } from './bf110Panel.js';
 export const FRAME_110 = {
   // The outer top bar: its middle line's height, half its length to the corners' centres, its width and corner radius.
   top: { y: -244, half: 260, width: 24, corner: 32 },
-  // The outer posts: out this many pixels for each pixel down from the top bar's corners (#32: about 0.16); width.
-  posts: { slope: 0.16, width: 26 },
+  // The outer posts: out this many pixels for each pixel down from the top bar's corners (#32: about 0.16), down to
+  // `foot`, the panel's top corners (its outline's shoulders at y 167; product owner, D120); width.
+  posts: { slope: 0.16, foot: 167, width: 26 },
   // The bar across between the outer posts, above the Revi's glass.
   crossBar: { y: -164, width: 22 },
   // The armoured windscreen's posts: half apart at the cross bar, in this many pixels for each pixel down, down to `foot`
@@ -35,7 +36,6 @@ export const FRAME_110 = {
   // The bracket on the top bar and the red-knobbed handle below it, right of the axis.
   knob: { dx: 52, y: -146, r: 8, bracket: [20, 90] },
 };
-const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
 const GREY = { band: '#4c5054', lit: '#7a7f83', shade: '#2c2f31', rivet: '#3a3d40', outline: '#17191a' };
 const PANEL_TOP = 57;
@@ -45,10 +45,14 @@ export const outerX = (side, y) => AXIS + side * (FRAME_110.top.half + FRAME_110
 /** A windscreen post's middle line at height y: in from the cross bar going down. */
 export const innerX = (side, y) => AXIS + side * (FRAME_110.inner.half - FRAME_110.inner.lean * (y - FRAME_110.crossBar.y));
 
-/** The outer frame's line: up the left post, round the corner, across the top bar, round, down the right post. */
+/**
+ * The outer frame's line: up the left post from its foot, round the corner, across the top bar, round, down the right
+ * post to its foot.
+ */
 export function outerPath() {
   const { y, corner } = FRAME_110.top;
-  const pts = [[outerX(-1, FAR), FAR]];
+  const { foot } = FRAME_110.posts;
+  const pts = [[outerX(-1, foot), foot]];
   for (const side of [-1, 1]) {
     // A rounded corner: from the post, `corner` below the top bar, round to the bar, `corner` in from the corner.
     const cx = outerX(side, y) - side * corner;
@@ -60,7 +64,7 @@ export function outerPath() {
     if (side < 0) pts.push(...arc);
     else pts.push(...arc.reverse());
   }
-  pts.push([outerX(1, FAR), FAR]);
+  pts.push([outerX(1, foot), foot]);
   return pts;
 }
 
@@ -110,17 +114,18 @@ function panelPath(g, at) {
 }
 
 /**
- * The cockpit's dark sides round the panel, between the outer posts from the panel's top down: on the panel's canvas
- * before its plate. `at` is the panel's placer.
+ * The cockpit's dark sides round the panel, between the outer posts from the panel's top down to their feet: on the
+ * panel's canvas before its plate. `at` is the panel's placer.
  */
 export function drawBf110Interior(g, at) {
   const y0 = PANEL_TOP - 3;
+  const { foot } = FRAME_110.posts;
   g.fillStyle = INTERIOR;
   g.beginPath();
   g.moveTo(...at.xy([outerX(-1, y0), y0]));
   g.lineTo(...at.xy([outerX(1, y0), y0]));
-  g.lineTo(...at.xy([outerX(1, FAR), FAR]));
-  g.lineTo(...at.xy([outerX(-1, FAR), FAR]));
+  g.lineTo(...at.xy([outerX(1, foot), foot]));
+  g.lineTo(...at.xy([outerX(-1, foot), foot]));
   g.closePath();
   g.fill();
 }

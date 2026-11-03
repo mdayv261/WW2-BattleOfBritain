@@ -1,7 +1,7 @@
 // The Bf 110 C's drawn front frame after the product owner's photograph (#32, D117): symmetric about the panel's axis;
 // the outer posts leaning out going down and the windscreen's posts leaning in, as photographed; the top bar on every
 // screen; the windscreen's opening round the Revi's glass and the guns' line; the grab handles arcs in the top corners
-// from the top bar to the outer posts (D119).
+// from the top bar to the outer posts (D119); the outer posts stopping at the panel's top corners (D120).
 import { describe, it, expect } from 'vitest';
 import { FRAME_110, outerX, innerX, outerPath, handlePath, frameBars110 } from '../../src/ui/bf110Frame.js';
 import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
@@ -60,6 +60,22 @@ describe('Bf 110 C front frame (D117)', () => {
       const chordX = x0 + (x1 - x0) * ((ym - y0) / (y1 - y0));
       expect(side * (chordX - xm)).toBeGreaterThan(0);
       expect(xm - AXIS).toBeCloseTo(-(handlePath(-side)[pts.length >> 1][0] - AXIS), 9); // symmetric
+    }
+  });
+
+  it('stops the outer posts at the panel\'s top corners, their inner edges on the outline\'s shoulders (D120)', () => {
+    const { foot, width } = FRAME_110.posts;
+    const path = outerPath();
+    for (const [x, y] of [path[0], path[path.length - 1]]) {
+      expect(y).toBe(foot);
+      expect(x).toBeCloseTo(outerX(Math.sign(x - AXIS), foot), 9);
+    }
+    const shoulders = L.outline.filter(([, y]) => y === foot);
+    expect(shoulders).toHaveLength(2);
+    for (const [x] of shoulders) {
+      const side = Math.sign(x - AXIS);
+      const innerEdge = outerX(side, foot) - (side * width) / 2;
+      expect(Math.abs(innerEdge - x), `${side}`).toBeLessThan(width / 2);
     }
   });
 

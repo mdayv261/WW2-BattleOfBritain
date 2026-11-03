@@ -3434,3 +3434,18 @@ half is not drawn.
 - bows in from the corner;
 - is symmetric with the other handle.
 
+## D120. The Bf 110 C's outer frame posts stop at the panel's top (3 Nov 2026, product owner's request)
+
+**The request:** "The outer vertical frames should stop at the top of the panel."
+
+**The change** (`src/ui/bf110Frame.js`):
+- **Posts:** the outer posts now end at y 167 (`FRAME_110.posts.foot`), where they reach the panel's top corners (its
+  outline's shoulders). Each post's inner edge lands on the shoulder.
+  - Before, they ran on down beside the panel to the foot of the screen (D117), like the Bf 109's fuselage frames.
+- **Cockpit sides:** the dark sides between the posts also stop at that height, so no dark strip runs on beside the
+  panel without a post.
+  - Below the panel's top corners, the 3D view shows beside the panel.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that the outer frame's line ends at the posts' foot on both sides, and that
+each post's inner edge is within half a post width of the panel's shoulder.
+
