@@ -98,7 +98,7 @@ function knob109(name, of, [x, y]) {
   return [x, y + (ky - BF109_PANEL.dials[of][1]) * FROM_109, rad * FROM_109];
 }
 
-const altimeter = as109('altimeter', 1085, 730);
+const altimeter = as109('altimeter', 1085, 716); // its foot level with the trim indicator's (D179)
 /**
  * How far the right engine's rev counter and manifold pressure gauge stand right of #34's place, in #34's pixels
  * (product owner, D165): 25 mm on the product owner's 2560 px wide screen, taken as 43 screen px to 10 mm (as D154),

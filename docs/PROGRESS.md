@@ -67,6 +67,7 @@ Read this at the start of every session.
 - D177: the artificial horizon 15% larger than the airspeed indicator. The engine gauges are not the airspeed
   indicator's size (decision pending).
 - D178: the Heizung placard lined up with the outside air thermometer.
+- D179: the altimeter raised level with the trim indicator.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

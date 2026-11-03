@@ -4602,3 +4602,13 @@ right corner, clear of the right dash cover's edge.
 
 **Tests:** tests/ui/bf110Panel.test.js checks that the left edges line up and that the knob moved with the placard.
 
+## D179. The Bf 110 C's altimeter raised level with the trim indicator (3 Nov 2026, product owner's request)
+
+**The request:** move the altimeter up so its bottom edge lines up with the elevator trim indicator's.
+
+**The change** (src/ui/bf110Layout.js): the two are the same size (D174), so the altimeter's centre is raised from 730 to
+716 on #34's pixels, the trim indicator's height. Their mountings' bottom edges are now level. The setting knob moves
+with it, and it stays clear of the two-bar window above (D176).
+
+**Tests:** tests/ui/bf110Panel.test.js checks the bottom edges are level and the knob is below the altimeter.
+
