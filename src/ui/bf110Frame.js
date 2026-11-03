@@ -11,7 +11,9 @@
 //   outer post just below the grab handle (product owner, D126, D127); a thin post from each of its top corners
 //   to the outer frame's top corner, as thin as the grab handles (product owner, D123); and below it, a lower frame each
 //   side from the windscreen frame's lower corner down and out to the outer post, level with the red button
-//   (product owner, D134, D135);
+//   (product owner, D134, D135); the dash covers: a gusset each side, filled in the frame's grey, from the lower frame
+//   and the outer post across the panel's top to the gunsight body's foot, its top edge straight from the windscreen
+//   frame's lower corner to the body's lower corner (product owner, D136);
 //   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119); no canopy
 //   latch or lever on the top bar, and no knobs on the ledge (product owner, D125);
 //   and the cockpit's dark sides round the panel, between the posts and the fuselage frames. No covers over the panel's
@@ -21,7 +23,7 @@
 // hidden meanwhile (src/render/testView.js) and shows again when the pilot looks round; the wings and engines stay.
 
 import { drawFrames } from './frameBars.js';
-import { AXIS, BF110_PANEL } from './bf110Panel.js';
+import { AXIS, BF110_PANEL, BF109_SCALE, REVI_110 } from './bf110Panel.js';
 
 export const FRAME_110 = {
   // The outer top bar: its middle line's height, half its length to the corners' centres, its width and corner radius.
@@ -53,6 +55,7 @@ const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
 const GREY = { band: '#4c5054', lit: '#7a7f83', shade: '#2c2f31', rivet: '#3a3d40', outline: '#17191a' };
 const PANEL_TOP = 57;
+const PX_110 = 30; // the Bf 110 layout's picture pixels per dial radius (src/ui/bf110Panel.js)
 
 /** An outer post's middle line at height y (`side` -1 left, +1 right): out from the top bar's corner going down. */
 export const outerX = (side, y) => AXIS + side * (FRAME_110.top.half + FRAME_110.posts.slope * (y - FRAME_110.top.y));
@@ -164,6 +167,19 @@ export function lowerFramePath(side) {
   return [ledge[side < 0 ? 0 : ledge.length - 1], [outerX(side, y), y]];
 }
 
+/**
+ * A dash cover's outline (`side` -1 left, +1 right; D136): a gusset filling the corner between the lower frame, the
+ * outer post and the panel's top, its top edge straight from the windscreen frame's lower corner to the gunsight body's
+ * lower corner on the panel's top. Its lower side runs into the panel, which hides it (the frame is drawn clipped to
+ * outside the panel), so the cover meets the panel's edge exactly.
+ */
+export function dashCoverPath(side) {
+  const [corner, foot] = lowerFramePath(side);
+  const sight = AXIS + side * Math.abs(REVI_110.body.x[side < 0 ? 0 : 1]) * BF109_SCALE * PX_110; // the body's side
+  const { foot: postFoot } = FRAME_110.posts;
+  return [corner, [sight, PANEL_TOP], [sight, postFoot], [outerX(side, postFoot), postFoot], foot];
+}
+
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
 export function frameBars110(at) {
   const w = (px) => at.len(px);
@@ -219,8 +235,28 @@ export function drawBf110Frame(g, at, width, height) {
   panelPath(g, at);
   g.clip('evenodd');
   handles(g, at);
+  for (const side of [-1, 1]) dashCover(g, at, side);
   drawFrames(g, frameBars110(at), GREY, { join: 'round' });
   g.restore();
+}
+
+/** A dash cover (D136): filled in the frame's grey with its dark outline, its top edge lit; the bars drawn over it. */
+function dashCover(g, at, side) {
+  const pts = dashCoverPath(side).map((p) => at.xy(p));
+  g.fillStyle = GREY.band;
+  g.strokeStyle = GREY.outline;
+  g.lineWidth = Math.max(1, at.len(2));
+  g.beginPath();
+  pts.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p)));
+  g.closePath();
+  g.fill();
+  g.stroke();
+  g.strokeStyle = GREY.lit;
+  g.lineWidth = Math.max(1, at.len(2));
+  g.beginPath();
+  g.moveTo(...pts[0]);
+  g.lineTo(...pts[1]);
+  g.stroke();
 }
 
 /** The thin tubes in drawing order: the corner posts first, behind the grab handles (product owner, D124). */

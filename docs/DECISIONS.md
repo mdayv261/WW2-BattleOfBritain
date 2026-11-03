@@ -3754,3 +3754,22 @@ frame, keeping it level with the red button.
 
 The weld test checks both ends are trimmed.
 
+## D136. The Bf 110 C's dash covers as corner gussets (3 Nov 2026, product owner's request)
+
+**The request:** start on the panel's dash covers. Draw a corner gusset on the left, from the lower left angled frame to
+the bottom of the gunsight body's left side, filled in the frame's colour. Mirror it on the right.
+
+**The change** (`src/ui/bf110Frame.js`, `dashCoverPath`, `dashCover`):
+- **Shape:** each cover fills the corner between the lower angled frame (D135), the outer post and the panel's top.
+- **Top edge:** straight, from the windscreen frame's lower corner (255, 18) down to the gunsight body's lower corner
+  on the panel's top. On the left that is x 403, y 57; the right cover mirrors it about the axis.
+- **Lower side:** it runs into the panel and is hidden by it, since the frame is drawn only outside the panel, so the
+  cover meets the panel's edge exactly.
+- **Colour:** the frame's grey (`GREY.band`), with its dark outline and a lit top edge. It is drawn after the grab
+  handles and under the bars, so the lower frames and the outer posts lie over its edges.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each cover:
+- starts at the windscreen's lower corner and ends where the lower frame meets the outer post;
+- has its top edge running down to the gunsight body's lower corner on the panel's top edge;
+- mirrors the other cover.
+

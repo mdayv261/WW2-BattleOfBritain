@@ -6,10 +6,13 @@
 // a thin post from each top corner of the windscreen frame to the outer frame's top corner (D123), behind the grab handles (D124);
 // the windscreen's top bar raised to touch the handles, with no latch, lever or ledge knobs (D125); side bars from its
 // top corners angled down slightly to the outer posts just below the handles (D126, D127); the ledge an arc (D128); the
-// lower frames from the windscreen's lower corners to the outer posts, level with the red button (D134, D135).
+// lower frames from the windscreen's lower corners to the outer posts, level with the red button (D134, D135); the
+// dash covers filling the corners to the gunsight body's foot (D136).
 import { describe, it, expect } from 'vitest';
-import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths, sideBarPath, ledgePath, lowerFramePath, frameBars110 } from '../../src/ui/bf110Frame.js';
-import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
+import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths, sideBarPath, ledgePath, lowerFramePath, dashCoverPath, frameBars110 } from '../../src/ui/bf110Frame.js';
+import {
+  AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, BF109_SCALE, REVI_110, placer, panelTop110,
+} from '../../src/ui/bf110Panel.js';
 import { reviPlacement } from '../../src/ui/reviSight.js';
 import { panelRadius } from '../../src/ui/instruments.js';
 
@@ -193,6 +196,26 @@ describe('Bf 110 C front frame (D117)', () => {
         const f = (px - x0) / (x1 - x0);
         if (f > 0 && f < 1) expect(y0 + f * (y1 - y0) + FRAME_110.inner.width / 2, `${side} ${px}`).toBeLessThan(py);
       }
+    }
+  });
+
+  it('fills each corner with a dash cover from the lower frame to the gunsight body\'s foot, mirrored (D136)', () => {
+    const PX = 30;
+    for (const side of [-1, 1]) {
+      const pts = dashCoverPath(side);
+      const [corner, foot] = lowerFramePath(side);
+      expect(pts[0]).toEqual(corner); // along the lower frame, from the windscreen's lower corner ...
+      expect(pts[pts.length - 1]).toEqual(foot); // ... to the outer post
+      // Its top edge runs straight to the gunsight body's lower corner on the panel's top.
+      const bodySide = AXIS + REVI_110.body.x[side < 0 ? 0 : 1] * BF109_SCALE * PX;
+      expect(pts[1][0]).toBeCloseTo(bodySide, 9);
+      expect(pts[1][1]).toBe(L.outline[0][1]); // the panel's top edge
+      expect(pts[1][1]).toBeGreaterThan(corner[1]); // sloping down to the sight
+      // Mirror images about the axis.
+      dashCoverPath(-side).forEach(([x, y], i) => {
+        expect(x - AXIS).toBeCloseTo(-(pts[i][0] - AXIS), 9);
+        expect(y).toBeCloseTo(pts[i][1], 9);
+      });
     }
   });
 
