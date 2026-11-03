@@ -39,3 +39,28 @@ export function shortRevi(parts, share) {
     cable: parts.cable.map(([u, v]) => [u, y(v)]),
   };
 }
+
+/**
+ * The Bf 110's Revi-110 (product owner, D130), after their photograph of the Bf 110 C's cockpit (#32): the Revi's body
+ * shortened as `shortRevi` (0.8, D107), and on it, in place of the wide glass, the housing, the dark glass and the bead
+ * post, a round reflector glass as wide as the body, held at its sides by a frame of the body's width: a strap up each
+ * side from a plate on the body's top to a pin at the glass's middle. The glass is centred over the body, its middle on
+ * the guns' line's height. `glass` gives the glass's extent for placing it (reviPlacement), as on the Bf 109's.
+ */
+export function revi110(parts) {
+  const short = shortRevi(parts, 0.8);
+  const [left, right] = short.body.x;
+  const top = short.body.y[0];
+  const radius = (right - left) / 2;
+  const cx = (left + right) / 2;
+  return {
+    ...short,
+    round: { cx, cy: 0, radius },
+    holder: { x: [left, right], strap: 0.16, plate: [top - 0.15, top] },
+    glass: { cx, top: -radius, topHalf: radius, dip: radius },
+    filter: null,
+    housing: null,
+    post: null,
+  };
+}
+

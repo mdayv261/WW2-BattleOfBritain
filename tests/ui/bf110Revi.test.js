@@ -1,7 +1,8 @@
-// The Bf 109's instruments and Revi on the Bf 110 C panel (D107): the airspeed indicator, altimeter, turn and bank and
-// strip compass at the Bf 109's size on screen, with its red bezels and setting knobs; the "L ... R" instrument gone; the
-// Revi with its body 20% shorter standing on the panel above the turn and bank, clear of everything on it, its glass
-// round the guns' line at BF110_AIM.
+// The Bf 109's instruments and the Revi-110 on the Bf 110 C panel (D107, D130): the airspeed indicator, altimeter, turn
+// and bank and strip compass at the Bf 109's size on screen, with its red bezels and setting knobs; the "L ... R"
+// instrument gone; the Revi-110, its body 20% shorter, standing on the panel above the climb indicator, clear of
+// everything on it, its round glass (as wide as the body, in a holder of the body's width) round the guns' line at
+// BF110_AIM.
 import { describe, it, expect } from 'vitest';
 import {
   BF110_PANEL, BF110_REVI, BF110_AIM, BF109_SCALE, GLASS_ABOVE_110, REVI_110, AXIS, bf110Panel, placer, panelTop110,
@@ -66,16 +67,53 @@ describe('the Bf 109\'s instruments on the Bf 110 panel (D107)', () => {
 });
 
 describe('the Bf 110\'s Revi (D107)', () => {
-  it('takes 20% off the body\'s height; the glasses are unchanged and the Bf 109\'s Revi too', () => {
+  it('takes 20% off the body\'s height; the Bf 109\'s Revi is unchanged', () => {
     const height = (p) => p.y[1] - p.y[0];
     expect(height(REVI_110.body)).toBeCloseTo(0.8 * height(REVI.body), 9);
-    expect(REVI_110.glass).toEqual(REVI.glass);
-    expect(REVI_110.housing).toEqual(REVI.housing);
     expect(REVI_110.knob.y[1]).toBeCloseTo(REVI.knob.y[1] - 0.2 * height(REVI.body), 9); // moved up by the height cut
     expect(REVI_110.pad.y[1]).toBeLessThanOrEqual(REVI_110.body.y[1]);
     expect(REVI_110.lever.y[1]).toBeLessThanOrEqual(REVI_110.body.y[1]);
     expect(REVI.body.y).toEqual([1.6, 5.6]);
     expect(shortRevi(REVI, 1)).toEqual(REVI);
+  });
+
+  it('is the Revi-110: a round glass as wide as the body, in a holder frame of the body\'s width (D130)', () => {
+    const [left, right] = REVI_110.body.x;
+    const { cx, cy, radius } = REVI_110.round;
+    expect(2 * radius).toBeCloseTo(right - left, 9); // as wide as the body
+    expect(cx).toBeCloseTo((left + right) / 2, 9); // centred over it
+    expect(cy).toBe(0); // its middle at the guns' line's height
+    expect(cy + radius).toBeLessThanOrEqual(REVI_110.holder.plate[0]); // standing on the holder's plate
+    expect(REVI_110.holder.x).toEqual([left, right]); // the holder as wide as the body
+    expect(REVI_110.holder.plate[1]).toBe(REVI_110.body.y[0]); // on the body's top
+    for (const k of ['housing', 'filter', 'post']) expect(REVI_110[k], k).toBeNull();
+    // Placed round its glass: a square about the circle.
+    const p = reviPlacement(1920, 1080, BF110_REVI);
+    expect(p.glass.w).toBeCloseTo(2 * radius * p.r, 9);
+    expect(p.glass.h).toBeCloseTo(2 * radius * p.r, 9);
+    expect(p.glass.x).toBeCloseTo(p.x + (cx - radius) * p.r, 9);
+    expect(p.glass.y).toBeCloseTo(p.y - radius * p.r, 9);
+    // The Bf 109's keeps its wide glass, housing and bead post.
+    expect(REVI.round).toBeUndefined();
+    expect(REVI.housing).toBeDefined();
+  });
+
+  it('draws the Revi-110\'s round glass at the body\'s width, the Bf 109\'s without it', () => {
+    const arcs = (fit) => {
+      const radii = [];
+      const g = new Proxy({}, {
+        get: (t, k) => (k === 'arc' ? (x, y, rad) => radii.push(rad) : k in t ? t[k]
+          : String(k).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+        set: (t, k, v) => { t[k] = v; return true; },
+      });
+      const p = reviPlacement(1920, 1080, fit);
+      drawRevi(g, p, null);
+      return { radii, r: p.r };
+    };
+    const { radii, r } = arcs(BF110_REVI);
+    expect(radii.some((x) => Math.abs(x - REVI_110.round.radius * r) < 1e-9)).toBe(true);
+    const b = arcs(undefined);
+    expect(b.radii.some((x) => x > r)).toBe(false); // no large round glass on the Bf 109's
   });
 
   it('stands its knob just above the climb indicator (D108) on every screen, the guns\' line at BF110_AIM inside the glass', () => {

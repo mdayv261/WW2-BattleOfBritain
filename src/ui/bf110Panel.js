@@ -34,7 +34,7 @@ import { luminous } from './lwStyle.js';
 import { redRing } from './bf110Dials.js';
 import { millibarWindow } from './altimeters.js';
 import { BF109_PANEL, BF109_PX, redBezel, settingKnob } from './bf109Panel.js';
-import { REVI, shortRevi } from './reviParts.js';
+import { REVI, revi110 } from './reviParts.js';
 import { SPITFIRE_PANEL } from './rafPanel.js';
 import { rafTrimGauge } from './rafPanelDials.js';
 import { bezel, dialScrews } from './panelParts.js';
@@ -107,8 +107,11 @@ const LOWER = row(LOWER_FOOT, LOWER_LEFT, [
   ['altimeter', size(as109('altimeter', 0, 0))],
 ], LOWER_GAP);
 
-/** The Revi on the Bf 110 (D107): the Bf 109's, its body 20% shorter, standing on the panel above the climb indicator. */
-export const REVI_110 = shortRevi(REVI, 0.8);
+/**
+ * The Revi-110 on the Bf 110 (D107, D130): the Bf 109's Revi, its body 20% shorter, with a round glass as wide as the
+ * body in a holder frame of the body's width, standing on the panel above the climb indicator.
+ */
+export const REVI_110 = revi110(REVI);
 // The knob's foot on #31: above the climb indicator's mounting (D108; the guns' line kept where the product owner
 // approved it, D107). The panel is drawn 3 px below its canvas's top.
 const KNOB_FOOT = 144;

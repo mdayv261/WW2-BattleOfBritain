@@ -3621,3 +3621,35 @@ moves down with it.
 - tests/ui/bf110Revi.test.js now takes the panel's top from `panelTop110`. Its knob-above-the-climb-indicator check still
   passes.
 
+## D130. The Revi-110: the Bf 110 C's gunsight with a round glass as wide as its body (3 Nov 2026, product owner's request)
+
+**The request:** call the Bf 110's sight the Revi-110. As in the product owner's photograph of the Bf 110 C's cockpit
+(#32), it has a round glass reflector as wide as the sight's body. Make the glass holder frame the same width as the
+body.
+
+**The change** (`revi110` in src/ui/reviParts.js, drawn by `roundHead` in src/ui/reviSight.js; `REVI_110` in
+src/ui/bf110Panel.js):
+- **Body:** the D107 body is kept, 20% shorter than the Bf 109's, with its leather pad, lever, block and knob.
+- **Removed:** the Bf 109's wide glass with rounded top corners, its dark sun-filter glass, the black housing with its
+  dip, and the bead post.
+- **Round glass:**
+  - It is as wide as the body (radius 1.425 of the Bf 109's dial radii) and centred over it.
+  - Its middle is at the guns' line's height, so the reticle sits in its middle. It is 0.075 left of the reticle,
+    because the body is not quite centred on the guns' line.
+  - It has a faint tint, a thin dark metal rim and a lit upper edge. The reticle shows only on the glass.
+- **Holder frame:** the body's width. A plate lies across the body's top, and a strap runs up each side to a pin at the
+  glass's middle, in front of the glass's edge.
+- **Placement:** the sight's place is unchanged: on the guns' line (0.450 of the screen, D129), its knob just above the
+  climb indicator. The windscreen frame's checks now use the round glass's extent.
+- **Bf 109:** its Revi C/12C is unchanged.
+
+**Shown as simplified:** on #32 a thin wire bracket arches over the glass's top; it is not drawn.
+
+**Tests:** tests/ui/bf110Revi.test.js checks that:
+- the glass's diameter equals the body's width and it is centred over the body;
+- the holder is the body's width and stands on the body's top;
+- the Revi-110 has no housing, dark glass or bead post;
+- its placement's glass is the square about the circle;
+- the drawing has an arc of the glass's radius;
+- the Bf 109's Revi keeps its own glass.
+

@@ -8,8 +8,9 @@
 // page of a German Revi manual (#18, drawn at about 1:2.5) for the parts' names. The reticle (src/ui/reticle.js) is seen
 // only on the glass, where the guns' line falls.
 // Sizes are in dial radii of the Bf 109's panel, from the guns' line looking ahead (REVI, src/ui/reviParts.js): the sight
-// stands in front of the panel's top, between the clock and the manifold pressure gauge. The Bf 110 C carries the same
-// sight at the same size on screen, its body shorter, on its panel above the turn and bank (D107).
+// stands in front of the panel's top, between the clock and the manifold pressure gauge. The Bf 110 C carries the
+// Revi-110 at the same size on screen (D107, D130): the body shorter, and a round glass as wide as the body in a holder
+// frame of the body's width (`revi110`, src/ui/reviParts.js), on its panel above the climb indicator.
 
 import { BF109_PANEL, BF109_AIM } from './bf109Panel.js';
 import { panelRadius } from './instruments.js';
@@ -35,7 +36,10 @@ export function reviPlacement(width, height, fit = BF109_REVI) {
   const { glass } = fit.parts;
   return {
     r, x, y, parts: fit.parts, cable: fit.cable,
-    glass: { x: x - glass.topHalf * r, y: y + glass.top * r, w: 2 * glass.topHalf * r, h: (glass.dip - glass.top) * r },
+    glass: {
+      x: x + ((glass.cx ?? 0) - glass.topHalf) * r, y: y + glass.top * r, w: 2 * glass.topHalf * r,
+      h: (glass.dip - glass.top) * r,
+    },
   };
 }
 
@@ -58,20 +62,24 @@ export function drawRevi(g, p, aim) {
     g.stroke();
   }
 
-  glasses(g, p, aim, X, Y);
+  if (R.round) {
+    roundHead(g, p, aim, X, Y, R); // the Revi-110's (D130)
+  } else {
+    glasses(g, p, aim, X, Y);
 
-  // The housing at the glasses' foot, its top dipping over the lens in the middle.
-  const { glass, housing } = REVI;
-  g.fillStyle = '#0b0b0c';
-  g.beginPath();
-  g.moveTo(X(-glass.footHalf), Y(glass.foot));
-  g.lineTo(X(-housing.dipHalf), Y(glass.foot));
-  dip(g, X, Y);
-  g.lineTo(X(glass.footHalf), Y(glass.foot));
-  g.lineTo(X(glass.footHalf - 0.1), Y(housing.y[1]));
-  g.lineTo(X(-glass.footHalf + 0.1), Y(housing.y[1]));
-  g.closePath();
-  g.fill();
+    // The housing at the glasses' foot, its top dipping over the lens in the middle.
+    const { glass, housing } = REVI;
+    g.fillStyle = '#0b0b0c';
+    g.beginPath();
+    g.moveTo(X(-glass.footHalf), Y(glass.foot));
+    g.lineTo(X(-housing.dipHalf), Y(glass.foot));
+    dip(g, X, Y);
+    g.lineTo(X(glass.footHalf), Y(glass.foot));
+    g.lineTo(X(glass.footHalf - 0.1), Y(housing.y[1]));
+    g.lineTo(X(-glass.footHalf + 0.1), Y(housing.y[1]));
+    g.closePath();
+    g.fill();
+  }
 
   // Body, the sun filter's lever and the bead post.
   const body = part(R.body);
@@ -87,14 +95,16 @@ export function drawRevi(g, p, aim) {
   g.fill();
   disc(g, X(R.pivot[0]), Y(R.pivot[1]), r * 0.08, '#6d7073');
   const post = R.post;
-  g.fillStyle = '#121314';
-  g.fillRect(X(post.x) - r * 0.12, Y(post.y[1]) - r * 0.18, r * 0.24, r * 0.18);
-  g.strokeStyle = '#121314';
-  g.lineWidth = Math.max(1, r * 0.05);
-  g.beginPath();
-  g.moveTo(X(post.x), Y(post.y[1]));
-  g.lineTo(X(post.x), Y(post.y[0]));
-  g.stroke();
+  if (post) {
+    g.fillStyle = '#121314';
+    g.fillRect(X(post.x) - r * 0.12, Y(post.y[1]) - r * 0.18, r * 0.24, r * 0.18);
+    g.strokeStyle = '#121314';
+    g.lineWidth = Math.max(1, r * 0.05);
+    g.beginPath();
+    g.moveTo(X(post.x), Y(post.y[1]));
+    g.lineTo(X(post.x), Y(post.y[0]));
+    g.stroke();
+  }
 
   // Mounting block and the knurled knob below it.
   g.fillStyle = '#1a1b1d';
@@ -191,6 +201,48 @@ function glasses(g, p, aim, X, Y) {
   g.moveTo(X(-glass.topHalf + 0.18), Y(glass.top + 0.02));
   g.lineTo(X(glass.topHalf - 0.18), Y(glass.top + 0.02));
   g.stroke();
+}
+
+/**
+ * The Revi-110's head (D130): the round reflector glass with the reticle on it (clipped to the glass) in its thin metal
+ * rim, and the holder frame of the body's width: the plate on the body's top and a strap up each side to a pin at the
+ * glass's middle, in front of the glass's edge.
+ */
+function roundHead(g, p, aim, X, Y, R) {
+  const { r } = p;
+  const { cx, cy, radius } = R.round;
+  const { x: [left, right], strap, plate } = R.holder;
+  const circle = () => {
+    g.beginPath();
+    g.arc(X(cx), Y(cy), radius * r, 0, Math.PI * 2);
+  };
+  g.save();
+  circle();
+  g.fillStyle = 'rgba(150, 190, 200, 0.12)';
+  g.fill();
+  g.clip();
+  if (aim) drawReticle(g, aim.x, aim.y, aim.ring, 'Revi');
+  g.restore();
+  // The rim, and its edge catching the light along the top.
+  circle();
+  g.strokeStyle = '#141516';
+  g.lineWidth = Math.max(1.5, r * 0.07);
+  g.stroke();
+  g.strokeStyle = 'rgba(150, 175, 215, 0.55)';
+  g.lineWidth = Math.max(1, r * 0.03);
+  g.beginPath();
+  g.arc(X(cx), Y(cy), (radius - 0.06) * r, Math.PI * 1.1, Math.PI * 1.9);
+  g.stroke();
+  // The holder: the plate across the body's top and the side straps, as wide as the body.
+  g.fillStyle = '#16171a';
+  roundRect(g, X(left), Y(plate[0]), (right - left) * r, (plate[1] - plate[0]) * r, r * 0.05);
+  g.fill();
+  for (const [x0, x1] of [[left, left + strap], [right - strap, right]]) {
+    roundRect(g, X(x0), Y(cy - strap), (x1 - x0) * r, (plate[1] - cy + strap) * r, r * 0.06);
+    g.fill();
+    disc(g, X((x0 + x1) / 2), Y(cy), r * 0.1, '#5d6064'); // the pin holding the glass
+    g.fillStyle = '#16171a';
+  }
 }
 
 function disc(g, x, y, radius, colour) {
