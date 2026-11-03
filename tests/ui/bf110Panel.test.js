@@ -135,7 +135,8 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
   });
 
   it('stands the turn and bank 5 mm right of the axis (D180), the airspeed indicator and climb indicator either side', () => {
-    expect(((L.dials.turn[0] - AXIS) / 30) * panelRadius(L, 2560, 1259)).toBeCloseTo(4.3 * 5, 0);
+    expect(((L.dials.turn[0] - AXIS) / 30) * panelRadius(L, 2560, 1259)).toBeCloseTo(4.3 * 5, -1); // about 5 mm
+    expect(L.dials.turn[0]).toBe(L.dials.horizon[0]); // on the horizon's centre line (D184)
     const r = panelRadius(L, 2560, 1259);
     for (const [n, x34] of [['climb', 1082], ['horizon', 880], ['altimeter', 1085], ['counter', 1082]]) {
       expect((((L.dials[n][0] - (440 + (x34 - 882) * 0.46)) / 30) * r), n).toBeCloseTo(4.3 * 5, 0); // 5 mm right (D180)

@@ -104,6 +104,7 @@ function knob109(name, of, [x, y]) {
  * the Revi stay, so the turn and slip indicator now stands 5 mm right of the Revi.
  */
 const RIGHT_5MM = 34.7;
+const HORIZON_X = 880 + RIGHT_5MM; // the horizon's centre line, the turn and slip indicator's too (D184)
 const altimeter = as109('altimeter', 1085 + RIGHT_5MM, 716); // its foot level with the trim indicator's (D179)
 /**
  * How far the right engine's rev counter and manifold pressure gauge stand right of #34's place, in #34's pixels
@@ -130,12 +131,13 @@ export const LAYOUT = {
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
     // two the Bf 109's); the elevator trim indicator (D161), horizon and altimeter (the Bf 109's) below.
     compass: dial(470, 418, 92, 110), airspeed: as109('airspeed', 690, 480),
-    turn: [...pt(882 + RIGHT_5MM, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size exactly (D173)
+    // The airspeed indicator's size exactly (D173), its centre line the horizon's (D184).
+    turn: [...pt(HORIZON_X, 480), ...as109('airspeed', 0, 0).slice(2)],
     climb: [...pt(1082 + RIGHT_5MM, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size (D175)
     // The elevator trim indicator at the airspeed indicator's size, a little lower to clear the dive placard (D174).
     trim: [...pt(690, 716), ...as109('airspeed', 0, 0).slice(2)], // its right edge in line with the airspeed's (D183)
     altimeter,
-    horizon: [...pt(880 + RIGHT_5MM, 715), ...as109('airspeed', 0, 0).slice(2).map((v) => v * 1.15)], // 15% larger (D177)
+    horizon: [...pt(HORIZON_X, 715), ...as109('airspeed', 0, 0).slice(2).map((v) => v * 1.15)], // 15% larger (D177)
     // The outside air thermometer (the airscrew pitch indicators of D109 removed: the Bf 110 C had none, D163).
     // Its left edge in line with the left manifold pressure gauge's, 5 mm up (product owner, D169).
     airTemp: dial(OAT_LEFT + 60, 440 - ENGINE_UP, 52, 60),

@@ -4670,3 +4670,13 @@ about 0.6 mm smaller.
 
 **Tests:** tests/ui/bf110Panel.test.js checks the right edges line up.
 
+## D184. The Bf 110 C's turn and slip indicator on the artificial horizon's centre line (3 Nov 2026, product owner's request)
+
+**The request:** line up the turn and slip indicator's vertical centre line with the artificial horizon's.
+
+**The change** (src/ui/bf110Layout.js, `HORIZON_X`): the turn and slip indicator moves 2 of #34's pixels (0.9 picture px,
+0.3 mm on a 2560 px screen) left, onto the horizon's centre line, 880 + 5 mm on #34. It is now 4.8 mm right of the
+gunsight's line (D182).
+
+**Tests:** tests/ui/bf110Panel.test.js checks the two centres share one x.
+
