@@ -18,6 +18,21 @@ Read this at the start of every session.
   test).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
 
+## Bf 110 C panel after the product owner's picture #34 (3 Nov 2026)
+
+**Done** (D140): the panel redrawn after "Bf110C panel_5.jpg" (#34).
+- **Layout:** in src/ui/bf110Layout.js, at the Bf 109's instrument size, the Revi over the turn and bank.
+- **New, working:** the round counter for the two cannon and the outside air thermometer.
+- **Placards:** with the sourced 650 and 250 km/h.
+- **Removed:** the trim gauge, the speed card, the strip compass and the old ammunition counter.
+- **Guns' line:** now 0.406 of the screen.
+
+**Left:** the product owner's review of the panel, then Phase 6 checkpoint 5 after a plan.
+
+**Known issues:**
+- the left dash cover hides the top of the SKK block;
+- the pitch indicators are small.
+
 ## Bf 110 C cockpit view (3 Nov 2026)
 
 **Done** (D117-D139): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code. The product owner asked for

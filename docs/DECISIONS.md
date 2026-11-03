@@ -3847,3 +3847,111 @@ frame and running down to the bottom of the screen, angled out a little more.
 
 It also checks that the outer frame's line ends at the posts' feet.
 
+## D140. The Bf 110 C panel redrawn from the product owner's picture of the panel (3 Nov 2026, plan approved by the product owner)
+
+**The request:** with the cockpit frame good enough, redo the panel after the product owner's picture "Bf110C
+panel_5.jpg" (#34).
+- **About #34:** a render seen a little from the left, not square-on. It is a layout reference only; everything is
+  redrawn in code, and its placard figures are not sources.
+- **Half-shown row:** the lower row of switches and the hydraulic (Preßluft) gauge are half shown, as D129.
+- **Guns:** the ammunition counter becomes #34's round counter for the two 20 mm cannon. The four MG 17s are left with
+  only the shown-only switch block (SKK 404-2) right of the red button.
+
+**The product owner's answers (this plan):**
+- **Size:** the flying instruments stay at the Bf 109's size on screen (D107).
+- **Pitch indicators kept:** the two airscrew pitch indicators stay (D109), fitted into a free space.
+- **Removed:** the trim gauge (D110) and the speed card (D116).
+- **Placard figures:** the sourced ones.
+- **Middle line:** the Revi and the panel's middle line stand over the turn and bank.
+
+**Layout** (new src/ui/bf110Layout.js):
+- **Measuring:** each item was measured in #34's pixels, its rows levelled (the picture falls about 2.5–3° to the
+  right) and its spacing evened out. Everything was turned into the layout's picture pixels at one scale (0.46), which
+  draws the airspeed indicator's face at the Bf 109's size.
+- **Middle line:** AXIS is the turn and bank's column.
+- **Dial radius on screen:** unchanged, kept as a share of the screen's height as since D106. The Bf 109's
+  instruments, the Revi and the frame therefore keep their sizes.
+- **Height:** the panel shows 13.9 dial radii above the screen's foot, where it showed 12.7.
+- **Clock bracket:** it rises above the top edge, so the panel's canvas keeps room for it (`above`).
+- **Half-shown row (D129):** the radiator flap switches, the tank selector and the Preßluft gauge have their centres on
+  the screen's foot. The Preßluft gauge was moved down from #34's place to that line; the two knobs below it are left
+  out.
+
+**What it shows (from #34):**
+- **Top:** the clock on its lighter bracket; the red Kurssteuerung button; the SKK 404-2 block (Ein/Aus toggle, four
+  dark lamps, four knobs); the Siemens Kurssteuerung indicator; the round counter "Durchladen"; the Heizung placard and
+  its green knob.
+- **Middle:**
+  - the repeater compass, the 2 MG / 4 MG switch and the Kurs strip;
+  - the airspeed indicator, turn and bank (both the Bf 109's) and the climb indicator;
+  - the outside air thermometer and the two pitch indicators;
+  - the dive placard and the Umschaltwarnung placard with its two lamps;
+  - the Siemens course box, the AEG L/R indicator, the horizon, the two-bar window and the altimeter (the Bf 109's,
+    its setting knob kept).
+- **Right:** two rev counters and two manifold pressure gauges in their recess, each with its "d 30′ 5′" card.
+- **Bottom:**
+  - the two coolant thermometers in green rings with their "Km" cards, either side of the fuel gauge in its yellow ring;
+  - the four tank lamps (Behälter vorn / hinten);
+  - the two radiator switches (Kühler / Auf) and the tank selector (0, 1 VL, 2, HL 3, HR 4).
+- **Left:** the Fahrgestell Anzeige lights, the airscrew lever box (Automatik / Hand, größer / kleiner), the Fahrwerk
+  and Landeklappe EIN/AUS switches with their T levers (D114), the Achtung placard and the labels.
+- **Plate:** dark grey, as #34.
+
+**Working:**
+- the flying and engine instruments, the clock, the two pitch indicators and the fuel gauge;
+- the undercarriage lights and the undercarriage and flap switches;
+- the radiator switches;
+- **new, the round counter:** each cannon's window counts its drum's rounds left (60 to 0), and its red lamp lights when
+  the drum is empty;
+- **new, the outside air thermometer:** it reads the standard atmosphere's temperature at the aircraft's height, a new
+  `airTemp` reading. A new `diveLimit` reading gives the dive placard its figure from the aircraft's data.
+
+**Shown only (normal operation):** everything else listed above.
+
+**Placards in sourced figures:**
+- the dive placard says 650 km/h (S24), not #34's 700;
+- the Achtung placard says 250 km/St for the undercarriage and the flaps (S24, the limit with flaps and undercarriage
+  down), not #34's unsourced 400.
+
+**Removed:**
+- the Spitfire trim gauge (D110);
+- the speed card and the flap placard (D116);
+- the strip compass G4 (D107);
+- the magneto switches and the hydraulic gauge;
+- the four warning lamps;
+- the D113 ammunition counter: src/ui/ammoCounter.js and its test are deleted;
+- the red rings under the manifold pressure gauges, and src/ui/bf110Dials.js, which nothing used any more.
+
+**Frame ties** (src/ui/bf110Frame.js, now reading the layout directly):
+- The outer posts end where the panel first reaches a post's inner edge, at y 140, where the panel's left side below
+  the clock's bracket meets the left post. Both posts end at that height; the panel's right side stays inside its post.
+- The lower frames still meet the posts level with the red button (now the Kurssteuerung button, y 112).
+- The clock's bracket stands proud of the panel, in front of the dash covers. The lower frame passes behind it.
+
+**Flagged:**
+- **Guns' line moves up,** from 0.447 of the screen's height (D133) to 0.406, because the panel shows more above the
+  screen's foot. The camera's picture is shifted to match.
+- **Pitch indicators are smaller:** to fit beside the outside air thermometer they are about 70% of the clock's size
+  (D116's choice), and their lettering is very small.
+- **Preßluft reading:** the gauge's hand stands at a steady 150 kg/cm². No figure was found.
+- **Flap angles:** the take-off and landing angles (D116) no longer show on the panel. `pilotCard` stays in the data.
+- **Airspeed indicator's setting knob:** removed, since #34 shows none and its place is the dive placard's.
+- **Left dash cover:** it lies over the top of the SKK block, hiding part of its dark lamps.
+
+**Tests:**
+- tests/ui/bf110Panel.test.js is rewritten. It checks that:
+  - everything is inside the outline with no overlaps;
+  - the dial radius is kept and the panel fits every screen;
+  - the turn and bank is on the axis;
+  - the lowest row and the Preßluft gauge have their centres on the screen's foot;
+  - there is room above for the bracket;
+  - each engine reads on its own gauges and the rev counters go to 3,600;
+  - the round counter counts each cannon and lights its lamp when empty;
+  - the outside air temperature is the standard atmosphere's;
+  - the coolant scale, the switches and lights, the fuel and radiator readings, and the pitch indicators work;
+  - the placards say 650 and 250, not 700 or 400;
+  - the removed items are gone;
+  - the T levers clear the boxes above them, and the dials are luminous.
+- **Updated:** bf110Revi (no strip compass; the Revi over the turn and bank), bf110Frame (the posts' end; the lower frames
+  behind the bracket), trimDisplay and gearLabels (no trim gauge).
+

@@ -1,18 +1,17 @@
-// The Bf 110 C panel after the product owner's pictures (D106): the variometer's scale; every dial, plate and knob inside
-// the traced outline, none touching; the panel below the guns' line on every screen; each engine on its own gauges; the
-// ammunition counter, the Ein/Aus switches and lights, the radiator switches, the trim indicator, the rev counter to
-// 3,600 rpm and the fuel gauge working (the trim on the Spitfire's gauge since D110); the old added displays gone; the luminous dials (D105); and the flying
-// instruments as the product owner arranged them (D108).
+// The Bf 110 C panel after the product owner's picture (#34, D140): the variometer's scale; every dial, plate and knob
+// inside the outline, none touching; the dial radius kept, so the Bf 109's instruments keep their size; the lowest row
+// and the Preßluft gauge half below the screen's foot (D129); each engine on its own gauges; the round counter for the
+// two cannon; the outside air thermometer; the Ein/Aus switches and lights (D114); the radiator switches and fuel gauge;
+// the placards' sourced figures; the items removed; and the luminous dials (D105).
 import { describe, it, expect } from 'vitest';
 import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
-
-/** The right-hand dials' places on #31 before the section moved out (D111). */
-const OLD_X = { rpmLeft: 589, rpmRight: 660, ataLeft: 602, ataRight: 673, pitchLeft: 585, pitchRight: 643, clock: 583 };
-import { ammoFractions, switchPosition, gearLightState, AMMO_COLUMNS, tBar, T_STEM } from '../../src/ui/bf110Fittings.js';
-import { flapPlacard, flapPlacardLines, speedPlacard } from '../../src/ui/bf110Placards.js';
+import { switchPosition, gearLightState, tBar, T_STEM } from '../../src/ui/bf110Fittings.js';
+import { cannonCounter, airTempAngle, coolantAngle } from '../../src/ui/bf110Gauges.js';
+import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
+import { atmosphere } from '../../src/physics/atmosphere.js';
 import { LUMINOUS, INK, HAND, paint } from '../../src/ui/lwStyle.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
@@ -64,51 +63,64 @@ describe('variometer (Fl. 22383 drawing)', () => {
   });
 });
 
-describe('Bf 110 C panel layout (D106)', () => {
-  it('puts every dial, plate and knob inside the traced outline, no two dials or plates touching', () => {
+describe('Bf 110 C panel layout after #34 (D140)', () => {
+  it('puts every dial, plate and knob inside the outline, no two dials or plates touching', () => {
     for (const [name, [l, t, r, b]] of squares) for (const c of [[l, t], [r, t], [l, b], [r, b]]) expect(inside(c), name).toBe(true);
     for (const [name, [l, t, r, b]] of Object.entries(L.boxes)) for (const c of [[l, t], [r, t], [l, b], [r, b]]) expect(inside(c), name).toBe(true);
     for (const [name, [x, y]] of Object.entries(L.knobs)) expect(inside([x, y]), name).toBe(true);
-    const plates = Object.entries(L.boxes).filter(([n]) => n !== 'recess');
+    // The manifold pressure gauges stand in their recess; the knob of the Heizung placard sits on it, as photographed.
+    const plates = Object.entries(L.boxes).filter(([n]) => n !== 'ataBox');
     const all = [...squares, ...plates];
     for (let i = 0; i < all.length; i += 1) {
       for (let j = i + 1; j < all.length; j += 1) {
-        const inRecess = (n) => n === 'stripCompass';
-        if (inRecess(all[i][0]) || inRecess(all[j][0])) continue;
         expect(overlap(all[i][1], all[j][1]), `${all[i][0]} / ${all[j][0]}`).toBe(false);
       }
     }
+    for (const n of ['ataLeft', 'ataRight']) {
+      const [x, y, , o] = L.dials[n];
+      const [l, t, r, b] = L.boxes.ataBox;
+      expect(x - o > l && x + o < r && y - o > t && y + o < b, n).toBe(true);
+    }
   });
 
-  it('stands below the guns\' line on every screen, at least as large as the RAF panel\'s dials allow', () => {
+  it('keeps the dial radius on screen as before (D106), so the Bf 109\'s instruments keep their size; fits every screen', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);
-      expect(L.height * r, `${w}x${h}`).toBeLessThanOrEqual(0.45 * h + 1e-6);
+      expect(r, `${w}x${h}`).toBeCloseTo((0.45 * h) / ((475 - 57) / 30 + 0.1), 6);
       expect(L.width * r, `${w}x${h}`).toBeLessThanOrEqual(0.96 * w + 1e-6);
     }
   });
 
-  it('sits low enough that the screen\'s foot crosses the lowest gauges\' centres, so half of each shows (D129)', () => {
-    const lowest = ['radiatorLeft', 'selector', 'radiatorRight'];
+  it('stands the turn and bank on the axis, under the Revi, with the airspeed indicator and climb indicator either side', () => {
+    expect(L.dials.turn[0]).toBe(AXIS);
+    expect(L.dials.airspeed[0]).toBeLessThan(AXIS);
+    expect(L.dials.climb[0]).toBeGreaterThan(AXIS);
+    for (const n of ['airspeed', 'climb']) expect(L.dials[n][1]).toBe(L.dials.turn[1]); // one row, levelled
+  });
+
+  it('sits low enough that the screen\'s foot crosses the lowest row\'s and the Preßluft gauge\'s centres (D129)', () => {
+    const lowest = ['radiatorLeft', 'selector', 'radiatorRight', 'pressluft'];
     const lowestY = L.dials.selector[1];
     for (const [name, [, y]] of Object.entries(L.dials)) {
-      if (lowest.includes(name)) expect(y, name).toBe(lowestY);
+      if (lowest.includes(name)) expect(y, name).toBeCloseTo(lowestY, 9);
       else expect(y, name).toBeLessThan(lowestY);
     }
     expect(L.sink).toBeGreaterThan(0);
-    for (const [w, h] of [[1548, 784], [1920, 1080], [1280, 720], [2560, 1259], [2560, 1203]]) {
+    for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);
       const at = placer(w / 2, panelTop110(h, r), r);
-      for (const name of lowest) {
-        const [, y, face] = at.dial(L.dials[name]);
-        expect(y, `${w}x${h} ${name}`).toBeCloseTo(h, 6); // the centre on the foot
-        expect(face).toBeGreaterThan(0);
-      }
+      for (const name of lowest) expect(at.dial(L.dials[name])[1], `${w}x${h} ${name}`).toBeCloseTo(h, 6);
     }
+  });
+
+  it('keeps room above the top edge for the clock\'s bracket, which rises over it', () => {
+    const highest = Math.min(...L.outline.map(([, y]) => y));
+    expect(highest).toBeLessThan(57);
+    expect(L.above * 30).toBeGreaterThan(57 - highest);
   });
 });
 
-describe('Bf 110 C panel instruments (D106)', () => {
+describe('Bf 110 C panel instruments (D106, D140)', () => {
   it('shows each engine on its own gauges: a stopped left engine reads on the left only', () => {
     const sim = new Simulation(aircraftById.bf110c4);
     sim.plane.engines[0].omega = 0;
@@ -121,17 +133,34 @@ describe('Bf 110 C panel instruments (D106)', () => {
   it('reads the rev counters to 3,600 rpm, as photographed', () => {
     expect(clockwise(lwRpmAngle(800, RPM_110))).toBeCloseTo(202.5, 6);
     expect(clockwise(lwRpmAngle(3600, RPM_110))).toBeCloseTo(157.5, 6);
-    const g = draw();
-    expect(g.texts.filter((t) => t.s === '36')).toHaveLength(2);
+    expect(draw().texts.filter((t) => t.s === '36')).toHaveLength(2);
   });
 
-  it('drops each ammunition counter tape as its guns fire: left MG 17s, MG FF, right MG 17s', () => {
+  it('counts each cannon\'s rounds on the round counter, its lamp lit when its drum is empty', () => {
     const sim = new Simulation(aircraftById.bf110c4, 'air');
-    expect(ammoFractions(instrumentReadings(sim))).toEqual([1, 1, 1]);
+    expect(cannonCounter(instrumentReadings(sim))).toEqual([{ rounds: 60, empty: false }, { rounds: 60, empty: false }]);
     sim.armament.find((x) => x.id === 'cannonLeft').rounds = 0;
-    sim.armament.find((x) => x.id === 'mg17UpperLeft').rounds = 500;
-    expect(ammoFractions(instrumentReadings(sim))).toEqual([0.75, 0.5, 1]);
-    expect(AMMO_COLUMNS.flat().sort()).toEqual(Object.keys(aircraftById.bf110c4.guns).sort());
+    sim.armament.find((x) => x.id === 'cannonRight').rounds = 23;
+    const v = instrumentReadings(sim);
+    expect(cannonCounter(v)).toEqual([{ rounds: 0, empty: true }, { rounds: 23, empty: false }]);
+    const words = draw(v).texts.map((t) => t.s);
+    for (const w of ['00', '23', 'Durchladen']) expect(words, w).toContain(w);
+  });
+
+  it('reads the outside air temperature of the standard atmosphere at the aircraft\'s height', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    const v = instrumentReadings(sim);
+    expect(v.airTemp).toBeCloseTo(atmosphere(sim.plane.last.altitude).temperature - 273.15, 9);
+    expect(atmosphere(0).temperature - 273.15).toBeCloseTo(15, 6);
+    expect(airTempAngle(0)).toBe(0); // 0 °C straight up
+    expect(airTempAngle(40)).toBeCloseTo(-airTempAngle(-40), 9);
+    expect(airTempAngle(-60)).toBe(airTempAngle(-40)); // held at the end of the scale
+  });
+
+  it('reads the coolant thermometers 40 to 120 °C, 80 straight up', () => {
+    expect(coolantAngle(80)).toBe(0);
+    expect(coolantAngle(120)).toBeCloseTo(-coolantAngle(40), 9);
+    expect(draw().texts.filter((t) => t.s === '120').length).toBeGreaterThanOrEqual(2);
   });
 
   it('turns the Landeklappe and Fahrwerk switches to Aus with the flaps and undercarriage down, Ein with them up', () => {
@@ -154,125 +183,51 @@ describe('Bf 110 C panel instruments (D106)', () => {
     expect(instrumentReadings(sim).radiatorOpen).toBe(true);
   });
 
-  it('letters the panel\'s words; the old flap, undercarriage and trim displays are gone', () => {
-    const words = new Set(draw().texts.map((t) => t.s));
-    for (const w of ['Landeklappe', 'Fahrwerk', 'Ein', 'Aus', 'EIN', 'AUS', 'Umschalter', 'Schalter f. Kühlkl.', 'Zu', 'Auf',
-      'NOSE', 'UP', 'DOWN', '0', 'Liter']) {
-      expect(words.has(w), w).toBe(true);
-    }
-    for (const w of ['OBEN', 'UNTEN', 'GEAR', 'KLAPPEN', 'ELEVATOR TRIM', 'TAKEOFF']) expect(words.has(w), w).toBe(false);
-    // The "00 00" instrument, the "4 MG / 2 MG" strip and the "Umschalterstellung" strip are gone (D108).
-    for (const w of ['00', 'MG', 'Umschalterstellung', 'links', 'rechts']) expect(words.has(w), w).toBe(false);
-  });
-});
-
-describe('Bf 110 luminous dials (D105)', () => {
-  it('draws all but the fuel gauge\'s markings and hands in luminous yellow, and restores the colours', () => {
-    const g = draw();
-    const colourOf = (s) => g.texts.filter((t) => t.s === s).map((t) => t.c);
-    const dials = (w) => colourOf(w).filter((c) => c !== '#e9e6dc'); // not the speed card's print (D116)
-    for (const w of ['km/h', 'U/min', 'ata', 'm/s', 'DREHT', '12', 'Kühlst.']) {
-      expect(dials(w).length, w).toBeGreaterThan(0);
-      expect(dials(w).every((c) => c === LUMINOUS), w).toBe(true);
-    }
-    expect(colourOf('Liter')).toEqual([INK]); // the fuel gauge stays white
-    expect(paint).toEqual({ ink: INK, hand: HAND });
-  });
-});
-
-describe('Bf 110 C flying instruments as the product owner arranged them (D108)', () => {
-  const D = L.dials;
-  const left = ([x, , , o]) => x - o;
-  const right = ([x, , , o]) => x + o;
-  const foot = ([, y, , o]) => y + o;
-
-  it('stands the Patin compass, turn and bank and climb indicator side by side, their bottoms aligned', () => {
-    const upper = [D.compass, D.turn, D.climb];
-    for (let i = 1; i < upper.length; i += 1) {
-      expect(left(upper[i]) - right(upper[i - 1])).toBeCloseTo(10, 9); // one even gap, widened from 3 (D111)
-      expect(foot(upper[i])).toBeCloseTo(foot(upper[0]), 9);
-    }
-    expect(D.counter).toBeUndefined();
-    expect(L.boxes.mgStrip).toBeUndefined();
-    expect(L.boxes.umschalter).toBeUndefined();
-  });
-
-  it('stands the strip compass, horizon, airspeed indicator and altimeter side by side below, their bottoms aligned', () => {
-    const lower = [D.stripCompass, D.horizon, D.airspeed, D.altimeter];
-    for (let i = 1; i < lower.length; i += 1) {
-      expect(left(lower[i]) - right(lower[i - 1])).toBeCloseTo(15, 9); // one even gap, a little wider than above (D112)
-      expect(foot(lower[i])).toBeCloseTo(foot(lower[0]), 9);
-    }
-    expect(D.stripCompass[1] - D.stripCompass[3]).toBeGreaterThan(foot(D.compass)); // below the upper row
-    expect(D.horizon.slice(2)).toEqual(D.compass.slice(2)); // the Patin compass's size
-    expect(left(D.stripCompass)).toBeCloseTo(left(D.compass), 9); // left edges aligned (D111)
-    expect(Math.abs(D.airspeed[0] - D.climb[0])).toBeLessThan(D.climb[3]); // below the climb indicator
-    expect(L.knobs.setAirspeed[0]).toBe(D.airspeed[0]);
-    expect(L.knobs.setAltimeter[0]).toBe(D.altimeter[0]);
-  });
-});
-
-describe('Bf 110 C airscrew pitch indicators (D109)', () => {
-  it('shows each engine\'s blade angle on its own indicator above its rev counter, in luminous paint', () => {
+  it('shows each engine\'s blade angle on its own pitch indicator, kept beside the outside air thermometer (D109)', () => {
     const sim = new Simulation(aircraftById.bf110c4, 'air');
-    sim.plane.engines[1].beta += 5 * Math.PI / 180;
+    sim.plane.engines[1].beta += 5 * DEG;
     const v = instrumentReadings(sim);
     expect(v.engines[1].pitchClock.minutes).not.toBeCloseTo(v.engines[0].pitchClock.minutes, 3);
-    for (const side of ['Left', 'Right']) {
-      expect(L.dials[`pitch${side}`].slice(2)).toEqual(L.dials.clock.slice(2)); // the clock's size (D116)
-      expect(L.dials[`pitch${side}`][0]).toBeCloseTo(L.dials[`rpm${side}`][0], -2); // above its rev counter
-      expect(L.dials[`pitch${side}`][1]).toBeLessThan(L.dials[`rpm${side}`][1]);
-    }
+    expect(L.dials.pitchLeft[0]).toBeGreaterThan(L.dials.airTemp[0]);
     const g = draw(v);
     expect(g.texts.filter((t) => t.s === 'Luftschrauben-')).toHaveLength(2);
-    expect(g.texts.filter((t) => t.s === 'stellung').every((t) => t.c === LUMINOUS)).toBe(true);
-    expect(g.texts.some((t) => t.s === 'Kraftst.')).toBe(false); // the fuel and oil pressure gauges are gone
   });
 });
 
-describe('Bf 110 C right-hand side moved out for even gaps (D111)', () => {
-  it('keeps the climb indicator on the axis, the engine gauges clear of the altimeter, the panel on every screen', () => {
-    const P2 = BF110_PANEL;
-    expect(P2.dials.climb[0]).toBe(AXIS);
-    const [ax, , , ao] = P2.dials.altimeter;
-    for (const n of ['rpmLeft', 'ataLeft', 'pitchLeft']) expect(P2.dials[n][0] - P2.dials[n][3], n).toBeGreaterThan(ax + ao);
-    for (const n of ['rpmLeft', 'rpmRight', 'ataLeft', 'ataRight', 'pitchLeft', 'pitchRight', 'clock']) {
-      expect(P2.dials[n][0], n).toBeGreaterThan(OLD_X[n]); // moved out with the right-hand section
-    }
-    for (const [w, h] of SCREENS) expect(P2.width * panelRadius(P2, w, h), `${w}x${h}`).toBeLessThanOrEqual(0.96 * w + 1e-6);
+describe('Bf 110 C placards with the sourced figures (S24, D140)', () => {
+  it('letters the dive limit 650 km/h and the undercarriage and flap limits 250 km/h, not the picture\'s 700 and 400', () => {
+    const v = readings();
+    expect(v.diveLimit).toBe(650);
+    expect(divePlacardLines(v)).toEqual(['Maximale Sturzflug-', 'Geschwindigkeit', '650 km/h']);
+    const { gear, flaps } = achtungLines(v);
+    expect(gear.join(' ')).toContain('250 km/St');
+    expect(flaps.join(' ')).toContain('250 km/St');
+    const texts = draw(v).texts.map((t) => t.s);
+    const words = texts.join(' | ');
+    for (const w of ['650 km/h', 'Achtung Fahrwerk', 'Achtung Landeklappe', 'Umschaltwarnung', 'Heizung', 'SKK 404-2', 'Kurs',
+      'Preßluft', 'Umschalter', 'Schalter f. Kühlkl.', 'Fahrgestell']) expect(words, w).toContain(w);
+    for (const w of ['700 km/h', '400 km/St']) expect(texts.some((s) => s.includes(w)), w).toBe(false);
+  });
+
+  it('fits a placard\'s lettering inside its plate', () => {
+    const g = recorder();
+    const px = textPlacard(g, { x: 0, y: 0, w: 60, h: 20 }, ['Maximale Sturzflug-', 'Geschwindigkeit', '650 km/h']);
+    expect(px * 3 * 1.3).toBeLessThanOrEqual(20);
+    expect('Maximale Sturzflug-'.length * 0.6 * px).toBeLessThanOrEqual(60 * 0.9 + 1e-9);
   });
 });
 
-describe('Bf 110 C right shoulder and side (D112)', () => {
-  const O = BF110_PANEL.outline;
-  const D = BF110_PANEL.dials;
-
-  it('ends the top edge over the clock\'s 12 o\'clock and mirrors the left shoulder', () => {
-    expect(O[1][0]).toBe(D.clock[0]);
-    expect(O[1][1]).toBe(O[0][1]);
-    const leftEnd = O.slice(-9).reverse(); // the left shoulder, from the top edge down
-    for (let i = 0; i < leftEnd.length; i += 1) {
-      expect(O[i + 2][0] - O[1][0]).toBeCloseTo(O[0][0] - leftEnd[i][0], 9);
-      expect(O[i + 2][1]).toBe(leftEnd[i][1]);
-    }
-  });
-
-  it('leans the right-hand side out at 75 degrees, as #31, with the engine gauges close inside it', () => {
-    const [x0, y0] = O[10];
-    const [x1, y1] = O[11];
-    expect(Math.atan2(y1 - y0, x1 - x0) * (180 / Math.PI)).toBeCloseTo(75, 6);
-    for (const n of ['pitchRight', 'rpmRight', 'ataRight']) {
-      const [x, y, , o] = D[n];
-      const top = y - o;
-      // The edge at the mounting's top: on the side below the shoulder's foot, on the shoulder above it.
-      const edge = top >= y0 ? x0 + (top - y0) / Math.tan(75 * Math.PI / 180) : null;
-      if (edge !== null) expect(edge - (x + o), n).toBeCloseTo(8, 6);
-    }
+describe('Bf 110 C items taken off for #34 (D140)', () => {
+  it('has no trim gauge, speed card, flap placard, strip compass, magnetos, hydraulic gauge or ammunition counter', () => {
+    for (const n of ['trim', 'stripCompass', 'hydraulic']) expect(L.dials[n], n).toBeUndefined();
+    for (const n of ['speedCard', 'placard', 'magnetos', 'ammo']) expect(L.boxes[n], n).toBeUndefined();
+    const words = new Set(draw().texts.map((t) => t.s));
+    for (const w of ['SPEEDS', 'NOSE', 'Achtung!', 'M1+2', 'Fahrwerk ', 'Kühlst.']) expect(words.has(w), w).toBe(false);
   });
 });
 
 describe('Bf 110 C flap and undercarriage levers (D114)', () => {
-  it('ends each lever in an upright T: a stem rising to a bar across its top, clear of the lights and placard', () => {
+  it('ends each lever in an upright T: a stem rising to a bar across its top, clear of the box above it', () => {
     const rects = [];
     const bars = [];
     const g = new Proxy({}, {
@@ -289,67 +244,22 @@ describe('Bf 110 C flap and undercarriage levers (D114)', () => {
     expect(bx + bw / 2).toBeCloseTo(sx + sw / 2, 9);
     // At Ein, each bar stays below the box above its switch.
     const PXR = 30;
-    for (const [sw2, above] of [['flaps', 'lights'], ['gear', 'placard']]) {
-      const [x, top] = L.switches[sw2];
-      const barTop = top - T_STEM * PXR - 0.07 * PXR;
-      const [l, , r, b] = L.boxes[above];
-      const crosses = x + 0.275 * PXR > l && x - 0.275 * PXR < r;
-      if (crosses) expect(barTop, sw2).toBeGreaterThan(b);
+    for (const [sw2, above] of [['gear', 'gearLights'], ['flaps', 'achtung']]) {
+      const [, top] = L.switches[sw2];
+      expect(top - T_STEM * PXR - 0.07 * PXR, sw2).toBeGreaterThan(L.boxes[above][3]);
     }
   });
 });
 
-describe('Bf 110 C coolant thermometers (D115)', () => {
-  it('draws each engine\'s coolant temperature on the Bf 109\'s thermometer, at its size', () => {
-    for (const side of ['Left', 'Right']) {
-      const [, , face, outer] = BF110_PANEL.dials[`temp${side}`];
-      expect(face / outer).toBeCloseTo(32 / 40, 9); // the Bf 109's coolTemp proportions
-    }
-    expect(BF110_PANEL.dials.tempLeft[0] + BF110_PANEL.dials.tempRight[0]).toBe(2 * BF110_PANEL.dials.fuel[0]);
-    expect(BF110_PANEL.dials.fuel.slice(2)).toEqual(BF110_PANEL.dials.tempLeft.slice(2)); // the fuel gauge the same size
+describe('Bf 110 luminous dials (D105)', () => {
+  it('draws all but the fuel gauge\'s markings and hands in luminous yellow, and restores the colours', () => {
     const g = draw();
-    expect(g.texts.filter((t) => t.s === 'Kühlst.')).toHaveLength(2);
-    expect(g.texts.some((t) => t.s === 'Kühl.')).toBe(false); // the oil and coolant gauges are gone
-  });
-});
-
-describe('Bf 110 C speed card and flap placard (D116)', () => {
-  it('letters the speed card below the trim gauge and the flap placard below the flap lever', () => {
-    const words = new Set(draw().texts.map((t) => t.s));
-    for (const w of ['SPEEDS', 'Stall Speed Flaps Up', 'Best ROC Speed', '155', '220', 'Achtung!', 'Max Flap Speed', '250 km/hr',
-      'Take-off 0°', 'Landing 50°']) expect(words.has(w), w).toBe(true);
-    expect(words.has('Achtung Fahrwerk')).toBe(false);
-    const [l, t, r] = L.boxes.speedCard;
-    const [tx, ty, , to] = L.dials.trim;
-    expect(t).toBeGreaterThan(ty + to); // below the trim gauge
-    expect(t).toBe(L.dials.climb[1] - L.dials.climb[3]); // level with the climb indicator's top
-    expect(l).toBeLessThan(tx);
-    expect(r).toBeGreaterThan(tx);
-    const [px, top, bottom] = [L.switches.flaps[0], L.boxes.placard[1], L.switches.flaps[2]];
-    expect(top).toBeGreaterThan(bottom); // below the flap lever
-    expect(L.boxes.placard[0]).toBeLessThan(px);
-    expect(L.boxes.placard[2]).toBeGreaterThan(px);
-  });
-});
-
-describe('Bf 110 C placards\' lettering (D116)', () => {
-  it('letters both placards white on black in one font size, the speed card no wider than its lettering needs', () => {
-    const fonts = [];
-    const fills = [];
-    const g = new Proxy({}, {
-      get: (t, p) => (p === 'fillText' ? (s) => fills.push({ s, font: t.font, c: t.fillStyle })
-        : p === 'fillRect' ? (...a) => fills.push({ rect: a, c: t.fillStyle }) : p in t ? t[p] : () => {}),
-      set: (t, p, v) => { if (p === 'font') fonts.push(v); t[p] = v; return true; },
-    });
-    const v = readings();
-    flapPlacard(g, { x: 0, y: 0, w: 64, h: 72 }, flapPlacardLines(v), 7);
-    const plate = speedPlacard(g, 300, 0, v.pilotCard, 7);
-    const texts = fills.filter((f) => f.s);
-    expect(new Set(texts.map((f) => f.font)).size).toBe(1); // one font size
-    expect(texts.every((f) => f.c === '#e9e6dc')).toBe(true); // white
-    expect(fills.filter((f) => f.rect).every((f) => f.c === '#0c0c0c')).toBe(true); // on black
-    const longest = Math.max(...v.pilotCard.entries.map((e) => (e.label.length + e.value.length) * 0.6 * 7));
-    expect(plate.w).toBeLessThan(longest + 7 * 4); // the lettering plus a bit
-    expect(plate.w).toBeGreaterThan(longest);
+    const colourOf = (s) => g.texts.filter((t) => t.s === s).map((t) => t.c);
+    for (const w of ['km/h', 'U/min', 'ata', 'm/s', 'DREHT', '12', '°C']) {
+      expect(colourOf(w).length, w).toBeGreaterThan(0);
+      expect(colourOf(w).every((c) => c === LUMINOUS), w).toBe(true);
+    }
+    expect(colourOf('Liter')).toEqual([INK]); // the fuel gauge stays white
+    expect(paint).toEqual({ ink: INK, hand: HAND });
   });
 });

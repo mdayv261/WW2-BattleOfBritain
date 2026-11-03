@@ -7,7 +7,6 @@ import { instrumentReadings } from '../../src/ui/instruments.js';
 import { BF109_PANEL, bf109Panel } from '../../src/ui/bf109Panel.js';
 import { BF110_PANEL, bf110Panel } from '../../src/ui/bf110Panel.js';
 import { trimDisplay, trimLayout, trimY, TRIM_SCALE, TRIM_WORDS } from '../../src/ui/panelControls.js';
-import { trimNeedle } from '../../src/ui/rafPanelDials.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 import { Keyboard } from '../../src/input/keyboard.js';
@@ -92,15 +91,13 @@ describe('elevator trim display (D74)', () => {
     expect(g.texts.some((t) => t.t === 'ELEVATOR')).toBe(false);
   });
 
-  it('Bf 110: the Spitfire\'s trim gauge at the clock\'s size since D110, not the trim display or the +/0/- indicator', () => {
+  it('Bf 110: no trim display since D140 (the Spitfire\'s trim gauge of D110 removed with the panel of #34)', () => {
     expect(BF110_PANEL.boxes.trim).toBeUndefined();
-    expect(BF110_PANEL.dials.trim.slice(2)).toEqual(BF110_PANEL.dials.clock.slice(2));
+    expect(BF110_PANEL.dials.trim).toBeUndefined();
     const g = recordingContext();
     bf110Panel(g, 500, 0, 40, instrumentReadings(new Simulation(aircraftById.bf110c4, 'air')));
     expect(g.texts.some((t) => t.t === TRIM_WORDS.title)).toBe(false);
-    expect(g.texts.some((t) => t.t === '+')).toBe(false);
-    expect(g.texts.filter((t) => t.t === 'NOSE')).toHaveLength(2);
-    expect(trimNeedle(15)).toBeCloseTo(-trimNeedle(-15), 9); // the needle swings with the trim, up for nose up
-    expect(trimNeedle(15)).toBeLessThan(0);
+    expect(g.texts.some((t) => t.t === 'NOSE')).toBe(false);
   });
+
 });

@@ -40,13 +40,12 @@ describe('undercarriage indicator words (D66)', () => {
     for (const word of ['OBEN', 'UNTEN', 'GEAR', 'DOWN']) expect(g.texts, word).not.toContain(word);
   });
 
-  it('Bf 110: the Fahrwerk Ein/Aus switch and EIN/AUS lights since D106, not OBEN, UNTEN or GEAR', () => {
+  it('Bf 110: the Fahrwerk EIN/AUS switch and lights since D106, not OBEN, UNTEN or GEAR', () => {
     const g = recordingContext();
     bf110Panel(g, 500, 0, 40, readings('bf110c4'));
     for (const word of ['Fahrwerk', 'Ein', 'Aus', 'EIN', 'AUS']) expect(g.texts, word).toContain(word);
-    // UP and DOWN appear only on the Spitfire trim gauge's NOSE UP / NOSE DOWN (D110).
-    for (const word of ['OBEN', 'UNTEN', 'GEAR']) expect(g.texts, word).not.toContain(word);
-    expect(g.texts.filter((t) => t === 'UP' || t === 'DOWN')).toHaveLength(2);
+    // No UP or DOWN since the Spitfire trim gauge went (D140).
+    for (const word of ['OBEN', 'UNTEN', 'GEAR', 'UP', 'DOWN']) expect(g.texts, word).not.toContain(word);
   });
 
   it('RAF: still UP, DOWN and UNDERCARRIAGE', () => {

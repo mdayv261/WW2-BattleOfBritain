@@ -12,8 +12,9 @@
 import { describe, it, expect } from 'vitest';
 import {
   FRAME_110, outerX, fuselageX, fuselagePath, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths,
-  sideBarPath, ledgePath, lowerFramePath, dashCoverPath, frameBars110,
+  sideBarPath, ledgePath, lowerFramePath, dashCoverPath, frameBars110, panelEdgeX,
 } from '../../src/ui/bf110Frame.js';
+import { BRACKET } from '../../src/ui/bf110Layout.js';
 import {
   AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, BF109_SCALE, REVI_110, placer, panelTop110,
 } from '../../src/ui/bf110Panel.js';
@@ -75,20 +76,17 @@ describe('Bf 110 C front frame (D117)', () => {
     }
   });
 
-  it('stops the outer posts at the panel\'s top corners, their inner edges on the outline\'s shoulders (D120)', () => {
+  it('stops both outer posts where the panel first reaches a post\'s inner edge (D120, D140)', () => {
     const { foot, width } = FRAME_110.posts;
     const path = outerPath();
     for (const [x, y] of [path[0], path[path.length - 1]]) {
       expect(y).toBe(foot);
       expect(x).toBeCloseTo(outerX(Math.sign(x - AXIS), foot), 9);
     }
-    const shoulders = L.outline.filter(([, y]) => y === foot);
-    expect(shoulders).toHaveLength(2);
-    for (const [x] of shoulders) {
-      const side = Math.sign(x - AXIS);
-      const innerEdge = outerX(side, foot) - (side * width) / 2;
-      expect(Math.abs(innerEdge - x), `${side}`).toBeLessThan(width / 2);
-    }
+    const gap = (side, y) => side * (outerX(side, y) - (side * width) / 2 - panelEdgeX(side, y)); // post's inner edge outside the panel's
+    expect(gap(-1, foot)).toBeLessThanOrEqual(0); // the left post meets the panel's left side there
+    expect(gap(-1, foot - 1)).toBeGreaterThan(0); // and not above it
+    for (let y = 57; y <= foot; y += 1) expect(gap(1, y), `right ${y}`).toBeGreaterThan(0); // the right side inside its post
   });
 
   it('runs the fuselage frames as thin sheets from the posts\' outside edges to the screen\'s foot at 70 degrees (D139)', () => {
@@ -204,7 +202,8 @@ describe('Bf 110 C front frame (D117)', () => {
       expect(x1).toBeCloseTo(outerX(side, y1), 9); // on the outer post's middle line
       expect(side * (x1 - x0)).toBeGreaterThan(0); // out going down
       // Clear above the panel: its lower edge above the panel's outline wherever it crosses over it.
-      for (const [px, py] of L.outline) {
+      for (const [px, py] of L.outline) { // where it passes behind the clock's bracket it is hidden (D140)
+        if (BRACKET.some(([bx, by]) => bx === px && by === py)) continue;
         const f = (px - x0) / (x1 - x0);
         if (f > 0 && f < 1) expect(y0 + f * (y1 - y0) + FRAME_110.inner.width / 2, `${side} ${px}`).toBeLessThan(py);
       }
@@ -232,7 +231,7 @@ describe('Bf 110 C front frame (D117)', () => {
       const inner = top[top.length - 1];
       expect(side * (bodySide - inner[0])).toBeGreaterThan(0); // just inside the gunsight body's side
       expect(side * (bodySide - inner[0])).toBeLessThan(5);
-      expect(footInner).toEqual([inner[0], L.outline[0][1]]); // down to its foot on the panel's top
+      expect(footInner).toEqual([inner[0], 57]); // down to its foot on the panel's top
       const [, foot] = lowerFramePath(side);
       expect(footOuter).toEqual(foot); // the front edge to the lower frame's foot on the outer post
       // Mirror images about the axis.

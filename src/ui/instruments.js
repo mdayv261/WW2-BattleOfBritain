@@ -7,6 +7,7 @@
 import { Euler, Vector3 } from 'three';
 import { UNIT, ISA } from '../core/constants.js';
 import { headingOf } from './units.js';
+import { atmosphere } from '../physics/atmosphere.js';
 import { BF109_PANEL, bf109Panel } from './bf109Panel.js';
 import { TRIM_SCALE } from './panelControls.js';
 import { pilotCard } from './speedCard.js';
@@ -65,6 +66,10 @@ export function instrumentReadings(sim) {
     rpm: plane.omega / UNIT.RPM,
     rpmLimit: plane.engine.maxSpeed / UNIT.RPM, // the red mark on the rev counter (D89)
     pilotCard: pilotCard(ac, raf), // the speed card on the panel (D91)
+    // The diving speed limit for the Bf 110's dive placard (D140): km/h, or mph on the RAF side.
+    diveLimit: ac.limits?.diveEas ? Math.round(ac.limits.diveEas / (raf ? UNIT.MPH : UNIT.KMH)) : null,
+    // The outside air temperature at the aircraft's height, °C, from the standard atmosphere (the Bf 110's, D140).
+    airTemp: atmosphere(d.altitude).temperature - 273.15,
     coolant: plane.engines[0].heat.coolant, // °C, the first engine's (the single-engine panels)
     oil: plane.engines[0].heat.oil,
     manifold: raf ? (d.map - ISA.P0) / UNIT.PSI : d.map / UNIT.ATA,
@@ -168,14 +173,16 @@ export class InstrumentPanel {
     const L = v.raf ? SPITFIRE_PANEL : twin ? BF110_PANEL : BF109_PANEL;
     const r = panelRadius(L, width, window.innerHeight);
     // A panel set below the screen's foot (the Bf 110's, D129) is cut there: its 3 px top margin and no foot margin.
-    const height = L.sink ? (L.height - L.sink) * r + 3 : L.height * r + 6;
+    // Room kept above a panel whose fittings rise over its top edge (the Bf 110's clock bracket, D140).
+    const above = (L.above ?? 0) * r;
+    const height = L.sink ? (L.height - L.sink) * r + 3 + above : L.height * r + 6;
     const g = this.context(width, height);
     if (!L.ownBackground) {
       g.fillStyle = 'rgba(18, 18, 16, 0.94)';
       g.fillRect((width - L.width * r) / 2, 0, L.width * r, height);
     }
     if (v.raf) rafPanel(g, width / 2, 0, r, v);
-    else if (twin) bf110Panel(g, width / 2, 3, r, v);
+    else if (twin) bf110Panel(g, width / 2, 3 + above, r, v);
     else bf109Panel(g, width / 2, 6, r, v); // the margin above, for the coaming's lip over its top (D90)
   }
 }

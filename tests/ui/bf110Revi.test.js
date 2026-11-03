@@ -37,7 +37,7 @@ function recorder() {
 }
 
 describe('the Bf 109\'s instruments on the Bf 110 panel (D107)', () => {
-  const pairs = [['airspeed', 'airspeed'], ['altimeter', 'altimeter'], ['turn', 'turn'], ['stripCompass', 'compass']];
+  const pairs = [['airspeed', 'airspeed'], ['altimeter', 'altimeter'], ['turn', 'turn']]; // the strip compass gone (D140)
 
   it('draws them at the Bf 109\'s size on every screen: faces and mountings in pixels as on its panel', () => {
     for (const [w, h] of SCREENS) {
@@ -143,7 +143,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
       expect(p.glass.y).toBeLessThan(p.y);
       expect(p.glass.y + p.glass.h).toBeGreaterThan(p.y);
       const panelTop = panelTop110(h, r); // as InstrumentPanel draws it
-      expect(L.dials.climb[0]).toBe(AXIS); // above the climb indicator, in the middle
+      expect(L.dials.turn[0]).toBe(AXIS); // above the turn and bank, in the middle (D140)
       expect(p.y + REVI_110.body.y[1] * p.r, `${w}x${h}`).toBeCloseTo(panelTop, 6);
     }
     expect(BF110_AIM).toBeGreaterThan(0.35);

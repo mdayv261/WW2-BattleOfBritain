@@ -26,14 +26,16 @@
 // hidden meanwhile (src/render/testView.js) and shows again when the pilot looks round; the wings and engines stay.
 
 import { drawFrames } from './frameBars.js';
-import { AXIS, BF110_PANEL, BF109_SCALE, REVI_110 } from './bf110Panel.js';
+import { AXIS, OUTLINE, LAYOUT, BRACKET, BF109_SCALE } from './bf110Layout.js';
+import { REVI_110 } from './bf110Panel.js';
 
 export const FRAME_110 = {
   // The outer top bar: its middle line's height, half its length to the corners' centres, its width and corner radius.
   top: { y: -244, half: 260, width: 24, corner: 32 },
   // The outer posts: out this many pixels for each pixel down from the top bar's corners (#32: about 0.16), down to
-  // `foot`, the panel's top corners (its outline's shoulders at y 167; product owner, D120); width.
-  posts: { slope: 0.16, foot: 167, width: 26 },
+  // `foot`, where the panel first reaches a post (its left wing, D140; the panel's top corners, product owner, D120),
+  // both posts ending there; width.
+  posts: { slope: 0.16, foot: null, width: 26 },
   // The fuselage frames: thin sheets from the posts' outside edges at their feet down to the foot of the screen, at this
   // angle from the horizontal (degrees), leaning out going down (product owner, D121; thinner and further out, D139);
   // their thickness.
@@ -59,10 +61,38 @@ const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
 const GREY = { band: '#4c5054', lit: '#7a7f83', shade: '#2c2f31', rivet: '#3a3d40', outline: '#17191a' };
 const PANEL_TOP = 57;
+const TOP_Y = PANEL_TOP;
 const PX_110 = 30; // the Bf 110 layout's picture pixels per dial radius (src/ui/bf110Panel.js)
+
+/**
+ * The panel's outermost edge on `side` (-1 left, +1 right) at height y: the furthest of its outline's crossings there,
+ * or null where the outline does not reach that height.
+ */
+export function panelEdgeX(side, y) {
+  let best = null;
+  OUTLINE.forEach((a, i) => {
+    const b = OUTLINE[(i + 1) % OUTLINE.length];
+    if (a[1] === b[1] || (a[1] - y) * (b[1] - y) > 0) return;
+    const x = a[0] + ((b[0] - a[0]) * (y - a[1])) / (b[1] - a[1]);
+    if (best === null || side * (x - best) > 0) best = x;
+  });
+  return best;
+}
 
 /** An outer post's middle line at height y (`side` -1 left, +1 right): out from the top bar's corner going down. */
 export const outerX = (side, y) => AXIS + side * (FRAME_110.top.half + FRAME_110.posts.slope * (y - FRAME_110.top.y));
+/**
+ * Where the posts end (D120, D140): the highest point at which the panel's edge reaches either post's inner edge (the
+ * left wing on #34's panel; the right side stays inside its post), both posts ending there.
+ */
+FRAME_110.posts.foot = (() => {
+  const reaches = (side, y) => {
+    const edge = panelEdgeX(side, y);
+    return edge !== null && side * (edge - (outerX(side, y) - (side * FRAME_110.posts.width) / 2)) >= 0;
+  };
+  for (let y = TOP_Y; y < 2000; y += 0.5) if (reaches(-1, y) || reaches(1, y)) return y;
+  return TOP_Y;
+})();
 /**
  * A fuselage frame's middle line at height y, below the post's foot: from the post's outside edge there, out at its
  * angle going down (D139).
@@ -177,7 +207,7 @@ export function ledgePath() {
  */
 export function lowerFramePath(side) {
   const ledge = ledgePath();
-  const y = BF110_PANEL.knobs.redButton[1];
+  const y = LAYOUT.knobs.redButton[1];
   return [ledge[side < 0 ? 0 : ledge.length - 1], [outerX(side, y), y]];
 }
 
@@ -228,7 +258,7 @@ export function frameBars110(at) {
 
 /** The panel's outline as a path (canvas px), for keeping the frame behind it. */
 function panelPath(g, at) {
-  BF110_PANEL.outline.forEach((p, i) => (i ? g.lineTo(...at.xy(p)) : g.moveTo(...at.xy(p))));
+  OUTLINE.forEach((p, i) => (i ? g.lineTo(...at.xy(p)) : g.moveTo(...at.xy(p))));
   g.closePath();
 }
 
@@ -275,6 +305,13 @@ export function drawBf110Frame(g, at, width, height) {
  * its top and front edges, as photographed (#33). The bars are drawn over its edge along the lower frame.
  */
 function dashCover(g, at, side) {
+  g.save();
+  // The clock's bracket stands proud of the panel, in front of the cover (D140).
+  g.beginPath();
+  g.rect(-1e5, -1e5, 2e5, 2e5);
+  BRACKET.forEach((p, i) => (i ? g.lineTo(...at.xy(p)) : g.moveTo(...at.xy(p))));
+  g.closePath();
+  g.clip('evenodd');
   const pts = dashCoverPath(side).map((p) => at.xy(p));
   const top = pts.slice(0, -2);
   const [footInner, footOuter] = pts.slice(-2);
@@ -303,6 +340,7 @@ function dashCover(g, at, side) {
   g.lineTo(footOuter[0] + dx, footOuter[1] + dy);
   g.stroke();
   g.setLineDash?.([]);
+  g.restore();
 }
 
 /** The fuselage frames (D139): thin grey sheets with a dark outline, lit along their inner edge. */
