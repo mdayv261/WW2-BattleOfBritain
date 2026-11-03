@@ -30,7 +30,7 @@ const slot = (X, top, bottom) => [pt(X, top)[0], pt(X, top)[1], pt(X, bottom)[1]
 // almost straight down a short way, then angles down at #34's shoulder slope (115 across for 95 down) until it touches
 // the right fuselage side (the right outer post's inner edge, src/ui/bf110Frame.js), and runs down beside it to the
 // right section's foot. Set here in #34's pixels; tests/ui/bf110Frame.test.js keeps the touch with the post.
-const RIGHT_CORNER = [[1335, 132], [1340, 172], [1568.4, 360.7]];
+const RIGHT_CORNER = [[1335, 132], [1340, 172], [1631, 412.4]]; // the touch moved out with the posts (D149)
 const OUTLINE_34 = [
   [255, 165], [295, 128], [447, 100], [455, 132], ...RIGHT_CORNER, [1570, 895], [1160, 895], [1160, 1080], [1130, 1120], [640, 1120],
   [608, 1090], [605, 835], [345, 835], [335, 960], [320, 1120], [55, 1120], [35, 1100], [35, 460], [200, 450],

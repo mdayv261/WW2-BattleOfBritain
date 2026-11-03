@@ -4117,3 +4117,28 @@ The posts and lower frame checks allow for the corner's touch.
 - every dial stays inside the corner;
 - the fill's right end lies on the cover's edge at the panel's top.
 
+## D149. The Bf 110 C's outer windscreen frame widened at its base by two frame widths (3 Nov 2026, product owner's request)
+
+**The request:** the product owner meant the outer windscreen frame, not the inner one. Widen the outer frame's base by
+twice the frame's width, and undo the inner change. D148 is reverted (commit 333bff1); the armoured windscreen is as
+D117–D128 again.
+
+**The change** (src/ui/bf110Frame.js, `FRAME_110.posts.slope`):
+- **Posts:** the outer posts keep their tops at the top bar's corners (260 px either side of the axis). Their lean out
+  going down is increased from #32's 0.16 to 0.215, so at their feet they stand one post width (26 px) further out
+  each side. The base is 52 px wider: 724 px across at the feet where it was 671.
+- **Feet:** recomputed where the panel's left side reaches the wider-set left post (frame y 229, was 227). The fuselage
+  sheets start there.
+- **Following the posts:**
+  - The side bars (D126, D127) and the lower frames (D135) end on the posts, so they reach a little further out.
+  - The dash covers' feet follow the lower frames.
+  - The grab handles' feet follow the posts. The windscreen's top corners now clear the handles by up to 1.52 px; the
+    test allows 2 px.
+- **Panel's right corner** (D147): it touches the right post further out and lower, at (1631, 412.4) on #34's pixels.
+  Its side then runs down and slightly in, inside the post, to the right section's foot.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that:
+- the top bar's corners are unchanged;
+- the base is two post widths wider than at #32's slope;
+- the right corner still touches the post.
+

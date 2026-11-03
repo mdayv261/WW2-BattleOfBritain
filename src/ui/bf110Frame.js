@@ -22,9 +22,9 @@ import { AXIS, OUTLINE, LAYOUT, GUNS_Y } from './bf110Layout.js';
 export const FRAME_110 = {
   // The outer top bar: its middle line's height, half its length to the corners' centres, its width and corner radius.
   top: { y: -244, half: 260, width: 24, corner: 32 },
-  // The outer posts: out this many pixels for each pixel down from the top bar's corners (#32: about 0.16), down to
-  // `foot`, where the panel first reaches a post (its left wing, D140; the panel's top corners, product owner, D120),
-  // both posts ending there; width.
+  // The outer posts: out this many pixels for each pixel down from the top bar's corners (#32: about 0.16; set below so
+  // the base is two post widths wider, D149), down to `foot`, where the panel first reaches a post (its left wing, D140;
+  // the panel's top corners, product owner, D120), both posts ending there; width.
   posts: { slope: 0.16, foot: null, width: 26 },
   // The fuselage frames: thin sheets from the posts' outside edges at their feet down to the foot of the screen, at this
   // angle from the horizontal (degrees), leaning out going down (product owner, D121; thinner and further out, D139);
@@ -89,14 +89,26 @@ export const outerX = (side, y) => AXIS + side * (FRAME_110.top.half + FRAME_110
  * left side reaches the left post's inner edge (below the clock's bracket on #34's panel), both posts ending there. The
  * panel's right corner only touches the right post where the right dash cover meets it (D146), and the post runs on past.
  */
-FRAME_110.posts.foot = (() => {
+function postFoot() {
   const reaches = (side, y) => {
     const edge = panelEdgeX(side, y + FRAME_SHIFT); // the panel's edge level with this point of the post
     return edge !== null && side * (edge - (outerX(side, y) - (side * FRAME_110.posts.width) / 2)) >= 0;
   };
   for (let y = TOP_Y; y < 2000; y += 0.5) if (reaches(-1, y)) return y;
   return TOP_Y;
-})();
+}
+/**
+ * The posts' slope (product owner, D149): #32's 0.16, more by enough that at their feet the posts stand one post width
+ * further out each side, the frame's base two widths wider, its top bar unchanged. Then the posts' feet again, where
+ * the panel reaches the wider-set left post.
+ */
+{
+  const { posts, top } = FRAME_110;
+  posts.slope = 0.16;
+  posts.foot = postFoot();
+  posts.slope = 0.16 + posts.width / (posts.foot - top.y);
+  posts.foot = postFoot();
+}
 /**
  * A fuselage frame's middle line at height y, below the post's foot: from the post's outside edge there, out at its
  * angle going down (D139).

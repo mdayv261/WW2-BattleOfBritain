@@ -157,7 +157,7 @@ describe('Bf 110 C front frame (D117)', () => {
       const gap = Math.min(...handlePath(side).map(([x, y]) => Math.hypot(x - corner[0], y - corner[1])))
         - (inner.width + handles.width) / 2; // between the rounded corner's edge and the tube's
       expect(gap, `${side}`).toBeGreaterThanOrEqual(0);
-      expect(gap, `${side}`).toBeLessThan(1.5);
+      expect(gap, `${side}`).toBeLessThan(2); // 1.5 before the posts were set wider (D149)
     }
     expect(FRAME_110.crossBar.y).toBeLessThan(-164); // higher than D117's
   });
@@ -302,6 +302,14 @@ describe('Bf 110 C front frame (D117)', () => {
       expect(x, `${y}`).toBeLessThan(postInner(y) + 0.2);
     }
     for (const [name, [x, , , o]] of Object.entries(L.dials)) expect(x + o, name).toBeLessThan(c[0]);
+  });
+
+  it('widens the outer frame\'s base by two post widths, its top bar unchanged (D149)', () => {
+    const { top, posts } = FRAME_110;
+    expect(outerX(1, top.y) - AXIS).toBe(top.half); // the top bar's corners as before
+    const d117 = (y) => top.half + 0.16 * (y - top.y); // #32's slope
+    expect(2 * (outerX(1, posts.foot) - AXIS) - 2 * d117(posts.foot)).toBeCloseTo(2 * posts.width, 0); // the base
+    expect(posts.slope).toBeGreaterThan(0.16);
   });
 
   it('has no canopy latch and lever on the top bar and no knobs on the ledge (D125)', () => {
