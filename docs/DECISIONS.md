@@ -4563,3 +4563,31 @@ everything round it.
 
 **Tests:** tests/ui/bf110Panel.test.js checks the 2 mm rise.
 
+## D177. The Bf 110 C's artificial horizon 15% larger than the airspeed indicator (3 Nov 2026, product owner's request)
+
+**The request:**
+- Verify the airspeed indicator, altimeter, turn and slip indicator, elevator trim indicator, climb indicator, rev
+  counters and manifold pressure gauges are all the same size.
+- Make the artificial horizon 15% larger than the airspeed indicator.
+
+**Verification** (picture px, face radius / mounting half-width):
+
+| Dial | Face | Mounting | Same as the airspeed indicator? |
+|---|---|---|---|
+| Airspeed indicator | 34.72 | 42.61 | — |
+| Altimeter | 34.72 | 42.61 | yes |
+| Turn and slip indicator | 34.72 | 42.61 | yes |
+| Elevator trim indicator | 34.72 | 42.61 | yes |
+| Climb indicator | 34.72 | 42.61 | yes |
+| Rev counters and manifold pressure gauges | 35.88 | 39.56 | **no** |
+
+The engine gauges' faces are 3% larger and their mountings 7% narrower. They were measured on #34 and have not been
+changed. **Decision needed:** whether to match them to the airspeed indicator.
+
+**The change** (src/ui/bf110Layout.js): the artificial horizon now has 1.15 times the airspeed indicator's face and
+mounting: face 39.93 (was 39.10), mounting 49.00 (was 47.84). It stands 3 of #34's pixels lower (715) so its mounting
+clears the Umschaltwarnung placard above it.
+
+**Tests:** tests/ui/bf110Panel.test.js checks the altimeter, turn and slip, trim and climb indicators against the
+airspeed indicator's size, and the horizon at 1.15 times it.
+

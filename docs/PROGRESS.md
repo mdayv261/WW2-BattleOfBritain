@@ -64,6 +64,8 @@ Read this at the start of every session.
 - D173-D175: the turn and slip indicator, the elevator trim indicator and the climb indicator the airspeed indicator's
   size.
 - D176: the two-bar window above the altimeter 2 mm up.
+- D177: the artificial horizon 15% larger than the airspeed indicator. The engine gauges are not the airspeed
+  indicator's size (decision pending).
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

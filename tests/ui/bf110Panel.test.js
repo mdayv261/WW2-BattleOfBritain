@@ -135,6 +135,8 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     expect(L.dials.turn.slice(2)).toEqual(L.dials.airspeed.slice(2)); // the same size, mounting and all (D173)
     expect(L.dials.trim.slice(2)).toEqual(L.dials.airspeed.slice(2)); // and the trim indicator (D174)
     expect(L.dials.climb.slice(2)).toEqual(L.dials.airspeed.slice(2)); // and the climb indicator (D175)
+    for (const n of ['altimeter']) expect(L.dials[n].slice(2), n).toEqual(L.dials.airspeed.slice(2));
+    L.dials.horizon.slice(2).forEach((v, i) => expect(v).toBeCloseTo(L.dials.airspeed[2 + i] * 1.15, 9)); // 15% larger (D177)
     expect(L.dials.airspeed[0]).toBeLessThan(AXIS);
     expect(L.dials.climb[0]).toBeGreaterThan(AXIS);
     for (const n of ['airspeed', 'climb']) expect(L.dials[n][1]).toBe(L.dials.turn[1]); // one row, levelled
