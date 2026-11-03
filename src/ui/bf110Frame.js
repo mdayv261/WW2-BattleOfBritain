@@ -170,13 +170,16 @@ export function drawBf110Frame(g, at, width, height) {
   g.restore();
 }
 
+/** The thin tubes in drawing order: the corner posts first, behind the grab handles (product owner, D124). */
+export const tubePaths = () => [cornerPostPath(-1), cornerPostPath(1), handlePath(-1), handlePath(1)];
+
 /**
- * The grab handles and the thin corner posts (as thin as the handles, D123): grey tubes with a lit upper edge, their
- * ends under the bars (drawn first).
+ * The thin corner posts and the grab handles (as thin as the handles, D123): grey tubes with a lit upper edge, the
+ * posts behind the handles, their ends under the bars (drawn first).
  */
 function handles(g, at) {
   const { width } = FRAME_110.handles;
-  for (const path of [handlePath(-1), handlePath(1), cornerPostPath(-1), cornerPostPath(1)]) {
+  for (const path of tubePaths()) {
     const pts = path.map((p) => at.xy(p));
     for (const [colour, wd, off] of [[GREY.outline, width + 2, 0], [GREY.band, width, 0], [GREY.lit, width * 0.25, -width * 0.3]]) {
       g.strokeStyle = colour;

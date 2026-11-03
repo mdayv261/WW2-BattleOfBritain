@@ -3508,3 +3508,12 @@ the short angled corner frames should be removed.
 - runs up and out;
 - mirrors the other post.
 
+## D124. The Bf 110 C's corner posts behind the grab handles (3 Nov 2026, product owner's request)
+
+**The request:** the thin corner posts (D123) should be behind the handle hoops.
+
+**The change** (`src/ui/bf110Frame.js`, `tubePaths`): the corner posts are now drawn before the grab handles, so each
+handle passes in front of its post where they cross.
+
+**Tests:** tests/ui/bf110Frame.test.js checks the drawing order: the corner posts first, then the handles.
+

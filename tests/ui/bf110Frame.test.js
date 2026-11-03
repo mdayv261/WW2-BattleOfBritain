@@ -3,9 +3,9 @@
 // screen; the windscreen's opening round the Revi's glass and the guns' line; the grab handles arcs in the top corners
 // from the top bar to the outer posts (D119); the outer posts stopping at the panel's top corners (D120); the fuselage frames from there to the foot of the screen
 // at 75 degrees (D121); the windscreen's top bar ending at its own posts, with no corner gussets (D122);
-// a thin post from each top corner of the windscreen frame to the outer frame's top corner (D123).
+// a thin post from each top corner of the windscreen frame to the outer frame's top corner (D123), behind the grab handles (D124).
 import { describe, it, expect } from 'vitest';
-import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, frameBars110 } from '../../src/ui/bf110Frame.js';
+import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths, frameBars110 } from '../../src/ui/bf110Frame.js';
 import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
 import { reviPlacement } from '../../src/ui/reviSight.js';
 import { panelRadius } from '../../src/ui/instruments.js';
@@ -112,6 +112,10 @@ describe('Bf 110 C front frame (D117)', () => {
       expect(y1).toBeLessThan(y0);
       expect(cornerPostPath(-side)[1][0] - AXIS).toBeCloseTo(-(x1 - AXIS), 9); // symmetric
     }
+  });
+
+  it('draws the corner posts behind the grab handles (D124)', () => {
+    expect(tubePaths()).toEqual([cornerPostPath(-1), cornerPostPath(1), handlePath(-1), handlePath(1)]);
   });
 
   it('draws the outer frame and the windscreen as whole frames, the ledge welded between the windscreen\'s posts', () => {
