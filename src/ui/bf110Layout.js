@@ -120,7 +120,8 @@ export const LAYOUT = {
     clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65), counter: dial(1082, 280 - UP_4MM, 66, 75),
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
     // two the Bf 109's); the elevator trim indicator (D161), horizon and altimeter (the Bf 109's) below.
-    compass: dial(470, 418, 92, 110), airspeed: as109('airspeed', 690, 480), turn: as109('turn', 882, 480),
+    compass: dial(470, 418, 92, 110), airspeed: as109('airspeed', 690, 480),
+    turn: [...pt(882, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size exactly (D173)
     climb: dial(1082, 480, 76, 84), trim: dial(680, 705, 68, 79), horizon: dial(880, 712, 85, 104), altimeter,
     // The outside air thermometer (the airscrew pitch indicators of D109 removed: the Bf 110 C had none, D163).
     // Its left edge in line with the left manifold pressure gauge's, 5 mm up (product owner, D169).

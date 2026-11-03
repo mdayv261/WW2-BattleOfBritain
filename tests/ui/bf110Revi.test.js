@@ -38,7 +38,8 @@ function recorder() {
 }
 
 describe('the Bf 109\'s instruments on the Bf 110 panel (D107)', () => {
-  const pairs = [['airspeed', 'airspeed'], ['altimeter', 'altimeter'], ['turn', 'turn']]; // the strip compass gone (D140)
+  // The strip compass gone (D140); the turn and slip indicator at the airspeed indicator's size exactly (D173).
+  const pairs = [['airspeed', 'airspeed'], ['altimeter', 'altimeter'], ['turn', 'airspeed']];
 
   it('draws them at the Bf 109\'s size on every screen: faces and mountings in pixels as on its panel', () => {
     for (const [w, h] of SCREENS) {

@@ -4520,3 +4520,13 @@ Kurssteuerung indicator.
 
 **Tests:** tests/ui/bf110Panel.test.js checks the 4 mm rise of all three.
 
+## D173. The Bf 110 C's turn and slip indicator the airspeed indicator's size (3 Nov 2026, product owner's request)
+
+**The request:** make the turn and slip indicator the same size as the airspeed indicator.
+
+**The change** (src/ui/bf110Layout.js): the turn and slip indicator now takes the airspeed indicator's face and mounting
+sizes exactly. Their faces were already equal (the Bf 109's 44 to 45 px, D107). Its mounting was the Bf 109's slightly
+wider one (55 against the airspeed indicator's 54), and is now 0.8 px narrower each side.
+
+**Tests:** tests/ui/bf110Panel.test.js and tests/ui/bf110Revi.test.js check that the two are the same size.
+
