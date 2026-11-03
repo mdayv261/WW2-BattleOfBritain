@@ -4,7 +4,7 @@
 // two cannon; the outside air thermometer; the Ein/Aus switches and lights (D114); the radiator switches and fuel gauge;
 // the placards' sourced figures; the items removed; and the white dials with black screws (D160).
 import { describe, it, expect } from 'vitest';
-import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
+import { lwVarioAngle, lwHorizon } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
 import { switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS, GEAR_HOUSING } from '../../src/ui/bf110Fittings.js';
@@ -289,6 +289,20 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     const words = draw(v).texts.map((t) => t.s);
     for (const w of ['L', 'R', 'AEG']) expect(words, w).toContain(w);
     for (const w of ['+15', '-15', '+5', 'Höhen-', 'Grad']) expect(words, w).not.toContain(w);
+  });
+
+  it('draws the artificial horizon with a round glass face, fixed marks at 9 and 3 o\'clock and no L or R (D181)', () => {
+    const rects = [];
+    const letters = [];
+    const g = new Proxy({}, {
+      get: (t2, p) => (p === 'fillRect' ? (...a) => rects.push(a) : p === 'fillText' ? (s) => letters.push(s) : p in t2 ? t2[p]
+        : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t2, p, v) => { t2[p] = v; return true; },
+    });
+    lwHorizon(g, 100, 100, 50, 0, 0);
+    const marks = rects.filter(([x, y, w, h]) => Math.abs(y + h / 2 - 100) < 1e-6 && w < 0.2 * 50 && w > h);
+    expect(marks.map(([x, , w]) => x + w / 2).sort((a, b) => a - b).map((c) => Math.round(c - 100))).toEqual([-37, 37]);
+    expect(letters).toEqual([]); // no L or R, no lettering at all
   });
 
   it('reads the coolant thermometers 40 to 120 °C, 80 straight up', () => {

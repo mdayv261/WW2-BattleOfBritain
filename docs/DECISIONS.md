@@ -4631,3 +4631,21 @@ knob moves with it. Everything stays clear of its neighbours and inside the pane
 - tests/ui/bf110Panel.test.js checks the 5 mm move of all six on a 2560 px screen.
 - tests/ui/bf110Revi.test.js now expects the turn and slip indicator right of the Revi's line.
 
+## D181. The Bf 110 C's artificial horizon with a round glass face and level marks (3 Nov 2026, product owner's requests)
+
+**The requests:**
+- Redesign the artificial horizon with a round glass face and no "L" and "R" letters at its sides.
+- Give it a short white fixed mark at 9 o'clock and at 3 o'clock, so the horizon bar can be lined up with them when
+  straight and level.
+
+**The change** (src/ui/lwFlightDials.js `lwHorizon`, drawn only on the Bf 110's panel):
+- **Window:** fully round (0.84 of the face radius). The straight sides it had are gone.
+- **Glass:** a faint sheen across its upper left and a dark rim.
+- **Letters:** "L" and "R" removed.
+- **Level marks:** two short white bars at 9 and 3 o'clock on the window's edge (0.16 of the radius long), level with
+  the small aircraft's wings. The horizon bar lines up with them in level flight.
+- **Unchanged:** the scalloped bezel and its eight screws, the banking and pitching horizon bar, and the small aircraft.
+
+**Tests:** tests/ui/bf110Panel.test.js checks that the horizon draws two level marks at ±0.74 of its radius and no
+lettering.
+

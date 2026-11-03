@@ -202,8 +202,9 @@ export function lwPatinCompass(g, x, y, r, heading) {
 }
 
 /**
- * Wendehorizont Fl. 22427: a white horizon bar that banks (rad) and moves with pitch (rad) across a window with
- * straight sides, behind the fixed small aircraft; a scalloped black bezel with screws round the glass.
+ * Wendehorizont Fl. 22427: a white horizon bar that banks (rad) and moves with pitch (rad) across a round glass face,
+ * behind the fixed small aircraft, with fixed marks at 9 and 3 o'clock to line it up with in level flight (D181); a
+ * scalloped black bezel with screws round the glass.
  */
 export function lwHorizon(g, x, y, r, bank, pitch) {
   // Scalloped bezel.
@@ -221,13 +222,10 @@ export function lwHorizon(g, x, y, r, bank, pitch) {
   g.arc(x, y, r * 1.0, 0, Math.PI * 2);
   g.fill();
   for (let k = 0; k < 8; k += 1) screw(g, ...at(x, y, (k * 45 + 22.5) * DEG, r * 0.92), r * 0.035);
-  // The window: the glass circle with straight sides.
+  // The window: a round glass face (the Bf 110's, product owner, D181).
   g.save();
   g.beginPath();
   g.arc(x, y, r * 0.84, 0, Math.PI * 2);
-  g.clip();
-  g.beginPath();
-  g.rect(x - r * 0.68, y - r, r * 1.36, r * 2);
   g.clip();
   const shade = g.createLinearGradient(x, y - r * 0.84, x, y + r * 0.84);
   shade.addColorStop(0, '#5c5f62');
@@ -240,14 +238,24 @@ export function lwHorizon(g, x, y, r, bank, pitch) {
   g.fillStyle = paint.ink;
   g.fillRect(-r * 0.8, shift - r * 0.025, r * 1.6, r * 0.05);
   g.restore();
+  // The glass: a faint sheen across its upper left, and its rim.
+  const sheen = g.createLinearGradient(x - r * 0.6, y - r * 0.6, x + r * 0.2, y + r * 0.2);
+  sheen.addColorStop(0, 'rgba(255, 255, 255, 0.16)');
+  sheen.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  g.fillStyle = sheen;
+  g.beginPath();
+  g.arc(x, y, r * 0.84, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = '#0b0b0c';
+  g.lineWidth = Math.max(1, r * 0.04);
+  g.stroke();
+  // The fixed marks at 9 and 3 o'clock, level with the small aircraft: the horizon lines up with them in level flight.
+  g.fillStyle = paint.ink;
+  for (const s of [-1, 1]) g.fillRect(s > 0 ? x + r * 0.66 : x - r * 0.82, y - r * 0.02, r * 0.16, r * 0.04);
   // The fixed small aircraft.
   g.fillStyle = paint.ink;
   g.beginPath();
   g.arc(x, y - r * 0.01, r * 0.05, Math.PI, 0);
   g.fill();
   g.fillRect(x - r * 0.28, y, r * 0.56, r * 0.018);
-  centred(g);
-  font(g, r * 0.11);
-  g.fillText('L', x - r * 0.76, y + r * 0.1);
-  g.fillText('R', x + r * 0.76, y + r * 0.1);
 }

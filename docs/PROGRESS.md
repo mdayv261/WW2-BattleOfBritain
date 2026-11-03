@@ -70,6 +70,7 @@ Read this at the start of every session.
 - D179: the altimeter raised level with the trim indicator.
 - D180: the Kurs strip, turn and slip, horizon, altimeter, climb indicator and round counter 5 mm right (the turn and
   slip no longer under the Revi, flagged).
+- D181: the artificial horizon has a round glass face, level marks at 9 and 3 o'clock, and no L or R.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 
