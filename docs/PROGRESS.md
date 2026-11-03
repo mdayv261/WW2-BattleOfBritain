@@ -60,6 +60,7 @@ Read this at the start of every session.
 - D166, D167: the left engine's moved 15 mm, then 5 mm more, right; D168: all four engine gauges 5 mm up.
 - D169: the outside air thermometer lined up with the left manifold pressure gauge, 5 mm up.
 - D170: the rev counters a further 3 mm up.
+- D171: plate round the manifold pressure gauges (recess removed); D172: the round counter and Heizung placard 4 mm up.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

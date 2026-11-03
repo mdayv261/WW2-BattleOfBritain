@@ -1,8 +1,8 @@
 // The Bf 110 C panel's boxes and buttons after the product owner's picture (#34, D140), all shown only (normal
 // operation, no function): the red Kurssteuerung emergency button; the SKK 404-2 switch block standing for the four MG 17
 // (product owner: the only fitting for them), its lamps dark; the 2 MG / 4 MG switch; the Kurs strip; the Heizung placard
-// and its knob; the Siemens course box under the compass; the two-bar window above the altimeter; and the recess the
-// manifold pressure gauges stand in.
+// and its knob; the Siemens course box under the compass; and the two-bar window above the altimeter. (The manifold
+// pressure gauges' recess is gone: plate round them, D171.)
 
 import { text, lens } from './panelParts.js';
 import { INK, plain, roundKnob } from './bf109Fittings.js';
@@ -13,7 +13,6 @@ const DARK = '#151618';
 /** Draws the boxes and buttons; `at` is the panel's placer, `L` its layout, `s` one dial radius in pixels. */
 export function drawBf110Boxes(g, at, L, s) {
   const B = (name) => at.box(L.boxes[name]);
-  recess(g, B('ataBox'), s);
   redButton(g, ...at.knob(L.knobs.redButton));
   skkBlock(g, B('skk'), s);
   mgSwitch(g, B('mgSwitch'), s);
@@ -175,11 +174,4 @@ function twoBars(g, b, s) {
   g.fillStyle = '#e8e8e2';
   g.fillRect(b.x + b.w * 0.22, b.y + b.h * 0.2, b.w * 0.56, b.h * 0.22);
   g.fillRect(b.x + b.w * 0.15, b.y + b.h * 0.58, b.w * 0.7, b.h * 0.2);
-}
-
-/** The recess the manifold pressure gauges stand in: darker than the plate, its top edge in shadow. */
-function recess(g, b, s) {
-  plain(g, b, s, '#2c2f2c');
-  g.fillStyle = 'rgba(0, 0, 0, 0.35)';
-  g.fillRect(b.x, b.y, b.w, b.h * 0.06);
 }

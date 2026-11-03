@@ -108,6 +108,7 @@ const RIGHT_MOVE = 173.6;
 const LEFT_MOVE = 138.9; // the left engine's, 15 mm (D166) and 5 mm more (D167), the same way
 const ENGINE_UP = 34.7; // both engines' gauges 5 mm up (D168)
 const RPM_UP = ENGINE_UP + 20.8; // the rev counters 3 mm more (D170)
+const UP_4MM = 27.8; // the round counter and the Heizung placard 4 mm up (D172)
 
 /**
  * Everything on the panel, in the layout's picture pixels: dials [x, y, face radius, mounting half-width]; boxes [left,
@@ -116,7 +117,7 @@ const RPM_UP = ENGINE_UP + 20.8; // the rev counters 3 mm more (D170)
 export const LAYOUT = {
   dials: {
     // Top row: the clock, mounted directly in the panel (D156), the Kurssteuerung indicator and the round counter.
-    clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65), counter: dial(1082, 280, 66, 75),
+    clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65), counter: dial(1082, 280 - UP_4MM, 66, 75),
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
     // two the Bf 109's); the elevator trim indicator (D161), horizon and altimeter (the Bf 109's) below.
     compass: dial(470, 418, 92, 110), airspeed: as109('airspeed', 690, 480), turn: as109('turn', 882, 480),
@@ -137,12 +138,12 @@ export const LAYOUT = {
   },
   boxes: {
     skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: box(790, 312, 975, 382),
-    heizung: box(1184, 245, 1317, 352), levers: box(...LEVERS),
-    // (the Heizung placard 3 px left, clear of the outside air thermometer, D169)
+    heizung: box(1184, 245 - UP_4MM, 1317, 352 - UP_4MM), levers: box(...LEVERS),
+    // (the Heizung placard 3 px left, clear of the outside air thermometer, D169; it and the round counter 4 mm up, D172)
     gearLights: box(202.5, 312.5, 352.5, 462.5), // round, the round counter's diameter (D157, D158)
     achtung: box(250, 590, 345, 730), dive: box(615, 578, 735, 620),
     course: box(360, 550, 580, 830), // the repeater compass's width, under it (D159)
-    umschalt: box(806, 576, 959, 603), window: box(1042, 590, 1122, 630), ataBox: box(1172 + LEFT_MOVE, 700 - ENGINE_UP, 1560 + RIGHT_MOVE, 893 - ENGINE_UP),
+    umschalt: box(806, 576, 959, 603), window: box(1042, 590, 1122, 630),
     fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(245, 870, 318, 892),
   },
   // The "d 30′ 5′" correction cards above the engine gauges and the "Km" cards above the coolant thermometers: shown
@@ -155,7 +156,7 @@ export const LAYOUT = {
     tempLeft: box(627, 842, 737, 895), tempRight: box(1017, 842, 1127, 895),
   },
   knobs: {
-    redButton: knob(442, 252, 30), heizungKnob: knob(1239, 340, 30),
+    redButton: knob(442, 252, 30), heizungKnob: knob(1239, 340 - UP_4MM, 30),
     umschaltLeft: knob(790, 590, 12), umschaltRight: knob(975, 590, 12),
     tankLeftFront: knob(775, 885, 17), tankLeftRear: knob(775, 955, 17),
     tankRightFront: knob(975, 885, 17), tankRightRear: knob(975, 955, 17),

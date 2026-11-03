@@ -4499,3 +4499,24 @@ counters' cards now come within a pixel of the outside air thermometer's mountin
 **Tests:** tests/ui/bf110Panel.test.js checks the 8 mm rise of the rev counters and the 5 mm of the manifold pressure
 gauges on a 2560 px screen.
 
+## D171. Plate round the Bf 110 C's manifold pressure gauges; their recess removed (3 Nov 2026, product owner's request)
+
+**The request:** fill the area round the MAP gauges with the panel's colour.
+
+**The change:** the dark recess the manifold pressure gauges stood in (#34, D140; `ataBox`) is gone, from
+src/ui/bf110Layout.js and src/ui/bf110Boxes.js. The gauges now stand in their black mountings on the plate, like the
+other dials.
+
+**Tests:** tests/ui/bf110Panel.test.js checks there is no recess. The overlap check now covers every box with no
+exceptions.
+
+## D172. The Bf 110 C's round counter and Heizung placard moved 4 mm up (3 Nov 2026, product owner's request)
+
+**The request:** move the cannon round counter and the Heizung switch up 4 mm.
+
+**The change** (src/ui/bf110Layout.js, `UP_4MM`): the round counter, the Heizung placard and its green knob stand 27.8 of
+#34's pixels (4 mm, 17.2 screen px on a 2560 × 1259 screen) higher. They stay inside the panel's top and clear of the
+Kurssteuerung indicator.
+
+**Tests:** tests/ui/bf110Panel.test.js checks the 4 mm rise of all three.
+

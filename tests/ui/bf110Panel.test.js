@@ -70,19 +70,13 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     for (const [name, [l, t, r, b]] of squares) for (const c of [[l, t], [r, t], [l, b], [r, b]]) expect(inside(c), name).toBe(true);
     for (const [name, [l, t, r, b]] of Object.entries(L.boxes)) for (const c of [[l, t], [r, t], [l, b], [r, b]]) expect(inside(c), name).toBe(true);
     for (const [name, [x, y]] of Object.entries(L.knobs)) expect(inside([x, y]), name).toBe(true);
-    // The manifold pressure gauges stand in their recess; the knob of the Heizung placard sits on it, as photographed.
-    const plates = Object.entries(L.boxes).filter(([n]) => n !== 'ataBox');
-    const all = [...squares, ...plates];
+    const all = [...squares, ...Object.entries(L.boxes)];
     for (let i = 0; i < all.length; i += 1) {
       for (let j = i + 1; j < all.length; j += 1) {
         expect(overlap(all[i][1], all[j][1]), `${all[i][0]} / ${all[j][0]}`).toBe(false);
       }
     }
-    for (const n of ['ataLeft', 'ataRight']) {
-      const [x, y, , o] = L.dials[n];
-      const [l, t, r, b] = L.boxes.ataBox;
-      expect(x - o > l && x + o < r && y - o > t && y + o < b, n).toBe(true);
-    }
+    expect(L.boxes.ataBox).toBeUndefined(); // the manifold pressure gauges on the plate, no recess (D171)
   });
 
   it('makes the course box as wide as the repeater compass\'s mounting, under it (D159)', () => {
@@ -98,7 +92,6 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     const at34 = 440 + (1442 - 882) * 0.46; // #34's place in the layout's picture pixels
     for (const n of ['rpmRight', 'ataRight']) {
       expect(screenPx(L.dials[n][0] - at34), n).toBeCloseTo(43 * 2.5, 0); // 10 mm taken as 43 px (D154)
-      expect(L.dials[n][0] + L.dials[n][3], n).toBeLessThan(L.boxes.ataBox[2] + (n === 'rpmRight' ? 1e3 : 0));
     }
     for (const n of ['rpmLeft', 'ataLeft']) { // the left engine's 15 mm and 5 mm more (D166, D167)
       expect(screenPx(L.dials[n][0] - (440 + (1265 - 882) * 0.46)), n).toBeCloseTo(43 * 2, 0);
@@ -114,6 +107,14 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     expect(left(L.dials.airTemp)).toBeCloseTo(left(L.dials.ataLeft), 9);
     const r = panelRadius(L, 2560, 1259);
     expect(((57 + (440 - 132) * 0.46 - L.dials.airTemp[1]) / 30) * r).toBeCloseTo(43 * 0.5, 0);
+  });
+
+  it('moves the round counter and the Heizung placard 4 mm up (D172)', () => {
+    const r = panelRadius(L, 2560, 1259);
+    const mm = (picture) => ((picture / 30) * r) / 4.3;
+    expect(mm(57 + (280 - 132) * 0.46 - L.dials.counter[1])).toBeCloseTo(4, 1);
+    expect(mm(57 + (245 - 132) * 0.46 - L.boxes.heizung[1])).toBeCloseTo(4, 1);
+    expect(mm(57 + (340 - 132) * 0.46 - L.knobs.heizungKnob[1])).toBeCloseTo(4, 1);
   });
 
   it('keeps the dial radius on screen as before (D106), so the Bf 109\'s instruments keep their size; fits every screen', () => {
