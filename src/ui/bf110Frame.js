@@ -12,7 +12,8 @@
 //   to the outer frame's top corner, as thin as the grab handles (product owner, D123); and below it, a lower frame each
 //   side from the windscreen frame's lower corner down and out to the outer post, level with the red button
 //   (product owner, D134, D135); the dash covers: a padded grey cover each side, after the product owner's photograph
-//   of them (#33), its top edge level below the windscreen's ledge from the lower frame to the gunsight's body, its
+//   of them (#33), its top edge along the windscreen ledge's lower edge (an arc) from the lower frame to the gunsight's
+//   body, its
 //   front edge straight from the body's foot down to the lower frame's foot on the outer post, lying over the panel's
 //   top, stitched along both edges (product owner, D136, D137);
 //   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119); no canopy
@@ -169,20 +170,29 @@ export function lowerFramePath(side) {
 }
 
 /**
- * A dash cover's outline (`side` -1 left, +1 right; D136, D137), after the product owner's photograph (#33): from the lower
- * frame, level along its top edge just below the windscreen's ledge to the gunsight's body, down the body's side (behind
- * it) to its foot on the panel's top, then its front edge straight down and out to the lower frame's foot on the outer
- * post, and back up the lower frame (under it). Points: top outer, top inner, foot inner, foot outer.
+ * A dash cover's outline (`side` -1 left, +1 right; D136-D138), after the product owner's photograph (#33): its top edge
+ * along the windscreen ledge's lower edge, an arc, from the ledge's end (under the windscreen post and the lower frame)
+ * in to the gunsight's body; down the body's side (behind it) to its foot on the panel's top; then its front edge
+ * straight down and out to the lower frame's foot on the outer post, and back up the lower frame (under it). Points: the
+ * top edge, outer to inner, then the foot inner and the foot outer.
  */
 export function dashCoverPath(side) {
-  const [corner, foot] = lowerFramePath(side);
-  const { ledge } = FRAME_110;
-  const top = ledge.y + ledge.sag + ledge.width / 2; // the ledge's lower edge at its ends
-  const f = (top - corner[1]) / (foot[1] - corner[1]);
-  const outer = [corner[0] + (foot[0] - corner[0]) * f, top]; // on the lower frame's line
+  const [, foot] = lowerFramePath(side);
+  const { y, sag, width } = FRAME_110.ledge;
+  const arc = ledgePath();
+  const half = AXIS - arc[0][0];
+  const radius = (half * half + sag * sag) / (2 * sag);
+  const centre = [AXIS, y + radius];
+  const k = (radius - width / 2) / radius; // the arc's lower edge, toward its centre
+  const lower = arc.map(([px, py]) => [centre[0] + (px - centre[0]) * k, centre[1] + (py - centre[1]) * k]);
   // A little inside the body's side, so the cover runs on behind the Revi.
   const sight = AXIS + side * (Math.abs(REVI_110.body.x[side < 0 ? 0 : 1]) * BF109_SCALE * PX_110 - 3);
-  return [outer, [sight, top], [sight, PANEL_TOP], foot];
+  const ours = (side < 0 ? lower : [...lower].reverse()).filter(([px]) => side * (px - sight) > 0);
+  const last = ours[ours.length - 1];
+  const next = (side < 0 ? lower : [...lower].reverse())[ours.length];
+  const t = (sight - last[0]) / (next[0] - last[0]);
+  const top = [...ours, [sight, last[1] + (next[1] - last[1]) * t]];
+  return [...top, [sight, PANEL_TOP], foot];
 }
 
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
@@ -251,8 +261,9 @@ export function drawBf110Frame(g, at, width, height) {
  */
 function dashCover(g, at, side) {
   const pts = dashCoverPath(side).map((p) => at.xy(p));
-  const [topOuter, topInner, footInner, footOuter] = pts;
-  const shade = g.createLinearGradient(0, topInner[1], 0, footOuter[1]);
+  const top = pts.slice(0, -2);
+  const [footInner, footOuter] = pts.slice(-2);
+  const shade = g.createLinearGradient(0, Math.min(...top.map(([, y]) => y)), 0, footOuter[1]);
   shade.addColorStop(0, GREY.lit);
   shade.addColorStop(1, GREY.band);
   g.fillStyle = shade;
@@ -265,18 +276,16 @@ function dashCover(g, at, side) {
   g.stroke();
   // The stitching: dashed, light, a few pixels in from the top and front edges.
   const inset = at.len(6);
-  const along = ([ax, ay], [bx, by], dx, dy) => {
-    g.moveTo(ax + dx, ay + dy);
-    g.lineTo(bx + dx, by + dy);
-  };
   g.strokeStyle = 'rgba(205, 208, 210, 0.75)';
   g.lineWidth = Math.max(1, at.len(1.5));
   g.setLineDash?.([at.len(4), at.len(3)]);
   g.beginPath();
-  along(topOuter, topInner, 0, inset);
+  top.forEach(([x, y], i) => (i ? g.lineTo(x, y + inset) : g.moveTo(x, y + inset)));
   const [ex, ey] = [footOuter[0] - footInner[0], footOuter[1] - footInner[1]];
   const n = Math.hypot(ex, ey);
-  along(footInner, footOuter, (side * ey * inset) / n, (-side * ex * inset) / n); // inside (above) the front edge
+  const [dx, dy] = [(side * ey * inset) / n, (-side * ex * inset) / n]; // inside (above) the front edge
+  g.moveTo(footInner[0] + dx, footInner[1] + dy);
+  g.lineTo(footOuter[0] + dx, footOuter[1] + dy);
   g.stroke();
   g.setLineDash?.([]);
 }

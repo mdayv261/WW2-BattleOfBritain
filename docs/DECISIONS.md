@@ -3803,3 +3803,24 @@ keep this, move the counter down, or bend the cover's front edge to clear it.
 - has its inner side just inside the gunsight body's side, down to the panel's top;
 - mirrors the other cover.
 
+## D138. The Bf 110 C's dash covers' top edge along the windscreen ledge (3 Nov 2026, product owner's request)
+
+**The request:** almost correct. Make the cover's top edge an arc that joins the lower inner windscreen frame (the
+ledge) along the frame's bottom edge.
+
+**The change** (`src/ui/bf110Frame.js`, `dashCoverPath`):
+- **Top edge:** each cover's top edge now follows the ledge's lower edge. That is the arc of D128 brought half the
+  ledge's width (6 px) towards its centre.
+- **Extent:** the edge runs from the ledge's end, under the windscreen post and the lower frame, in to just inside the
+  gunsight body's side, rising from y 24 at the ledge's end towards the middle.
+  - The end point at the body's side is interpolated between the arc's samples.
+- **Stitching:** the seam inside the top edge follows the arc.
+- **Unchanged from D137:** the rest of the cover: its inner side behind the body, its straight front edge to the lower
+  frame's foot, and the padding.
+
+**Still flagged (D137):** the left cover hides the top of the ammunition counter. A decision is pending.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that every top-edge point lies on the ledge's lower-edge arc (within
+0.05 px), that the edge rises from the ledge's end in to the gunsight body's side, and the D137 checks on the rest of the
+shape and the mirroring.
+

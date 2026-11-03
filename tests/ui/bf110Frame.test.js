@@ -7,7 +7,7 @@
 // the windscreen's top bar raised to touch the handles, with no latch, lever or ledge knobs (D125); side bars from its
 // top corners angled down slightly to the outer posts just below the handles (D126, D127); the ledge an arc (D128); the
 // lower frames from the windscreen's lower corners to the outer posts, level with the red button (D134, D135); the
-// dash covers as photographed: a level top under the ledge and a straight front edge to the posts (D136, D137).
+// dash covers as photographed: the top along the ledge's lower edge, a straight front edge to the posts (D136-D138).
 import { describe, it, expect } from 'vitest';
 import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths, sideBarPath, ledgePath, lowerFramePath, dashCoverPath, frameBars110 } from '../../src/ui/bf110Frame.js';
 import {
@@ -199,28 +199,36 @@ describe('Bf 110 C front frame (D117)', () => {
     }
   });
 
-  it('shapes each dash cover as photographed: a level top under the ledge, a straight front edge to the post (D137)', () => {
+  it('shapes each dash cover as photographed: its top along the ledge\'s lower edge, a straight front edge (D137, D138)', () => {
     const PX = 30;
     const { ledge } = FRAME_110;
+    const arc = ledgePath();
+    const half = AXIS - arc[0][0];
+    const radius = (half ** 2 + ledge.sag ** 2) / (2 * ledge.sag);
+    const centre = [AXIS, ledge.y + radius];
     for (const side of [-1, 1]) {
-      const [topOuter, topInner, footInner, footOuter] = dashCoverPath(side);
-      const [corner, foot] = lowerFramePath(side);
-      const top = ledge.y + ledge.sag + ledge.width / 2;
-      expect(topOuter[1]).toBe(top); // level, just below the ledge
-      expect(topInner[1]).toBe(top);
-      // Its outer edge on the lower frame's line.
-      expect((topOuter[0] - corner[0]) * (foot[1] - corner[1]) - (topOuter[1] - corner[1]) * (foot[0] - corner[0]))
-        .toBeCloseTo(0, 6);
-      expect(footOuter).toEqual(foot); // the front edge ends at the lower frame's foot on the outer post
-      // The inner side just inside the gunsight body's side, down to its foot on the panel's top.
+      const pts = dashCoverPath(side);
+      const top = pts.slice(0, -2);
+      const [footInner, footOuter] = pts.slice(-2);
+      // The top edge: on the ledge's lower edge, an arc, rising from the ledge's end in to the gunsight.
+      for (const [x, y] of top) { // within 0.05 px (the last point interpolated between the arc's samples)
+        expect(Math.hypot(x - centre[0], y - centre[1])).toBeCloseTo(radius - ledge.width / 2, 1);
+      }
+      expect(top[0][1]).toBeGreaterThan(top[top.length - 1][1]);
+      expect(Math.abs(top[0][0] - arc[side < 0 ? 0 : arc.length - 1][0])).toBeLessThan(1); // from the ledge's end
       const bodySide = AXIS + REVI_110.body.x[side < 0 ? 0 : 1] * BF109_SCALE * PX;
-      expect(side * (bodySide - topInner[0])).toBeGreaterThan(0);
-      expect(side * (bodySide - topInner[0])).toBeLessThan(5);
-      expect(footInner).toEqual([topInner[0], L.outline[0][1]]);
+      const inner = top[top.length - 1];
+      expect(side * (bodySide - inner[0])).toBeGreaterThan(0); // just inside the gunsight body's side
+      expect(side * (bodySide - inner[0])).toBeLessThan(5);
+      expect(footInner).toEqual([inner[0], L.outline[0][1]]); // down to its foot on the panel's top
+      const [, foot] = lowerFramePath(side);
+      expect(footOuter).toEqual(foot); // the front edge to the lower frame's foot on the outer post
       // Mirror images about the axis.
-      dashCoverPath(-side).forEach(([x, y], i) => {
-        expect(x - AXIS).toBeCloseTo(-([topOuter, topInner, footInner, footOuter][i][0] - AXIS), 9);
-        expect(y).toBeCloseTo([topOuter, topInner, footInner, footOuter][i][1], 9);
+      const mirror = dashCoverPath(-side);
+      expect(mirror).toHaveLength(pts.length);
+      mirror.forEach(([x, y], i) => {
+        expect(x - AXIS).toBeCloseTo(-(pts[i][0] - AXIS), 9);
+        expect(y).toBeCloseTo(pts[i][1], 9);
       });
     }
   });
