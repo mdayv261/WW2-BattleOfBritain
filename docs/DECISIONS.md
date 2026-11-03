@@ -4159,3 +4159,23 @@ D117–D128 again.
 **Tests:** tests/ui/bf110Frame.test.js checks that the base is four post widths wider than at #32's slope (within 10 px)
 and that the right corner still touches the post.
 
+## D151. The Bf 110 C panel's top right edge runs three quarters of the way along the right dash cover (3 Nov 2026, product owner's request)
+
+**The request:** fix the panel's right-hand edge. Its top right edge should extend three quarters of the length of the
+right dash cover's bottom edge.
+
+**The change** (src/ui/bf110Layout.js, `RIGHT_CORNER`; replaces D147's corner):
+- **Top edge:** it runs level to the right cover's front (bottom) edge, at 1292.1 on #34's pixels.
+- **Along the cover:** it follows that edge three quarters of its length from the Revi's pad, to (1479.8, 167.6).
+- **Angled edge:** down at #34's shoulder slope (115 across for 95 down) until it touches the right outer post's inner
+  edge, at (1659.3, 315.9).
+- **Side:** down beside the post, inside it, to the right section's foot (1570, 895).
+- **Beyond:** a small dark wedge of the cockpit side shows between the angled edge, the last quarter of the cover and
+  the post.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that:
+- the top edge runs level to the cover's edge;
+- the corner lies on that edge at 0.75 of its length;
+- the angled edge has #34's slope and touches the post's inner edge;
+- the side stays inside the post.
+

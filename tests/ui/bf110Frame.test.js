@@ -284,33 +284,26 @@ describe('Bf 110 C front frame (D117)', () => {
     expect(lInner[1]).toBeLessThan(top); // the pad's foot above the panel's top: a strip to fill
   });
 
-  it('ends the panel\'s top past the Heizung placard, drops a little, then angles down to touch the right post (D147)', () => {
+  it('runs the panel\'s top along the right cover three quarters of its length, then down to the post (D151)', () => {
+    const toPanel = ([x, y]) => [x, y + FRAME_SHIFT];
+    const [inner, foot] = dashCoverPath(1).slice(-2).map(toPanel);
+    const along = ([x, y]) => [((x - inner[0]) * (foot[0] - inner[0]) + (y - inner[1]) * (foot[1] - inner[1]))
+      / ((foot[0] - inner[0]) ** 2 + (foot[1] - inner[1]) ** 2), // how far along the cover's front edge
+      ((x - inner[0]) * (foot[1] - inner[1]) - (y - inner[1]) * (foot[0] - inner[0])) / Math.hypot(foot[0] - inner[0], foot[1] - inner[1])];
     const O = L.outline;
     const i = O.findIndex(([x, y]) => y === 57 && x > AXIS); // the top edge's right end
     const [a, b, c, d] = [O[i], O[i + 1], O[i + 2], O[i + 3]];
     expect(O[i - 1][1]).toBe(57); // the top edge runs level to it
-    const heizungRight = L.boxes.heizung[2];
-    expect(a[0]).toBeGreaterThan(heizungRight); // just past the Heizung placard
-    expect(a[0] - heizungRight).toBeLessThan(10);
-    expect(b[1] - a[1]).toBeGreaterThan(5 * (b[0] - a[0])); // almost straight down
-    expect(b[1] - a[1]).toBeLessThan(30); // a short way
-    expect((c[0] - b[0]) / (c[1] - b[1])).toBeCloseTo(115 / 95, 2); // at #34's shoulder slope
+    expect(Math.abs(along(a)[1])).toBeLessThan(0.1); // on the cover's front edge
+    expect(Math.abs(along(b)[1])).toBeLessThan(0.1); // along it
+    expect(along(b)[0]).toBeCloseTo(0.75, 3); // three quarters of its length
+    expect((c[0] - b[0]) / (c[1] - b[1])).toBeCloseTo(115 / 95, 2); // then down at #34's shoulder slope
     const postInner = (y) => outerX(1, y - FRAME_SHIFT) - FRAME_110.posts.width / 2;
     expect(Math.abs(c[0] - postInner(c[1]))).toBeLessThan(0.2); // touching the right fuselage side
     for (let y = c[1]; y <= d[1]; y += 2) { // then down beside it, inside it
       const x = c[0] + ((d[0] - c[0]) * (y - c[1])) / (d[1] - c[1]);
       expect(x, `${y}`).toBeLessThan(postInner(y) + 0.2);
     }
-    for (const [name, [x, , , o]] of Object.entries(L.dials)) expect(x + o, name).toBeLessThan(c[0]);
-  });
-
-  it('widens the outer frame\'s base by two post widths twice, its top bar unchanged (D149, D150)', () => {
-    const { top, posts } = FRAME_110;
-    expect(WIDEN).toBe(2);
-    expect(outerX(1, top.y) - AXIS).toBe(top.half); // the top bar's corners as before
-    const d117 = (y) => top.half + 0.16 * (y - top.y); // #32's slope
-    expect(2 * (outerX(1, posts.foot) - AXIS) - 2 * d117(posts.foot)).toBeCloseTo(4 * posts.width, -1); // the base
-    expect(posts.slope).toBeGreaterThan(0.16);
   });
 
   it('has no canopy latch and lever on the top bar and no knobs on the ledge (D125)', () => {

@@ -26,11 +26,12 @@ const slot = (X, top, bottom) => [pt(X, top)[0], pt(X, top)[1], pt(X, bottom)[1]
 // The outline on #34, levelled, clockwise from the clock's bracket: its slanted top over the panel's top edge, the long
 // top edge, the right corner and side, the manifold pressure gauges' box, the bottom centre section, the gap beside
 // it and the left wing with the airscrew lever box. Below the screen's foot it only closes the shape (D129).
-// The right corner (product owner, D147): the top edge ends just past the Heizung placard's right edge (1320), drops
-// almost straight down a short way, then angles down at #34's shoulder slope (115 across for 95 down) until it touches
-// the right fuselage side (the right outer post's inner edge, src/ui/bf110Frame.js), and runs down beside it to the
-// right section's foot. Set here in #34's pixels; tests/ui/bf110Frame.test.js keeps the touch with the post.
-const RIGHT_CORNER = [[1335, 132], [1340, 172], [1701, 470.2]]; // the touch moved out with the posts (D149, D150)
+// The right corner (product owner, D147, D151): the top edge carried on level to the right dash cover's front edge, along
+// that edge three quarters of its length from the Revi's pad, then down at #34's shoulder slope (115 across for 95 down)
+// until it touches the right fuselage side (the right outer post's inner edge), and down beside it to the right
+// section's foot. Worked out from the cover and the post (src/ui/bf110Covers.js, src/ui/bf110Frame.js) and set here in
+// #34's pixels; tests/ui/bf110Frame.test.js keeps them together.
+const RIGHT_CORNER = [[1292.1, 132], [1479.8, 167.6], [1659.3, 315.9]];
 const OUTLINE_34 = [
   [255, 165], [295, 128], [447, 100], [455, 132], ...RIGHT_CORNER, [1570, 895], [1160, 895], [1160, 1080], [1130, 1120], [640, 1120],
   [608, 1090], [605, 835], [345, 835], [335, 960], [320, 1120], [55, 1120], [35, 1100], [35, 460], [200, 450],
