@@ -1,9 +1,10 @@
 // The Bf 110 C's drawn front frame after the product owner's photograph (#32, D117): symmetric about the panel's axis;
 // the outer posts leaning out going down and the windscreen's posts leaning in, as photographed; the top bar on every
 // screen; the windscreen's opening round the Revi's glass and the guns' line; the grab handles arcs in the top corners
-// from the top bar to the outer posts (D119); the outer posts stopping at the panel's top corners (D120).
+// from the top bar to the outer posts (D119); the outer posts stopping at the panel's top corners (D120); the fuselage frames from there to the foot of the screen
+// at 75 degrees (D121).
 import { describe, it, expect } from 'vitest';
-import { FRAME_110, outerX, innerX, outerPath, handlePath, frameBars110 } from '../../src/ui/bf110Frame.js';
+import { FRAME_110, outerX, fuselageX, innerX, outerPath, handlePath, frameBars110 } from '../../src/ui/bf110Frame.js';
 import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
 import { reviPlacement } from '../../src/ui/reviSight.js';
 import { panelRadius } from '../../src/ui/instruments.js';
@@ -66,7 +67,7 @@ describe('Bf 110 C front frame (D117)', () => {
   it('stops the outer posts at the panel\'s top corners, their inner edges on the outline\'s shoulders (D120)', () => {
     const { foot, width } = FRAME_110.posts;
     const path = outerPath();
-    for (const [x, y] of [path[0], path[path.length - 1]]) {
+    for (const [x, y] of [path[1], path[path.length - 2]]) {
       expect(y).toBe(foot);
       expect(x).toBeCloseTo(outerX(Math.sign(x - AXIS), foot), 9);
     }
@@ -76,6 +77,23 @@ describe('Bf 110 C front frame (D117)', () => {
       const side = Math.sign(x - AXIS);
       const innerEdge = outerX(side, foot) - (side * width) / 2;
       expect(Math.abs(innerEdge - x), `${side}`).toBeLessThan(width / 2);
+    }
+  });
+
+  it('runs the fuselage frames from the posts\' feet to the foot of every screen at 75 degrees, leaning out (D121)', () => {
+    const { foot } = FRAME_110.posts;
+    const path = outerPath();
+    for (const [[x0, y0], [x1, y1]] of [[path[1], path[0]], [path[path.length - 2], path[path.length - 1]]]) {
+      const side = Math.sign(x0 - AXIS);
+      expect(y0).toBe(foot);
+      expect(side * (x1 - x0)).toBeGreaterThan(0); // out going down
+      expect((Math.atan2(y1 - y0, Math.abs(x1 - x0)) * 180) / Math.PI).toBeCloseTo(75, 9);
+      expect(fuselageX(side, y1)).toBeCloseTo(x1, 9);
+      for (const [w, h] of SCREENS) {
+        const r = panelRadius(L, w, h);
+        const at = placer(w / 2, panelTop110(h, r), r);
+        expect(at.xy([x1, y1])[1], `${w}x${h}`).toBeGreaterThan(h);
+      }
     }
   });
 

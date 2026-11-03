@@ -3449,3 +3449,26 @@ half is not drawn.
 **Tests:** tests/ui/bf110Frame.test.js checks that the outer frame's line ends at the posts' foot on both sides, and that
 each post's inner edge is within half a post width of the panel's shoulder.
 
+## D121. The Bf 110 C's fuselage frames at 75 degrees (3 Nov 2026, product owner's request)
+
+**The request:** draw the left and right fuselage frames from the bottom of the windscreen's outer frames to the
+bottom of the screen, at an angle of 75 degrees.
+
+**The change** (`src/ui/bf110Frame.js`):
+- **Frames:** from each outer post's foot (y 167, the panel's top corners, D120), a fuselage frame runs down to the
+  foot of every screen at 75° from the horizontal (`FRAME_110.fuselage.angle`, `fuselageX`). The frames lean out going
+  down, as the Bf 109's fuselage frames do.
+  - They are part of the outer frame's line, welded to the posts with a rounded bend, and as wide as the posts
+    (26 px).
+  - They are kept behind the panel.
+- **Panel sides:** the right frame runs just outside the panel's right side, which also slopes at 75° (D112). The
+  panel's traced left side bulges further out, so it covers part of the left frame lower down.
+- **Cockpit sides:** the dark cockpit sides now run between the posts and the fuselage frames down to the foot of the
+  screen.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each fuselage frame:
+- starts at the post's foot;
+- leans out going down;
+- is at 75°;
+- reaches below the foot of every tested screen.
+
