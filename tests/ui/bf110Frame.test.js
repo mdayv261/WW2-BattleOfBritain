@@ -2,9 +2,9 @@
 // the outer posts leaning out going down and the windscreen's posts leaning in, as photographed; the top bar on every
 // screen; the windscreen's opening round the Revi's glass and the guns' line; the grab handles arcs in the top corners
 // from the top bar to the outer posts (D119); the outer posts stopping at the panel's top corners (D120); the fuselage frames from there to the foot of the screen
-// at 75 degrees (D121).
+// at 75 degrees (D121); the windscreen's top bar ending at its own posts, with no corner gussets (D122).
 import { describe, it, expect } from 'vitest';
-import { FRAME_110, outerX, fuselageX, innerX, outerPath, handlePath, frameBars110 } from '../../src/ui/bf110Frame.js';
+import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, frameBars110 } from '../../src/ui/bf110Frame.js';
 import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
 import { reviPlacement } from '../../src/ui/reviSight.js';
 import { panelRadius } from '../../src/ui/instruments.js';
@@ -36,7 +36,7 @@ describe('Bf 110 C front frame (D117)', () => {
       const [, topY] = at.xy([AXIS, FRAME_110.top.y - FRAME_110.top.width / 2]);
       expect(topY, `${w}x${h}`).toBeGreaterThan(0);
       const { glass, y } = reviPlacement(w, h, BF110_REVI);
-      const [, barFoot] = at.xy([AXIS, FRAME_110.crossBar.y + FRAME_110.crossBar.width / 2]);
+      const [, barFoot] = at.xy([AXIS, FRAME_110.crossBar.y + FRAME_110.inner.width / 2]);
       expect(barFoot, `${w}x${h}: cross bar above the glass`).toBeLessThan(glass.y);
       const [left] = at.xy([innerX(-1, GUNS_LINE) + FRAME_110.inner.width / 2, 0]);
       const [right] = at.xy([innerX(1, GUNS_LINE) - FRAME_110.inner.width / 2, 0]);
@@ -97,10 +97,24 @@ describe('Bf 110 C front frame (D117)', () => {
     }
   });
 
-  it('welds every bar: each bar after the one it ends on, trimmed at that end', () => {
+  it('draws the outer frame and the windscreen as whole frames, the ledge welded between the windscreen\'s posts', () => {
     const at = placer(1000, 500, 40);
     const bars = frameBars110(at);
-    expect(bars[0].trim).toEqual([0, 0]); // the outer frame first
-    for (const b of bars.slice(1)) expect(b.trim[0]).toBeGreaterThan(0);
+    expect(bars).toHaveLength(3); // no bar across to the outer posts, no corner gussets (D122)
+    expect(bars[0].trim).toEqual([0, 0]);
+    expect(bars[1].trim).toEqual([0, 0]);
+    expect(bars[2].trim[0]).toBeGreaterThan(0);
   });
+
+  it('ends the windscreen\'s top bar at its own posts, well inside the outer posts (D122)', () => {
+    const { crossBar, posts } = FRAME_110;
+    const path = windscreenPath();
+    expect(path).toHaveLength(4);
+    for (const [side, [x, y]] of [[-1, path[1]], [1, path[2]]]) {
+      expect(y).toBe(crossBar.y);
+      expect(x).toBeCloseTo(innerX(side, crossBar.y), 9);
+      expect(side * (outerX(side, crossBar.y) - x)).toBeGreaterThan(posts.width * 2);
+    }
+  });
+
 });

@@ -3472,3 +3472,22 @@ bottom of the screen, at an angle of 75 degrees.
 - is at 75°;
 - reaches below the foot of every tested screen.
 
+## D122. The Bf 110 C's windscreen top bar between its own posts; corner gussets removed (3 Nov 2026, product owner's request)
+
+**The request:** the lower horizontal frame below the handle hoops should not extend to the outer vertical frames, and
+the short angled corner frames should be removed.
+
+**The change** (`src/ui/bf110Frame.js`):
+- **Windscreen frame:** it is now one frame of its own (`windscreenPath`): up its left post from the ledge, across its
+  top bar at y -164, and down its right post.
+  - The top bar ends at the windscreen's posts. It no longer runs out to the outer posts.
+  - The top bar is now the posts' width, 20 px, where the cross bar was 22 px.
+- **Gussets removed:** the short angled corner frames between the cross bar and the outer posts (D117) are gone.
+- **Welding:** the outer frame and the windscreen frame are each drawn whole, and the ledge is welded between the
+  windscreen's posts.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that:
+- there are three bars: the outer frame, the windscreen frame and the ledge;
+- the windscreen's top bar ends at its own posts, well inside the outer posts;
+- its foot still clears the Revi's glass on every screen.
+

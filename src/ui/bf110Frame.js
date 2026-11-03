@@ -4,8 +4,8 @@
 //   the canopy's outer front frame, a wide flat top bar with rounded corners and side posts leaning out going down to
 //   the panel's top corners (as the Bf 109's hood sides; product owner, D120), then the fuselage frames on down to the
 //   foot of the screen at 75 degrees (as the Bf 109's fuselage frames; product owner, D121), kept behind the panel;
-//   the bar across between the outer posts (as the Bf 109's cross bar) with the armoured windscreen's posts below it,
-//   leaning in a little going down, a ledge across their feet, and small gussets in the corners;
+//   the armoured windscreen's frame below the top bar, its top bar between its own posts only (product owner, D122) and
+//   its posts leaning in a little going down, with a ledge across their feet;
 //   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119), and the
 //   bracket on the top bar with the red-knobbed handle hanging below;
 //   and the cockpit's dark sides round the panel, between the posts and the fuselage frames. No covers over the panel's
@@ -26,15 +26,13 @@ export const FRAME_110 = {
   // The fuselage frames: from the posts' feet down to the foot of the screen, at this angle from the horizontal (degrees),
   // leaning out going down (product owner, D121); as wide as the posts.
   fuselage: { angle: 75 },
-  // The bar across between the outer posts, above the Revi's glass.
-  crossBar: { y: -164, width: 22 },
-  // The armoured windscreen's posts: half apart at the cross bar, in this many pixels for each pixel down, down to `foot`
-  // (the ledge's lower edge); width.
+  // The windscreen's top bar, above the Revi's glass, between the windscreen's posts only (D122).
+  crossBar: { y: -164 },
+  // The armoured windscreen's posts: half apart at its top bar, in this many pixels for each pixel down, down to `foot`
+  // (the ledge's lower edge); the width of its posts and top bar.
   inner: { half: 207, lean: 0.14, foot: 12, width: 20 },
   // The ledge across the windscreen's foot, behind the Revi, and its two knobs.
   ledge: { y: 6, width: 12, knob: 7 },
-  // The gussets in the corners between the cross bar and the outer posts: their legs.
-  gussets: { leg: 34, width: 16 },
   // The grab handles in the top corners: arcs round the corner from the top bar, `along` in from the corner, down to the
   // outer post, `down` below the top bar (#32: about 100 and 50 of its pixels); tube width.
   handles: { along: 112, down: 56, width: 9 },
@@ -96,26 +94,26 @@ export function handlePath(side) {
   return pts;
 }
 
+/**
+ * The armoured windscreen's frame line: up its left post from the ledge, across its top bar, down its right post. The
+ * top bar ends at the windscreen's posts, not at the outer posts (D122).
+ */
+export function windscreenPath() {
+  const { crossBar: { y }, inner: { foot } } = FRAME_110;
+  return [[innerX(-1, foot), foot], [innerX(-1, y), y], [innerX(1, y), y], [innerX(1, foot), foot]];
+}
+
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
 export function frameBars110(at) {
   const w = (px) => at.len(px);
   const P = (pts) => pts.map((p) => at.xy(p));
-  const { top, posts, crossBar, inner, ledge, gussets } = FRAME_110;
-  const out = [{ pts: P(outerPath()), w: w(top.width), trim: [0, 0] }];
-  out.push({ pts: P([[outerX(-1, crossBar.y), crossBar.y], [outerX(1, crossBar.y), crossBar.y]]), w: w(crossBar.width),
-    trim: [w(posts.width / 2), w(posts.width / 2)] });
-  for (const side of [-1, 1]) {
-    out.push({ pts: P([[innerX(side, crossBar.y), crossBar.y], [innerX(side, inner.foot), inner.foot]]), w: w(inner.width),
-      trim: [w(crossBar.width / 2), 0] });
-    // The gusset across the corner under the cross bar, from the bar to the outer post.
-    const x0 = outerX(side, crossBar.y) - side * (posts.width / 2 + gussets.leg);
-    const y1 = crossBar.y + crossBar.width / 2 + gussets.leg;
-    out.push({ pts: P([[x0, crossBar.y], [outerX(side, y1), y1]]), w: w(gussets.width),
-      trim: [w(crossBar.width / 2), w(posts.width / 2)] });
-  }
-  out.push({ pts: P([[innerX(-1, ledge.y), ledge.y], [innerX(1, ledge.y), ledge.y]]), w: w(ledge.width),
-    trim: [w(inner.width / 2), w(inner.width / 2)] });
-  return out;
+  const { top, inner, ledge } = FRAME_110;
+  return [
+    { pts: P(outerPath()), w: w(top.width), trim: [0, 0] },
+    { pts: P(windscreenPath()), w: w(inner.width), trim: [0, 0] },
+    { pts: P([[innerX(-1, ledge.y), ledge.y], [innerX(1, ledge.y), ledge.y]]), w: w(ledge.width),
+      trim: [w(inner.width / 2), w(inner.width / 2)] },
+  ];
 }
 
 /** The panel's outline as a path (canvas px), for keeping the frame behind it. */
