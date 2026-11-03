@@ -5,10 +5,11 @@
 //   the panel's top corners (as the Bf 109's hood sides; product owner, D120), then the fuselage frames on down to the
 //   foot of the screen at 75 degrees (as the Bf 109's fuselage frames; product owner, D121), kept behind the panel;
 //   the armoured windscreen's frame below the top bar, its top bar between its own posts only (product owner, D122) and
-//   its posts leaning in a little going down, with a ledge across their feet; a thin post from each of its top corners
+//   its posts leaning in a little going down, with a ledge across their feet, its top bar raised until its top corners
+//   just touch the grab handles (product owner, D125); a thin post from each of its top corners
 //   to the outer frame's top corner, as thin as the grab handles (product owner, D123);
-//   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119), and the
-//   bracket on the top bar with the red-knobbed handle hanging below;
+//   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119); no canopy
+//   latch or lever on the top bar, and no knobs on the ledge (product owner, D125);
 //   and the cockpit's dark sides round the panel, between the posts and the fuselage frames. No covers over the panel's
 //   top yet (D119).
 // Sizes are in picture pixels of the Bf 110 panel's layout (#31, src/ui/bf110Panel.js), measured on #32 at about 1.12
@@ -27,18 +28,17 @@ export const FRAME_110 = {
   // The fuselage frames: from the posts' feet down to the foot of the screen, at this angle from the horizontal (degrees),
   // leaning out going down (product owner, D121); as wide as the posts.
   fuselage: { angle: 75 },
-  // The windscreen's top bar, above the Revi's glass, between the windscreen's posts only (D122).
-  crossBar: { y: -164 },
-  // The armoured windscreen's posts: half apart at its top bar, in this many pixels for each pixel down, down to `foot`
-  // (the ledge's lower edge); the width of its posts and top bar.
-  inner: { half: 207, lean: 0.14, foot: 12, width: 20 },
-  // The ledge across the windscreen's foot, behind the Revi, and its two knobs.
-  ledge: { y: 6, width: 12, knob: 7 },
+  // The windscreen's top bar, above the Revi's glass, between the windscreen's posts only (D122), raised from -164 until
+  // its top corners just touch the grab handles (D125).
+  crossBar: { y: -181 },
+  // The armoured windscreen's posts: `half` apart at height `at`, in this many pixels for each pixel down, from the top
+  // bar down to `foot` (the ledge's lower edge); the width of its posts and top bar.
+  inner: { half: 207, at: -164, lean: 0.14, foot: 12, width: 20 },
+  // The ledge across the windscreen's foot, behind the Revi.
+  ledge: { y: 6, width: 12 },
   // The grab handles in the top corners: arcs round the corner from the top bar, `along` in from the corner, down to the
   // outer post, `down` below the top bar (#32: about 100 and 50 of its pixels); tube width.
   handles: { along: 112, down: 56, width: 9 },
-  // The bracket on the top bar and the red-knobbed handle below it, right of the axis.
-  knob: { dx: 52, y: -146, r: 8, bracket: [20, 90] },
 };
 const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
@@ -53,7 +53,10 @@ export const fuselageX = (side, y) => {
   return outerX(side, foot) + (side * (y - foot)) / Math.tan((FRAME_110.fuselage.angle * Math.PI) / 180);
 };
 /** A windscreen post's middle line at height y: in from the cross bar going down. */
-export const innerX = (side, y) => AXIS + side * (FRAME_110.inner.half - FRAME_110.inner.lean * (y - FRAME_110.crossBar.y));
+export const innerX = (side, y) => {
+  const { half, lean, at } = FRAME_110.inner;
+  return AXIS + side * (half - lean * (y - at));
+};
 
 /**
  * The outer frame's line: up the left fuselage frame from the foot of the screen to the post's foot, up the post, round
@@ -154,8 +157,8 @@ export function drawBf110Interior(g, at) {
 }
 
 /**
- * The front frame on the sight's canvas before the Revi: the grab handles, the bars (kept behind the panel), the
- * ledge's knobs and the red knob. `at` is the panel's placer; `width`, `height` the canvas.
+ * The front frame on the sight's canvas before the Revi: the corner posts and grab handles, then the bars, kept behind
+ * the panel. `at` is the panel's placer; `width`, `height` the canvas.
  */
 export function drawBf110Frame(g, at, width, height) {
   g.save();
@@ -165,8 +168,6 @@ export function drawBf110Frame(g, at, width, height) {
   g.clip('evenodd');
   handles(g, at);
   drawFrames(g, frameBars110(at), GREY, { join: 'round' });
-  ledgeKnobs(g, at);
-  redKnob(g, at);
   g.restore();
 }
 
@@ -190,40 +191,4 @@ function handles(g, at) {
       g.stroke();
     }
   }
-}
-
-/** The ledge's two small knobs at the windscreen posts' feet. */
-function ledgeKnobs(g, at) {
-  const { y, knob } = FRAME_110.ledge;
-  for (const side of [-1, 1]) {
-    const [x, ky] = at.xy([innerX(side, y) - side * 16, y - 6]);
-    g.fillStyle = '#5c6165';
-    g.beginPath();
-    g.arc(x, ky, at.len(knob), 0, Math.PI * 2);
-    g.fill();
-  }
-}
-
-/** The bracket on the top bar and the red-knobbed handle hanging from it. */
-function redKnob(g, at) {
-  const { dx, y, r, bracket } = FRAME_110.knob;
-  const top = FRAME_110.top.y;
-  const [bx0, by0] = at.xy([AXIS + bracket[0], top - 10]);
-  const [bx1, by1] = at.xy([AXIS + bracket[1], top + 18]);
-  g.fillStyle = '#7d8286';
-  g.fillRect(bx0, by0, bx1 - bx0, by1 - by0);
-  const [kx, ky] = at.xy([AXIS + dx, y]);
-  g.strokeStyle = '#b3201b';
-  g.lineWidth = at.len(4);
-  g.beginPath();
-  g.moveTo(kx, by1);
-  g.lineTo(kx, ky);
-  g.stroke();
-  const shade = g.createRadialGradient(kx - at.len(r * 0.3), ky - at.len(r * 0.3), 0, kx, ky, at.len(r));
-  shade.addColorStop(0, '#ff6b5e');
-  shade.addColorStop(1, '#a3140f');
-  g.fillStyle = shade;
-  g.beginPath();
-  g.arc(kx, ky, at.len(r), 0, Math.PI * 2);
-  g.fill();
 }

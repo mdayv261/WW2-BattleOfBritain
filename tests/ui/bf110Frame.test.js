@@ -3,7 +3,8 @@
 // screen; the windscreen's opening round the Revi's glass and the guns' line; the grab handles arcs in the top corners
 // from the top bar to the outer posts (D119); the outer posts stopping at the panel's top corners (D120); the fuselage frames from there to the foot of the screen
 // at 75 degrees (D121); the windscreen's top bar ending at its own posts, with no corner gussets (D122);
-// a thin post from each top corner of the windscreen frame to the outer frame's top corner (D123), behind the grab handles (D124).
+// a thin post from each top corner of the windscreen frame to the outer frame's top corner (D123), behind the grab handles (D124);
+// the windscreen's top bar raised to touch the handles, with no latch, lever or ledge knobs (D125).
 import { describe, it, expect } from 'vitest';
 import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths, frameBars110 } from '../../src/ui/bf110Frame.js';
 import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
@@ -116,6 +117,23 @@ describe('Bf 110 C front frame (D117)', () => {
 
   it('draws the corner posts behind the grab handles (D124)', () => {
     expect(tubePaths()).toEqual([cornerPostPath(-1), cornerPostPath(1), handlePath(-1), handlePath(1)]);
+  });
+
+  it('raises the windscreen\'s top bar until its top corners just touch the grab handles (D125)', () => {
+    const { inner, handles } = FRAME_110;
+    for (const side of [-1, 1]) {
+      const corner = windscreenPath()[side < 0 ? 1 : 2];
+      const gap = Math.min(...handlePath(side).map(([x, y]) => Math.hypot(x - corner[0], y - corner[1])))
+        - (inner.width + handles.width) / 2; // between the rounded corner's edge and the tube's
+      expect(gap, `${side}`).toBeGreaterThanOrEqual(0);
+      expect(gap, `${side}`).toBeLessThan(1.5);
+    }
+    expect(FRAME_110.crossBar.y).toBeLessThan(-164); // higher than D117's
+  });
+
+  it('has no canopy latch and lever on the top bar and no knobs on the ledge (D125)', () => {
+    expect(FRAME_110.knob).toBeUndefined();
+    expect(FRAME_110.ledge.knob).toBeUndefined();
   });
 
   it('draws the outer frame and the windscreen as whole frames, the ledge welded between the windscreen\'s posts', () => {

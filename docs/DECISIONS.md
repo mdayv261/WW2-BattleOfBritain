@@ -3517,3 +3517,23 @@ handle passes in front of its post where they cross.
 
 **Tests:** tests/ui/bf110Frame.test.js checks the drawing order: the corner posts first, then the handles.
 
+## D125. The Bf 110 C's windscreen raised to the handles; ledge knobs, canopy latch and lever removed (3 Nov 2026, product owner's request)
+
+**The request:**
+- remove the two dots at the bottom corners of the inner windscreen frame;
+- remove the canopy latch and lever on the outer frame's top bar;
+- raise the inner windscreen's horizontal frame so its top corners just touch the handle hoops.
+
+**The change** (`src/ui/bf110Frame.js`):
+- **Removed:** the ledge's two knobs, and the bracket with the red-knobbed handle (D117, shown only).
+- **Windscreen top bar:** raised from y -164 to -181 (`FRAME_110.crossBar.y`). Its rounded top corners now just touch
+  the grab handles' tubes, leaving under 1 px between their edges.
+- **Windscreen posts:** they keep their D117 line (`inner.at` -164, `half` 207, lean 0.14) and are extended up to the
+  raised bar.
+- **Corner posts (D123):** they still run from the windscreen frame's top corners, so they are now shorter.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that:
+- the gap between each windscreen top corner and its handle is 0 to 1.5 px;
+- the bar is higher than before;
+- there is no latch or ledge knob data.
+
