@@ -83,6 +83,8 @@ Read this at the start of every session.
 - D191: the pitch levers' knobs follow each engine's airscrew pitch (größer at fine, kleiner at coarse).
 - D192: the engines moved out to 2.75 m (estimate) so the airscrew arcs clear the fuselage; the 3.1 m diameter is
   kept. The main wheels' track not moved (decision pending).
+- D193: the Bf 110's nose rears up as the flaps go down, then sinks (S24); it dips as they come up. Size and duration
+  are estimates.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

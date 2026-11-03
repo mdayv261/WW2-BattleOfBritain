@@ -55,6 +55,10 @@ export function updateSurfaces(ac, s, input, { q, tailQ }, dt) {
   s.rudderTrim = ac.aero.rudderTrimCn ? clamp(input.rudderTrim ?? 0, -1, 1) : 0;
   s.radiator = clamp(input.radiator ?? 0, 0, 1);
   s.flaps = approach(s.flaps, flapTarget(ac, input.flaps), 1 / c.flapTime, dt);
+  // The flaps' lagging position (D193): it follows them with a first-order lag where the aircraft has one, so a
+  // moment that depends on the difference acts only while they move (the Bf 110's rear-up, S24).
+  if (s.flapsLag === undefined || !c.flapLagTime) s.flapsLag = s.flaps;
+  else s.flapsLag += (s.flaps - s.flapsLag) * Math.min(1, dt / c.flapLagTime);
   s.gear = approach(s.gear, input.gear ? 1 : 0, 1 / c.gearTime, dt);
   return s;
 }

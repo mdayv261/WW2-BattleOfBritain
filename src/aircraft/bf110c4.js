@@ -31,6 +31,7 @@ export const bf110c4 = {
     elevatorCm: 0.2,
     trimCm: 0.03,
     flapCm: -0.02,
+    flapCmLag: 0.025, // the nose rears up while the flaps go down, then sinks (S24, D193)
     aileronCl: 0.04,
     adverseYaw: -0.008,
     cnBeta: 0.1,
@@ -45,6 +46,7 @@ export const bf110c4 = {
   },
   controls: {
     pitchHinge: 0.07, rollHinge: 0.035, yawHinge: 0.06, flapTime: 8, gearTime: 8,
+    flapLagTime: 2, // s: how long the flaps' passing pitch change lasts once they stop (D193)
     flapStops: 5, // hydraulic flaps; any position can be held (S24), the keys step 10 degrees at a time
     flapTravel: 50 * DEG,
     flapTakeoff: 0, // flap setting for take-off (fraction of travel)

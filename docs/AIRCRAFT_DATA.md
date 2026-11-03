@@ -1041,7 +1041,8 @@ Bf 109's (same designer, engine and airscrew).
 | Pitch damping Cmq (`aero.cmq`) | -15 | per unit q c/2V | — | ASSUMPTION | estimate | A longer tail arm than a single-engine fighter's; no measured value found. |
 | Pitching moment coefficient at full up elevator (`aero.elevatorCm`) | 0.2 | — | — | ASSUMPTION | estimate | No source; tuned by flying. |
 | Pitching moment range of the elevator trimmer (`aero.trimCm`) | 0.03 | — | — | ASSUMPTION | estimate | Enough to trim from the approach to top speed. Trim wheel on the pilot's left (S24). |
-| Pitching moment from fully lowered flaps (`aero.flapCm`) | -0.02 | — | — | S24, ASSUMPTION | estimate | S24: the nose first rears up, then sinks, and the eventual change of trim is very small. Only the small final change is modelled. |
+| Pitching moment from fully lowered flaps (`aero.flapCm`) | -0.02 | — | — | S24, ASSUMPTION | estimate | S24: the nose first rears up, then sinks, and the eventual change of trim is very small. This is the small final change; the rear-up is `aero.flapCmLag` (D193). |
+| Passing pitching moment while the flaps move (`aero.flapCmLag`) | 0.025 | — | the nose first rears up, then sinks | S24, ASSUMPTION | estimate | S24 describes the rear-up but gives no size. Times the flaps' lead over their lagging position: nose up while they go down, nose down while they come up, gone once they stop. Tuned so that, hands off at 220 km/h, the full travel rears the nose about 2° before it sinks (D193). |
 | Roll moment coefficient at full aileron (`aero.aileronCl`) | 0.04 | — | — | ASSUMPTION | estimate | No roll data found. Smaller than the fighters'; tuned by flying. |
 | Adverse yaw at full aileron (`aero.adverseYaw`) | -0.008 | — | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
 | Weathercock stability Cnβ (`aero.cnBeta`) | 0.1 | per rad | — | ASSUMPTION | estimate | Twin fins and rudders on a long tail arm; more than the Bf 109's 0.07. No measured value found. With the rudder below, full rudder holds about 30° of sideslip. |
@@ -1057,6 +1058,7 @@ Bf 109's (same designer, engine and airscrew).
 | Aileron stick force at full deflection per unit dynamic pressure (`controls.rollHinge`) | 0.035 | N/Pa | — | S24, ASSUMPTION | estimate | As the Bf 109 (S32); S24 as above. |
 | Rudder pedal force at full deflection per unit dynamic pressure (`controls.yawHinge`) | 0.06 | N/Pa | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
 | Flap travel time (`controls.flapTime`) | 8 | s | — | ASSUMPTION | estimate | Hydraulic flaps (S24); no time found. |
+| Lag of the flaps' passing pitch change (`controls.flapLagTime`) | 2 | s | — | ASSUMPTION | estimate | How long the rear-up of S24 lasts once the flaps stop; no figure found (D193). |
 | Undercarriage travel time (`controls.gearTime`) | 8 | s | — | ASSUMPTION | estimate | Hydraulic (S24); no time found. |
 | Flap positions besides up (keyboard steps) (`controls.flapStops`) | 5 | — | indicator 0° to 50°; any intermediate position | S24 | medium | S24: the flaps can be stopped anywhere, read on an indicator graduated 0° to 50°. The keys step 10° at a time. |
 | Flap travel, fully down (`controls.flapTravel`) | 50 | deg | 0° to 50° | S24 | medium |  |

@@ -4823,3 +4823,35 @@ engines. That would widen the wheel track and change ground handling.
 
 **Tests:** the existing tests pass, including the data rows check (tests/aircraftCode.test.js) with the new figures.
 
+## D193. The Bf 110 C's pitch change with flaps: the nose rears up, then sinks (3 Nov 2026, plan approved by the product owner)
+
+**Prompt:** the product owner asked to verify that the nose pitches up when the flaps are lowered and down when they
+are raised. It did not: every aircraft had only a small fixed nose-down moment with flaps down (`aero.flapCm` −0.02,
+an estimate). Lowering the flaps sank the nose; raising them lifted it.
+
+**The source (S24):** the RAE report on the Bf 110 says that when the flaps are lowered, "the nose first rears up,
+then sinks, and the eventual change of trim is very small". The product owner asked for this to be modelled for the
+Bf 110 only.
+
+**The change:**
+- **Moment** (src/physics/aero.js, pitch): a passing moment `flapCmLag × (flaps − flapsLag)`.
+  - `flapsLag` follows the flap position with a first-order lag of `flapLagTime` (src/physics/controls.js).
+  - While the flaps go down they lead the lag, so the moment is nose-up. While they come up it is nose-down.
+  - Once they stop it dies away, leaving the small final change, `flapCm`.
+- **New data** (Bf 110 only, src/aircraft/bf110c4.js, with keyed rows in docs/AIRCRAFT_DATA.md): `aero.flapCmLag`
+  0.025 and `controls.flapLagTime` 2 s. Both are estimates: S24 gives no figures.
+- **Tuning:** flown hands off from trimmed level flight at 220 km/h, the full 8 s flap travel rears the nose about 2°
+  above its starting attitude near the end of the travel. It then sinks below it as the speed falls. Raising the flaps
+  from 200 km/h dips the nose by about 1.5° in 4 s, compared with the same flight without the moment.
+- **Other aircraft:** they have no `flapCmLag`, so the term is always zero and they fly as before.
+
+**Flagged:** the size (0.025) and duration (2 s) of the rear-up are estimates tuned to S24's words, not measured figures.
+
+**Not changed:** `npm run validate`, whose cases fly with the flaps up.
+
+**Tests:** tests/physics/flapPitch.test.js checks that:
+- the nose rears up 1.5–4° while the flaps go down, then sinks;
+- lowering pitches the nose up, and raising dips it, compared with the same flights without the moment;
+- the moment dies away once the flaps stop;
+- the other aircraft have no lag.
+

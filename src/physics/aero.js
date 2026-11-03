@@ -238,13 +238,15 @@ export function aeroCoefficients(ac, flow, surfaces) {
   // fixed fin offset or rudder tab that cancels slipstream swirl.
   const cyaw = a.cnBeta * flow.beta + a.cnr * rHat + (a.rudderCn * surfaces.rudder + (a.rudderTrimCn ?? 0) * (surfaces.rudderTrim ?? 0)) * tailQ
     + a.adverseYaw * surfaces.aileron - rollOf((l, r) => l.cd - r.cd) + a.yawRig;
-  // Pitch: static stability about the zero-lift attitude, damping, elevator, trim tab, flaps, and the
+  // Pitch: static stability about the zero-lift attitude, damping, elevator, trim tab, flaps (their final change and,
+  // on the Bf 110, the passing change while they move, D193), and the
   // nose-down moment of a stalled wing root: its lift acts near mid-chord, well behind the centre of
   // gravity, as for a flat plate (normal-force coefficient 2 sin a cos a).
   const cmAlpha = -a.staticMargin * w.clAlpha;
   const aw = flow.alpha - a.alphaZeroLift;
   const cpitch = a.cmZero + cmAlpha * aw + a.cmq * qHat
     + (a.elevatorCm * surfaces.elevator + a.trimCm * surfaces.trim) * tailQ + a.flapCm * flaps
+    + (a.flapCmLag ?? 0) * (flaps - (surfaces.flapsLag ?? flaps)) // nose up while flaps go down, down as they rise (D193)
     - common.stallNoseDown * innerStall * Math.sin(2 * aw);
 
   const stalledOf = (ps) => Math.max(ps[0].stalled, ps[1].stalled);
