@@ -105,6 +105,7 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
   it('lines the outside air thermometer\'s left edge up with the left manifold pressure gauge\'s, 5 mm up (D169)', () => {
     const left = ([x, , , o]) => x - o;
     expect(left(L.dials.airTemp)).toBeCloseTo(left(L.dials.ataLeft), 9);
+    expect(L.boxes.heizung[0]).toBeCloseTo(left(L.dials.airTemp), 9); // the Heizung placard's too (D178)
     const r = panelRadius(L, 2560, 1259);
     expect(((57 + (440 - 132) * 0.46 - L.dials.airTemp[1]) / 30) * r).toBeCloseTo(43 * 0.5, 0);
   });
@@ -115,6 +116,9 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     expect(mm(57 + (280 - 132) * 0.46 - L.dials.counter[1])).toBeCloseTo(4, 1);
     expect(mm(57 + (245 - 132) * 0.46 - L.boxes.heizung[1])).toBeCloseTo(4, 1);
     expect(mm(57 + (340 - 132) * 0.46 - L.knobs.heizungKnob[1])).toBeCloseTo(4, 1);
+    const [hl, , hr] = L.boxes.heizung;
+    expect(L.knobs.heizungKnob[0]).toBeGreaterThan(hl); // its knob moved with it (D178)
+    expect(L.knobs.heizungKnob[0]).toBeLessThan(hr);
   });
 
   it('moves the two-bar window above the altimeter 2 mm up (D176)', () => {

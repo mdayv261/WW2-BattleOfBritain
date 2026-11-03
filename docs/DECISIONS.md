@@ -4591,3 +4591,14 @@ clears the Umschaltwarnung placard above it.
 **Tests:** tests/ui/bf110Panel.test.js checks the altimeter, turn and slip, trim and climb indicators against the
 airspeed indicator's size, and the horizon at 1.15 times it.
 
+## D178. The Bf 110 C's Heizung placard lined up with the outside air thermometer (3 Nov 2026, product owner's request)
+
+**The request:** move the Heizung control right so its left edge lines up with the outside air thermometer's left edge.
+
+**The change** (src/ui/bf110Layout.js, `OAT_LEFT`): the Heizung placard and its green knob move 133.9 of #34's pixels
+right. The placard's left edge now lies in line with the thermometer mounting's left edge, which lies in line with the
+left manifold pressure gauge's (D169). The placard keeps its width and its height (D172). It stays inside the panel's top
+right corner, clear of the right dash cover's edge.
+
+**Tests:** tests/ui/bf110Panel.test.js checks that the left edges line up and that the knob moved with the placard.
+
