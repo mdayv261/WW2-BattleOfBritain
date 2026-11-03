@@ -57,11 +57,39 @@ export function tableAngle(table, v) {
   return table[table.length - 1][1] * DEG;
 }
 
+/** The domed screws' shading, light to dark: grey unless `blackScrews` is drawing (the Bf 110's, D160). */
+const SCREWS = { grey: ['#e2e3e3', '#727578'], black: ['#4a4c4f', '#050505'] };
+const screwPaint = { colours: SCREWS.grey };
+
+/** Draws (in `draw`) with black domed screws, then restores the grey ones. */
+export function blackScrews(draw) {
+  const was = screwPaint.colours;
+  screwPaint.colours = SCREWS.black;
+  try {
+    draw();
+  } finally {
+    screwPaint.colours = was;
+  }
+}
+
+/** Draws dials (in `draw`) with their markings and hands white, then restores the usual colours (the Bf 110's, D160). */
+export function whiteDials(draw) {
+  const was = { ...paint };
+  paint.ink = INK;
+  paint.hand = INK;
+  try {
+    draw();
+  } finally {
+    Object.assign(paint, was);
+  }
+}
+
 /** A domed screw head. */
 export function screw(g, x, y, radius) {
   const shade = g.createRadialGradient(x - radius * 0.35, y - radius * 0.35, radius * 0.1, x, y, radius);
-  shade.addColorStop(0, '#e2e3e3');
-  shade.addColorStop(1, '#727578');
+  const [light, dark] = screwPaint.colours;
+  shade.addColorStop(0, light);
+  shade.addColorStop(1, dark);
   g.fillStyle = shade;
   g.beginPath();
   g.arc(x, y, radius, 0, Math.PI * 2);

@@ -49,6 +49,7 @@ Read this at the start of every session.
 - D157: the undercarriage indicator lights are in a round housing.
 - D158: the undercarriage lights housing is the round counter's diameter.
 - D159: the course box is as wide as the repeater compass, under it.
+- D160: the dials' markings and hands are white, and the screws black.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

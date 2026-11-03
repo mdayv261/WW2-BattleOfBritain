@@ -4326,3 +4326,21 @@ little further apart (±0.44 of the radius) and the word is smaller.
 
 **Tests:** tests/ui/bf110Panel.test.js checks that the course box's sides line up with the compass mounting's.
 
+## D160. The Bf 110 C's dials white, their screws black (3 Nov 2026, product owner's request)
+
+**The request:** change all the instrument bezel screws to black, and the dial colour to white.
+
+**Interpretation:** "dial colour" is the dials' markings and hands, which were luminous yellow (D105). White faces would
+hide white markings, and #34's dials are black with white markings.
+
+**The change:**
+- **Dials** (src/ui/lwStyle.js `whiteDials`, used by src/ui/bf110Panel.js): every Bf 110 dial's markings, figures and
+  hands are now white (#f1f1ec), in place of D105's luminous yellow. The fuel gauge was already white.
+- **Screws** (src/ui/lwStyle.js `blackScrews`): every domed screw on the Bf 110 panel is now black. That covers the
+  instruments' square mountings, the round counter's flange, the boxes' corners and the undercarriage housing.
+- **Other aircraft:** the Bf 109's and the RAF panels keep their colours. Both settings are restored after the Bf 110's
+  panel is drawn.
+
+**Tests:** tests/ui/bf110Panel.test.js checks that the dials' lettering is white, not luminous, and that the paint is
+restored. It also checks that every screw is shaded black on the Bf 110 panel and grey again afterwards.
+

@@ -16,13 +16,13 @@
 // the altimeter's setting knob included (D107).
 // Working: the flying and engine instruments, the clock, the pitch indicators, the round counter, the outside air
 // thermometer, the undercarriage and flap switches and lights, the radiator switches and the fuel gauge (the tank the
-// selector chooses, full: fuel use is not modelled). The rest shows normal operation. The dials carry radium luminous
-// paint, but for the fuel gauge (D105).
+// selector chooses, full: fuel use is not modelled). The rest shows normal operation. The dials' markings and hands are
+// white and the mountings' screws black (product owner, D160; the luminous paint of D105 gone).
 
 import { drawBf110Fittings } from './bf110Fittings.js';
 import { mount, lwRpm, lwAta, lwClock, lwPitchIndicator, lwFuelGauge, RPM_110 } from './luftwaffeDials.js';
 import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
-import { luminous } from './lwStyle.js';
+import { whiteDials, blackScrews } from './lwStyle.js';
 import { millibarWindow } from './altimeters.js';
 import { redBezel, settingKnob } from './bf109Panel.js';
 import { drawBf110Interior } from './bf110Frame.js';
@@ -97,6 +97,10 @@ const RED_BEZELS = ['altimeter', 'airspeed'];
 
 /** Draws the panel with the axis at its top at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
 export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
+  blackScrews(() => drawPanel(g, x0, y0, r, v, now)); // every screw black (D160)
+}
+
+function drawPanel(g, x0, y0, r, v, now) {
   const L = BF110_PANEL;
   const at = placer(x0, y0, r);
   drawBf110Interior(g, at); // the cockpit's sides round the panel, below the drawn front frame (D117)
@@ -110,7 +114,7 @@ export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
   settingKnob(g, ...at.knob(L.knobs.setAltimeter));
   const dial = (name) => at.dial(L.dials[name]);
   const face = (name) => dial(name).slice(0, 3);
-  luminous(() => {
+  whiteDials(() => {
     lwClock(g, ...face('clock'), now);
     lwPatinCompass(g, ...face('compass'), v.heading);
     lwTurnBank(g, ...face('turn'), v.turnRate, v.sideG);
@@ -130,7 +134,7 @@ export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
   roundCounter(g, ...dial('counter'), cannonCounter(v));
   ['Left', 'Right'].forEach((side, i) => {
     const e = v.engines[i] ?? v.engines[0];
-    luminous(() => {
+    whiteDials(() => {
       if (e.pitchClock) lwPitchIndicator(g, ...face(`pitch${side}`), e.pitchClock); // each engine's blade angle (D109)
       lwRpm(g, ...face(`rpm${side}`), e.rpm, v.rpmLimit, RPM_110);
       lwAta(g, ...face(`ata${side}`), e.manifold);

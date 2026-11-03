@@ -2,7 +2,7 @@
 // inside the outline, none touching; the dial radius kept, so the Bf 109's instruments keep their size; the lowest row
 // and the Preßluft gauge half below the screen's foot (D129); each engine on its own gauges; the round counter for the
 // two cannon; the outside air thermometer; the Ein/Aus switches and lights (D114); the radiator switches and fuel gauge;
-// the placards' sourced figures; the items removed; and the luminous dials (D105).
+// the placards' sourced figures; the items removed; and the white dials with black screws (D160).
 import { describe, it, expect } from 'vitest';
 import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
@@ -12,7 +12,7 @@ import { cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftA
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { atmosphere } from '../../src/physics/atmosphere.js';
-import { LUMINOUS, INK, HAND, paint } from '../../src/ui/lwStyle.js';
+import { LUMINOUS, INK, HAND, paint, screw } from '../../src/ui/lwStyle.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
 import { UNIT } from '../../src/core/constants.js';
@@ -329,15 +329,30 @@ describe('Bf 110 C flap and undercarriage levers (D114)', () => {
   });
 });
 
-describe('Bf 110 luminous dials (D105)', () => {
-  it('draws all but the fuel gauge\'s markings and hands in luminous yellow, and restores the colours', () => {
+describe('Bf 110 white dials and black screws (D160)', () => {
+  it('draws every dial\'s markings and hands in white, and restores the colours', () => {
     const g = draw();
     const colourOf = (s) => g.texts.filter((t) => t.s === s).map((t) => t.c);
-    for (const w of ['km/h', 'U/min', 'ata', 'm/s', 'DREHT', '12', '°C']) {
+    for (const w of ['km/h', 'U/min', 'ata', 'm/s', 'DREHT', '12', '°C', 'Liter']) {
       expect(colourOf(w).length, w).toBeGreaterThan(0);
-      expect(colourOf(w).every((c) => c === LUMINOUS), w).toBe(true);
+      expect(colourOf(w).every((c) => c === INK), w).toBe(true);
     }
-    expect(colourOf('Liter')).toEqual([INK]); // the fuel gauge stays white
+    expect(colourOf('km/h').some((c) => c === LUMINOUS)).toBe(false);
     expect(paint).toEqual({ ink: INK, hand: HAND });
+  });
+
+  it('shades every domed screw black on the Bf 110 panel, grey again afterwards', () => {
+    const stops = [];
+    const g = new Proxy({}, {
+      get: (t2, p) => (p === 'createRadialGradient' ? () => ({ addColorStop: (k, c) => stops.push(c) }) : p in t2 ? t2[p]
+        : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t2, p, v) => { t2[p] = v; return true; },
+    });
+    bf110Panel(g, 1000, 0, 40, readings());
+    expect(stops).toContain('#050505');
+    expect(stops).not.toContain('#727578'); // no grey screws
+    stops.length = 0;
+    screw(g, 0, 0, 5);
+    expect(stops).toEqual(['#e2e3e3', '#727578']); // the other panels keep theirs
   });
 });
