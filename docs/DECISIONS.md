@@ -4541,3 +4541,15 @@ mounting sizes. Its face is 34.7 picture px, was 31.3; its mounting 42.6, was 36
 **Tests:** tests/ui/bf110Panel.test.js checks it is the airspeed indicator's size. The layout checks keep it clear of
 the placard, the course box and the horizon.
 
+## D175. The Bf 110 C's climb indicator the airspeed indicator's size (3 Nov 2026, product owner's request)
+
+**The request:** make the VSI (climb indicator) the same size as the airspeed indicator.
+
+**The change** (src/ui/bf110Layout.js): the climb indicator now takes the airspeed indicator's face and mounting sizes.
+Its face is 34.7 picture px, was 35.0; its mounting 42.6, was 38.6. It stays at #34's place, clear of the Kurs strip,
+the round counter, the two-bar window and the outside air thermometer. The flying instruments' upper row (airspeed, turn
+and slip, climb) is now three dials of one size.
+
+**Tests:** tests/ui/bf110Panel.test.js checks it is the airspeed indicator's size. The layout checks keep it clear of
+everything round it.
+

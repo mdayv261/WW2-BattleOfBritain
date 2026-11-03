@@ -61,7 +61,8 @@ Read this at the start of every session.
 - D169: the outside air thermometer lined up with the left manifold pressure gauge, 5 mm up.
 - D170: the rev counters a further 3 mm up.
 - D171: plate round the manifold pressure gauges (recess removed); D172: the round counter and Heizung placard 4 mm up.
-- D173, D174: the turn and slip indicator and the elevator trim indicator the airspeed indicator's size.
+- D173-D175: the turn and slip indicator, the elevator trim indicator and the climb indicator the airspeed indicator's
+  size.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 
