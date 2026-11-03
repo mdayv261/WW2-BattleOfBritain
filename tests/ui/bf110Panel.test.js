@@ -100,8 +100,11 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
       expect(screenPx(L.dials[n][0] - at34), n).toBeCloseTo(43 * 2.5, 0); // 10 mm taken as 43 px (D154)
       expect(L.dials[n][0] + L.dials[n][3], n).toBeLessThan(L.boxes.ataBox[2] + (n === 'rpmRight' ? 1e3 : 0));
     }
-    for (const n of ['rpmLeft', 'ataLeft']) { // the left engine's 15 mm (D166)
-      expect(screenPx(L.dials[n][0] - (440 + (1265 - 882) * 0.46)), n).toBeCloseTo(43 * 1.5, 0);
+    for (const n of ['rpmLeft', 'ataLeft']) { // the left engine's 15 mm and 5 mm more (D166, D167)
+      expect(screenPx(L.dials[n][0] - (440 + (1265 - 882) * 0.46)), n).toBeCloseTo(43 * 2, 0);
+    }
+    for (const [n, y34] of [['rpmLeft', 630], ['rpmRight', 630], ['ataLeft', 805], ['ataRight', 805]]) { // 5 mm up (D168)
+      expect(screenPx(57 + (y34 - 132) * 0.46 - L.dials[n][1]), n).toBeCloseTo(43 * 0.5, 0);
     }
   });
 

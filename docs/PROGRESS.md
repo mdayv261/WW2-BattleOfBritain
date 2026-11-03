@@ -57,7 +57,7 @@ Read this at the start of every session.
 - D164: the elevator trim indicator is redrawn after #34's AEG instrument (five marks, a very short pointer, the rudder
   trim's L R shown only).
 - D165: the right engine's rev counter and manifold pressure gauge moved 25 mm right.
-- D166: the left engine's moved 15 mm right.
+- D166, D167: the left engine's moved 15 mm, then 5 mm more, right; D168: all four engine gauges 5 mm up.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

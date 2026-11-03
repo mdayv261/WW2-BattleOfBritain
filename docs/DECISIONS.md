@@ -4454,3 +4454,23 @@ taking 10 mm as 43 px as in D154. The recess's left edge moves with them.
 
 **Tests:** tests/ui/bf110Panel.test.js checks the move on a 2560 px screen.
 
+## D167. The Bf 110 C's left engine gauges moved a further 5 mm right (3 Nov 2026, product owner's request)
+
+**The request:** move the left rev counter and left manifold pressure gauge 5 mm further right.
+
+**The change** (src/ui/bf110Layout.js): `LEFT_MOVE` is now 138.9 of #34's pixels, 20 mm in all (86 screen px on a 2560
+× 1259 screen, at 43 px to 10 mm as D154). Their cards and the recess's left edge move with them.
+
+## D168. The Bf 110 C's engine gauges moved 5 mm up (3 Nov 2026, product owner's request)
+
+**The request:** move the top tacho and top MAP gauges 5 mm upward.
+
+**Interpretation:** the rev counters (the top row) and the manifold pressure gauges are moved together.
+
+**The change** (src/ui/bf110Layout.js, `ENGINE_UP`): all four engine gauges, their correction cards and the recess move
+up 34.7 of #34's pixels (5 mm, 21.5 screen px on a 2560 × 1259 screen). They stay clear of the outside air thermometer
+and inside the panel's right side.
+
+**Tests:** tests/ui/bf110Panel.test.js checks the left engine's 20 mm move and the 5 mm rise of all four on a 2560 px
+screen.
+
