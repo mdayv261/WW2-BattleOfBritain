@@ -121,7 +121,8 @@ export const LAYOUT = {
     compass: dial(470, 418, 92, 110), airspeed: as109('airspeed', 690, 480), turn: as109('turn', 882, 480),
     climb: dial(1082, 480, 76, 84), trim: dial(680, 705, 68, 79), horizon: dial(880, 712, 85, 104), altimeter,
     // The outside air thermometer (the airscrew pitch indicators of D109 removed: the Bf 110 C had none, D163).
-    airTemp: dial(1250, 440, 52, 60),
+    // Its left edge in line with the left manifold pressure gauge's, 5 mm up (product owner, D169).
+    airTemp: dial(1265 + LEFT_MOVE - 86 + 60, 440 - ENGINE_UP, 52, 60),
     // Each engine's rev counter and manifold pressure gauge.
     // The right engine's moved 25 mm right (product owner, D165), the left engine's 20 mm (D166, D167); all 5 mm up
     // (D168).
@@ -135,7 +136,8 @@ export const LAYOUT = {
   },
   boxes: {
     skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: box(790, 312, 975, 382),
-    heizung: box(1187, 245, 1320, 352), levers: box(...LEVERS),
+    heizung: box(1184, 245, 1317, 352), levers: box(...LEVERS),
+    // (the Heizung placard 3 px left, clear of the outside air thermometer, D169)
     gearLights: box(202.5, 312.5, 352.5, 462.5), // round, the round counter's diameter (D157, D158)
     achtung: box(250, 590, 345, 730), dive: box(615, 578, 735, 620),
     course: box(360, 550, 580, 830), // the repeater compass's width, under it (D159)
@@ -152,7 +154,7 @@ export const LAYOUT = {
     tempLeft: box(627, 842, 737, 895), tempRight: box(1017, 842, 1127, 895),
   },
   knobs: {
-    redButton: knob(442, 252, 30), heizungKnob: knob(1242, 340, 30),
+    redButton: knob(442, 252, 30), heizungKnob: knob(1239, 340, 30),
     umschaltLeft: knob(790, 590, 12), umschaltRight: knob(975, 590, 12),
     tankLeftFront: knob(775, 885, 17), tankLeftRear: knob(775, 955, 17),
     tankRightFront: knob(975, 885, 17), tankRightRear: knob(975, 955, 17),

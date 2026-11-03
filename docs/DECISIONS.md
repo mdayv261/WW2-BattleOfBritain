@@ -4474,3 +4474,17 @@ and inside the panel's right side.
 **Tests:** tests/ui/bf110Panel.test.js checks the left engine's 20 mm move and the 5 mm rise of all four on a 2560 px
 screen.
 
+## D169. The Bf 110 C's outside air thermometer lined up with the left manifold pressure gauge, 5 mm up (3 Nov 2026, product owner's request)
+
+**The request:** move the outside air temperature gauge so its left edge lines up with the left manifold pressure
+gauge's, and move it up 5 mm.
+
+**The change** (src/ui/bf110Layout.js):
+- **Thermometer:** its mounting's left edge is now in line with the left manifold pressure gauge's mounting (D166–D168),
+  and it is 34.7 of #34's pixels (5 mm) higher.
+- **Heizung placard:** the placard and its knob are moved 3 px left, so the thermometer's mounting clears the placard's
+  corner (they overlapped by 2 px). This is a small unrequested move, kept to the minimum.
+
+**Tests:** tests/ui/bf110Panel.test.js checks the left edges line up and the 5 mm rise. The layout checks keep it clear of
+every dial and box.
+

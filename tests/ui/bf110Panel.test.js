@@ -108,6 +108,13 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     }
   });
 
+  it('lines the outside air thermometer\'s left edge up with the left manifold pressure gauge\'s, 5 mm up (D169)', () => {
+    const left = ([x, , , o]) => x - o;
+    expect(left(L.dials.airTemp)).toBeCloseTo(left(L.dials.ataLeft), 9);
+    const r = panelRadius(L, 2560, 1259);
+    expect(((57 + (440 - 132) * 0.46 - L.dials.airTemp[1]) / 30) * r).toBeCloseTo(43 * 0.5, 0);
+  });
+
   it('keeps the dial radius on screen as before (D106), so the Bf 109\'s instruments keep their size; fits every screen', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);

@@ -58,6 +58,7 @@ Read this at the start of every session.
   trim's L R shown only).
 - D165: the right engine's rev counter and manifold pressure gauge moved 25 mm right.
 - D166, D167: the left engine's moved 15 mm, then 5 mm more, right; D168: all four engine gauges 5 mm up.
+- D169: the outside air thermometer lined up with the left manifold pressure gauge, 5 mm up.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 
