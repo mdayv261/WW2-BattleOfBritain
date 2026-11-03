@@ -30,6 +30,7 @@ Read this at the start of every session.
 **Adjustments** (product owner, one at a time):
 - D141: the panel is lowered so the coolant thermometers touch the screen's foot (the gunsight is kept where it was),
   and the Preßluft gauge is placed below the lever box.
+- D142: the Preßluft gauge reads 0 with the engines stopped and 150 with them running.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

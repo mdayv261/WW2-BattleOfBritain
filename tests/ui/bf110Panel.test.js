@@ -8,7 +8,7 @@ import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
 import { switchPosition, gearLightState, tBar, T_STEM } from '../../src/ui/bf110Fittings.js';
-import { cannonCounter, airTempAngle, coolantAngle } from '../../src/ui/bf110Gauges.js';
+import { cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle } from '../../src/ui/bf110Gauges.js';
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { atmosphere } from '../../src/physics/atmosphere.js';
@@ -171,6 +171,20 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     expect(airTempAngle(0)).toBe(0); // 0 °C straight up
     expect(airTempAngle(40)).toBeCloseTo(-airTempAngle(-40), 9);
     expect(airTempAngle(-60)).toBe(airTempAngle(-40)); // held at the end of the scale
+  });
+
+  it('reads the Preßluft gauge 0 with the engines stopped and 150 kg/cm² with either running (D142)', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    for (const e of sim.plane.engines) e.omega = 0;
+    expect(pressluftReading(instrumentReadings(sim))).toBe(0);
+    sim.plane.engines[1].omega = 2200 * UNIT.RPM;
+    expect(pressluftReading(instrumentReadings(sim))).toBe(150);
+    sim.plane.engines[1].omega = 600 * UNIT.RPM; // starting: part way up
+    const starting = pressluftReading(instrumentReadings(sim));
+    expect(starting).toBeGreaterThan(0);
+    expect(starting).toBeLessThan(150);
+    expect(clockwise(pressluftAngle(0))).toBeCloseTo(225, 6); // at the scale's start, bottom left
+    expect(clockwise(pressluftAngle(125))).toBeCloseTo(0, 6);
   });
 
   it('reads the coolant thermometers 40 to 120 °C, 80 straight up', () => {

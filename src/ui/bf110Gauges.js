@@ -1,7 +1,7 @@
 // The Bf 110 C panel's own gauges after the product owner's picture (#34, D140), in the look of the Luftwaffe dials
 // (src/ui/lwStyle.js): the round counter for the two MG FF/M cannon (Durchladen), the outside air thermometer, the coolant
 // thermometers in their green rings, the radiator flap switches and the tank selector, and, shown only, the Kurssteuerung
-// indicator, the AEG indicator, the Preßluft gauge and the correction cards above the engine gauges. Angles are in
+// indicator, the AEG indicator and the correction cards; the Preßluft gauge above the engine gauges. Angles are in
 // radians, 0 straight up, clockwise.
 
 import { DEG, at, font, centred, tick, lwFace, lwHand, screw, paint } from './lwStyle.js';
@@ -167,19 +167,24 @@ export function aegIndicator(g, x, y, face) {
 }
 
 /**
- * The Preßluft (compressed air) gauge, shown only: 0 to 250 kg/cm², its hand at a steady 150 (no figure found, D140),
- * Preßluft below.
+ * The Preßluft (compressed air) gauge's reading, kg/cm²: 0 with the engines stopped, 150 with either running, rising
+ * as it starts (product owner, D142; no figure was found).
  */
-export function pressluftGauge(g, x, y, face, outer) {
+export const PRESSLUFT_RUNNING = 150;
+export const pressluftReading = (v) => PRESSLUFT_RUNNING * (v.enginesRunning ?? 0);
+
+/** The Preßluft gauge: 0 to 250 kg/cm², its hand at `value`, Preßluft below. */
+export const pressluftAngle = (p) => (-135 + (Math.max(0, Math.min(250, p)) / 250) * 270) * DEG;
+export function pressluftGauge(g, x, y, face, outer, value) {
   lwFace(g, x, y, face);
-  const angle = (p) => (-135 + (p / 250) * 270) * DEG;
+  const angle = pressluftAngle;
   centred(g);
   for (let p = 0; p <= 250; p += 25) tick(g, x, y, face, angle(p), 0.95, p % 50 === 0 ? 0.78 : 0.87, p % 50 === 0 ? 1.8 : 1);
   font(g, face * 0.2, true);
   for (const p of [50, 100, 150, 200, 250]) g.fillText(String(p), ...at(x, y, angle(p), face * 0.58));
   font(g, face * 0.14);
   g.fillText('kg/cm²', x, y + face * 0.3);
-  lwHand(g, x, y, face, angle(150), { counterweight: false });
+  lwHand(g, x, y, face, angle(value), { counterweight: false });
   text(g, 'Preßluft', x, y + outer * 1.12, face * 0.26, WHITE, { bold: true });
 }
 

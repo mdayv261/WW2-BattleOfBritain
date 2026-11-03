@@ -3986,3 +3986,21 @@ panel_5.jpg" (#34).
   - the Preßluft gauge stands below the lever box, between its labels.
 - tests/ui/bf110Revi.test.js checks that the Revi's foot is REVI_RAISE above the panel's top.
 
+## D142. The Bf 110 C's Preßluft gauge reads 0 stopped, 150 running (3 Nov 2026, product owner's request)
+
+**The request:** the hydraulic pressure gauge (the Preßluft gauge, D141) should read 0 with the engines off and 150
+with them started.
+
+**The change:**
+- **Reading** (src/ui/bf110Gauges.js, `pressluftReading`): the gauge reads 150 kg/cm² times the fastest engine's
+  `running` fraction, a new `enginesRunning` reading in src/ui/instruments.js. It rises from nothing at 200 rpm to all
+  of it at 1,000 rpm, as the DB 601A's fuel and oil pressures do (D63).
+  - It reads 0 with both engines stopped, 150 with either running, and in between while one starts.
+- **Replaced:** D140's steady 150.
+
+**Flagged:** 150 kg/cm² is the product owner's figure; no source was found. It is a display value in the gauge's code,
+not aircraft data.
+
+**Tests:** tests/ui/bf110Panel.test.js checks that the gauge reads 0 with both engines stopped, 150 with one at
+2,200 rpm, part way at 600 rpm, and that its scale runs from bottom left with 125 straight up.
+

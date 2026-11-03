@@ -95,6 +95,8 @@ export function instrumentReadings(sim) {
     radiatorOpen: sim.input ? !!sim.input.radiator : false, // the Bf 110's radiator flap switches (D106)
     // Each gun's rounds left and loaded, by gun, for the Bf 110's ammunition counter (D106).
     rounds: Object.fromEntries((sim.armament ?? []).map((gun) => [gun.id, { rounds: gun.rounds, capacity: gun.capacity }])),
+    // How far the fastest engine's pressures have come up (0 stopped, 1 running): the Bf 110's Preßluft gauge (D142).
+    enginesRunning: Math.max(...plane.engines.map((e) => running(e.omega / UNIT.RPM))),
     gearSelected: sim.input ? !!sim.input.gear : plane.surfaces.gear > 0.5, // the undercarriage lever: down
     pressures: plane.engine.pressures ? gaugePressures(plane.engine.pressures, plane.omega / UNIT.RPM) : null,
     // The RAF oil pressure gauge, lb/sq in (D86): the Merlin's normal pressure while it turns, rising from nothing as it

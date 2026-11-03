@@ -31,7 +31,7 @@ import {
   PX, TOP, AXIS, OUTLINE, HEIGHT, ABOVE, SINK, SHARE, BF109_SCALE, LAYOUT, REVI_RAISE,
 } from './bf110Layout.js';
 import {
-  airThermometer, autopilotIndicator, aegIndicator, cannonCounter, coolantGauge, correctionCard, pressluftGauge,
+  airThermometer, autopilotIndicator, aegIndicator, cannonCounter, coolantGauge, correctionCard, pressluftGauge, pressluftReading,
   radiatorSwitch, roundCounter, tankSelector,
 } from './bf110Gauges.js';
 
@@ -131,7 +131,7 @@ export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
     airThermometer(g, ...face('airTemp'), v.airTemp);
     autopilotIndicator(g, ...face('autopilot'));
     aegIndicator(g, ...face('aeg'));
-    pressluftGauge(g, ...dial('pressluft'));
+    pressluftGauge(g, ...dial('pressluft'), pressluftReading(v)); // 0 stopped, 150 running (D142)
     radiatorSwitch(g, ...dial('radiatorLeft'), !!v.radiatorOpen);
     radiatorSwitch(g, ...dial('radiatorRight'), !!v.radiatorOpen);
     tankSelector(g, ...dial('selector'));
