@@ -3558,3 +3558,21 @@ handle hoop, and the same on the right.
 
 It also checks that the bars are welded after the frames they end on.
 
+## D127. The Bf 110 C's side bars angled up into the windscreen's corners (3 Nov 2026, product owner's request)
+
+**The request:** "The short frames need angling up slightly to join the corner of the inner top frame" (D126's level
+bars).
+
+**The change** (`src/ui/bf110Frame.js`, `sideBarPath`):
+- **Bars:** each now starts at the windscreen's top corner, on the middle line of its top bar (y -181), and runs out
+  and slightly down to the outer post at y -166 (`FRAME_110.sideBars.y`). That is about 13° from level, rising going
+  in, so it meets the corner with no step.
+- **Handle clearance:** -166 is the highest point on the outer post that keeps the bar clear of the grab handle. The
+  handle's tube clears the bar by under 1 px.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each bar:
+- starts at the windscreen's top corner;
+- ends on the outer post;
+- rises going in at 5-20°;
+- clears its handle by 0 to 1.5 px.
+

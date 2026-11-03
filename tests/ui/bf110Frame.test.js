@@ -4,8 +4,8 @@
 // from the top bar to the outer posts (D119); the outer posts stopping at the panel's top corners (D120); the fuselage frames from there to the foot of the screen
 // at 75 degrees (D121); the windscreen's top bar ending at its own posts, with no corner gussets (D122);
 // a thin post from each top corner of the windscreen frame to the outer frame's top corner (D123), behind the grab handles (D124);
-// the windscreen's top bar raised to touch the handles, with no latch, lever or ledge knobs (D125); level side bars from
-// its top corners to the outer posts just below the handles (D126).
+// the windscreen's top bar raised to touch the handles, with no latch, lever or ledge knobs (D125); side bars from its
+// top corners angled down slightly to the outer posts just below the handles (D126, D127).
 import { describe, it, expect } from 'vitest';
 import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths, sideBarPath, frameBars110 } from '../../src/ui/bf110Frame.js';
 import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
@@ -132,20 +132,22 @@ describe('Bf 110 C front frame (D117)', () => {
     expect(FRAME_110.crossBar.y).toBeLessThan(-164); // higher than D117's
   });
 
-  it('joins each windscreen top corner to the outer post with a level bar just below the grab handle (D126)', () => {
-    const { sideBars, inner, handles, crossBar } = FRAME_110;
+  it('joins each windscreen top corner to the outer post with a bar angled up slightly, below the handle (D127)', () => {
+    const { sideBars, inner, handles } = FRAME_110;
     for (const side of [-1, 1]) {
       const [[x0, y0], [x1, y1]] = sideBarPath(side);
-      expect(y0).toBe(sideBars.y);
-      expect(y1).toBe(sideBars.y); // level
-      expect(x0).toBeCloseTo(innerX(side, sideBars.y), 9);
-      expect(x1).toBeCloseTo(outerX(side, sideBars.y), 9);
-      // At the windscreen's top corner: overlapping its top bar.
-      expect(sideBars.y - inner.width / 2).toBeLessThan(crossBar.y + inner.width / 2);
+      expect([x0, y0]).toEqual(windscreenPath()[side < 0 ? 1 : 2]); // at the windscreen's top corner
+      expect(y1).toBe(sideBars.y);
+      expect(x1).toBeCloseTo(outerX(side, sideBars.y), 9); // on the outer post
+      const angle = (Math.atan2(y1 - y0, Math.abs(x1 - x0)) * 180) / Math.PI; // rising going in
+      expect(angle).toBeGreaterThan(5);
+      expect(angle).toBeLessThan(20);
       // Just below the handle: its edge clear of the tube's by under 1.5 px.
       const seg = ([px, py]) => {
-        const t = Math.max(0, Math.min(1, (px - x0) / (x1 - x0)));
-        return Math.hypot(px - (x0 + t * (x1 - x0)), py - y0);
+        const dx = x1 - x0;
+        const dy = y1 - y0;
+        const t = Math.max(0, Math.min(1, ((px - x0) * dx + (py - y0) * dy) / (dx * dx + dy * dy)));
+        return Math.hypot(px - (x0 + t * dx), py - (y0 + t * dy));
       };
       const gap = Math.min(...handlePath(side).map(seg)) - (inner.width + handles.width) / 2;
       expect(gap, `${side}`).toBeGreaterThanOrEqual(0);
