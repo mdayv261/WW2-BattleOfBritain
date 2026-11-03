@@ -4744,3 +4744,21 @@ then chose Shift+P.
 - tests/ui/bf110Panel.test.js checks the knobs' places at each end of the rocker, their 10 px size on a 2560 × 1259
   screen, and that both are drawn at Hand when set so.
 
+## D189. The Bf 110 C's pitch levers' knobs in the Heizung knob's green (3 Nov 2026, product owner's request)
+
+**The request:** change the airscrew pitch control knobs' colour to the Heizung control knob's.
+
+**Interpretation:** the two round knobs on the pitch levers (größer / kleiner Drehzahl) in the airscrew lever box, which
+were dark grey. The white switch knobs of D188 are unchanged.
+
+**The change** (src/ui/bf110Boxes.js `greenKnob`, `GREEN_KNOB`; src/ui/bf110Fittings.js): both lever knobs are now
+drawn with the Heizung knob's green shading (#4f8f86 to #0f2f2c, lit from the upper left). Both knobs share one drawing
+function.
+
+**Sizes, on a 2560 × 1259 screen:**
+- lever knobs: 17.3 px across;
+- pitch control switch knobs (D188): 10 px;
+- the Heizung knob: 37.1 px.
+
+**Tests:** tests/ui/bf110Panel.test.js checks three knobs use the green: the Heizung knob and both lever knobs.
+

@@ -114,12 +114,18 @@ function heizung(g, b, [kx, ky, kr], s) {
   text(g, 'auf', b.x + b.w * 0.22, b.y + b.h * 0.55, b.h * 0.12, INK, { bold: true });
   text(g, 'drücken', b.x + b.w * 0.78, b.y + b.h * 0.4, b.h * 0.12, INK, { bold: true });
   text(g, 'zu', b.x + b.w * 0.78, b.y + b.h * 0.55, b.h * 0.12, INK, { bold: true });
-  const shade = g.createRadialGradient(kx - kr * 0.35, ky - kr * 0.35, kr * 0.1, kx, ky, kr);
-  shade.addColorStop(0, '#4f8f86');
-  shade.addColorStop(1, '#0f2f2c');
+  greenKnob(g, kx, ky, kr);
+}
+
+/** A green knob, lit from its upper left: the Heizung knob's, and the pitch levers' (D189). */
+export const GREEN_KNOB = ['#4f8f86', '#0f2f2c'];
+export function greenKnob(g, x, y, r) {
+  const shade = g.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.1, x, y, r);
+  shade.addColorStop(0, GREEN_KNOB[0]);
+  shade.addColorStop(1, GREEN_KNOB[1]);
   g.fillStyle = shade;
   g.beginPath();
-  g.arc(kx, ky, kr, 0, Math.PI * 2);
+  g.arc(x, y, r, 0, Math.PI * 2);
   g.fill();
 }
 

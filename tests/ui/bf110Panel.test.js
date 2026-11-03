@@ -14,6 +14,7 @@ import {
   cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
 } from '../../src/ui/bf110Gauges.js';
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
+import { GREEN_KNOB } from '../../src/ui/bf110Boxes.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { atmosphere } from '../../src/physics/atmosphere.js';
 import { LUMINOUS, INK, HAND, paint, screw } from '../../src/ui/lwStyle.js';
@@ -387,6 +388,17 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     const [, t3, , b] = L.boxes.levers;
     const hand = t3 - 57 + (b - t3) * pitchKnobY(false);
     expect(arcs.filter(([, y, rad]) => Math.abs(y - hand) < 1e-6 && Math.abs(rad - (PITCH_KNOB * 30) / 2) < 1e-6)).toHaveLength(2);
+  });
+
+  it('gives the pitch levers\' knobs the Heizung knob\'s green (D189)', () => {
+    const stops = [];
+    const g = new Proxy({}, {
+      get: (t2, p) => (p === 'createRadialGradient' ? () => ({ addColorStop: (k, c) => stops.push(c) }) : p in t2 ? t2[p]
+        : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t2, p, val) => { t2[p] = val; return true; },
+    });
+    bf110Panel(g, 0, 0, 30, readings());
+    expect(stops.filter((c) => c === GREEN_KNOB[0])).toHaveLength(3); // the Heizung knob and both levers' knobs
   });
 
   it('reads the fuel gauge from the front left main tank, 375 L full (S24), and the radiator from key O', () => {

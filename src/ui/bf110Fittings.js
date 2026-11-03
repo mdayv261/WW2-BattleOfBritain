@@ -9,7 +9,7 @@ import { text, lens } from './panelParts.js';
 import { BLACK, INK, plain } from './bf109Fittings.js';
 import { mount } from './lwStyle.js';
 import { achtungPlacard, divePlacardLines, textPlacard } from './bf110Placards.js';
-import { drawBf110Boxes } from './bf110Boxes.js';
+import { drawBf110Boxes, greenKnob } from './bf110Boxes.js';
 
 const PLATE = { top: '#4d524c', foot: '#3c403b', edge: '#1d1f1d' };
 
@@ -136,10 +136,7 @@ function leverBox(g, b, s, v) {
     text(g, 'kleiner', x, b.y + b.h * 0.8, b.h * 0.03, INK);
     g.fillStyle = '#0d0e0f';
     g.fillRect(x - b.w * 0.03, b.y + b.h * 0.5, b.w * 0.06, b.h * 0.27); // the lever's slot
-    g.fillStyle = '#2b2d2f';
-    g.beginPath();
-    g.arc(x, b.y + b.h * 0.6, b.w * 0.07, 0, Math.PI * 2); // its knob, at the middle of its travel
-    g.fill();
+    greenKnob(g, x, b.y + b.h * 0.6, b.w * 0.07); // its knob, mid-travel, the Heizung knob's green (D189)
   }
   text(g, 'Drehzahl', b.x + b.w / 2, b.y + b.h * 0.88, b.h * 0.03, INK);
 }
