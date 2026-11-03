@@ -53,6 +53,7 @@ Read this at the start of every session.
 - D161: an elevator trim indicator (0 at 9 o'clock) below the airspeed indicator, in the AEG indicator's place.
 - D162: the airspeed indicator, altimeter, undercarriage lights and round counter stand in the turn and slip
   indicator's black mounting (the red bezels gone).
+- D163: the airscrew pitch indicators are removed (the Bf 110 C had none, product owner).
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

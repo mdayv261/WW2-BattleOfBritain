@@ -301,15 +301,12 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     expect(instrumentReadings(sim).radiatorOpen).toBe(true);
   });
 
-  it('shows each engine\'s blade angle on its own pitch indicator, kept beside the outside air thermometer (D109)', () => {
-    const sim = new Simulation(aircraftById.bf110c4, 'air');
-    sim.plane.engines[1].beta += 5 * DEG;
-    const v = instrumentReadings(sim);
-    expect(v.engines[1].pitchClock.minutes).not.toBeCloseTo(v.engines[0].pitchClock.minutes, 3);
-    expect(L.dials.pitchLeft[0]).toBeGreaterThan(L.dials.airTemp[0]);
-    const g = draw(v);
-    expect(g.texts.filter((t) => t.s === 'Luftschrauben-')).toHaveLength(2);
+  it('has no airscrew pitch indicators: the Bf 110 C had none (product owner, D163)', () => {
+    expect(L.dials.pitchLeft).toBeUndefined();
+    expect(L.dials.pitchRight).toBeUndefined();
+    expect(draw().texts.some((t) => t.s === 'Luftschrauben-')).toBe(false);
   });
+
 });
 
 describe('Bf 110 C placards with the sourced figures (S24, D140)', () => {

@@ -5,7 +5,7 @@
 //   Top: the clock (mounted directly in the panel, D156), the red Kurssteuerung button, the SKK 404-2 block for the MG 17s, the Kurssteuerung
 //   indicator, the round counter for the two MG FF/M cannon (Durchladen) and the Heizung placard.
 //   Middle: the repeater compass, the 2 MG / 4 MG switch and the Kurs strip; the airspeed indicator, turn and bank (under
-//   the Revi) and climb indicator; the outside air thermometer and the two airscrew pitch indicators (kept, D109); the
+//   the Revi) and climb indicator; the outside air thermometer (no airscrew pitch indicators, D163); the
 //   Siemens course box, the elevator trim indicator (in #34's AEG indicator's place, D161), the horizon and the
 //   altimeter.
 //   Right: each engine's rev counter and manifold pressure gauge, with their correction cards.
@@ -15,13 +15,13 @@
 //   and the Preßluft gauge below the lever box (D141).
 // The airspeed indicator, turn and bank and altimeter are the Bf 109's exactly, at its size on screen, the altimeter's
 // setting knob included (D107); all three in the black square mounting, as every dial (D162).
-// Working: the flying and engine instruments, the clock, the pitch indicators, the round counter, the outside air
+// Working: the flying and engine instruments, the clock, the trim indicator, the round counter, the outside air
 // thermometer, the undercarriage and flap switches and lights, the radiator switches and the fuel gauge (the tank the
 // selector chooses, full: fuel use is not modelled). The rest shows normal operation. The dials' markings and hands are
 // white and the mountings' screws black (product owner, D160; the luminous paint of D105 gone).
 
 import { drawBf110Fittings } from './bf110Fittings.js';
-import { mount, lwRpm, lwAta, lwClock, lwPitchIndicator, lwFuelGauge, RPM_110 } from './luftwaffeDials.js';
+import { mount, lwRpm, lwAta, lwClock, lwFuelGauge, RPM_110 } from './luftwaffeDials.js';
 import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
 import { whiteDials, blackScrews } from './lwStyle.js';
 import { millibarWindow } from './altimeters.js';
@@ -130,7 +130,6 @@ function drawPanel(g, x0, y0, r, v, now) {
   ['Left', 'Right'].forEach((side, i) => {
     const e = v.engines[i] ?? v.engines[0];
     whiteDials(() => {
-      if (e.pitchClock) lwPitchIndicator(g, ...face(`pitch${side}`), e.pitchClock); // each engine's blade angle (D109)
       lwRpm(g, ...face(`rpm${side}`), e.rpm, v.rpmLimit, RPM_110);
       lwAta(g, ...face(`ata${side}`), e.manifold);
       coolantGauge(g, ...face(`temp${side}`), e.coolant);

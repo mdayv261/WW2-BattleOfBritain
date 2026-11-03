@@ -4387,3 +4387,20 @@ black bezel, the same as the turn and slip indicator's.
   undercarriage lights each have a square mounting of their half-width, and that the undercarriage housing is 0.9 of it.
 - tests/ui/bf110Revi.test.js checks that no red bezels remain.
 
+## D163. The Bf 110 C's airscrew pitch indicators removed (3 Nov 2026, product owner's request)
+
+**The request:** remove the airscrew pitch indicators; the Bf 110 C did not have them.
+
+**The change** (src/ui/bf110Layout.js, src/ui/bf110Panel.js): the two pitch indicators (D109, kept beside the outside
+air thermometer in D140) are gone. The space beside the outside air thermometer is now bare plate.
+
+**Flagged:**
+- **No pitch reading:** the airscrew pitch is no longer shown anywhere on the Bf 110's panel. The airscrew lever box
+  (D140) is shown only, and the pitch is still set from the keyboard and joystick.
+- **Source:** the statement that the Bf 110 C had no pitch indicators is the product owner's. No source has been checked
+  for it.
+- **Other aircraft:** the Bf 109's pitch indicator (D89) is unchanged.
+
+**Tests:** tests/ui/bf110Panel.test.js checks that the Bf 110 has no pitch indicator entries and no
+"Luftschraubenstellung" lettering.
+

@@ -109,11 +109,11 @@ export const LAYOUT = {
     // Top row: the clock, mounted directly in the panel (D156), the Kurssteuerung indicator and the round counter.
     clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65), counter: dial(1082, 280, 66, 75),
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
-    // two the Bf 109's); the AEG indicator, horizon and altimeter (the Bf 109's) below.
+    // two the Bf 109's); the elevator trim indicator (D161), horizon and altimeter (the Bf 109's) below.
     compass: dial(470, 418, 92, 110), airspeed: as109('airspeed', 690, 480), turn: as109('turn', 882, 480),
     climb: dial(1082, 480, 76, 84), trim: dial(680, 705, 68, 79), horizon: dial(880, 712, 85, 104), altimeter,
-    // The outside air thermometer, and the two airscrew pitch indicators kept beside it (product owner, D109, D140).
-    airTemp: dial(1250, 440, 52, 60), pitchLeft: dial(1350, 455, 30, 36), pitchRight: dial(1426, 455, 30, 36),
+    // The outside air thermometer (the airscrew pitch indicators of D109 removed: the Bf 110 C had none, D163).
+    airTemp: dial(1250, 440, 52, 60),
     // Each engine's rev counter and manifold pressure gauge.
     rpmLeft: dial(1265, 630, 78, 86), rpmRight: dial(1442, 630, 78, 86),
     ataLeft: dial(1265, 805, 78, 86), ataRight: dial(1442, 805, 78, 86),
