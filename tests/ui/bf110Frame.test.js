@@ -7,7 +7,7 @@
 // the windscreen's top bar raised to touch the handles, with no latch, lever or ledge knobs (D125); side bars from its
 // top corners angled down slightly to the outer posts just below the handles (D126, D127); the ledge an arc (D128); the
 // lower frames from the windscreen's lower corners to the outer posts, level with the red button (D134, D135); the
-// dash covers filling the corners to the gunsight body's foot (D136).
+// dash covers as photographed: a level top under the ledge and a straight front edge to the posts (D136, D137).
 import { describe, it, expect } from 'vitest';
 import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths, sideBarPath, ledgePath, lowerFramePath, dashCoverPath, frameBars110 } from '../../src/ui/bf110Frame.js';
 import {
@@ -199,22 +199,28 @@ describe('Bf 110 C front frame (D117)', () => {
     }
   });
 
-  it('fills each corner with a dash cover from the lower frame to the gunsight body\'s foot, mirrored (D136)', () => {
+  it('shapes each dash cover as photographed: a level top under the ledge, a straight front edge to the post (D137)', () => {
     const PX = 30;
+    const { ledge } = FRAME_110;
     for (const side of [-1, 1]) {
-      const pts = dashCoverPath(side);
+      const [topOuter, topInner, footInner, footOuter] = dashCoverPath(side);
       const [corner, foot] = lowerFramePath(side);
-      expect(pts[0]).toEqual(corner); // along the lower frame, from the windscreen's lower corner ...
-      expect(pts[pts.length - 1]).toEqual(foot); // ... to the outer post
-      // Its top edge runs straight to the gunsight body's lower corner on the panel's top.
+      const top = ledge.y + ledge.sag + ledge.width / 2;
+      expect(topOuter[1]).toBe(top); // level, just below the ledge
+      expect(topInner[1]).toBe(top);
+      // Its outer edge on the lower frame's line.
+      expect((topOuter[0] - corner[0]) * (foot[1] - corner[1]) - (topOuter[1] - corner[1]) * (foot[0] - corner[0]))
+        .toBeCloseTo(0, 6);
+      expect(footOuter).toEqual(foot); // the front edge ends at the lower frame's foot on the outer post
+      // The inner side just inside the gunsight body's side, down to its foot on the panel's top.
       const bodySide = AXIS + REVI_110.body.x[side < 0 ? 0 : 1] * BF109_SCALE * PX;
-      expect(pts[1][0]).toBeCloseTo(bodySide, 9);
-      expect(pts[1][1]).toBe(L.outline[0][1]); // the panel's top edge
-      expect(pts[1][1]).toBeGreaterThan(corner[1]); // sloping down to the sight
+      expect(side * (bodySide - topInner[0])).toBeGreaterThan(0);
+      expect(side * (bodySide - topInner[0])).toBeLessThan(5);
+      expect(footInner).toEqual([topInner[0], L.outline[0][1]]);
       // Mirror images about the axis.
       dashCoverPath(-side).forEach(([x, y], i) => {
-        expect(x - AXIS).toBeCloseTo(-(pts[i][0] - AXIS), 9);
-        expect(y).toBeCloseTo(pts[i][1], 9);
+        expect(x - AXIS).toBeCloseTo(-([topOuter, topInner, footInner, footOuter][i][0] - AXIS), 9);
+        expect(y).toBeCloseTo([topOuter, topInner, footInner, footOuter][i][1], 9);
       });
     }
   });

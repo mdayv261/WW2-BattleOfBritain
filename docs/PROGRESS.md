@@ -20,7 +20,7 @@ Read this at the start of every session.
 
 ## Bf 110 C cockpit view (3 Nov 2026)
 
-**Done** (D117-D136): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code. The product owner asked for
+**Done** (D117-D137): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code. The product owner asked for
 the windscreen frame first:
 - the dash covers are removed;
 - the corner grab handles are arcs from the top bar to the posts (D119);
@@ -35,7 +35,9 @@ the windscreen frame first:
 - the windscreen's bottom ledge is an arc, its ends a little lower (D128);
 - lower windscreen frames run from the windscreen's lower corners out to the outer posts, level with the red button
   (D134, D135);
-- dash covers: corner gussets in the frame's grey from the lower frames to the gunsight body's foot (D136);
+- dash covers: padded grey covers as on the product owner's photograph (#33), level under the ledge, the front edge
+  straight to the outer posts, over the panel's top (D136, D137). Known issue: the left cover hides the top of the
+  ammunition counter (decision pending).
 - the panel is lowered until only the top halves of the lowest gauges show, and the Revi, the guns' line (now 0.450 of
   the screen) and the frame move down with it (D129);
 - the Revi-110: the Bf 110's gunsight with a round glass as wide as its body, in a holder frame of the body's width

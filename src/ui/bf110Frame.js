@@ -11,9 +11,10 @@
 //   outer post just below the grab handle (product owner, D126, D127); a thin post from each of its top corners
 //   to the outer frame's top corner, as thin as the grab handles (product owner, D123); and below it, a lower frame each
 //   side from the windscreen frame's lower corner down and out to the outer post, level with the red button
-//   (product owner, D134, D135); the dash covers: a gusset each side, filled in the frame's grey, from the lower frame
-//   and the outer post across the panel's top to the gunsight body's foot, its top edge straight from the windscreen
-//   frame's lower corner to the body's lower corner (product owner, D136);
+//   (product owner, D134, D135); the dash covers: a padded grey cover each side, after the product owner's photograph
+//   of them (#33), its top edge level below the windscreen's ledge from the lower frame to the gunsight's body, its
+//   front edge straight from the body's foot down to the lower frame's foot on the outer post, lying over the panel's
+//   top, stitched along both edges (product owner, D136, D137);
 //   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119); no canopy
 //   latch or lever on the top bar, and no knobs on the ledge (product owner, D125);
 //   and the cockpit's dark sides round the panel, between the posts and the fuselage frames. No covers over the panel's
@@ -168,16 +169,20 @@ export function lowerFramePath(side) {
 }
 
 /**
- * A dash cover's outline (`side` -1 left, +1 right; D136): a gusset filling the corner between the lower frame, the
- * outer post and the panel's top, its top edge straight from the windscreen frame's lower corner to the gunsight body's
- * lower corner on the panel's top. Its lower side runs into the panel, which hides it (the frame is drawn clipped to
- * outside the panel), so the cover meets the panel's edge exactly.
+ * A dash cover's outline (`side` -1 left, +1 right; D136, D137), after the product owner's photograph (#33): from the lower
+ * frame, level along its top edge just below the windscreen's ledge to the gunsight's body, down the body's side (behind
+ * it) to its foot on the panel's top, then its front edge straight down and out to the lower frame's foot on the outer
+ * post, and back up the lower frame (under it). Points: top outer, top inner, foot inner, foot outer.
  */
 export function dashCoverPath(side) {
   const [corner, foot] = lowerFramePath(side);
-  const sight = AXIS + side * Math.abs(REVI_110.body.x[side < 0 ? 0 : 1]) * BF109_SCALE * PX_110; // the body's side
-  const { foot: postFoot } = FRAME_110.posts;
-  return [corner, [sight, PANEL_TOP], [sight, postFoot], [outerX(side, postFoot), postFoot], foot];
+  const { ledge } = FRAME_110;
+  const top = ledge.y + ledge.sag + ledge.width / 2; // the ledge's lower edge at its ends
+  const f = (top - corner[1]) / (foot[1] - corner[1]);
+  const outer = [corner[0] + (foot[0] - corner[0]) * f, top]; // on the lower frame's line
+  // A little inside the body's side, so the cover runs on behind the Revi.
+  const sight = AXIS + side * (Math.abs(REVI_110.body.x[side < 0 ? 0 : 1]) * BF109_SCALE * PX_110 - 3);
+  return [outer, [sight, top], [sight, PANEL_TOP], foot];
 }
 
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
@@ -229,21 +234,28 @@ export function drawBf110Interior(g, at) {
  * the panel. `at` is the panel's placer; `width`, `height` the canvas.
  */
 export function drawBf110Frame(g, at, width, height) {
+  for (const side of [-1, 1]) dashCover(g, at, side); // over the panel's top, under the bars
   g.save();
   g.beginPath();
   g.rect(0, 0, width, height);
   panelPath(g, at);
   g.clip('evenodd');
   handles(g, at);
-  for (const side of [-1, 1]) dashCover(g, at, side);
   drawFrames(g, frameBars110(at), GREY, { join: 'round' });
   g.restore();
 }
 
-/** A dash cover (D136): filled in the frame's grey with its dark outline, its top edge lit; the bars drawn over it. */
+/**
+ * A dash cover (D136, D137): padded grey, lighter at the back, with its dark outline, and a stitched seam a little inside
+ * its top and front edges, as photographed (#33). The bars are drawn over its edge along the lower frame.
+ */
 function dashCover(g, at, side) {
   const pts = dashCoverPath(side).map((p) => at.xy(p));
-  g.fillStyle = GREY.band;
+  const [topOuter, topInner, footInner, footOuter] = pts;
+  const shade = g.createLinearGradient(0, topInner[1], 0, footOuter[1]);
+  shade.addColorStop(0, GREY.lit);
+  shade.addColorStop(1, GREY.band);
+  g.fillStyle = shade;
   g.strokeStyle = GREY.outline;
   g.lineWidth = Math.max(1, at.len(2));
   g.beginPath();
@@ -251,12 +263,22 @@ function dashCover(g, at, side) {
   g.closePath();
   g.fill();
   g.stroke();
-  g.strokeStyle = GREY.lit;
-  g.lineWidth = Math.max(1, at.len(2));
+  // The stitching: dashed, light, a few pixels in from the top and front edges.
+  const inset = at.len(6);
+  const along = ([ax, ay], [bx, by], dx, dy) => {
+    g.moveTo(ax + dx, ay + dy);
+    g.lineTo(bx + dx, by + dy);
+  };
+  g.strokeStyle = 'rgba(205, 208, 210, 0.75)';
+  g.lineWidth = Math.max(1, at.len(1.5));
+  g.setLineDash?.([at.len(4), at.len(3)]);
   g.beginPath();
-  g.moveTo(...pts[0]);
-  g.lineTo(...pts[1]);
+  along(topOuter, topInner, 0, inset);
+  const [ex, ey] = [footOuter[0] - footInner[0], footOuter[1] - footInner[1]];
+  const n = Math.hypot(ex, ey);
+  along(footInner, footOuter, (side * ey * inset) / n, (-side * ex * inset) / n); // inside (above) the front edge
   g.stroke();
+  g.setLineDash?.([]);
 }
 
 /** The thin tubes in drawing order: the corner posts first, behind the grab handles (product owner, D124). */

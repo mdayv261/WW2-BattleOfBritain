@@ -3773,3 +3773,33 @@ the bottom of the gunsight body's left side, filled in the frame's colour. Mirro
 - has its top edge running down to the gunsight body's lower corner on the panel's top edge;
 - mirrors the other cover.
 
+## D137. The Bf 110 C's dash covers reshaped after the product owner's photograph (3 Nov 2026, product owner's request)
+
+**The request:** the dash cover gussets should look like the product owner's photograph of them (#33: the two padded
+covers either side of the Revi, a layout reference only).
+
+**The change** (`src/ui/bf110Frame.js`, `dashCoverPath`, `dashCover`):
+- **Shape:** each cover is now four-sided, as on #33.
+  - The top edge is level just below the windscreen's ledge (y 24), from the lower frame's line in to the gunsight's
+    body.
+  - The inner side runs down behind the body to its foot on the panel's top.
+  - The front edge is straight, from the body's foot down and out to where the lower frame meets the outer post (the red
+    button's height, y 108).
+  - The outer edge lies under the lower frame.
+- **Finish:** padded grey, lighter at the back and the frame's grey at the front, with a dark outline. A light stitched
+  seam runs just inside the top and front edges.
+- **Drawing order:** the covers are drawn before the frame bars and over the panel's top, as on #33. The lower frames
+  and the outer posts lie over their edges, and the Revi stands in front.
+
+**Flagged: the left cover hides part of the panel.** As on #33, the covers lie over the panel's top. The left cover's
+front edge crosses the top of the ammunition counter (D113): it hides 3 px of the counter at its right end and about
+23 px at its left end, including the EIN lamp. The right cover clears the trim gauge and the clock. **Decision needed:**
+keep this, move the counter down, or bend the cover's front edge to clear it.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each cover:
+- has its top level at the ledge's lower edge;
+- has its outer edge on the lower frame's line;
+- ends its front edge at the lower frame's foot;
+- has its inner side just inside the gunsight body's side, down to the panel's top;
+- mirrors the other cover.
+
