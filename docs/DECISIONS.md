@@ -4703,3 +4703,16 @@ the Heizung placard, the outside air thermometer and the engine gauges.
 
 **Tests:** tests/ui/bf110Panel.test.js checks the three share one x.
 
+## D187. The Bf 110 C's Kurssteuerung indicator on the Kurs strip's centre line (3 Nov 2026, product owner's request)
+
+**The request:** line up the centre line of the gauge below the gunsight with the Kurs gauge's vertical centre line.
+
+**Interpretation:** the gauge below the gunsight is the Siemens Kurssteuerung indicator in the top row. The Kurs gauge
+is the Kurs strip below it (D180).
+
+**The change** (src/ui/bf110Layout.js, `KURS_X`): the Kurssteuerung indicator moves onto the Kurs strip's centre line,
+30.2 of #34's pixels (about 4.4 mm on a 2560 px screen) right. Its height and size are unchanged. It stays clear of the
+SKK block and the round counter.
+
+**Tests:** tests/ui/bf110Panel.test.js checks it lies on the Kurs strip's centre line.
+

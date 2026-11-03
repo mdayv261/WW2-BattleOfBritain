@@ -105,6 +105,8 @@ function knob109(name, of, [x, y]) {
  */
 const RIGHT_5MM = 34.7;
 const HORIZON_X = 880 + RIGHT_5MM; // the horizon's centre line, the turn and slip indicator's too (D184)
+const KURS = box(790 + RIGHT_5MM, 312, 975 + RIGHT_5MM, 382); // the Kurs strip, 5 mm right (D180)
+const KURS_X = (KURS[0] + KURS[2]) / 2; // its centre line, the Kurssteuerung indicator's too (D187)
 const AIRSPEED = as109('airspeed', 690, 480);
 const SIZE = AIRSPEED.slice(2); // the airspeed indicator's face and mounting
 // The turn and slip indicator: the airspeed indicator's size exactly (D173), its centre line the horizon's (D184).
@@ -136,7 +138,8 @@ const OAT_LEFT = 1265 + LEFT_MOVE - 86;
 export const LAYOUT = {
   dials: {
     // Top row: the clock, mounted directly in the panel (D156), the Kurssteuerung indicator and the round counter.
-    clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65),
+    clock: dial(325, 230, 50, 62),
+    autopilot: [KURS_X, pt(0, 237)[1], len(55), len(65)], // on the Kurs strip's centre line (D187)
     counter: [CLIMB[0], pt(0, 280 - UP_4MM)[1], len(66), len(75)], // on the climb indicator's centre line (D186)
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
     // two the Bf 109's); the elevator trim indicator (D161), horizon and altimeter (the Bf 109's) below.
@@ -160,7 +163,7 @@ export const LAYOUT = {
     pressluft: dial(180, 905, 42, 48), // below the airscrew lever box, between its labels, as #34 (product owner, D141)
   },
   boxes: {
-    skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: box(790 + RIGHT_5MM, 312, 975 + RIGHT_5MM, 382),
+    skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: KURS,
     heizung: box(OAT_LEFT, 245 - UP_4MM, OAT_LEFT + 133, 352 - UP_4MM), levers: box(...LEVERS),
     // (the Heizung placard: 4 mm up with the round counter, D172; its left edge in line with the thermometer's, D178)
     gearLights: box(202.5, 312.5, 352.5, 462.5), // round, the round counter's diameter (D157, D158)
