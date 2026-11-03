@@ -81,6 +81,8 @@ Read this at the start of every session.
 - D189: the pitch levers' knobs in the Heizung knob's green.
 - D190: the pitch levers' knobs 25 px across.
 - D191: the pitch levers' knobs follow each engine's airscrew pitch (größer at fine, kleiner at coarse).
+- D192: the engines moved out to 2.75 m (estimate) so the airscrew arcs clear the fuselage; the 3.1 m diameter is
+  kept. The main wheels' track not moved (decision pending).
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

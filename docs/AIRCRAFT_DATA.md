@@ -1079,10 +1079,10 @@ Bf 109's (same designer, engine and airscrew).
 | Engine speed held by the engine-management assist (`propeller.rpmMax`) | 2400 | rpm | 2400 rpm | S24 | medium | 5-minute rating. |
 | Left airscrew hub, ahead of the centre of gravity (`engines.left.x`) | 2.3 | m | — | ASSUMPTION | estimate | No scaled drawing found. From the overall length (S23) and the airscrews' position ahead of the wing leading edge. |
 | Left airscrew hub, height (`engines.left.y`) | 0 | m | — | ASSUMPTION | estimate | On a thrust line through the centre of gravity. |
-| Left airscrew hub, sideways (`engines.left.z`) | -2.45 | m | — | ASSUMPTION | estimate | The 3.1 m discs must clear the fuselage (about 1.3 m wide) with some margin: 1.55 + 0.65 + 0.25 m. |
+| Left airscrew hub, sideways (`engines.left.z`) | -2.75 | m | — | ASSUMPTION | estimate | The 3.1 m discs must clear the fuselage (about 1.3 m wide): 1.55 + 0.65 + 0.55 m. Was 2.45 (0.25 m margin); moved out because the arc looked too close to the fuselage (product owner, D192). No scaled drawing found. |
 | Right airscrew hub, ahead of the centre of gravity (`engines.right.x`) | 2.3 | m | — | ASSUMPTION | estimate | As the left engine's. |
 | Right airscrew hub, height (`engines.right.y`) | 0 | m | — | ASSUMPTION | estimate | As the left engine's. |
-| Right airscrew hub, sideways (`engines.right.z`) | 2.45 | m | — | ASSUMPTION | estimate | As the left engine's. |
+| Right airscrew hub, sideways (`engines.right.z`) | 2.75 | m | — | ASSUMPTION | estimate | As the left engine's (D192). |
 | Slat opening starts (local angle from zero lift) (`slats.openAlpha`) | 12.4 | deg | — | S32, ASSUMPTION | estimate | Automatic slots (S24). Taken as the Bf 109's fitted value (S32). |
 | Slat fully open (`slats.fullAlpha`) | 14.4 | deg | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
 | Maximum lift coefficient with the slats closed (`slats.clMaxClosed`) | 1.22 | — | — | ASSUMPTION | estimate | As the Bf 109, slats assumed to add 0.25. |

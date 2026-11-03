@@ -4800,3 +4800,26 @@ pitch.
 - tests/ui/bf110Panel.test.js checks the readings at the fine, coarse and feathered blade angles, the knobs' travel
   ends, and that the left knob is drawn at the top and the right at the foot when the engines differ.
 
+## D192. The Bf 110 C's engines moved outward to clear the airscrew arcs from the fuselage (3 Nov 2026, product owner's request)
+
+**The request:** reduce the airscrew arc's diameter, since it is too close to the fuselage.
+
+**The choice:** the 3.1 m airscrew diameter is sourced (S23, S24, S25, high confidence). The engines' sideways position
+(2.45 m from the centreline) is only an estimate. Asked, the product owner chose to keep the sourced diameter and move
+the engines outward.
+
+**The change** (src/aircraft/bf110c4.js `engines`; docs/AIRCRAFT_DATA.md rows `engines.left.z`, `engines.right.z`):
+- **Engines:** both airscrew hubs move from 2.45 m to 2.75 m from the centreline, still an estimate (no scaled drawing
+  found). The blade tips now clear the fuselage's side by about 0.55 m, where they cleared it by 0.25 m.
+- **Following them:** the nacelles, airscrews and engine hit zones.
+- **Effects:**
+  - **Single-engine flight:** slightly more yaw from one engine alone, since the engines are 12% further out.
+  - **Validation:** `npm run validate` is unchanged, as its cases use both engines.
+  - **Cockpit view:** the arcs stand further out at the screen's sides.
+
+**Flagged:** the main wheels keep their own estimated track (`gear.main.z` 2.3 m, "under the engines", S24), so they now
+sit at the nacelles' inner edge rather than under the engines. **Decision needed:** whether to move them out with the
+engines. That would widen the wheel track and change ground handling.
+
+**Tests:** the existing tests pass, including the data rows check (tests/aircraftCode.test.js) with the new figures.
+

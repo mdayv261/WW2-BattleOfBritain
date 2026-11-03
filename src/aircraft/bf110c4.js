@@ -70,8 +70,8 @@ export const bf110c4 = {
   },
   // Airscrew hubs (body axes from the centre of gravity): the engines' positions.
   engines: {
-    left: { x: 2.3, y: 0, z: -2.45 },
-    right: { x: 2.3, y: 0, z: 2.45 },
+    left: { x: 2.3, y: 0, z: -2.75 }, // out from 2.45 to clear the fuselage further (product owner, D192)
+    right: { x: 2.3, y: 0, z: 2.75 },
   },
   slats: { openAlpha: 12.4 * DEG, fullAlpha: 14.4 * DEG, clMaxClosed: 1.22, sectionGain: 0.3, rate: 4 },
   // Undercarriage and ground contact: main wheels under the engine nacelles, a fixed tailwheel (S24).
