@@ -5,7 +5,8 @@
 //   the panel's top corners (as the Bf 109's hood sides; product owner, D120), then the fuselage frames on down to the
 //   foot of the screen at 75 degrees (as the Bf 109's fuselage frames; product owner, D121), kept behind the panel;
 //   the armoured windscreen's frame below the top bar, its top bar between its own posts only (product owner, D122) and
-//   its posts leaning in a little going down, with a ledge across their feet;
+//   its posts leaning in a little going down, with a ledge across their feet; a thin post from each of its top corners
+//   to the outer frame's top corner, as thin as the grab handles (product owner, D123);
 //   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119), and the
 //   bracket on the top bar with the red-knobbed handle hanging below;
 //   and the cockpit's dark sides round the panel, between the posts and the fuselage frames. No covers over the panel's
@@ -103,6 +104,17 @@ export function windscreenPath() {
   return [[innerX(-1, foot), foot], [innerX(-1, y), y], [innerX(1, y), y], [innerX(1, foot), foot]];
 }
 
+/**
+ * A thin corner post's line (`side` -1 left, +1 right): from the windscreen frame's top corner to the outer frame's top
+ * corner, ending on the outer frame's middle line where it rounds the corner (D123).
+ */
+export function cornerPostPath(side) {
+  const { y, corner } = FRAME_110.top;
+  const k = Math.SQRT1_2; // half way round the rounded corner
+  const outer = [outerX(side, y) - side * corner * (1 - k), y + corner * (1 - k)];
+  return [[innerX(side, FRAME_110.crossBar.y), FRAME_110.crossBar.y], outer];
+}
+
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
 export function frameBars110(at) {
   const w = (px) => at.len(px);
@@ -158,11 +170,14 @@ export function drawBf110Frame(g, at, width, height) {
   g.restore();
 }
 
-/** The grab handles: grey tubes with a lit upper edge, their ends under the bars (drawn first). */
+/**
+ * The grab handles and the thin corner posts (as thin as the handles, D123): grey tubes with a lit upper edge, their
+ * ends under the bars (drawn first).
+ */
 function handles(g, at) {
   const { width } = FRAME_110.handles;
-  for (const side of [-1, 1]) {
-    const pts = handlePath(side).map((p) => at.xy(p));
+  for (const path of [handlePath(-1), handlePath(1), cornerPostPath(-1), cornerPostPath(1)]) {
+    const pts = path.map((p) => at.xy(p));
     for (const [colour, wd, off] of [[GREY.outline, width + 2, 0], [GREY.band, width, 0], [GREY.lit, width * 0.25, -width * 0.3]]) {
       g.strokeStyle = colour;
       g.lineWidth = at.len(wd);

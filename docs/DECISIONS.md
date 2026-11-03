@@ -3491,3 +3491,20 @@ the short angled corner frames should be removed.
 - the windscreen's top bar ends at its own posts, well inside the outer posts;
 - its foot still clears the Revi's glass on every screen.
 
+## D123. Thin corner posts between the Bf 110 C's windscreen frame and its outer frame (3 Nov 2026, product owner's request)
+
+**The request:** draw a thin post, the same width as the handle hoops, from the top left corner of the inner
+(windscreen) frame to the top left corner of the outer frame, and the same on the right.
+
+**The change** (`src/ui/bf110Frame.js`, `cornerPostPath`):
+- **Posts:** each runs from the windscreen frame's top corner up and out to the outer frame's top corner. At the outer
+  end it stops on the frame's middle line, half way round the rounded corner.
+- **Drawing:** 9 px wide, like the grab handles, and drawn the same way, as grey tubes with a lit upper edge. Their ends
+  sit under the bars.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each post:
+- starts at the windscreen frame's top corner;
+- ends half way round the outer frame's rounded corner, on its middle line;
+- runs up and out;
+- mirrors the other post.
+

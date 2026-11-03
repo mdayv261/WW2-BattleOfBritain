@@ -2,9 +2,10 @@
 // the outer posts leaning out going down and the windscreen's posts leaning in, as photographed; the top bar on every
 // screen; the windscreen's opening round the Revi's glass and the guns' line; the grab handles arcs in the top corners
 // from the top bar to the outer posts (D119); the outer posts stopping at the panel's top corners (D120); the fuselage frames from there to the foot of the screen
-// at 75 degrees (D121); the windscreen's top bar ending at its own posts, with no corner gussets (D122).
+// at 75 degrees (D121); the windscreen's top bar ending at its own posts, with no corner gussets (D122);
+// a thin post from each top corner of the windscreen frame to the outer frame's top corner (D123).
 import { describe, it, expect } from 'vitest';
-import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, frameBars110 } from '../../src/ui/bf110Frame.js';
+import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, frameBars110 } from '../../src/ui/bf110Frame.js';
 import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
 import { reviPlacement } from '../../src/ui/reviSight.js';
 import { panelRadius } from '../../src/ui/instruments.js';
@@ -94,6 +95,22 @@ describe('Bf 110 C front frame (D117)', () => {
         const at = placer(w / 2, panelTop110(h, r), r);
         expect(at.xy([x1, y1])[1], `${w}x${h}`).toBeGreaterThan(h);
       }
+    }
+  });
+
+  it('joins each top corner of the windscreen frame to the outer frame\'s top corner with a thin post (D123)', () => {
+    const { top, crossBar } = FRAME_110;
+    for (const side of [-1, 1]) {
+      const [[x0, y0], [x1, y1]] = cornerPostPath(side);
+      expect([x0, y0]).toEqual(windscreenPath()[side < 0 ? 1 : 2]); // the windscreen frame's top corner
+      expect(y0).toBe(crossBar.y);
+      // The outer frame's corner: on its middle line, half way round the rounded corner.
+      const [cx, cy] = [outerX(side, top.y) - side * top.corner, top.y + top.corner];
+      expect(Math.hypot(x1 - cx, y1 - cy)).toBeCloseTo(top.corner, 9);
+      expect(side * (x1 - cx)).toBeCloseTo(cy - y1, 9);
+      expect(side * (x1 - x0)).toBeGreaterThan(0); // up and out
+      expect(y1).toBeLessThan(y0);
+      expect(cornerPostPath(-side)[1][0] - AXIS).toBeCloseTo(-(x1 - AXIS), 9); // symmetric
     }
   });
 
