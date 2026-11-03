@@ -76,6 +76,8 @@ Read this at the start of every session.
 - D185: the climb indicator as far from the turn and slip as that is from the airspeed indicator.
 - D186: the round counter and the altimeter on the climb indicator's centre line.
 - D187: the Kurssteuerung indicator on the Kurs strip's centre line.
+- D188: the pitch control switches show a white knob at Automatik or Hand; Shift+P toggles them (Automatik is the
+  automatic pitch, Hand is E/D).
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

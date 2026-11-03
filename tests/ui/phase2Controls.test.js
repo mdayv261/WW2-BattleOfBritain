@@ -19,8 +19,11 @@ const DT = 1 / 120;
 function fakeKeyboard() {
   const handlers = {};
   const kb = new Keyboard({ addEventListener: (type, fn) => { handlers[type] = fn; } });
-  const send = (type, code) => handlers[type]({ code, repeat: false, preventDefault() {} });
-  return { kb, press: (code) => { send('keydown', code); send('keyup', code); }, down: (c) => send('keydown', c), up: (c) => send('keyup', c) };
+  const send = (type, code, shiftKey = false) => handlers[type]({ code, shiftKey, repeat: false, preventDefault() {} });
+  return {
+    kb, press: (code, shift) => { send('keydown', code, shift); send('keyup', code, shift); },
+    down: (c) => send('keydown', c), up: (c) => send('keyup', c),
+  };
 }
 
 describe('aerodrome and starts', () => {
@@ -529,3 +532,32 @@ describe('joystick propeller pitch buttons (D96)', () => {
     expect(source).toMatch(/value="-1">none/);
   });
 });
+
+describe('Bf 110 pitch control switch (D188)', () => {
+  const { bf110c4 } = aircraftById;
+
+  it('toggles Automatik and Hand with Shift+P on the Bf 110; P alone still pauses', () => {
+    const { kb, press } = fakeKeyboard();
+    const input = { engineAssist: true, throttle: 0, trim: 0, flaps: 0 };
+    press('KeyP', true);
+    kb.update(input, bf110c4, DT);
+    expect(input.engineAssist).toBe(false); // Hand
+    expect(kb.took('KeyP')).toBe(false); // no pause
+    press('KeyP', true);
+    kb.update(input, bf110c4, DT);
+    expect(input.engineAssist).toBe(true); // Automatik
+    press('KeyP');
+    expect(kb.took('KeyP')).toBe(true); // P pauses as before
+    kb.update(input, bf110c4, DT);
+    expect(input.engineAssist).toBe(true);
+  });
+
+  it('has no Shift+P switch on the Bf 109', () => {
+    const { kb, press } = fakeKeyboard();
+    const input = { engineAssist: true, throttle: 0, trim: 0, flaps: 0 };
+    press('KeyP', true);
+    kb.update(input, bf109e4, DT);
+    expect(input.engineAssist).toBe(true);
+  });
+});
+

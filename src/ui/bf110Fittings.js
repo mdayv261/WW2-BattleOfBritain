@@ -26,7 +26,7 @@ export function drawBf110Fittings(g, at, L, v) {
   outlinePlate(g, at, L.outline);
   drawBf110Boxes(g, at, L, s);
   gearLights(g, B('gearLights'), s, v);
-  leverBox(g, B('levers'), s);
+  leverBox(g, B('levers'), s, v);
   einAus(g, at, L.switches.gear, switchPosition.gear(v), s);
   einAus(g, at, L.switches.flaps, switchPosition.flaps(v), s);
   achtungPlacard(g, B('achtung'), v);
@@ -104,10 +104,19 @@ function gearLights(g, b, s, v) {
 }
 
 /**
- * The airscrew lever box (shown only; the pitch is set from the keyboard and read on the pitch indicators, D109): the
- * Automatik and Hand plates over two rocker switches, and below them a lever for each engine, größer / kleiner Drehzahl.
+ * Where each pitch control switch's white knob stands (D188): at its Automatik end (the top, under the Automatik
+ * plate) with the automatic pitch on, at its Hand end (the foot, over the Hand plate) without; as a share of the lever
+ * box's height. Its diameter: 10 screen px on the product owner's 2560 × 1259 screen, in dial radii.
  */
-function leverBox(g, b, s) {
+export const pitchKnobY = (automatik) => (automatik ? 0.175 : 0.255);
+export const PITCH_KNOB = 10 / 40.37; // dial radii: 10 px where a dial radius is 40.37 px (2560 × 1259)
+
+/**
+ * The airscrew lever box: the Automatik and Hand plates over two rocker switches for the pitch control, their white
+ * knobs at Automatik or Hand as the switch is set (Shift+P, D188); below them a lever for each engine, größer / kleiner
+ * Drehzahl (shown only; the pitch is set with E / D).
+ */
+function leverBox(g, b, s, v) {
   plain(g, b, s, '#1a1b1d');
   const plateAt = (y, word) => {
     plain(g, { x: b.x + b.w * 0.25, y: b.y + b.h * y, w: b.w * 0.5, h: b.h * 0.07 }, s, '#5b5f5d');
@@ -119,6 +128,10 @@ function leverBox(g, b, s) {
     const x = b.x + b.w * fx;
     g.fillStyle = '#0b0b0c';
     g.fillRect(x - b.w * 0.08, b.y + b.h * 0.15, b.w * 0.16, b.h * 0.13); // the rocker switches
+    g.fillStyle = '#f2efe6'; // the switch's white knob, at Automatik or Hand (D188)
+    g.beginPath();
+    g.arc(x, b.y + b.h * pitchKnobY(!!v.pitchAutomatik), (PITCH_KNOB * s) / 2, 0, Math.PI * 2);
+    g.fill();
     text(g, 'größer', x, b.y + b.h * 0.47, b.h * 0.03, INK);
     text(g, 'kleiner', x, b.y + b.h * 0.8, b.h * 0.03, INK);
     g.fillStyle = '#0d0e0f';

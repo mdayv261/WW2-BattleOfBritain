@@ -11,6 +11,7 @@
 //   B (hold)             brakes; with rudder, the brake on that side (D28)
 //   F / Shift+F          flaps down / up one stop (the Spitfire's go straight down or up)
 //   U  undercarriage   O  radiator   Q  +12 lb boost cut-out (RAF)   A  engine assist (Bf 109)
+//   Shift+P              Bf 110: airscrew pitch control switch, Automatik / Hand (D188; P alone pauses)
 //   Backspace (hold 1 s)  bail out (D80)
 
 import { clamp } from '../physics/interp.js';
@@ -38,7 +39,8 @@ export class Keyboard {
     target.addEventListener('keydown', (e) => {
       if (e.repeat || e.metaKey || e.ctrlKey) return;
       this.down.add(e.code);
-      this.pressed.add(e.code);
+      // Shift+P is its own key (the Bf 110's pitch control switch, D188), so it does not also pause (P).
+      this.pressed.add(e.code === 'KeyP' && e.shiftKey ? 'Shift+KeyP' : e.code);
       if (e.code.startsWith('Arrow') || e.code === 'Space' || e.code === 'Enter' || e.code === 'Backspace') e.preventDefault();
     });
     target.addEventListener('keyup', (e) => this.down.delete(e.code));
@@ -91,5 +93,8 @@ export class Keyboard {
     if (this.took('KeyO')) input.radiator = input.radiator ? 0 : 1;
     if (this.took('KeyQ') && ac.side === 'RAF') input.emergency = !input.emergency;
     if (this.took('KeyA') && ac.propeller.type === 'manualPitch') input.engineAssist = !input.engineAssist;
+    // The Bf 110's pitch control switch (D188): Automatik is the automatic pitch (the engine assist, which holds the
+    // rpm), Hand the pitch set with E / D.
+    if (this.took('Shift+KeyP') && ac.propeller.type === 'manualPitch' && ac.engines) input.engineAssist = !input.engineAssist;
   }
 }

@@ -4716,3 +4716,31 @@ SKK block and the round counter.
 
 **Tests:** tests/ui/bf110Panel.test.js checks it lies on the Kurs strip's centre line.
 
+## D188. The Bf 110 C's pitch control switches, Automatik or Hand, on Shift+P (3 Nov 2026, product owner's request)
+
+**The request:** the airscrew pitch control switches should show a white knob 10 px across, at either Automatik or Hand
+as set. The setting is toggled from the keyboard. The product owner first named P, which already pauses the game, and
+then chose Shift+P.
+
+**The change:**
+- **Key** (src/input/keyboard.js): Shift+P is its own key. It does not also pause, and P alone still pauses. On the
+  Bf 110 it toggles the pitch control between Automatik and Hand.
+- **Behaviour:** the product owner did not say what the settings should do. The chosen default is:
+  - **Automatik** is the existing automatic pitch, the engine assist that holds the rpm (D16, `engineAssist`, also on
+    key A);
+  - **Hand** is the pitch set with E and D.
+  - The player's aircraft starts at Hand, as it did.
+- **Panel** (src/ui/bf110Fittings.js, `pitchKnobY`, `PITCH_KNOB`; the `pitchAutomatik` reading):
+  - each of the two rocker switches under the Automatik and Hand plates shows a white knob, at its Automatik end (top)
+    or its Hand end (foot);
+  - the knob is 10 screen px across on the product owner's 2560 × 1259 screen, and scales with the panel on other
+    screens;
+  - both switches follow the one setting, since the assist works both engines together.
+- **Bf 109:** unchanged; Shift+P does nothing there.
+
+**Tests:**
+- tests/ui/phase2Controls.test.js checks that Shift+P toggles Automatik and Hand on the Bf 110 without pausing, that P
+  still pauses, and that the Bf 109 is unaffected.
+- tests/ui/bf110Panel.test.js checks the knobs' places at each end of the rocker, their 10 px size on a 2560 × 1259
+  screen, and that both are drawn at Hand when set so.
+

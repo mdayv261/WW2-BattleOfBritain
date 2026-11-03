@@ -93,6 +93,8 @@ export function instrumentReadings(sim) {
     // The Bf 110's fuel gauge: the tank its selector chooses, at 1 the front left main tank, full (D106).
     fuelSelected: ac.fuel?.main ? { litres: ac.fuel.main * 1000, capacity: ac.fuel.main * 1000 } : null,
     radiatorOpen: sim.input ? !!sim.input.radiator : false, // the Bf 110's radiator flap switches (D106)
+    // The Bf 110's pitch control switch: Automatik with the automatic pitch on, Hand without (D188).
+    pitchAutomatik: sim.input ? !!sim.input.engineAssist : false,
     // Each gun's rounds left and loaded, by gun, for the Bf 110's ammunition counter (D106).
     rounds: Object.fromEntries((sim.armament ?? []).map((gun) => [gun.id, { rounds: gun.rounds, capacity: gun.capacity }])),
     // How far the fastest engine's pressures have come up (0 stopped, 1 running): the Bf 110's Preßluft gauge (D142).

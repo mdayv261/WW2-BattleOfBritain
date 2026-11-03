@@ -7,7 +7,9 @@ import { describe, it, expect } from 'vitest';
 import { lwVarioAngle, lwHorizon } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
-import { switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS, GEAR_HOUSING } from '../../src/ui/bf110Fittings.js';
+import {
+  switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS, GEAR_HOUSING, pitchKnobY, PITCH_KNOB,
+} from '../../src/ui/bf110Fittings.js';
 import {
   cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
 } from '../../src/ui/bf110Gauges.js';
@@ -364,6 +366,27 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     }
     const [l, t3, r, b] = L.boxes.gearLights;
     expect(has([...at((l + r) / 2, (t3 + b) / 2), (r - l) / 2]), 'gearLights').toBe(true);
+  });
+
+  it('shows the pitch control switches\' 10 px white knobs at Automatik or Hand as set (D188)', () => {
+    const v = readings();
+    expect(v.pitchAutomatik).toBe(false); // the player's Bf 110 starts at Hand (the engine assist off)
+    expect(pitchKnobY(true)).toBeLessThan(pitchKnobY(false)); // Automatik at the top, Hand at the foot
+    for (const y of [pitchKnobY(true), pitchKnobY(false)]) { // on the rocker, between the plates
+      expect(y).toBeGreaterThan(0.13);
+      expect(y).toBeLessThan(0.30);
+    }
+    expect(PITCH_KNOB * panelRadius(L, 2560, 1259)).toBeCloseTo(10, 1); // 10 px across on a 2560 x 1259 screen
+    const arcs = [];
+    const g = new Proxy({}, {
+      get: (t2, p) => (p === 'arc' ? (x, y, rad) => arcs.push([x, y, rad]) : p in t2 ? t2[p]
+        : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t2, p, val) => { t2[p] = val; return true; },
+    });
+    bf110Panel(g, 0, 0, 30, { ...v, pitchAutomatik: false });
+    const [, t3, , b] = L.boxes.levers;
+    const hand = t3 - 57 + (b - t3) * pitchKnobY(false);
+    expect(arcs.filter(([, y, rad]) => Math.abs(y - hand) < 1e-6 && Math.abs(rad - (PITCH_KNOB * 30) / 2) < 1e-6)).toHaveLength(2);
   });
 
   it('reads the fuel gauge from the front left main tank, 375 L full (S24), and the radiator from key O', () => {
