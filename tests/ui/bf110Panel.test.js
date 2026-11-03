@@ -134,8 +134,13 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     }
   });
 
-  it('stands the turn and bank on the axis, under the Revi, with the airspeed indicator and climb indicator either side', () => {
-    expect(L.dials.turn[0]).toBe(AXIS);
+  it('stands the turn and bank 5 mm right of the axis (D180), the airspeed indicator and climb indicator either side', () => {
+    expect(((L.dials.turn[0] - AXIS) / 30) * panelRadius(L, 2560, 1259)).toBeCloseTo(4.3 * 5, 0);
+    const r = panelRadius(L, 2560, 1259);
+    for (const [n, x34] of [['climb', 1082], ['horizon', 880], ['altimeter', 1085], ['counter', 1082]]) {
+      expect((((L.dials[n][0] - (440 + (x34 - 882) * 0.46)) / 30) * r), n).toBeCloseTo(4.3 * 5, 0); // 5 mm right (D180)
+    }
+    expect((((L.boxes.kurs[0] - (440 + (790 - 882) * 0.46)) / 30) * r)).toBeCloseTo(4.3 * 5, 0);
     expect(L.dials.turn.slice(2)).toEqual(L.dials.airspeed.slice(2)); // the same size, mounting and all (D173)
     expect(L.dials.trim.slice(2)).toEqual(L.dials.airspeed.slice(2)); // and the trim indicator (D174)
     expect(L.dials.climb.slice(2)).toEqual(L.dials.airspeed.slice(2)); // and the climb indicator (D175)

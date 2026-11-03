@@ -145,7 +145,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
       expect(p.glass.y).toBeLessThan(p.y);
       expect(p.glass.y + p.glass.h).toBeGreaterThan(p.y);
       const panelTop = panelTop110(h, r); // as InstrumentPanel draws it
-      expect(L.dials.turn[0]).toBe(AXIS); // above the turn and bank, in the middle (D140)
+      expect(L.dials.turn[0]).toBeGreaterThan(AXIS); // the turn and bank 5 mm right of the Revi's line (D180)
       // Kept where it stood in D140 while the panel moved down (D141).
       expect(panelTop - (p.y + REVI_110.body.y[1] * p.r), `${w}x${h}`).toBeCloseTo(REVI_RAISE * r, 6);
     }

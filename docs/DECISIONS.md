@@ -4612,3 +4612,22 @@ with it, and it stays clear of the two-bar window above (D176).
 
 **Tests:** tests/ui/bf110Panel.test.js checks the bottom edges are level and the knob is below the altimeter.
 
+## D180. The Bf 110 C's Kurs strip, turn and slip, horizon, altimeter, climb indicator and round counter moved 5 mm right (3 Nov 2026, product owner's request)
+
+**The request:** move the Kurs indicator, turn and slip indicator, artificial horizon, altimeter, climb indicator and
+cannon round counter 5 mm to the right.
+
+**The change** (src/ui/bf110Layout.js, `RIGHT_5MM`): all six move 34.7 of #34's pixels (5 mm, 21.5 screen px on a
+2560 × 1259 screen) right. "Kurs indicator" is taken as the Kurs strip under the round counter. The altimeter's setting
+knob moves with it. Everything stays clear of its neighbours and inside the panel.
+
+**Flagged:**
+- **Turn and slip off the gunsight's line:** the panel's middle line (AXIS), the Revi and the windscreen frame stay put,
+  so the turn and slip indicator now stands 5 mm right of the Revi rather than under it (D140).
+- **Window not moved:** the two-bar window above the altimeter was not in the list and stays where it was. It is now
+  5 mm left of the altimeter's centre.
+
+**Tests:**
+- tests/ui/bf110Panel.test.js checks the 5 mm move of all six on a 2560 px screen.
+- tests/ui/bf110Revi.test.js now expects the turn and slip indicator right of the Revi's line.
+

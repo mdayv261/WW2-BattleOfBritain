@@ -68,6 +68,8 @@ Read this at the start of every session.
   indicator's size (decision pending).
 - D178: the Heizung placard lined up with the outside air thermometer.
 - D179: the altimeter raised level with the trim indicator.
+- D180: the Kurs strip, turn and slip, horizon, altimeter, climb indicator and round counter 5 mm right (the turn and
+  slip no longer under the Revi, flagged).
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

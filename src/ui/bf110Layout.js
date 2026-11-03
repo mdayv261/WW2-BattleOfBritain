@@ -98,7 +98,13 @@ function knob109(name, of, [x, y]) {
   return [x, y + (ky - BF109_PANEL.dials[of][1]) * FROM_109, rad * FROM_109];
 }
 
-const altimeter = as109('altimeter', 1085, 716); // its foot level with the trim indicator's (D179)
+/**
+ * How far the Kurs strip, the turn and slip indicator, the horizon, the altimeter, the climb indicator and the round
+ * counter stand right of their places, in #34's pixels: 5 mm (product owner, D180). The panel's middle line (AXIS) and
+ * the Revi stay, so the turn and slip indicator now stands 5 mm right of the Revi.
+ */
+const RIGHT_5MM = 34.7;
+const altimeter = as109('altimeter', 1085 + RIGHT_5MM, 716); // its foot level with the trim indicator's (D179)
 /**
  * How far the right engine's rev counter and manifold pressure gauge stand right of #34's place, in #34's pixels
  * (product owner, D165): 25 mm on the product owner's 2560 px wide screen, taken as 43 screen px to 10 mm (as D154),
@@ -120,15 +126,15 @@ const OAT_LEFT = 1265 + LEFT_MOVE - 86;
 export const LAYOUT = {
   dials: {
     // Top row: the clock, mounted directly in the panel (D156), the Kurssteuerung indicator and the round counter.
-    clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65), counter: dial(1082, 280 - UP_4MM, 66, 75),
+    clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65), counter: dial(1082 + RIGHT_5MM, 280 - UP_4MM, 66, 75),
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
     // two the Bf 109's); the elevator trim indicator (D161), horizon and altimeter (the Bf 109's) below.
     compass: dial(470, 418, 92, 110), airspeed: as109('airspeed', 690, 480),
-    turn: [...pt(882, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size exactly (D173)
-    climb: [...pt(1082, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size (D175)
+    turn: [...pt(882 + RIGHT_5MM, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size exactly (D173)
+    climb: [...pt(1082 + RIGHT_5MM, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size (D175)
     // The elevator trim indicator at the airspeed indicator's size, a little lower to clear the dive placard (D174).
     trim: [...pt(680, 716), ...as109('airspeed', 0, 0).slice(2)], altimeter,
-    horizon: [...pt(880, 715), ...as109('airspeed', 0, 0).slice(2).map((v) => v * 1.15)], // 15% larger (D177)
+    horizon: [...pt(880 + RIGHT_5MM, 715), ...as109('airspeed', 0, 0).slice(2).map((v) => v * 1.15)], // 15% larger (D177)
     // The outside air thermometer (the airscrew pitch indicators of D109 removed: the Bf 110 C had none, D163).
     // Its left edge in line with the left manifold pressure gauge's, 5 mm up (product owner, D169).
     airTemp: dial(OAT_LEFT + 60, 440 - ENGINE_UP, 52, 60),
@@ -144,7 +150,7 @@ export const LAYOUT = {
     pressluft: dial(180, 905, 42, 48), // below the airscrew lever box, between its labels, as #34 (product owner, D141)
   },
   boxes: {
-    skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: box(790, 312, 975, 382),
+    skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: box(790 + RIGHT_5MM, 312, 975 + RIGHT_5MM, 382),
     heizung: box(OAT_LEFT, 245 - UP_4MM, OAT_LEFT + 133, 352 - UP_4MM), levers: box(...LEVERS),
     // (the Heizung placard: 4 mm up with the round counter, D172; its left edge in line with the thermometer's, D178)
     gearLights: box(202.5, 312.5, 352.5, 462.5), // round, the round counter's diameter (D157, D158)
