@@ -4691,3 +4691,15 @@ If the airspeed indicator or the turn and slip indicator moves, the climb indica
 
 **Tests:** tests/ui/bf110Panel.test.js checks the two gaps are equal.
 
+## D186. The Bf 110 C's round counter and altimeter on the climb indicator's centre line (3 Nov 2026, product owner's request)
+
+**The request:** line up the cannon round counter's and the altimeter's vertical centre lines with the climb
+indicator's.
+
+**The change** (src/ui/bf110Layout.js): the round counter and the altimeter now take the climb indicator's x (D185),
+both about 2.5 mm right of where they were. Their heights are unchanged, and the altimeter's setting knob moves with
+it. The upper row's right-hand column (round counter, climb indicator, altimeter) is now one line. They stay clear of
+the Heizung placard, the outside air thermometer and the engine gauges.
+
+**Tests:** tests/ui/bf110Panel.test.js checks the three share one x.
+

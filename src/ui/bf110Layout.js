@@ -113,7 +113,8 @@ const TURN = [...pt(HORIZON_X, 480), ...SIZE];
 // the airspeed indicator (D185).
 const ROW_GAP = TURN[0] - SIZE[1] - (AIRSPEED[0] + SIZE[1]);
 const CLIMB = [TURN[0] + 2 * SIZE[1] + ROW_GAP, TURN[1], ...SIZE];
-const altimeter = as109('altimeter', 1085 + RIGHT_5MM, 716); // its foot level with the trim indicator's (D179)
+// The altimeter: its foot level with the trim indicator's (D179), on the climb indicator's centre line (D186).
+const altimeter = [CLIMB[0], pt(0, 716)[1], ...as109('altimeter', 0, 0).slice(2)];
 /**
  * How far the right engine's rev counter and manifold pressure gauge stand right of #34's place, in #34's pixels
  * (product owner, D165): 25 mm on the product owner's 2560 px wide screen, taken as 43 screen px to 10 mm (as D154),
@@ -135,7 +136,8 @@ const OAT_LEFT = 1265 + LEFT_MOVE - 86;
 export const LAYOUT = {
   dials: {
     // Top row: the clock, mounted directly in the panel (D156), the Kurssteuerung indicator and the round counter.
-    clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65), counter: dial(1082 + RIGHT_5MM, 280 - UP_4MM, 66, 75),
+    clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65),
+    counter: [CLIMB[0], pt(0, 280 - UP_4MM)[1], len(66), len(75)], // on the climb indicator's centre line (D186)
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
     // two the Bf 109's); the elevator trim indicator (D161), horizon and altimeter (the Bf 109's) below.
     compass: dial(470, 418, 92, 110), airspeed: AIRSPEED, turn: TURN, climb: CLIMB,

@@ -141,7 +141,8 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     // Even gaps along the row: airspeed to turn and slip, turn and slip to climb (D185).
     const gap = (a, b) => (L.dials[b][0] - L.dials[b][3]) - (L.dials[a][0] + L.dials[a][3]);
     expect(gap('turn', 'climb')).toBeCloseTo(gap('airspeed', 'turn'), 9);
-    for (const [n, x34] of [['horizon', 880], ['altimeter', 1085], ['counter', 1082]]) {
+    for (const n of ['altimeter', 'counter']) expect(L.dials[n][0], n).toBe(L.dials.climb[0]); // one centre line (D186)
+    for (const [n, x34] of [['horizon', 880]]) {
       expect((((L.dials[n][0] - (440 + (x34 - 882) * 0.46)) / 30) * r), n).toBeCloseTo(4.3 * 5, 0); // 5 mm right (D180)
     }
     expect((((L.boxes.kurs[0] - (440 + (790 - 882) * 0.46)) / 30) * r)).toBeCloseTo(4.3 * 5, 0);
