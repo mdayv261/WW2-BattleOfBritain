@@ -3733,3 +3733,24 @@ and running to the lower left corner of the inner windscreen frame, and mirror i
 
 The weld test now counts seven bars.
 
+## D135. The Bf 110 C's lower windscreen frames run to the outer posts, level with the red button (3 Nov 2026, product owner's request)
+
+**The request:** the D134 frames were not quite right. Connect the bottom of each new frame to the outer windscreen
+frame, keeping it level with the red button.
+
+**The change** (`src/ui/bf110Frame.js`, `lowerFramePath`):
+- **Route:** each lower frame now runs from the windscreen frame's lower corner (the post meeting the ledge's end, at
+  y 18) down and out to the outer post's middle line at the red button's height (y 108). On the left that is from
+  (255, 18) to (121, 108); the right frame mirrors it.
+- **Clear of the panel:** the frames pass above the panel's shoulders, over the dark cockpit sides.
+- **Welding:** each is welded to the windscreen at its top and to the outer post at its foot. D134's start on the
+  panel's edge is replaced.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each lower frame:
+- starts at the windscreen's lower corner;
+- ends on the outer post's middle line at the red button's height;
+- runs out going down;
+- stays above the panel's outline.
+
+The weld test checks both ends are trimmed.
+

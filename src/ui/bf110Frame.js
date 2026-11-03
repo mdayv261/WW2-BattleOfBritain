@@ -10,8 +10,8 @@
 //   just touch the grab handles (product owner, D125); a bar each side from its top corner out and slightly down to the
 //   outer post just below the grab handle (product owner, D126, D127); a thin post from each of its top corners
 //   to the outer frame's top corner, as thin as the grab handles (product owner, D123); and below it, a lower frame each
-//   side from the panel's top edge, above the red button on the left (mirrored on the right), up to the windscreen
-//   frame's lower corner (product owner, D134);
+//   side from the windscreen frame's lower corner down and out to the outer post, level with the red button
+//   (product owner, D134, D135);
 //   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119); no canopy
 //   latch or lever on the top bar, and no knobs on the ledge (product owner, D125);
 //   and the cockpit's dark sides round the panel, between the posts and the fuselage frames. No covers over the panel's
@@ -154,33 +154,14 @@ export function ledgePath() {
   return pts;
 }
 
-/** The panel's top edge (picture y) at picture x: the highest crossing of its outline there. */
-export function panelEdgeY(x) {
-  const O = BF110_PANEL.outline;
-  let top = Infinity;
-  O.forEach((a, i) => {
-    const b = O[(i + 1) % O.length];
-    if (a[0] === b[0] || (a[0] - x) * (b[0] - x) > 0) return;
-    top = Math.min(top, a[1] + ((b[1] - a[1]) * (x - a[0])) / (b[0] - a[0]));
-  });
-  return top;
-}
-
 /**
- * A lower windscreen frame's line (`side` -1 left, +1 right; D134): from the panel's top edge in line with the red button
- * on the left (its mirror image about the axis on the right) up to the windscreen frame's lower corner, where its post
- * meets the ledge's end. It starts a little inside the panel's edge along its own line, behind the panel, so it rises
- * from the edge itself.
+ * A lower windscreen frame's line (`side` -1 left, +1 right; D134, D135): from the windscreen frame's lower corner, where
+ * its post meets the ledge's end, down and out to the outer post, level with the red button on the panel.
  */
 export function lowerFramePath(side) {
-  const left = BF110_PANEL.knobs.redButton[0];
-  const x = side < 0 ? left : 2 * AXIS - left;
-  const start = [x, panelEdgeY(x)];
   const ledge = ledgePath();
-  const corner = ledge[side < 0 ? 0 : ledge.length - 1];
-  const [dx, dy] = [start[0] - corner[0], start[1] - corner[1]];
-  const k = 1 + FRAME_110.inner.width / Math.hypot(dx, dy); // on behind the panel's edge
-  return [[corner[0] + dx * k, corner[1] + dy * k], corner];
+  const y = BF110_PANEL.knobs.redButton[1];
+  return [ledge[side < 0 ? 0 : ledge.length - 1], [outerX(side, y), y]];
 }
 
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
@@ -194,7 +175,9 @@ export function frameBars110(at) {
     ...[-1, 1].map((side) => ({
       pts: P(sideBarPath(side)), w: w(inner.width), trim: [w(inner.width / 2), w(posts.width / 2)],
     })),
-    ...[-1, 1].map((side) => ({ pts: P(lowerFramePath(side)), w: w(inner.width), trim: [0, w(inner.width / 2)] })),
+    ...[-1, 1].map((side) => ({
+      pts: P(lowerFramePath(side)), w: w(inner.width), trim: [w(inner.width / 2), w(posts.width / 2)],
+    })),
     { pts: P(ledgePath()), w: w(ledge.width),
       trim: [w(inner.width / 2), w(inner.width / 2)] },
   ];
