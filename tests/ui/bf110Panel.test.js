@@ -9,6 +9,7 @@ import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
 import {
   switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS, GEAR_HOUSING, pitchKnobY, PITCH_KNOB, LEVER_KNOB,
+  leverKnobY, LEVER_TRAVEL,
 } from '../../src/ui/bf110Fittings.js';
 import {
   cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
@@ -400,6 +401,36 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     bf110Panel(g, 0, 0, 30, readings());
     expect(stops.filter((c) => c === GREEN_KNOB[0])).toHaveLength(3); // the Heizung knob and both levers' knobs
     expect(LEVER_KNOB * panelRadius(L, 2560, 1259)).toBeCloseTo(25, 1); // 25 px across on a 2560 x 1259 screen (D190)
+  });
+
+  it('moves each pitch lever\'s knob with its own engine\'s blade angle: größer at fine, kleiner at coarse (D191)', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    const { betaMin, betaMax, featherAngle } = aircraftById.bf110c4.propeller;
+    sim.plane.engines[0].beta = betaMin;
+    sim.plane.engines[1].beta = betaMax;
+    const v = instrumentReadings(sim);
+    expect(v.engines[0].pitchFraction).toBe(0);
+    expect(v.engines[1].pitchFraction).toBe(1);
+    sim.plane.engines[1].beta = featherAngle;
+    expect(instrumentReadings(sim).engines[1].pitchFraction).toBe(1); // held at the coarse end when feathered
+    expect(leverKnobY(0)).toBe(LEVER_TRAVEL[0]); // the slot's top, größer
+    expect(leverKnobY(1)).toBe(LEVER_TRAVEL[1]); // its foot, kleiner
+    expect(leverKnobY(0.5)).toBeCloseTo((LEVER_TRAVEL[0] + LEVER_TRAVEL[1]) / 2, 9);
+    // Drawn so: the left lever's knob at the top, the right lever's at the foot.
+    const arcs = [];
+    const g = new Proxy({}, {
+      get: (t2, p) => (p === 'arc' ? (x, y, rad) => arcs.push([x, y, rad]) : p in t2 ? t2[p]
+        : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t2, p, val) => { t2[p] = val; return true; },
+    });
+    bf110Panel(g, 0, 0, 30, v);
+    const [l, t3, r, b] = L.boxes.levers;
+    const knobs = arcs.filter(([, , rad]) => Math.abs(rad - (LEVER_KNOB * 30) / 2) < 1e-6);
+    const at = (fx, f) => [l - 440 + (r - l) * fx, t3 - 57 + (b - t3) * leverKnobY(f)];
+    for (const [fx, f] of [[0.35, 0], [0.65, 1]]) {
+      const [x, y] = at(fx, f);
+      expect(knobs.some(([kx, ky]) => Math.abs(kx - x) < 1e-6 && Math.abs(ky - y) < 1e-6), `${fx}`).toBe(true);
+    }
   });
 
   it('reads the fuel gauge from the front left main tank, 375 L full (S24), and the radiator from key O', () => {

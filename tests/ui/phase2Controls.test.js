@@ -561,3 +561,27 @@ describe('Bf 110 pitch control switch (D188)', () => {
   });
 });
 
+describe('Bf 110 pitch levers follow the airscrews (D191)', () => {
+  it('moves each engine\'s pitch reading, which drives its lever knob, as D and E are held through the game\'s controls', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    const { kb, down, up } = fakeKeyboard();
+    const hold = (code, seconds) => {
+      down(code);
+      for (let i = 0; i < seconds * 120; i += 1) {
+        kb.update(sim.input, sim.ac, DT);
+        sim.applyLevers();
+        sim.step(DT);
+      }
+      up(code);
+    };
+    const pitch = () => instrumentReadings(sim).engines.map((e) => e.pitchFraction);
+    const [start] = pitch();
+    hold('KeyD', 2); // coarser
+    const [coarser, coarserRight] = pitch();
+    expect(coarser).toBeGreaterThan(start + 0.2);
+    expect(coarserRight).toBeCloseTo(coarser, 9); // both engines selected
+    hold('KeyE', 7); // finer, to the stop (about 4 degrees a second)
+    expect(pitch()).toEqual([0, 0]);
+  });
+});
+

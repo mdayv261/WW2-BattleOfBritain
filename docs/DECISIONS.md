@@ -4772,3 +4772,31 @@ stay clear of each other (37 px apart) and inside the lever box.
 
 **Tests:** tests/ui/bf110Panel.test.js checks the 25 px size on a 2560 × 1259 screen.
 
+## D191. The Bf 110 C's pitch levers' knobs follow each engine's airscrew pitch (3 Nov 2026, product owner's request)
+
+**The request:** verify that the pitch control knobs move with changes in airscrew pitch. They did not: they were drawn
+fixed half way along their slots (shown only since D140). The product owner asked for them to follow each engine's
+pitch.
+
+**The change:**
+- **Reading** (src/ui/instruments.js): each engine now has a `pitchFraction`, its blade angle from the fine stop (0) to
+  the coarse stop (1), held at 1 when feathered.
+- **Knobs** (src/ui/bf110Fittings.js, `leverKnobY`, `LEVER_TRAVEL`):
+  - the left lever's knob follows the left engine and the right lever's the right engine;
+  - each runs from the top of its slot at the fine stop (größer Drehzahl) to the foot at the coarse stop (kleiner);
+  - the travel, 0.54 to 0.73 of the lever box's height, keeps the 25 px knob clear of the größer and kleiner labels.
+- **What moves them:** E and D in Hand, the automatic pitch in Automatik (D188), and the engine selection (K), which can
+  move one engine alone.
+
+**Checked:**
+- The pitch keys reach each engine through the twin levers (`applyTwinLevers`).
+- Holding D for 2 s moves both engines' readings 0.25 coarser.
+- Holding E for 7 s takes them to the fine stop, at the airscrew's assumed 4°/s pitch rate (`propeller.pitchRate`).
+- Headless screenshots run the game far slower than real time, so the knobs move only a little in them.
+
+**Tests:**
+- tests/ui/phase2Controls.test.js holds D and E through the keyboard, the levers and the simulation, and checks both
+  engines' readings.
+- tests/ui/bf110Panel.test.js checks the readings at the fine, coarse and feathered blade angles, the knobs' travel
+  ends, and that the left knob is drawn at the top and the right at the foot when the engines differ.
+

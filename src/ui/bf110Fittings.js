@@ -112,11 +112,20 @@ export const pitchKnobY = (automatik) => (automatik ? 0.175 : 0.255);
 export const PITCH_KNOB = 10 / 40.37; // dial radii: 10 px where a dial radius is 40.37 px (2560 × 1259)
 /** The pitch levers' knobs' diameter (D190): 25 screen px on the product owner's 2560 × 1259 screen, in dial radii. */
 export const LEVER_KNOB = 25 / 40.37;
+/**
+ * Where a pitch lever's knob stands along its slot (D191), as a share of the lever box's height: at the slot's top
+ * (größer Drehzahl) at the fine stop, at its foot (kleiner) at the coarse stop, `fraction` 0 to 1.
+ */
+export const LEVER_TRAVEL = [0.54, 0.73]; // the 25 px knob clear of the größer and kleiner labels (0.47, 0.80)
+export const leverKnobY = (fraction) => {
+  const f = Math.max(0, Math.min(1, fraction ?? 0));
+  return LEVER_TRAVEL[0] + (LEVER_TRAVEL[1] - LEVER_TRAVEL[0]) * f;
+};
 
 /**
  * The airscrew lever box: the Automatik and Hand plates over two rocker switches for the pitch control, their white
  * knobs at Automatik or Hand as the switch is set (Shift+P, D188); below them a lever for each engine, größer / kleiner
- * Drehzahl (shown only; the pitch is set with E / D).
+ * Drehzahl, its knob following that engine's blade angle (D191; the pitch is set with E / D, or by the Automatik).
  */
 function leverBox(g, b, s, v) {
   plain(g, b, s, '#1a1b1d');
@@ -126,7 +135,7 @@ function leverBox(g, b, s, v) {
   };
   plateAt(0.06, 'Automatik');
   plateAt(0.3, 'Hand');
-  for (const fx of [0.35, 0.65]) {
+  [0.35, 0.65].forEach((fx, engine) => {
     const x = b.x + b.w * fx;
     g.fillStyle = '#0b0b0c';
     g.fillRect(x - b.w * 0.08, b.y + b.h * 0.15, b.w * 0.16, b.h * 0.13); // the rocker switches
@@ -138,8 +147,9 @@ function leverBox(g, b, s, v) {
     text(g, 'kleiner', x, b.y + b.h * 0.8, b.h * 0.03, INK);
     g.fillStyle = '#0d0e0f';
     g.fillRect(x - b.w * 0.03, b.y + b.h * 0.5, b.w * 0.06, b.h * 0.27); // the lever's slot
-    greenKnob(g, x, b.y + b.h * 0.6, (LEVER_KNOB * s) / 2); // its knob, mid-travel, the Heizung knob's green (D189)
-  }
+    // Its knob, the Heizung knob's green (D189), following its engine's blade angle (left lever left engine, D191).
+    greenKnob(g, x, b.y + b.h * leverKnobY(v.engines?.[engine]?.pitchFraction), (LEVER_KNOB * s) / 2);
+  });
   text(g, 'Drehzahl', b.x + b.w / 2, b.y + b.h * 0.88, b.h * 0.03, INK);
 }
 

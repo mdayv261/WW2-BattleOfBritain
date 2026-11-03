@@ -80,6 +80,7 @@ Read this at the start of every session.
   automatic pitch, Hand is E/D).
 - D189: the pitch levers' knobs in the Heizung knob's green.
 - D190: the pitch levers' knobs 25 px across.
+- D191: the pitch levers' knobs follow each engine's airscrew pitch (größer at fine, kleiner at coarse).
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

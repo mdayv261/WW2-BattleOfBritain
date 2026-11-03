@@ -17,6 +17,9 @@ import { BF110_PANEL, bf110Panel } from './bf110Panel.js';
 const DEG = 180 / Math.PI;
 const PITCH_CLOCK_MINUTES_PER_DEGREE = 10; // S32: "about ten minutes on this clock being equivalent to 1 deg"
 
+/** The blade angle from the fine stop (0) to the coarse stop (1), held at the ends. */
+const bladeFraction = (beta, ac) => Math.max(0, Math.min(1, (beta - ac.propeller.betaMin) / (ac.propeller.betaMax - ac.propeller.betaMin)));
+
 /** Propeller pitch clock: 12 o'clock at the fine stop is assumed (the zero is not stated, D32). */
 function pitchClock(beta, ac) {
   const minutes = ((beta - ac.propeller.betaMin) * DEG) * PITCH_CLOCK_MINUTES_PER_DEGREE;
@@ -86,6 +89,9 @@ export function instrumentReadings(sim) {
       oil: e.heat.oil,
       manifold: raf ? (d.engines[i].map - ISA.P0) / UNIT.PSI : d.engines[i].map / UNIT.ATA,
       pitchClock: raf ? null : pitchClock(e.beta, ac),
+      // The blade angle from the fine stop (0) to the coarse stop (1), held there when feathered: the Bf 110's pitch
+      // lever for this engine (D191).
+      pitchFraction: raf ? null : bladeFraction(e.beta, ac),
     })),
     // Fuel in each tank, litres (fuel use is not modelled yet: full tanks): each wing's on the Bf 110, the one tank on
     // the Bf 109 (D89).
