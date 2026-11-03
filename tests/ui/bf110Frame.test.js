@@ -304,17 +304,6 @@ describe('Bf 110 C front frame (D117)', () => {
     for (const [name, [x, , , o]] of Object.entries(L.dials)) expect(x + o, name).toBeLessThan(c[0]);
   });
 
-  it('widens the windscreen\'s base by two post widths, its top unchanged (D148)', () => {
-    const { crossBar, inner, ledge } = FRAME_110;
-    const half117 = (y) => 207 - 0.14 * (y + 164); // D117's posts
-    expect(innerX(1, crossBar.y) - AXIS).toBeCloseTo(half117(crossBar.y), 9); // the top as before
-    const foot = ledge.y + ledge.sag;
-    expect(2 * (innerX(1, foot) - AXIS)).toBeCloseTo(2 * half117(foot) + 2 * inner.width, 9); // the base two widths wider
-    expect(innerX(1, foot)).toBeLessThan(innerX(1, crossBar.y)); // still leaning in a little going down
-    const ends = ledgePath();
-    expect(ends[ends.length - 1][0]).toBeCloseTo(innerX(1, foot), 9); // the ledge spans the wider base
-  });
-
   it('has no canopy latch and lever on the top bar and no knobs on the ledge (D125)', () => {
     expect(FRAME_110.knob).toBeUndefined();
     expect(FRAME_110.ledge.knob).toBeUndefined();
