@@ -3824,3 +3824,26 @@ ledge) along the frame's bottom edge.
 0.05 px), that the edge rises from the ledge's end in to the gunsight body's side, and the D137 checks on the rest of the
 shape and the mirroring.
 
+## D139. The Bf 110 C's fuselage frames as thin sheets, angled further out (3 Nov 2026, product owner's request)
+
+**The request:** make the fuselage frames thin, like a sheet, starting at the outside edge of the windscreen's outer
+frame and running down to the bottom of the screen, angled out a little more.
+
+**The change** (`src/ui/bf110Frame.js`, `fuselagePath`, `fuselageX`, `sheets`):
+- **Separate sheets:** the fuselage frames are no longer part of the outer frame's line, which now ends at the posts'
+  feet (y 167, D120). Each is a thin sheet of its own.
+- **Start:** the outer post's outside edge at its foot, half the post's width (13 px) out from its middle line.
+- **Run:** down to below the foot of every screen.
+- **Angle:** 70° from the horizontal (`FRAME_110.fuselage.angle`), out from D121's 75°.
+- **Thickness:** 6 px (`FRAME_110.fuselage.width`), where the posts are 26 px. The sheet is grey with a dark outline and
+  lit along its inner edge, with no rivets. It is drawn behind the posts and kept behind the panel.
+- **Cockpit sides:** the dark sides now reach out to the sheets.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each sheet:
+- starts at the post's outside edge at its foot;
+- leans out going down at 70°, further out than 75°;
+- reaches below every tested screen;
+- is under a third of the post's width.
+
+It also checks that the outer frame's line ends at the posts' feet.
+

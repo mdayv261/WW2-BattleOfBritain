@@ -20,12 +20,13 @@ Read this at the start of every session.
 
 ## Bf 110 C cockpit view (3 Nov 2026)
 
-**Done** (D117-D138): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code. The product owner asked for
+**Done** (D117-D139): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code. The product owner asked for
 the windscreen frame first:
 - the dash covers are removed;
 - the corner grab handles are arcs from the top bar to the posts (D119);
 - the outer posts stop at the panel's top corners (D120);
-- the fuselage frames run from there to the foot of the screen at 75° (D121);
+- the fuselage frames run from there to the foot of the screen (D121), now thin sheets from the posts' outside edges
+  at 70° (D139);
 - the windscreen's top bar ends at its own posts, and the corner gussets are removed (D122);
 - thin posts join the windscreen frame's top corners to the outer frame's, behind the grab handles (D123, D124);
 - the windscreen's top bar is raised to touch the handles, and the ledge knobs, canopy latch and lever are removed

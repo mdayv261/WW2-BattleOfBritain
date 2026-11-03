@@ -2,8 +2,9 @@
 // product owner's photograph of a Bf 110 C cockpit (#32, a layout reference only: redrawn in code), starting from the
 // Bf 109's drawn frame (src/ui/bf109Frame.js, D90, D103) and its welded bars (src/ui/frameBars.js, D104):
 //   the canopy's outer front frame, a wide flat top bar with rounded corners and side posts leaning out going down to
-//   the panel's top corners (as the Bf 109's hood sides; product owner, D120), then the fuselage frames on down to the
-//   foot of the screen at 75 degrees (as the Bf 109's fuselage frames; product owner, D121), kept behind the panel;
+//   the panel's top corners (as the Bf 109's hood sides; product owner, D120), and the fuselage frames, thin sheets from
+//   the posts' outside edges there down to the foot of the screen at 70 degrees (product owner, D121, D139), kept
+//   behind the panel;
 //   the armoured windscreen's frame below the top bar, its top bar between its own posts only (product owner, D122) and
 //   its posts leaning in a little going down, with an arched ledge across their feet (its ends lowered a little; product
 //   owner, D128), its top bar raised until its top corners
@@ -33,9 +34,10 @@ export const FRAME_110 = {
   // The outer posts: out this many pixels for each pixel down from the top bar's corners (#32: about 0.16), down to
   // `foot`, the panel's top corners (its outline's shoulders at y 167; product owner, D120); width.
   posts: { slope: 0.16, foot: 167, width: 26 },
-  // The fuselage frames: from the posts' feet down to the foot of the screen, at this angle from the horizontal (degrees),
-  // leaning out going down (product owner, D121); as wide as the posts.
-  fuselage: { angle: 75 },
+  // The fuselage frames: thin sheets from the posts' outside edges at their feet down to the foot of the screen, at this
+  // angle from the horizontal (degrees), leaning out going down (product owner, D121; thinner and further out, D139);
+  // their thickness.
+  fuselage: { angle: 70, width: 6 },
   // The windscreen's top bar, above the Revi's glass, between the windscreen's posts only (D122), raised from -164 until
   // its top corners just touch the grab handles (D125).
   crossBar: { y: -181 },
@@ -61,10 +63,20 @@ const PX_110 = 30; // the Bf 110 layout's picture pixels per dial radius (src/ui
 
 /** An outer post's middle line at height y (`side` -1 left, +1 right): out from the top bar's corner going down. */
 export const outerX = (side, y) => AXIS + side * (FRAME_110.top.half + FRAME_110.posts.slope * (y - FRAME_110.top.y));
-/** A fuselage frame's middle line at height y, below the post's foot: out at its angle going down. */
+/**
+ * A fuselage frame's middle line at height y, below the post's foot: from the post's outside edge there, out at its
+ * angle going down (D139).
+ */
 export const fuselageX = (side, y) => {
+  const { foot, width } = FRAME_110.posts;
+  const start = outerX(side, foot) + (side * width) / 2;
+  return start + (side * (y - foot)) / Math.tan((FRAME_110.fuselage.angle * Math.PI) / 180);
+};
+
+/** A fuselage frame's line (`side` -1 left, +1 right): from the post's outside edge at its foot to below the screen. */
+export const fuselagePath = (side) => {
   const { foot } = FRAME_110.posts;
-  return outerX(side, foot) + (side * (y - foot)) / Math.tan((FRAME_110.fuselage.angle * Math.PI) / 180);
+  return [[fuselageX(side, foot), foot], [fuselageX(side, FAR), FAR]];
 };
 /** A windscreen post's middle line at height y: in from the cross bar going down. */
 export const innerX = (side, y) => {
@@ -73,13 +85,13 @@ export const innerX = (side, y) => {
 };
 
 /**
- * The outer frame's line: up the left fuselage frame from the foot of the screen to the post's foot, up the post, round
- * the corner, across the top bar, round, down the right post and on down its fuselage frame.
+ * The outer frame's line: up the left post from its foot, round the corner, across the top bar, round, down the right
+ * post to its foot. The fuselage frames are thin sheets of their own (D139).
  */
 export function outerPath() {
   const { y, corner } = FRAME_110.top;
   const { foot } = FRAME_110.posts;
-  const pts = [[fuselageX(-1, FAR), FAR], [outerX(-1, foot), foot]];
+  const pts = [[outerX(-1, foot), foot]];
   for (const side of [-1, 1]) {
     // A rounded corner: from the post, `corner` below the top bar, round to the bar, `corner` in from the corner.
     const cx = outerX(side, y) - side * corner;
@@ -91,7 +103,7 @@ export function outerPath() {
     if (side < 0) pts.push(...arc);
     else pts.push(...arc.reverse());
   }
-  pts.push([outerX(1, foot), foot], [fuselageX(1, FAR), FAR]);
+  pts.push([outerX(1, foot), foot]);
   return pts;
 }
 
@@ -232,8 +244,10 @@ export function drawBf110Interior(g, at) {
   g.moveTo(...at.xy([outerX(-1, y0), y0]));
   g.lineTo(...at.xy([outerX(1, y0), y0]));
   g.lineTo(...at.xy([outerX(1, foot), foot]));
+  g.lineTo(...at.xy([fuselageX(1, foot), foot]));
   g.lineTo(...at.xy([fuselageX(1, FAR), FAR]));
   g.lineTo(...at.xy([fuselageX(-1, FAR), FAR]));
+  g.lineTo(...at.xy([fuselageX(-1, foot), foot]));
   g.lineTo(...at.xy([outerX(-1, foot), foot]));
   g.closePath();
   g.fill();
@@ -251,6 +265,7 @@ export function drawBf110Frame(g, at, width, height) {
   panelPath(g, at);
   g.clip('evenodd');
   handles(g, at);
+  sheets(g, at);
   drawFrames(g, frameBars110(at), GREY, { join: 'round' });
   g.restore();
 }
@@ -288,6 +303,30 @@ function dashCover(g, at, side) {
   g.lineTo(footOuter[0] + dx, footOuter[1] + dy);
   g.stroke();
   g.setLineDash?.([]);
+}
+
+/** The fuselage frames (D139): thin grey sheets with a dark outline, lit along their inner edge. */
+function sheets(g, at) {
+  const { width } = FRAME_110.fuselage;
+  for (const side of [-1, 1]) {
+    const pts = fuselagePath(side).map((p) => at.xy(p));
+    for (const [colour, wd] of [[GREY.outline, width + 2], [GREY.band, width]]) {
+      g.strokeStyle = colour;
+      g.lineWidth = at.len(wd);
+      g.lineCap = 'butt';
+      g.beginPath();
+      g.moveTo(...pts[0]);
+      g.lineTo(...pts[1]);
+      g.stroke();
+    }
+    const d = -side * at.len(width * 0.3); // towards the cockpit
+    g.strokeStyle = GREY.lit;
+    g.lineWidth = Math.max(1, at.len(width * 0.25));
+    g.beginPath();
+    g.moveTo(pts[0][0] + d, pts[0][1]);
+    g.lineTo(pts[1][0] + d, pts[1][1]);
+    g.stroke();
+  }
 }
 
 /** The thin tubes in drawing order: the corner posts first, behind the grab handles (product owner, D124). */

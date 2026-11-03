@@ -1,15 +1,19 @@
 // The Bf 110 C's drawn front frame after the product owner's photograph (#32, D117): symmetric about the panel's axis;
 // the outer posts leaning out going down and the windscreen's posts leaning in, as photographed; the top bar on every
 // screen; the windscreen's opening round the Revi's glass and the guns' line; the grab handles arcs in the top corners
-// from the top bar to the outer posts (D119); the outer posts stopping at the panel's top corners (D120); the fuselage frames from there to the foot of the screen
-// at 75 degrees (D121); the windscreen's top bar ending at its own posts, with no corner gussets (D122);
-// a thin post from each top corner of the windscreen frame to the outer frame's top corner (D123), behind the grab handles (D124);
-// the windscreen's top bar raised to touch the handles, with no latch, lever or ledge knobs (D125); side bars from its
-// top corners angled down slightly to the outer posts just below the handles (D126, D127); the ledge an arc (D128); the
-// lower frames from the windscreen's lower corners to the outer posts, level with the red button (D134, D135); the
-// dash covers as photographed: the top along the ledge's lower edge, a straight front edge to the posts (D136-D138).
+// from the top bar to the outer posts (D119); the outer posts stopping at the panel's top corners (D120); the fuselage
+// frames, thin sheets from the posts' outside edges to the foot of the screen at 70 degrees (D121, D139); the
+// windscreen's top bar ending at its own posts, with no corner gussets (D122); a thin post from each top corner of the
+// windscreen frame to the outer frame's top corner (D123), behind the grab handles (D124); the windscreen's top bar
+// raised to touch the handles, with no latch, lever or ledge knobs (D125); side bars from its top corners angled down
+// slightly to the outer posts just below the handles (D126, D127); the ledge an arc (D128); the lower frames from the
+// windscreen's lower corners to the outer posts, level with the red button (D134, D135); the dash covers as
+// photographed: the top along the ledge's lower edge, a straight front edge to the posts (D136-D138).
 import { describe, it, expect } from 'vitest';
-import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths, sideBarPath, ledgePath, lowerFramePath, dashCoverPath, frameBars110 } from '../../src/ui/bf110Frame.js';
+import {
+  FRAME_110, outerX, fuselageX, fuselagePath, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths,
+  sideBarPath, ledgePath, lowerFramePath, dashCoverPath, frameBars110,
+} from '../../src/ui/bf110Frame.js';
 import {
   AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, BF109_SCALE, REVI_110, placer, panelTop110,
 } from '../../src/ui/bf110Panel.js';
@@ -74,7 +78,7 @@ describe('Bf 110 C front frame (D117)', () => {
   it('stops the outer posts at the panel\'s top corners, their inner edges on the outline\'s shoulders (D120)', () => {
     const { foot, width } = FRAME_110.posts;
     const path = outerPath();
-    for (const [x, y] of [path[1], path[path.length - 2]]) {
+    for (const [x, y] of [path[0], path[path.length - 1]]) {
       expect(y).toBe(foot);
       expect(x).toBeCloseTo(outerX(Math.sign(x - AXIS), foot), 9);
     }
@@ -87,14 +91,17 @@ describe('Bf 110 C front frame (D117)', () => {
     }
   });
 
-  it('runs the fuselage frames from the posts\' feet to the foot of every screen at 75 degrees, leaning out (D121)', () => {
-    const { foot } = FRAME_110.posts;
-    const path = outerPath();
-    for (const [[x0, y0], [x1, y1]] of [[path[1], path[0]], [path[path.length - 2], path[path.length - 1]]]) {
-      const side = Math.sign(x0 - AXIS);
+  it('runs the fuselage frames as thin sheets from the posts\' outside edges to the screen\'s foot at 70 degrees (D139)', () => {
+    const { foot, width } = FRAME_110.posts;
+    const { angle, width: sheet } = FRAME_110.fuselage;
+    expect(sheet).toBeLessThan(width / 3); // a thin sheet
+    expect(angle).toBeLessThan(75); // angled out more than D121's
+    for (const side of [-1, 1]) {
+      const [[x0, y0], [x1, y1]] = fuselagePath(side);
       expect(y0).toBe(foot);
+      expect(x0).toBeCloseTo(outerX(side, foot) + (side * width) / 2, 9); // the post's outside edge
       expect(side * (x1 - x0)).toBeGreaterThan(0); // out going down
-      expect((Math.atan2(y1 - y0, Math.abs(x1 - x0)) * 180) / Math.PI).toBeCloseTo(75, 9);
+      expect((Math.atan2(y1 - y0, Math.abs(x1 - x0)) * 180) / Math.PI).toBeCloseTo(angle, 9);
       expect(fuselageX(side, y1)).toBeCloseTo(x1, 9);
       for (const [w, h] of SCREENS) {
         const r = panelRadius(L, w, h);
@@ -102,7 +109,12 @@ describe('Bf 110 C front frame (D117)', () => {
         expect(at.xy([x1, y1])[1], `${w}x${h}`).toBeGreaterThan(h);
       }
     }
+    // No longer part of the outer frame's line: it ends at the posts' feet.
+    const path = outerPath();
+    expect(path[0][1]).toBe(foot);
+    expect(path[path.length - 1][1]).toBe(foot);
   });
+
 
   it('joins each top corner of the windscreen frame to the outer frame\'s top corner with a thin post (D123)', () => {
     const { top, crossBar } = FRAME_110;
