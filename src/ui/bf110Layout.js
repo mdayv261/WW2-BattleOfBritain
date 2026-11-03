@@ -32,8 +32,12 @@ const slot = (X, top, bottom) => [pt(X, top)[0], pt(X, top)[1], pt(X, bottom)[1]
 // section's foot. Worked out from the cover and the post (src/ui/bf110Covers.js, src/ui/bf110Frame.js) and set here in
 // #34's pixels; tests/ui/bf110Frame.test.js keeps them together.
 const RIGHT_CORNER = [[1292.1, 132], [1479.8, 167.6], [1659.3, 315.9]];
+// The right side (product owner, D152): from the corner's touch, at an obtuse angle, down the right fuselage side: the
+// right outer post's inner edge to its foot, out to the fuselage sheet's inner edge there, and down it to the right
+// section's foot, whose bottom edge runs out to meet it. Set in #34's pixels, kept with the frame by the same tests.
+const RIGHT_SIDE = [[1698, 459.2], [1748, 459.2], [1906.6, 895]];
 const OUTLINE_34 = [
-  [255, 165], [295, 128], [447, 100], [455, 132], ...RIGHT_CORNER, [1570, 895], [1160, 895], [1160, 1080], [1130, 1120], [640, 1120],
+  [255, 165], [295, 128], [447, 100], [455, 132], ...RIGHT_CORNER, ...RIGHT_SIDE, [1160, 895], [1160, 1080], [1130, 1120], [640, 1120],
   [608, 1090], [605, 835], [345, 835], [335, 960], [320, 1120], [55, 1120], [35, 1100], [35, 460], [200, 450],
   [205, 320], [222, 300], [258, 295],
 ];

@@ -4179,3 +4179,24 @@ right dash cover's bottom edge.
 - the angled edge has #34's slope and touches the post's inner edge;
 - the side stays inside the post.
 
+## D152. The Bf 110 C panel's lower right edge extended to the right fuselage side (3 Nov 2026, product owner's request)
+
+**The request:** extend the panel's lower right edge at an obtuse angle so it touches the right fuselage side.
+
+**The change** (src/ui/bf110Layout.js, `RIGHT_SIDE`):
+- **Side:** from the corner's touch on the right outer post (D151), the panel's right side now runs down the right
+  fuselage side, at an obtuse angle to the corner's angled edge:
+  - down the post's inner edge to its foot (1698, 459.2 on #34's pixels);
+  - out to the fuselage sheet's inner edge there (1748, 459.2);
+  - down the sheet to the right section's foot (1906.6, 895), below the screen's foot.
+- **Bottom edge:** the right section's bottom edge runs out to meet the side.
+- **Replaced:** D147–D151's side, which ran in to (1570, 895).
+- **Result:** the plate now fills out to the fuselage side below the corner; no dark cockpit side shows there.
+- **Width:** the panel is wider (31.6 dial radii, measured from the axis to its furthest side). It still fits every
+  tested screen, and the dial radius is unchanged.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that:
+- the side follows the post's inner edge to its foot, then the sheet's inner edge;
+- the bottom edge runs out to it;
+- the angle at the touch is obtuse.
+

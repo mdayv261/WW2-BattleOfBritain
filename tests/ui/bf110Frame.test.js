@@ -300,10 +300,24 @@ describe('Bf 110 C front frame (D117)', () => {
     expect((c[0] - b[0]) / (c[1] - b[1])).toBeCloseTo(115 / 95, 2); // then down at #34's shoulder slope
     const postInner = (y) => outerX(1, y - FRAME_SHIFT) - FRAME_110.posts.width / 2;
     expect(Math.abs(c[0] - postInner(c[1]))).toBeLessThan(0.2); // touching the right fuselage side
-    for (let y = c[1]; y <= d[1]; y += 2) { // then down beside it, inside it
-      const x = c[0] + ((d[0] - c[0]) * (y - c[1])) / (d[1] - c[1]);
-      expect(x, `${y}`).toBeLessThan(postInner(y) + 0.2);
-    }
+  });
+
+  it('runs the panel\'s right side down the right fuselage side, at an obtuse angle to the corner (D152)', () => {
+    const O = L.outline;
+    const i = O.findIndex(([x, y]) => y === 57 && x > AXIS) + 2; // the corner's touch on the post
+    const [b, c, d, e, f, g] = [O[i - 1], O[i], O[i + 1], O[i + 2], O[i + 3], O[i + 4]];
+    const { foot, width } = FRAME_110.posts;
+    const postInner = (y) => outerX(1, y - FRAME_SHIFT) - width / 2;
+    const sheetInner = (y) => fuselageX(1, y - FRAME_SHIFT) - FRAME_110.fuselage.width / 2;
+    for (const [x, y] of [c, d]) expect(Math.abs(x - postInner(y)), `${y}`).toBeLessThan(0.3); // down the post's inner edge
+    expect(d[1]).toBeCloseTo(foot + FRAME_SHIFT, 0); // to its foot
+    for (const [x, y] of [e, f]) expect(Math.abs(x - sheetInner(y)), `${y}`).toBeLessThan(0.3); // then down the sheet
+    expect(f[1]).toBe(g[1]); // the right section's bottom edge runs out to it
+    // An obtuse angle at the touch between the angled edge and the side.
+    const [u, v] = [[b[0] - c[0], b[1] - c[1]], [d[0] - c[0], d[1] - c[1]]];
+    const angle = Math.acos((u[0] * v[0] + u[1] * v[1]) / (Math.hypot(...u) * Math.hypot(...v))) * (180 / Math.PI);
+    expect(angle).toBeGreaterThan(90);
+    expect(angle).toBeLessThan(180);
   });
 
   it('has no canopy latch and lever on the top bar and no knobs on the ledge (D125)', () => {
