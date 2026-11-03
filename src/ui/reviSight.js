@@ -106,22 +106,26 @@ export function drawRevi(g, p, aim) {
     g.stroke();
   }
 
-  // Mounting block and the knurled knob below it.
-  g.fillStyle = '#1a1b1d';
-  roundRect(g, ...part(R.block), r * 0.12);
-  g.fill();
-  const knob = part(R.knob);
-  g.fillStyle = '#0b0b0c';
-  roundRect(g, ...knob, r * 0.08);
-  g.fill();
-  g.strokeStyle = '#3c3e40';
-  g.lineWidth = Math.max(1, r * 0.04);
-  for (let k = 1; k < 8; k += 1) {
-    const kx = knob[0] + (knob[2] * k) / 8;
-    g.beginPath();
-    g.moveTo(kx, knob[1] + r * 0.06);
-    g.lineTo(kx, knob[1] + knob[3] - r * 0.06);
-    g.stroke();
+  // Mounting block and the knurled knob below it (none on the Revi-110, D132).
+  if (R.block) {
+    g.fillStyle = '#1a1b1d';
+    roundRect(g, ...part(R.block), r * 0.12);
+    g.fill();
+  }
+  if (R.knob) {
+    const knob = part(R.knob);
+    g.fillStyle = '#0b0b0c';
+    roundRect(g, ...knob, r * 0.08);
+    g.fill();
+    g.strokeStyle = '#3c3e40';
+    g.lineWidth = Math.max(1, r * 0.04);
+    for (let k = 1; k < 8; k += 1) {
+      const kx = knob[0] + (knob[2] * k) / 8;
+      g.beginPath();
+      g.moveTo(kx, knob[1] + r * 0.06);
+      g.lineTo(kx, knob[1] + knob[3] - r * 0.06);
+      g.stroke();
+    }
   }
 
   // The leather crash pad: brown, worn lighter on its face, darker at the edges.
@@ -223,10 +227,13 @@ function roundHead(g, p, aim, X, Y, R) {
   g.clip();
   if (aim) drawReticle(g, aim.x, aim.y, aim.ring, 'Revi');
   g.restore();
-  // The rim, and its edge catching the light along the top.
-  circle();
+  // The rim, just outside the glass so the reticle's ring (near the glass's edge) shows inside it (D131), and the
+  // glass's edge catching the light along the top.
+  const rim = Math.max(1.5, r * 0.07);
   g.strokeStyle = '#141516';
-  g.lineWidth = Math.max(1.5, r * 0.07);
+  g.lineWidth = rim;
+  g.beginPath();
+  g.arc(X(cx), Y(cy), radius * r + rim / 2, 0, Math.PI * 2);
   g.stroke();
   g.strokeStyle = 'rgba(150, 175, 215, 0.55)';
   g.lineWidth = Math.max(1, r * 0.03);

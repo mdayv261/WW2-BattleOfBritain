@@ -41,26 +41,39 @@ export function shortRevi(parts, share) {
 }
 
 /**
- * The Bf 110's Revi-110 (product owner, D130), after their photograph of the Bf 110 C's cockpit (#32): the Revi's body
- * shortened as `shortRevi` (0.8, D107), and on it, in place of the wide glass, the housing, the dark glass and the bead
- * post, a round reflector glass as wide as the body, held at its sides by a frame of the body's width: a strap up each
- * side from a plate on the body's top to a pin at the glass's middle. The glass is centred over the body, its middle on
- * the guns' line's height. `glass` gives the glass's extent for placing it (reviPlacement), as on the Bf 109's.
+ * The Bf 110's Revi-110 (product owner, D130, D131), after their photograph of the Bf 110 C's cockpit (#32): the Revi's
+ * body shortened as `shortRevi` (0.8, D107) and then cut to its brown pad's size; on it, in place of the wide glass, the
+ * housing, the dark glass and the bead post, a round reflector glass as wide as the body, held at its sides by a frame
+ * of the body's width: a plate on the body's top and a strap up each side to a pin at the glass's middle. The sight is
+ * moved so the glass's middle is on the guns' line (the reticle in its middle) and the glass stands on the plate: the
+ * body and lever raised to close the gap. No mounting block or knob below the body (product owner, D132): `foot` keeps
+ * where the knob's foot stood, which sets the sight's height on the panel (src/ui/bf110Panel.js). `glass` gives the glass's extent for placing it (reviPlacement).
  */
+export const PLATE_110 = 0.15; // the holder's plate on the body's top
 export function revi110(parts) {
   const short = shortRevi(parts, 0.8);
-  const [left, right] = short.body.x;
-  const top = short.body.y[0];
+  const [left, right] = short.pad.x;
   const radius = (right - left) / 2;
-  const cx = (left + right) / 2;
+  const cx = (left + right) / 2; // moved to the guns' line
+  const top = radius + PLATE_110; // the body's new top: the glass on the plate
+  const lift = short.pad.y[0] - top;
+  const move = (p) => ({ ...p, x: p.x.map((v) => v - cx), y: p.y.map((v) => v - lift) });
+  const lever = { x: [left - 0.28, left + 0.05], y: short.lever.y }; // against the body's left side, as on the Bf 109's
   return {
     ...short,
-    round: { cx, cy: 0, radius },
-    holder: { x: [left, right], strap: 0.16, plate: [top - 0.15, top] },
-    glass: { cx, top: -radius, topHalf: radius, dip: radius },
+    body: move(short.pad),
+    pad: move(short.pad),
+    lever: move(lever),
+    pivot: [left - 0.115 - cx, short.pivot[1] - lift],
+    block: null,
+    knob: null,
+    foot: short.knob.y[1] - lift,
+    cable: short.cable.map(([u, v]) => [u - cx, v - lift]),
+    round: { cx: 0, cy: 0, radius },
+    holder: { x: [-radius, radius], strap: 0.16, plate: [radius, top] },
+    glass: { cx: 0, top: -radius, topHalf: radius, dip: radius },
     filter: null,
     housing: null,
     post: null,
   };
 }
-

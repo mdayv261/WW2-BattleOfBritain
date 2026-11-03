@@ -3653,3 +3653,42 @@ src/ui/bf110Panel.js):
 - the drawing has an arc of the glass's radius;
 - the Bf 109's Revi keeps its own glass.
 
+## D131. The Revi-110's body cut to its pad; the reticle in the round glass's middle (3 Nov 2026, product owner's request)
+
+**The request:** make the gunsight's body the same size as the brown pad, and adjust the sight's position so the
+reticle is centred in the round reflector glass.
+
+**The change** (`revi110`, src/ui/reviParts.js):
+- **Body:** the body is now the brown pad's rectangle: 1.92 wide (x ±0.96 after centring) and 2.72 tall, in the Bf 109's
+  dial radii. With it, the round glass and its holder frame shrink to the same width (radius 0.96), as D130 asked.
+- **Centred:** the sight is moved 0.19 sideways, so the round glass's middle is on the guns' line and the reticle sits in
+  its middle.
+- **Glass on the body:** the body and lever are raised 0.61, so the smaller glass still stands on the holder's plate on
+  the body's top, as on #32. The lever sits against the body's narrower left side.
+- **Reticle ring:** the ring's sourced size (100 mils at the cockpit's 70° field of view) is 97-98% of the glass's
+  radius on every screen. The glass's dark rim is now drawn just outside the glass, so the whole ring shows inside it.
+
+**Flagged: the guns' line moves again.** Raising the body raises the point where its mounting met the panel (D108).
+To keep the sight above the climb indicator, the sight and the guns' line move down: from 0.450 of the screen's height
+(D129) to 0.474. The camera's picture is shifted to match, as before.
+
+**Tests:** tests/ui/bf110Revi.test.js checks that:
+- the body equals the pad, as wide as the Bf 109's pad;
+- the glass is centred on the guns' line and stands on the plate;
+- the lever is against the body's side;
+- the whole ring fits inside the glass on every tested screen.
+
+## D132. The Revi-110 without its mounting block and knob (3 Nov 2026, product owner's request)
+
+**The request:** remove the black box and adjuster knob below the gunsight.
+
+**The change:**
+- **Removed** (src/ui/reviParts.js, src/ui/reviSight.js): the Revi-110 has no mounting block or knurled knob. Its body
+  (the brown pad) is the lowest part, standing in front of the panel's top.
+- **Height kept** (src/ui/bf110Panel.js): the sight's height still comes from where the knob's foot stood
+  (`REVI_110.foot`), just above the climb indicator. The guns' line is unchanged from D131 (0.474).
+- **Bf 109:** its Revi keeps its block and knob.
+
+**Tests:** tests/ui/bf110Revi.test.js checks that there is no block or knob, and that the sight still stands where the
+knob's foot stood above the climb indicator on every screen.
+

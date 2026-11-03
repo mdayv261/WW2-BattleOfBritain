@@ -13,6 +13,7 @@ import { reviPlacement, drawRevi } from '../../src/ui/reviSight.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
+import { FOV } from '../../src/render/cameras.js';
 
 const L = BF110_PANEL;
 const SCREENS = [[1548, 784], [1920, 1080], [1280, 720], [2560, 1259], [2560, 1203]];
@@ -67,23 +68,33 @@ describe('the Bf 109\'s instruments on the Bf 110 panel (D107)', () => {
 });
 
 describe('the Bf 110\'s Revi (D107)', () => {
-  it('takes 20% off the body\'s height; the Bf 109\'s Revi is unchanged', () => {
+  it('takes 20% off the body\'s height, then cuts the body to its brown pad (D131); the Bf 109\'s Revi is unchanged', () => {
     const height = (p) => p.y[1] - p.y[0];
-    expect(height(REVI_110.body)).toBeCloseTo(0.8 * height(REVI.body), 9);
-    expect(REVI_110.knob.y[1]).toBeCloseTo(REVI.knob.y[1] - 0.2 * height(REVI.body), 9); // moved up by the height cut
-    expect(REVI_110.pad.y[1]).toBeLessThanOrEqual(REVI_110.body.y[1]);
+    const width = (p) => p.x[1] - p.x[0];
+    const short = shortRevi(REVI, 0.8);
+    expect(height(short.body)).toBeCloseTo(0.8 * height(REVI.body), 9);
+    expect(REVI_110.body).toEqual(REVI_110.pad); // the body the pad's size
+    expect(height(REVI_110.body)).toBeCloseTo(height(short.pad), 9);
+    expect(width(REVI_110.body)).toBeCloseTo(width(REVI.pad), 9);
+    // Everything below the body raised by the same lift as the pad.
+    const lift = short.pad.y[0] - REVI_110.pad.y[0];
+    expect(REVI_110.foot).toBeCloseTo(short.knob.y[1] - lift, 9); // where the knob's foot stood
+    expect(REVI_110.block).toBeNull(); // no mounting block or knob (D132)
+    expect(REVI_110.knob).toBeNull();
+    expect(REVI_110.lever.x[1]).toBeGreaterThan(REVI_110.body.x[0]); // against its left side
+    expect(REVI_110.lever.x[0]).toBeLessThan(REVI_110.body.x[0]);
     expect(REVI_110.lever.y[1]).toBeLessThanOrEqual(REVI_110.body.y[1]);
     expect(REVI.body.y).toEqual([1.6, 5.6]);
     expect(shortRevi(REVI, 1)).toEqual(REVI);
   });
 
-  it('is the Revi-110: a round glass as wide as the body, in a holder frame of the body\'s width (D130)', () => {
+  it('is the Revi-110: a round glass as wide as the body, in a holder of the body\'s width, the reticle in its middle', () => {
     const [left, right] = REVI_110.body.x;
     const { cx, cy, radius } = REVI_110.round;
-    expect(2 * radius).toBeCloseTo(right - left, 9); // as wide as the body
+    expect(2 * radius).toBeCloseTo(right - left, 9); // as wide as the body (D130)
     expect(cx).toBeCloseTo((left + right) / 2, 9); // centred over it
-    expect(cy).toBe(0); // its middle at the guns' line's height
-    expect(cy + radius).toBeLessThanOrEqual(REVI_110.holder.plate[0]); // standing on the holder's plate
+    expect([cx, cy]).toEqual([0, 0]); // its middle on the guns' line: the reticle in the middle (D131)
+    expect(cy + radius).toBeCloseTo(REVI_110.holder.plate[0], 9); // standing on the holder's plate (D131)
     expect(REVI_110.holder.x).toEqual([left, right]); // the holder as wide as the body
     expect(REVI_110.holder.plate[1]).toBe(REVI_110.body.y[0]); // on the body's top
     for (const k of ['housing', 'filter', 'post']) expect(REVI_110[k], k).toBeNull();
@@ -96,6 +107,15 @@ describe('the Bf 110\'s Revi (D107)', () => {
     // The Bf 109's keeps its wide glass, housing and bead post.
     expect(REVI.round).toBeUndefined();
     expect(REVI.housing).toBeDefined();
+  });
+
+  it('shows the whole reticle ring inside the round glass looking ahead, on every screen (D131)', () => {
+    for (const [w, h] of SCREENS) {
+      const p = reviPlacement(w, h, BF110_REVI);
+      const perRadian = h / 2 / Math.tan((FOV.cockpit * Math.PI) / 360);
+      const ring = perRadian * Math.tan(aircraftById.bf110c4.sight.ringMils / 2000);
+      expect(ring, `${w}x${h}`).toBeLessThan(REVI_110.round.radius * p.r);
+    }
   });
 
   it('draws the Revi-110\'s round glass at the body\'s width, the Bf 109\'s without it', () => {
@@ -116,7 +136,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
     expect(b.radii.some((x) => x > r)).toBe(false); // no large round glass on the Bf 109's
   });
 
-  it('stands its knob just above the climb indicator (D108) on every screen, the guns\' line at BF110_AIM inside the glass', () => {
+  it('stands where its knob\'s foot stood above the climb indicator (D108, D132), the guns\' line inside the glass', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);
       const p = reviPlacement(w, h, BF110_REVI);
@@ -127,7 +147,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
       const [climbX, climbY, , climbOuter] = L.dials.climb;
       expect(climbX).toBe(AXIS); // under the Revi in the middle
       const mountTop = panelTop + ((climbY - climbOuter - TOP) / PX) * r;
-      const knobFoot = p.y + REVI_110.knob.y[1] * p.r;
+      const knobFoot = p.y + REVI_110.foot * p.r;
       expect(knobFoot, `${w}x${h}`).toBeLessThan(mountTop);
       expect(mountTop - knobFoot, `${w}x${h}`).toBeLessThan(r);
     }
@@ -135,7 +155,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
     expect(BF110_AIM).toBeLessThan(0.5);
   });
 
-  it('keeps the body, lever, block and knob clear of every dial and plate on the panel', () => {
+  it('keeps the body and lever clear of every dial and plate on the panel', () => {
     // The Revi's parts in the layout's picture pixels: the guns' line GLASS_ABOVE_110 radii above the panel's top.
     const toPicture = ({ x: [x0, x1], y: [y0, y1] }) => {
       const u = BF109_SCALE * PX;
@@ -147,7 +167,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
       ...Object.entries(L.dials).map(([n, [x, y, , o]]) => [n, [x - o, y - o, x + o, y + o]]),
       ...Object.entries(L.boxes),
     ];
-    for (const part of ['body', 'lever', 'block', 'knob']) {
+    for (const part of ['body', 'lever']) {
       for (const [name, square] of things) expect(overlap(toPicture(REVI_110[part]), square), `${part} / ${name}`).toBe(false);
     }
   });

@@ -20,7 +20,7 @@ const LOOK_LIMITS = { yaw: Math.PI * 0.9, pitchUp: 1.4, pitchDown: -0.7 };
 // rad: a head turned further than this to the side, or raised further, is looking away from the instrument panel, which
 // is then hidden (D58). Every hat view is beyond it; looking down at the panel never hides it.
 export const PANEL_LOOK_LIMIT = 20 * (Math.PI / 180);
-const FOV = { cockpit: 70, outside: 60 };
+export const FOV = { cockpit: 70, outside: 60 };
 
 const _q = new THREE.Quaternion();
 const _y = new THREE.Vector3(0, 1, 0);
