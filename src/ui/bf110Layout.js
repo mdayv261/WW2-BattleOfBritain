@@ -105,6 +105,14 @@ function knob109(name, of, [x, y]) {
  */
 const RIGHT_5MM = 34.7;
 const HORIZON_X = 880 + RIGHT_5MM; // the horizon's centre line, the turn and slip indicator's too (D184)
+const AIRSPEED = as109('airspeed', 690, 480);
+const SIZE = AIRSPEED.slice(2); // the airspeed indicator's face and mounting
+// The turn and slip indicator: the airspeed indicator's size exactly (D173), its centre line the horizon's (D184).
+const TURN = [...pt(HORIZON_X, 480), ...SIZE];
+// The climb indicator: the airspeed indicator's size (D175), as far from the turn and slip indicator as that is from
+// the airspeed indicator (D185).
+const ROW_GAP = TURN[0] - SIZE[1] - (AIRSPEED[0] + SIZE[1]);
+const CLIMB = [TURN[0] + 2 * SIZE[1] + ROW_GAP, TURN[1], ...SIZE];
 const altimeter = as109('altimeter', 1085 + RIGHT_5MM, 716); // its foot level with the trim indicator's (D179)
 /**
  * How far the right engine's rev counter and manifold pressure gauge stand right of #34's place, in #34's pixels
@@ -130,10 +138,7 @@ export const LAYOUT = {
     clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65), counter: dial(1082 + RIGHT_5MM, 280 - UP_4MM, 66, 75),
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
     // two the Bf 109's); the elevator trim indicator (D161), horizon and altimeter (the Bf 109's) below.
-    compass: dial(470, 418, 92, 110), airspeed: as109('airspeed', 690, 480),
-    // The airspeed indicator's size exactly (D173), its centre line the horizon's (D184).
-    turn: [...pt(HORIZON_X, 480), ...as109('airspeed', 0, 0).slice(2)],
-    climb: [...pt(1082 + RIGHT_5MM, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size (D175)
+    compass: dial(470, 418, 92, 110), airspeed: AIRSPEED, turn: TURN, climb: CLIMB,
     // The elevator trim indicator at the airspeed indicator's size, a little lower to clear the dive placard (D174).
     trim: [...pt(690, 716), ...as109('airspeed', 0, 0).slice(2)], // its right edge in line with the airspeed's (D183)
     altimeter,

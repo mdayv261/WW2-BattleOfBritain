@@ -73,6 +73,7 @@ Read this at the start of every session.
   turn and slip (product owner's decisions).
 - D183: the elevator trim indicator lined up under the airspeed indicator.
 - D184: the turn and slip indicator on the artificial horizon's centre line.
+- D185: the climb indicator as far from the turn and slip as that is from the airspeed indicator.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

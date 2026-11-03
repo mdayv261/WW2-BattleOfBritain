@@ -4680,3 +4680,14 @@ gunsight's line (D182).
 
 **Tests:** tests/ui/bf110Panel.test.js checks the two centres share one x.
 
+## D185. The Bf 110 C's climb indicator spaced from the turn and slip as that is from the airspeed indicator (3 Nov 2026, product owner's request)
+
+**The request:** make the gap between the climb indicator and the turn and slip indicator the same as the gap between
+the airspeed indicator and the turn and slip indicator (18.15 picture px, about 5.7 mm on a 2560 px screen).
+
+**The change** (src/ui/bf110Layout.js, `ROW_GAP`, `CLIMB`): the climb indicator is placed from the other two. It stands
+one gap past the turn and slip indicator's mounting, about 2.5 mm right of where it was (the gap was 7.7 picture px).
+If the airspeed indicator or the turn and slip indicator moves, the climb indicator keeps the gaps equal.
+
+**Tests:** tests/ui/bf110Panel.test.js checks the two gaps are equal.
+
