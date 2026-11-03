@@ -133,7 +133,8 @@ export const LAYOUT = {
     turn: [...pt(882 + RIGHT_5MM, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size exactly (D173)
     climb: [...pt(1082 + RIGHT_5MM, 480), ...as109('airspeed', 0, 0).slice(2)], // the airspeed indicator's size (D175)
     // The elevator trim indicator at the airspeed indicator's size, a little lower to clear the dive placard (D174).
-    trim: [...pt(680, 716), ...as109('airspeed', 0, 0).slice(2)], altimeter,
+    trim: [...pt(690, 716), ...as109('airspeed', 0, 0).slice(2)], // its right edge in line with the airspeed's (D183)
+    altimeter,
     horizon: [...pt(880 + RIGHT_5MM, 715), ...as109('airspeed', 0, 0).slice(2).map((v) => v * 1.15)], // 15% larger (D177)
     // The outside air thermometer (the airscrew pitch indicators of D109 removed: the Bf 110 C had none, D163).
     // Its left edge in line with the left manifold pressure gauge's, 5 mm up (product owner, D169).

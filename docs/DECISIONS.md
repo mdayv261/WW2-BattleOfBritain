@@ -4659,3 +4659,14 @@ lettering.
 
 No code changes.
 
+## D183. The Bf 110 C's elevator trim indicator lined up under the airspeed indicator (3 Nov 2026, product owner's request)
+
+**The request:** line up the elevator trim indicator's right edge with the airspeed indicator's.
+
+**The change** (src/ui/bf110Layout.js): the two are the same size (D174), so the trim indicator's centre moves 10 of
+#34's pixels right, from 680 to 690, directly under the airspeed indicator. Their right edges, and their left edges, are
+now in line. It stays clear of the course box on its left and the horizon on its right; the gap to the horizon is
+about 0.6 mm smaller.
+
+**Tests:** tests/ui/bf110Panel.test.js checks the right edges line up.
+

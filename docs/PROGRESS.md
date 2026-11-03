@@ -71,6 +71,7 @@ Read this at the start of every session.
 - D181: the artificial horizon has a round glass face, level marks at 9 and 3 o'clock, and no L or R.
 - D182: the engine gauges keep their own size, and the gunsight stays on the panel's middle line, 5 mm left of the
   turn and slip (product owner's decisions).
+- D183: the elevator trim indicator lined up under the airspeed indicator.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

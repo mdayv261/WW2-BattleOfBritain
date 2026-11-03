@@ -272,10 +272,10 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     expect(clockwise(trimAngle(10))).toBeGreaterThan(270); // above: towards 12 o'clock
     expect(clockwise(trimAngle(-10))).toBeLessThan(270); // below: towards 6 o'clock
     expect(trimAngle(30)).toBe(trimAngle(15)); // held at the scale's end
-    const [tx, ty] = L.dials.trim;
+    const [tx, ty, , to] = L.dials.trim;
     const [ax, ay, , ao] = L.dials.airspeed;
     expect(ty).toBeGreaterThan(ay + ao); // below the airspeed indicator
-    expect(Math.abs(tx - ax)).toBeLessThan(ao);
+    expect(tx + to).toBeCloseTo(ax + ao, 9); // their right edges in line (D183)
         const sim = new Simulation(aircraftById.bf110c4, 'air');
     sim.plane.surfaces.trim = 0.5;
     const v = instrumentReadings(sim);
