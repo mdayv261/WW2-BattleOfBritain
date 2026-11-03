@@ -31,6 +31,8 @@ Read this at the start of every session.
 - D141: the panel is lowered so the coolant thermometers touch the screen's foot (the gunsight is kept where it was),
   and the Preßluft gauge is placed below the lever box.
 - D142: the Preßluft gauge reads 0 with the engines stopped and 150 with them running.
+- D143: the windscreen frame group is raised so the reticle is in the windscreen's middle; the panel and the gunsight
+  stay.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

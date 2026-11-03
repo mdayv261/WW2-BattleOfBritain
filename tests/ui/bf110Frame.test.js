@@ -12,7 +12,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   FRAME_110, outerX, fuselageX, fuselagePath, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths,
-  sideBarPath, ledgePath, lowerFramePath, dashCoverPath, frameBars110, panelEdgeX,
+  sideBarPath, ledgePath, lowerFramePath, dashCoverPath, frameBars110, panelEdgeX, FRAME_SHIFT, framePlacer,
 } from '../../src/ui/bf110Frame.js';
 import { BRACKET } from '../../src/ui/bf110Layout.js';
 import {
@@ -41,10 +41,23 @@ describe('Bf 110 C front frame (D117)', () => {
     });
   });
 
+  it('raises the frame so the guns\' line falls in the middle of the windscreen on every screen; panel and Revi stay (D143)', () => {
+    const { crossBar, inner, ledge } = FRAME_110;
+    expect(FRAME_SHIFT).toBeLessThan(0); // up
+    for (const [w, h] of SCREENS) {
+      const r = panelRadius(L, w, h);
+      const at = framePlacer(placer(w / 2, panelTop110(h, r), r));
+      const [, top] = at.xy([AXIS, crossBar.y + inner.width / 2]);
+      const [, bottom] = at.xy([AXIS, ledge.y - ledge.width / 2]);
+      const { y } = reviPlacement(w, h, BF110_REVI);
+      expect(y, `${w}x${h}`).toBeCloseTo((top + bottom) / 2, 6);
+    }
+  });
+
   it('shows the top bar on every screen, the windscreen round the Revi\'s glass and the guns\' line', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);
-      const at = placer(w / 2, panelTop110(h, r), r);
+      const at = framePlacer(placer(w / 2, panelTop110(h, r), r));
       const [, topY] = at.xy([AXIS, FRAME_110.top.y - FRAME_110.top.width / 2]);
       expect(topY, `${w}x${h}`).toBeGreaterThan(0);
       const { glass, y } = reviPlacement(w, h, BF110_REVI);
@@ -83,10 +96,11 @@ describe('Bf 110 C front frame (D117)', () => {
       expect(y).toBe(foot);
       expect(x).toBeCloseTo(outerX(Math.sign(x - AXIS), foot), 9);
     }
-    const gap = (side, y) => side * (outerX(side, y) - (side * width) / 2 - panelEdgeX(side, y)); // post's inner edge outside the panel's
+    // The post's inner edge outside the panel's edge level with it (the frame raised FRAME_SHIFT over the panel, D143).
+    const gap = (side, y) => side * (outerX(side, y) - (side * width) / 2 - panelEdgeX(side, y + FRAME_SHIFT));
     expect(gap(-1, foot)).toBeLessThanOrEqual(0); // the left post meets the panel's left side there
     expect(gap(-1, foot - 1)).toBeGreaterThan(0); // and not above it
-    for (let y = 57; y <= foot; y += 1) expect(gap(1, y), `right ${y}`).toBeGreaterThan(0); // the right side inside its post
+    for (let y = 57 - FRAME_SHIFT; y <= foot; y += 1) expect(gap(1, y), `right ${y}`).toBeGreaterThan(0); // the right side inside its post
   });
 
   it('runs the fuselage frames as thin sheets from the posts\' outside edges to the screen\'s foot at 70 degrees (D139)', () => {
@@ -103,7 +117,7 @@ describe('Bf 110 C front frame (D117)', () => {
       expect(fuselageX(side, y1)).toBeCloseTo(x1, 9);
       for (const [w, h] of SCREENS) {
         const r = panelRadius(L, w, h);
-        const at = placer(w / 2, panelTop110(h, r), r);
+        const at = framePlacer(placer(w / 2, panelTop110(h, r), r));
         expect(at.xy([x1, y1])[1], `${w}x${h}`).toBeGreaterThan(h);
       }
     }
@@ -231,7 +245,7 @@ describe('Bf 110 C front frame (D117)', () => {
       const inner = top[top.length - 1];
       expect(side * (bodySide - inner[0])).toBeGreaterThan(0); // just inside the gunsight body's side
       expect(side * (bodySide - inner[0])).toBeLessThan(5);
-      expect(footInner).toEqual([inner[0], 57]); // down to its foot on the panel's top
+      expect(footInner).toEqual([inner[0], 57 - FRAME_SHIFT]); // on the panel's top, the frame raised over it (D143) // down to its foot on the panel's top
       const [, foot] = lowerFramePath(side);
       expect(footOuter).toEqual(foot); // the front edge to the lower frame's foot on the outer post
       // Mirror images about the axis.

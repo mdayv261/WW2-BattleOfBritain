@@ -5,6 +5,7 @@
 // the airspeed indicator at the Bf 109's size on screen (D107). Drawn by src/ui/bf110Panel.js and its fittings.
 
 import { BF109_PANEL, BF109_PX } from './bf109Panel.js';
+import { REVI, revi110 } from './reviParts.js';
 
 export const PX = 30; // picture pixels per dial radius
 export const TOP = 57; // the panel's top edge (as D106, so the cockpit frame's sizes keep their meaning)
@@ -58,6 +59,15 @@ export const REVI_RAISE = (pt(0, 1045)[1] - LOWEST) / PX;
 export const SHARE = HEIGHT * (0.45 / ((475 - 57) / PX + 0.1));
 /** The Bf 109's dial radius in the Bf 110's (D107): its instruments and Revi drawn at their own size on screen. */
 export const BF109_SCALE = (BF109_PANEL.screenShare / BF109_PANEL.height) / (SHARE / HEIGHT);
+/**
+ * The Revi-110 on the Bf 110 (D107, D130-D133): the Bf 109's Revi, its body cut to its brown pad, with a round glass as
+ * wide as the body in a holder frame of the body's width. No mounting block, knob or sun filter lever (D132, D133).
+ */
+export const REVI_110 = revi110(REVI);
+/** The guns' line above the Revi's foot, in dial radii, at the Bf 109's size (D133). */
+export const GLASS_ABOVE_110 = REVI_110.body.y[1] * BF109_SCALE;
+/** The guns' line's height in picture pixels: GLASS_ABOVE_110 above the Revi's foot, REVI_RAISE above the top edge. */
+export const GUNS_Y = TOP - (REVI_RAISE + GLASS_ABOVE_110) * PX;
 const FROM_109 = (BF109_SCALE * PX) / BF109_PX; // the Bf 109's picture pixels to the Bf 110's
 
 /** A Bf 109 instrument (its BF109_PANEL entry `name`) at (X, Y) on #34, its size as on the Bf 109. */

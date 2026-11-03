@@ -26,8 +26,7 @@
 // hidden meanwhile (src/render/testView.js) and shows again when the pilot looks round; the wings and engines stay.
 
 import { drawFrames } from './frameBars.js';
-import { AXIS, OUTLINE, LAYOUT, BRACKET, BF109_SCALE } from './bf110Layout.js';
-import { REVI_110 } from './bf110Panel.js';
+import { AXIS, OUTLINE, LAYOUT, BRACKET, BF109_SCALE, REVI_110, GUNS_Y } from './bf110Layout.js';
 
 export const FRAME_110 = {
   // The outer top bar: its middle line's height, half its length to the corners' centres, its width and corner radius.
@@ -61,7 +60,21 @@ const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
 const GREY = { band: '#4c5054', lit: '#7a7f83', shade: '#2c2f31', rivet: '#3a3d40', outline: '#17191a' };
 const PANEL_TOP = 57;
-const TOP_Y = PANEL_TOP;
+/**
+ * How far the frame stands above its D139 place on the panel, picture pixels (negative: up), so the guns' line falls in
+ * the middle of the windscreen's opening, between its top bar's lower edge and the ledge's upper edge at the middle
+ * (product owner, D143). The panel and the Revi stay. Every frame point (x, y) stands at (x, y + FRAME_SHIFT) on the
+ * panel's picture.
+ */
+const OPENING = [FRAME_110.crossBar.y + FRAME_110.inner.width / 2, FRAME_110.ledge.y - FRAME_110.ledge.width / 2];
+export const FRAME_SHIFT = GUNS_Y - (OPENING[0] + OPENING[1]) / 2;
+/** The panel's top edge in the frame's picture pixels. */
+const TOP_Y = PANEL_TOP - FRAME_SHIFT;
+
+/** The panel's placer `at` (src/ui/bf110Panel.js) for the frame's points: raised FRAME_SHIFT (D143). */
+export function framePlacer(at) {
+  return { ...at, xy: ([x, y]) => at.xy([x, y + FRAME_SHIFT]) };
+}
 const PX_110 = 30; // the Bf 110 layout's picture pixels per dial radius (src/ui/bf110Panel.js)
 
 /**
@@ -82,12 +95,13 @@ export function panelEdgeX(side, y) {
 /** An outer post's middle line at height y (`side` -1 left, +1 right): out from the top bar's corner going down. */
 export const outerX = (side, y) => AXIS + side * (FRAME_110.top.half + FRAME_110.posts.slope * (y - FRAME_110.top.y));
 /**
- * Where the posts end (D120, D140): the highest point at which the panel's edge reaches either post's inner edge (the
- * left wing on #34's panel; the right side stays inside its post), both posts ending there.
+ * Where the posts end (D120, D140, D143), in the frame's picture pixels: the highest point at which the panel's edge
+ * reaches either post's inner edge (the left side below the clock's bracket on #34's panel; the right side stays inside
+ * its post), both posts ending there.
  */
 FRAME_110.posts.foot = (() => {
   const reaches = (side, y) => {
-    const edge = panelEdgeX(side, y);
+    const edge = panelEdgeX(side, y + FRAME_SHIFT); // the panel's edge level with this point of the post
     return edge !== null && side * (edge - (outerX(side, y) - (side * FRAME_110.posts.width) / 2)) >= 0;
   };
   for (let y = TOP_Y; y < 2000; y += 0.5) if (reaches(-1, y) || reaches(1, y)) return y;
@@ -234,7 +248,7 @@ export function dashCoverPath(side) {
   const next = (side < 0 ? lower : [...lower].reverse())[ours.length];
   const t = (sight - last[0]) / (next[0] - last[0]);
   const top = [...ours, [sight, last[1] + (next[1] - last[1]) * t]];
-  return [...top, [sight, PANEL_TOP], foot];
+  return [...top, [sight, TOP_Y], foot]; // its inner foot on the panel's top, the frame raised over it (D143)
 }
 
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
@@ -266,8 +280,9 @@ function panelPath(g, at) {
  * The cockpit's dark sides round the panel, between the posts and the fuselage frames from the panel's top down: on the
  * panel's canvas before its plate. `at` is the panel's placer.
  */
-export function drawBf110Interior(g, at) {
-  const y0 = PANEL_TOP - 3;
+export function drawBf110Interior(g, panelAt) {
+  const at = framePlacer(panelAt); // the frame raised over the panel (D143)
+  const y0 = TOP_Y - 3;
   const { foot } = FRAME_110.posts;
   g.fillStyle = INTERIOR;
   g.beginPath();
@@ -287,12 +302,13 @@ export function drawBf110Interior(g, at) {
  * The front frame on the sight's canvas before the Revi: the corner posts and grab handles, then the bars, kept behind
  * the panel. `at` is the panel's placer; `width`, `height` the canvas.
  */
-export function drawBf110Frame(g, at, width, height) {
-  for (const side of [-1, 1]) dashCover(g, at, side); // over the panel's top, under the bars
+export function drawBf110Frame(g, panelAt, width, height) {
+  const at = framePlacer(panelAt); // the frame raised over the panel (D143)
+  for (const side of [-1, 1]) dashCover(g, at, panelAt, side); // over the panel's top, under the bars
   g.save();
   g.beginPath();
   g.rect(0, 0, width, height);
-  panelPath(g, at);
+  panelPath(g, panelAt);
   g.clip('evenodd');
   handles(g, at);
   sheets(g, at);
@@ -304,12 +320,12 @@ export function drawBf110Frame(g, at, width, height) {
  * A dash cover (D136, D137): padded grey, lighter at the back, with its dark outline, and a stitched seam a little inside
  * its top and front edges, as photographed (#33). The bars are drawn over its edge along the lower frame.
  */
-function dashCover(g, at, side) {
+function dashCover(g, at, panelAt, side) {
   g.save();
   // The clock's bracket stands proud of the panel, in front of the cover (D140).
   g.beginPath();
   g.rect(-1e5, -1e5, 2e5, 2e5);
-  BRACKET.forEach((p, i) => (i ? g.lineTo(...at.xy(p)) : g.moveTo(...at.xy(p))));
+  BRACKET.forEach((p, i) => (i ? g.lineTo(...panelAt.xy(p)) : g.moveTo(...panelAt.xy(p))));
   g.closePath();
   g.clip('evenodd');
   const pts = dashCoverPath(side).map((p) => at.xy(p));

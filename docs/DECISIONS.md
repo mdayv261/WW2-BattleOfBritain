@@ -4004,3 +4004,32 @@ not aircraft data.
 **Tests:** tests/ui/bf110Panel.test.js checks that the gauge reads 0 with both engines stopped, 150 with one at
 2,200 rpm, part way at 600 rpm, and that its scale runs from bottom left with 125 straight up.
 
+## D143. The Bf 110 C's windscreen frame raised so the reticle is in the windscreen's middle (3 Nov 2026, product owner's request)
+
+**The request:** raise the windscreen frame group, including the dash covers, leaving the panel and the gunsight where
+they are, so the gunsight's reticle is in the middle of the front windscreen.
+
+**The change** (src/ui/bf110Frame.js, `FRAME_SHIFT`, `framePlacer`):
+- **Raised:** the whole frame group is drawn 23.4 picture pixels (0.78 dial radius) higher on the panel's picture.
+  - The group is the outer frame, grab handles, corner posts, windscreen, side bars, ledge, lower frames, fuselage
+    sheets and dash covers.
+  - The guns' line (GUNS_Y, now in src/ui/bf110Layout.js with the Revi-110) falls exactly midway between the windscreen
+    top bar's lower edge and the ledge's upper edge at the middle, on every screen.
+- **Still meeting the panel:**
+  - The posts end where the panel's edge, level with them, first reaches a post. Raised and leaning out going down,
+    they now meet the panel's left side lower down, at its left wing (frame y 227, panel y 204, was 140). The fuselage
+    sheets start there.
+  - The dash covers' inner feet stay on the panel's top. Their top edges rise with the ledge.
+  - The cockpit's dark sides follow the raised posts and sheets, from the panel's top down.
+- **Moved up with the group:** the lower frames still meet the posts at the red button's height on the frame's own
+  picture, so they now meet them 23 px higher than the button itself.
+- **Unchanged:** the panel, the Revi and the guns' line (0.406).
+
+**Tests:** tests/ui/bf110Frame.test.js checks that:
+- on every tested screen the guns' line lies midway in the windscreen's opening;
+- the frame stands higher than before;
+- the posts meet the panel level with their raised points;
+- the covers' inner feet lie on the panel's top.
+
+The on-screen checks use the raised frame.
+

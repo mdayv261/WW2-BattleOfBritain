@@ -25,26 +25,17 @@ import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurn
 import { luminous } from './lwStyle.js';
 import { millibarWindow } from './altimeters.js';
 import { redBezel, settingKnob } from './bf109Panel.js';
-import { REVI, revi110 } from './reviParts.js';
 import { drawBf110Interior } from './bf110Frame.js';
 import {
-  PX, TOP, AXIS, OUTLINE, HEIGHT, ABOVE, SINK, SHARE, BF109_SCALE, LAYOUT, REVI_RAISE,
+  PX, TOP, AXIS, OUTLINE, HEIGHT, ABOVE, SINK, SHARE, BF109_SCALE, LAYOUT, REVI_RAISE, REVI_110, GLASS_ABOVE_110,
 } from './bf110Layout.js';
 import {
   airThermometer, autopilotIndicator, aegIndicator, cannonCounter, coolantGauge, correctionCard, pressluftGauge, pressluftReading,
   radiatorSwitch, roundCounter, tankSelector,
 } from './bf110Gauges.js';
 
-export { AXIS, BF109_SCALE };
+export { AXIS, BF109_SCALE, REVI_110, GLASS_ABOVE_110 };
 
-/**
- * The Revi-110 on the Bf 110 (D107, D130-D133): the Bf 109's Revi, its body cut to its brown pad, with a round glass as
- * wide as the body in a holder frame of the body's width, its body's foot standing on the panel's top on the axis
- * (D133, D140). No mounting block, knob or sun filter lever (D132, D133).
- */
-export const REVI_110 = revi110(REVI);
-/** The guns' line above the panel's top, in dial radii: the Revi-110's body's foot on the panel's top (D133). */
-export const GLASS_ABOVE_110 = REVI_110.body.y[1] * BF109_SCALE;
 /**
  * Where the guns' line stands looking ahead in the Bf 110's cockpit, as a fraction of the screen's height from its top:
  * GLASS_ABOVE_110 above the Revi's foot, which stands REVI_RAISE above the panel, which stands SINK below the screen's
