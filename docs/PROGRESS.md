@@ -16,7 +16,7 @@ Read this at the start of every session.
   parachutes, the product owner's addition) done (D80); checkpoint 3 (fighter tactics and formations) done (D81);
   checkpoint 4 (bombers' routes and air gunners) done (D83); next checkpoint 5 (skill levels and the Phase 6 acceptance
   test).
-- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026.
+- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751).
 
 ## Bf 110 C panel after the product owner's picture #34 (3 Nov 2026)
 
@@ -85,6 +85,9 @@ Read this at the start of every session.
   kept. The main wheels' track not moved (decision pending).
 - D193: the Bf 110's nose rears up as the flaps go down, then sinks (S24); it dips as they come up. Size and duration
   are estimates.
+
+**Left:** two minor changes to the flap and undercarriage levers (product owner, later); the main wheels' track (D192,
+decision pending); then Phase 6 checkpoint 5 after a plan.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 
