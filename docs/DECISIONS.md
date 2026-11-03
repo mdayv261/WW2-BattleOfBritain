@@ -4367,3 +4367,23 @@ at 9 o'clock for a neutral 0° trim setting, with positive degrees above the 0 a
   at the ends, the indicator is below the airspeed indicator, it reads the trim, and it is lettered.
 - tests/ui/trimDisplay.test.js now expects the Bf 110's trim indicator.
 
+## D162. The Bf 110 C's airspeed indicator, altimeter, undercarriage lights and round counter in black mountings (3 Nov 2026, product owner's request)
+
+**The request:** give the airspeed indicator, the altimeter, the undercarriage indicator and the cannon round counter a
+black bezel, the same as the turn and slip indicator's.
+
+**The change:**
+- **Airspeed indicator and altimeter** (src/ui/bf110Panel.js): they now stand in the turn and slip indicator's square
+  black mounting with its corner screws (`mount`, black since D160). The Bf 109's red round bezels (D107) are gone; the
+  altimeter keeps its setting knob.
+- **Round counter** (src/ui/bf110Gauges.js): it stands in the same mounting, at its 75 px half-width. Its old round
+  flange with twelve screws is gone.
+- **Undercarriage lights** (src/ui/bf110Fittings.js): the round housing (D157, D158) stands in the same mounting at the
+  box's half-width. The housing is 0.9 of the mounting's width (`GEAR_HOUSING`), so the mounting's corners show.
+- **Every dial** on the Bf 110 panel now stands in the same black mounting.
+
+**Tests:**
+- tests/ui/bf110Panel.test.js checks that the airspeed indicator, altimeter, turn and slip indicator, round counter and
+  undercarriage lights each have a square mounting of their half-width, and that the undercarriage housing is 0.9 of it.
+- tests/ui/bf110Revi.test.js checks that no red bezels remain.
+

@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
-import { switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS } from '../../src/ui/bf110Fittings.js';
+import { switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS, GEAR_HOUSING } from '../../src/ui/bf110Fittings.js';
 import {
   cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle,
 } from '../../src/ui/bf110Gauges.js';
@@ -272,7 +272,26 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
       set: (t2, p, v) => { t2[p] = v; return true; },
     });
     bf110Panel(g, 1000, 0, 30, readings());
-    expect(arcs.some((rad) => Math.abs(rad - (r - l) / 2) < 1e-6)).toBe(true); // the housing at 30 px per dial radius
+    expect(arcs.some((rad) => Math.abs(rad - (GEAR_HOUSING * (r - l)) / 2) < 1e-6)).toBe(true); // in its mounting (D162)
+  });
+
+  it('stands every dial, the undercarriage lights and the round counter in the turn and slip\'s black mounting (D162)', () => {
+    const squares2 = [];
+    const g = new Proxy({}, {
+      get: (t2, p) => (p === 'roundRect' ? (x, y, w, h) => squares2.push([x + w / 2, y + h / 2, w / 2]) : p in t2 ? t2[p]
+        : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t2, p, v) => { t2[p] = v; return true; },
+    });
+    bf110Panel(g, 0, 0, 30, readings()); // 30 px per dial radius: canvas px = picture px, the axis at x 0
+    const has = ([x, y, half]) => squares2.some(([sx, sy, sh]) => Math.abs(sx - x) < 1e-6 && Math.abs(sy - y) < 1e-6
+      && Math.abs(sh - half) < 1e-6);
+    const at = (x, y) => [x - AXIS, y - 57];
+    for (const n of ['airspeed', 'altimeter', 'turn', 'counter']) {
+      const [x, y, , o] = L.dials[n];
+      expect(has([...at(x, y), o]), n).toBe(true);
+    }
+    const [l, t3, r, b] = L.boxes.gearLights;
+    expect(has([...at((l + r) / 2, (t3 + b) / 2), (r - l) / 2]), 'gearLights').toBe(true);
   });
 
   it('reads the fuel gauge from the front left main tank, 375 L full (S24), and the radiator from key O', () => {

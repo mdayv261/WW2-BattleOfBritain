@@ -13,8 +13,8 @@
 //   the screen's foot (D141); below them, out of sight, the radiator flap switches either side of the tank selector.
 //   Left: the undercarriage lights, the airscrew lever box, the Fahrwerk and Landeklappe switches and their placard,
 //   and the Preßluft gauge below the lever box (D141).
-// The airspeed indicator, turn and bank and altimeter are the Bf 109's exactly, at its size on screen, red bezels and
-// the altimeter's setting knob included (D107).
+// The airspeed indicator, turn and bank and altimeter are the Bf 109's exactly, at its size on screen, the altimeter's
+// setting knob included (D107); all three in the black square mounting, as every dial (D162).
 // Working: the flying and engine instruments, the clock, the pitch indicators, the round counter, the outside air
 // thermometer, the undercarriage and flap switches and lights, the radiator switches and the fuel gauge (the tank the
 // selector chooses, full: fuel use is not modelled). The rest shows normal operation. The dials' markings and hands are
@@ -25,7 +25,7 @@ import { mount, lwRpm, lwAta, lwClock, lwPitchIndicator, lwFuelGauge, RPM_110 } 
 import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
 import { whiteDials, blackScrews } from './lwStyle.js';
 import { millibarWindow } from './altimeters.js';
-import { redBezel, settingKnob } from './bf109Panel.js';
+import { settingKnob } from './bf109Panel.js';
 import { drawBf110Interior } from './bf110Frame.js';
 import {
   PX, TOP, AXIS, OUTLINE, HEIGHT, ABOVE, SINK, SHARE, BF109_SCALE, LAYOUT, REVI_RAISE, REVI_110, GLASS_ABOVE_110,
@@ -90,11 +90,7 @@ export function placer(x0, y0, r) {
   return { xy, len, dial, box, knob };
 }
 
-/** The round counter stands in its own round flange (src/ui/bf110Gauges.js), not a square mounting. */
-const UNMOUNTED = ['counter'];
 
-/** The Bf 109's instruments with its red bezels (D107). */
-const RED_BEZELS = ['altimeter', 'airspeed'];
 
 /** Draws the panel with the axis at its top at (x0, y0) and dial radius r. `v` is instrumentReadings(). */
 export function bf110Panel(g, x0, y0, r, v, now = new Date()) {
@@ -107,10 +103,8 @@ function drawPanel(g, x0, y0, r, v, now) {
   drawBf110Interior(g, at); // the cockpit's sides round the panel, below the drawn front frame (D117)
   drawBf110Fittings(g, at, L, v);
   for (const [name, entry] of Object.entries(L.dials)) {
-    if (UNMOUNTED.includes(name)) continue;
     const [x, y, , outer] = at.dial(entry);
-    if (RED_BEZELS.includes(name)) redBezel(g, x, y, outer);
-    else mount(g, x, y, outer);
+    mount(g, x, y, outer); // every dial in the turn and slip indicator's black mounting (the red bezels gone, D162)
   }
   settingKnob(g, ...at.knob(L.knobs.setAltimeter));
   const dial = (name) => at.dial(L.dials[name]);

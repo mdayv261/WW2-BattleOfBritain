@@ -7,6 +7,7 @@
 
 import { text, lens } from './panelParts.js';
 import { BLACK, INK, plain } from './bf109Fittings.js';
+import { mount } from './lwStyle.js';
 import { achtungPlacard, divePlacardLines, textPlacard } from './bf110Placards.js';
 import { drawBf110Boxes } from './bf110Boxes.js';
 
@@ -58,6 +59,7 @@ function outlinePlate(g, at, outline) {
  * Where the undercarriage lights' four lamps stand in their round housing (D157), as fractions of its radius from its
  * centre: an EIN lamp for each leg above, an AUS lamp for each below; and their radius.
  */
+export const GEAR_HOUSING = 0.9; // the round housing's diameter as a share of its square mounting's width (D162)
 export const GEAR_LAMPS = {
   radius: 0.2,
   lamps: [[-0.44, -0.3, 'ein'], [0.44, -0.3, 'ein'], [-0.44, 0.36, 'aus'], [0.44, 0.36, 'aus']],
@@ -69,8 +71,9 @@ export const GEAR_LAMPS = {
  * the AUS lamps green with it down (D95, D106).
  */
 function gearLights(g, b, s, v) {
-  const r = Math.min(b.w, b.h) / 2;
   const [x, y] = [b.x + b.w / 2, b.y + b.h / 2];
+  mount(g, x, y, Math.min(b.w, b.h) / 2); // the turn and slip indicator's black mounting (D162)
+  const r = (GEAR_HOUSING * Math.min(b.w, b.h)) / 2;
   g.fillStyle = 'rgba(0,0,0,0.3)';
   g.beginPath();
   g.arc(x + r * 0.04, y + r * 0.05, r, 0, Math.PI * 2);

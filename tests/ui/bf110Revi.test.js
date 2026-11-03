@@ -55,10 +55,10 @@ describe('the Bf 109\'s instruments on the Bf 110 panel (D107)', () => {
     }
   });
 
-  it('gives the airspeed indicator and altimeter the Bf 109\'s red bezels and setting knobs; the homing instrument is gone', () => {
+  it('stands the airspeed indicator and altimeter in black mountings, the red bezels gone (D162); the homing instrument is gone', () => {
     const g = recorder();
     bf110Panel(g, 1000, 0, 40, instrumentReadings(new Simulation(aircraftById.bf110c4, 'air')));
-    expect(g.log.fills.filter((c) => c === '#8a3a2c')).toHaveLength(2); // two red bezels
+    expect(g.log.fills.filter((c) => c === '#8a3a2c')).toHaveLength(0); // no red bezels
     expect(g.log.fills.filter((c) => c === '#0c0c0c').length).toBeGreaterThanOrEqual(2); // their knurled knobs
     expect(L.knobs.setAltimeter[1]).toBeGreaterThan(L.dials.altimeter[1] + L.dials.altimeter[2]); // below the face
     for (const w of ['km/h', 'DREH', 'HÄNGT', 'N']) expect(g.log.texts.some((t) => t.includes(w)), w).toBe(true);

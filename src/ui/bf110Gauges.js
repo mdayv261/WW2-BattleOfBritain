@@ -4,7 +4,7 @@
 // indicator and the correction cards; the elevator trim indicator (D161); the Preßluft gauge above the engine gauges. Angles are in
 // radians, 0 straight up, clockwise.
 
-import { DEG, at, font, centred, tick, lwFace, lwHand, screw, paint } from './lwStyle.js';
+import { DEG, at, font, centred, tick, lwFace, lwHand, paint } from './lwStyle.js';
 import { lens, text } from './panelParts.js';
 
 const WHITE = '#e9e6dc';
@@ -18,14 +18,6 @@ function ring(g, x, y, r, colour) {
   g.fill();
 }
 
-/** A round mounting flange with screws round its rim (the round counter's, #34). */
-function flange(g, x, y, outer) {
-  g.fillStyle = '#1b1c1e';
-  g.beginPath();
-  g.arc(x, y, outer, 0, Math.PI * 2);
-  g.fill();
-  for (let k = 0; k < 12; k += 1) screw(g, ...at(x, y, (k * 30 + 15) * DEG, outer * 0.86), outer * 0.06);
-}
 
 /** Each cannon's counter window: its drum's rounds left (60 down to 0) and whether it is empty. */
 export function cannonCounter(v) {
@@ -41,7 +33,7 @@ export function cannonCounter(v) {
  * window, lit when its drum is empty, the windows counting each drum's rounds left, and two knobs below.
  */
 export function roundCounter(g, x, y, face, outer, counts) {
-  flange(g, x, y, outer);
+  // In the turn and slip indicator's black square mounting (src/ui/bf110Panel.js, D162), its old round flange gone.
   g.fillStyle = '#2a2c2e';
   g.beginPath();
   g.arc(x, y, face, 0, Math.PI * 2);
