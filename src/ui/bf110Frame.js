@@ -6,7 +6,8 @@
 //   foot of the screen at 75 degrees (as the Bf 109's fuselage frames; product owner, D121), kept behind the panel;
 //   the armoured windscreen's frame below the top bar, its top bar between its own posts only (product owner, D122) and
 //   its posts leaning in a little going down, with a ledge across their feet, its top bar raised until its top corners
-//   just touch the grab handles (product owner, D125); a thin post from each of its top corners
+//   just touch the grab handles (product owner, D125); a level bar each side from its top corner out to the outer post
+//   just below the grab handle (product owner, D126); a thin post from each of its top corners
 //   to the outer frame's top corner, as thin as the grab handles (product owner, D123);
 //   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119); no canopy
 //   latch or lever on the top bar, and no knobs on the ledge (product owner, D125);
@@ -34,6 +35,9 @@ export const FRAME_110 = {
   // The armoured windscreen's posts: `half` apart at height `at`, in this many pixels for each pixel down, from the top
   // bar down to `foot` (the ledge's lower edge); the width of its posts and top bar.
   inner: { half: 207, at: -164, lean: 0.14, foot: 12, width: 20 },
+  // The level bars each side from the windscreen's top corner out to the outer post: their middle line's height, just
+  // below the grab handles' feet (the tubes clear by under 1 px; D126). As wide as the windscreen's posts.
+  sideBars: { y: -173 },
   // The ledge across the windscreen's foot, behind the Revi.
   ledge: { y: 6, width: 12 },
   // The grab handles in the top corners: arcs round the corner from the top bar, `along` in from the corner, down to the
@@ -118,14 +122,23 @@ export function cornerPostPath(side) {
   return [[innerX(side, FRAME_110.crossBar.y), FRAME_110.crossBar.y], outer];
 }
 
+/** A level side bar's line (`side` -1 left, +1 right): from the windscreen's post out to the outer post (D126). */
+export function sideBarPath(side) {
+  const { y } = FRAME_110.sideBars;
+  return [[innerX(side, y), y], [outerX(side, y), y]];
+}
+
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
 export function frameBars110(at) {
   const w = (px) => at.len(px);
   const P = (pts) => pts.map((p) => at.xy(p));
-  const { top, inner, ledge } = FRAME_110;
+  const { top, posts, inner, ledge } = FRAME_110;
   return [
     { pts: P(outerPath()), w: w(top.width), trim: [0, 0] },
     { pts: P(windscreenPath()), w: w(inner.width), trim: [0, 0] },
+    ...[-1, 1].map((side) => ({
+      pts: P(sideBarPath(side)), w: w(inner.width), trim: [w(inner.width / 2), w(posts.width / 2)],
+    })),
     { pts: P([[innerX(-1, ledge.y), ledge.y], [innerX(1, ledge.y), ledge.y]]), w: w(ledge.width),
       trim: [w(inner.width / 2), w(inner.width / 2)] },
   ];

@@ -3537,3 +3537,24 @@ handle passes in front of its post where they cross.
 - the bar is higher than before;
 - there is no latch or ledge knob data.
 
+## D126. Level side bars from the Bf 110 C's windscreen to the outer posts, below the handles (3 Nov 2026, product owner's request)
+
+**The request:** draw a frame connecting the inner frame's top left corner with the left outer frame, just below the
+handle hoop, and the same on the right.
+
+**The change** (`src/ui/bf110Frame.js`, `sideBarPath`, `FRAME_110.sideBars`):
+- **Bars:** each is a level bar from the windscreen's post at its top corner out to the outer post. It is the
+  windscreen's width (20 px), and welded to both posts.
+- **Height:** its middle line is at y -173, the highest level bar that stays clear of the grab handle. The handle's
+  tube clears it by under 1 px where the handle meets the outer post.
+- **At the windscreen:** the bar overlaps the lower part of the windscreen's top bar (y -181). Its top edge is therefore
+  8 px below the top bar's, a small step at the corner.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each bar:
+- is level;
+- runs from the windscreen's post to the outer post;
+- overlaps the windscreen's top bar;
+- clears its handle by 0 to 1.5 px.
+
+It also checks that the bars are welded after the frames they end on.
+
