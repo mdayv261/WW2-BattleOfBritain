@@ -3405,3 +3405,32 @@ gauges (D63), which these thermometers replace.
 - thickens outward;
 - ends under its outer post;
 - has its lower edge above every corner of the panel's outline it crosses.
+
+## D119. The Bf 110 C's windscreen frame first: dash covers removed, the corner handles as arcs (3 Nov 2026, product owner's request)
+
+**The request:** the product owner said the dash covers (the crash pads of D117/D118) are wrong. Start with the
+windscreen frame alone, with no dash covers yet. The handle hoops in the top corners should be arcs joining the
+vertical and horizontal frames, as in #32.
+
+**The change** (`src/ui/bf110Frame.js`):
+- **Dash covers removed:** the crash pads and the dark fill under them are gone. D118 is superseded.
+- **Grab handles:** each is now an arc in its top corner (`handlePath`, `FRAME_110.handles`). It is a quarter ellipse
+  that bows in from the corner.
+  - It runs from the top bar's middle line, 112 px in from the corner, down to the outer post's middle line, 56 px
+    below the top bar. That is #32's ≈100 and ≈50 of its pixels, scaled by 1.12.
+  - The tube is 9 px wide. It is drawn before the bars, so its ends sit under them.
+  - This replaces D117's free-standing loops.
+- **Windscreen ledge:** back at 6 px, D117's measured height. The windscreen posts now end on it (foot 12 px, the
+  ledge's lower edge). Before, they ran down behind the pads.
+
+**Shown:** the handle arcs only. On #32 each hoop is a closed loop whose upper half lies over the top bar; that upper
+half is not drawn.
+
+**Left:** the dash covers, to be redesigned with the product owner.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each handle:
+- starts on the top bar, 112 px in from the corner;
+- ends on the post's middle line, 56 px down;
+- bows in from the corner;
+- is symmetric with the other handle.
+

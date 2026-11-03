@@ -5,10 +5,9 @@
 //   the foot of the screen (as the Bf 109's hood sides and fuselage frames), passing behind the panel;
 //   the bar across between the outer posts (as the Bf 109's cross bar) with the armoured windscreen's posts below it,
 //   leaning in a little going down, a ledge across their feet, and small gussets in the corners;
-//   two loop grab handles behind the top bar, and the bracket on it with the red-knobbed handle hanging below;
-//   two grey padded crash pads either side of the Revi (as the Bf 109's coaming lip), straight wedges sloping down and
-//   out from beside the Revi to the outer posts above the panel's top, as photographed, dark beneath them;
-//   and the cockpit's dark sides round the panel, between the outer posts.
+//   a grab handle in each top corner, an arc from the top bar down to the outer post (product owner, D119), and the
+//   bracket on the top bar with the red-knobbed handle hanging below;
+//   and the cockpit's dark sides round the panel, between the outer posts. No covers over the panel's top yet (D119).
 // Sizes are in picture pixels of the Bf 110 panel's layout (#31, src/ui/bf110Panel.js), measured on #32 at about 1.12
 // times its pixels from the Revi's axis, the windscreen raised to clear the Revi's larger glass. The 3D cockpit frame is
 // hidden meanwhile (src/render/testView.js) and shows again when the pilot looks round; the wings and engines stay.
@@ -24,20 +23,17 @@ export const FRAME_110 = {
   // The bar across between the outer posts, above the Revi's glass.
   crossBar: { y: -164, width: 22 },
   // The armoured windscreen's posts: half apart at the cross bar, in this many pixels for each pixel down, down to `foot`
-  // (behind the crash pads); width.
-  inner: { half: 207, lean: 0.14, foot: 40, width: 20 },
+  // (the ledge's lower edge); width.
+  inner: { half: 207, lean: 0.14, foot: 12, width: 20 },
   // The ledge across the windscreen's foot, behind the Revi, and its two knobs.
-  ledge: { y: -10, width: 12, knob: 7 },
+  ledge: { y: 6, width: 12, knob: 7 },
   // The gussets in the corners between the cross bar and the outer posts: their legs.
   gussets: { leg: 34, width: 16 },
-  // The grab handles behind the top bar: their centres from the axis, radii and tube width.
-  handles: { dx: 185, y: -206, rx: 62, ry: 24, width: 9 },
+  // The grab handles in the top corners: arcs round the corner from the top bar, `along` in from the corner, down to the
+  // outer post, `down` below the top bar (#32: about 100 and 50 of its pixels); tube width.
+  handles: { along: 112, down: 56, width: 9 },
   // The bracket on the top bar and the red-knobbed handle below it, right of the axis.
   knob: { dx: 52, y: -146, r: 8, bracket: [20, 90] },
-  // The crash pads: the gap either side of the axis for the Revi's body; their lower edge's height at the inner end and
-  // at the outer post (a straight slope, #32: about 0.28 down for each pixel out, clear above the panel's top); their
-  // thickness at the inner and outer ends.
-  pads: { gap: 58, foot: [20, 88], thick: [52, 64] },
 };
 const FAR = 4000; // picture pixels: far enough to run off any screen
 const INTERIOR = '#2b2e31';
@@ -69,15 +65,20 @@ export function outerPath() {
 }
 
 /**
- * A crash pad's outline (`side` -1 left, +1 right): a straight wedge, its lower edge from the Revi's gap down and out to
- * the outer post, then its upper edge back, the pad thickening outward as photographed. Points: lower inner, lower outer, upper outer,
- * upper inner.
+ * A grab handle's line (`side` -1 left, +1 right): a quarter ellipse round the frame's top corner, bowing in from it,
+ * from the top bar's middle line `along` in from the corner down to the outer post's, `down` below the bar.
  */
-export function padPath(side) {
-  const { gap, foot, thick } = FRAME_110.pads;
-  const atPost = (y) => [outerX(side, y) - side * FRAME_110.posts.width * 0.4, y]; // tucked under the post
-  const x = AXIS + side * gap;
-  return [[x, foot[0]], atPost(foot[1]), atPost(foot[1] - thick[1]), [x, foot[0] - thick[0]]];
+export function handlePath(side) {
+  const { along, down } = FRAME_110.handles;
+  const { y: cy, half } = FRAME_110.top;
+  const pts = [];
+  for (let k = 0; k <= 16; k += 1) {
+    const a = (k / 16) * (Math.PI / 2);
+    const y = cy + down * Math.sin(a);
+    // Sheared with the post's lean so its foot lands on the post's middle line.
+    pts.push([AXIS + side * (half - along * Math.cos(a) + FRAME_110.posts.slope * (y - cy)), y]);
+  }
+  return pts;
 }
 
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
@@ -125,8 +126,8 @@ export function drawBf110Interior(g, at) {
 }
 
 /**
- * The front frame on the sight's canvas before the Revi: the bars (kept behind the panel), the grab handles, the red
- * knob, then the crash pads over the panel's top. `at` is the panel's placer; `width`, `height` the canvas.
+ * The front frame on the sight's canvas before the Revi: the grab handles, the bars (kept behind the panel), the
+ * ledge's knobs and the red knob. `at` is the panel's placer; `width`, `height` the canvas.
  */
 export function drawBf110Frame(g, at, width, height) {
   g.save();
@@ -136,34 +137,22 @@ export function drawBf110Frame(g, at, width, height) {
   g.clip('evenodd');
   handles(g, at);
   drawFrames(g, frameBars110(at), GREY, { join: 'round' });
-  underPads(g, at);
   ledgeKnobs(g, at);
   redKnob(g, at);
   g.restore();
-  for (const side of [-1, 1]) crashPad(g, at, side);
 }
 
-/** The dark beneath the crash pads, down to the panel's top (the clip keeps the panel clear). */
-function underPads(g, at) {
-  const [left, right] = [padPath(-1), padPath(1)];
-  g.fillStyle = INTERIOR;
-  g.beginPath();
-  [[outerX(-1, FAR), FAR], left[1], left[0], right[0], right[1], [outerX(1, FAR), FAR]]
-    .forEach((p, i) => (i ? g.lineTo(...at.xy(p)) : g.moveTo(...at.xy(p))));
-  g.closePath();
-  g.fill();
-}
-
-/** The two loop grab handles behind the top bar: grey tubes with a lit upper edge. */
+/** The grab handles: grey tubes with a lit upper edge, their ends under the bars (drawn first). */
 function handles(g, at) {
-  const { dx, y, rx, ry, width } = FRAME_110.handles;
+  const { width } = FRAME_110.handles;
   for (const side of [-1, 1]) {
-    const [cx, cy] = at.xy([AXIS + side * dx, y]);
+    const pts = handlePath(side).map((p) => at.xy(p));
     for (const [colour, wd, off] of [[GREY.outline, width + 2, 0], [GREY.band, width, 0], [GREY.lit, width * 0.25, -width * 0.3]]) {
       g.strokeStyle = colour;
       g.lineWidth = at.len(wd);
+      g.lineCap = 'round';
       g.beginPath();
-      g.ellipse(cx, cy + at.len(off), at.len(rx), at.len(ry), 0, 0, Math.PI * 2);
+      pts.forEach(([x, y], i) => (i ? g.lineTo(x, y + at.len(off)) : g.moveTo(x, y + at.len(off))));
       g.stroke();
     }
   }
@@ -203,31 +192,4 @@ function redKnob(g, at) {
   g.beginPath();
   g.arc(kx, ky, at.len(r), 0, Math.PI * 2);
   g.fill();
-}
-
-/** A crash pad: padded grey, lighter along its top, a stitched seam inside its upper edge. */
-function crashPad(g, at, side) {
-  const pts = padPath(side).map((p) => at.xy(p));
-  const ys = pts.map(([, y]) => y);
-  const shade = g.createLinearGradient(0, Math.min(...ys), 0, Math.max(...ys));
-  shade.addColorStop(0, '#80868a');
-  shade.addColorStop(1, '#55595d');
-  g.fillStyle = shade;
-  g.strokeStyle = GREY.outline;
-  g.lineWidth = Math.max(1, at.len(2));
-  g.beginPath();
-  pts.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p)));
-  g.closePath();
-  g.fill();
-  g.stroke();
-  // The seam: a dashed line a little inside the upper edge.
-  const [, , upOut, upIn] = pts;
-  g.strokeStyle = 'rgba(30, 32, 34, 0.7)';
-  g.lineWidth = Math.max(1, at.len(1.2));
-  g.setLineDash?.([at.len(4), at.len(3)]);
-  g.beginPath();
-  g.moveTo(upOut[0], upOut[1] + at.len(7));
-  g.lineTo(upIn[0], upIn[1] + at.len(7));
-  g.stroke();
-  g.setLineDash?.([]);
 }

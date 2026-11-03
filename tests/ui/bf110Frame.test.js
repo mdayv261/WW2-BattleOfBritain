@@ -1,9 +1,9 @@
 // The Bf 110 C's drawn front frame after the product owner's photograph (#32, D117): symmetric about the panel's axis;
 // the outer posts leaning out going down and the windscreen's posts leaning in, as photographed; the top bar on every
-// screen; the windscreen's opening round the Revi's glass and the guns' line; the crash pads straight wedges sloping down
-// and out to the outer posts, as photographed, above the panel's top and clear of every dial and plate on it.
+// screen; the windscreen's opening round the Revi's glass and the guns' line; the grab handles arcs in the top corners
+// from the top bar to the outer posts (D119).
 import { describe, it, expect } from 'vitest';
-import { FRAME_110, outerX, innerX, outerPath, padPath, frameBars110 } from '../../src/ui/bf110Frame.js';
+import { FRAME_110, outerX, innerX, outerPath, handlePath, frameBars110 } from '../../src/ui/bf110Frame.js';
 import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
 import { reviPlacement } from '../../src/ui/reviSight.js';
 import { panelRadius } from '../../src/ui/instruments.js';
@@ -45,44 +45,21 @@ describe('Bf 110 C front frame (D117)', () => {
     }
   });
 
-  it('makes the crash pads straight wedges sloping down and out to the outer posts, as #32, above the panel\'s top', () => {
+  it('arcs each grab handle round its top corner from the top bar down to the outer post, bowing in (D119)', () => {
+    const { top, handles } = FRAME_110;
     for (const side of [-1, 1]) {
-      const [lowIn, lowOut, upOut, upIn] = padPath(side);
-      expect(padPath(side)).toHaveLength(4);
-      const slope = (a, b) => (b[1] - a[1]) / Math.abs(b[0] - a[0]);
-      expect(slope(lowIn, lowOut)).toBeGreaterThan(0.2); // #32: about 0.28
-      expect(slope(lowIn, lowOut)).toBeLessThan(0.35);
-      expect(slope(upIn, upOut)).toBeGreaterThan(0);
-      expect(lowOut[1] - upOut[1]).toBeGreaterThan(lowIn[1] - upIn[1]); // thickening outward, as #32
-      expect(Math.abs(lowOut[0] - outerX(side, lowOut[1]))).toBeLessThan(FRAME_110.posts.width / 2); // under the post
-      // The lower edge passes above every corner of the panel's outline it crosses.
-      for (const [x, y] of L.outline) {
-        const f = (x - lowIn[0]) / (lowOut[0] - lowIn[0]);
-        if (f >= 0 && f <= 1) expect(lowIn[1] + f * (lowOut[1] - lowIn[1]), `${side} ${x}`).toBeLessThan(y);
-      }
-    }
-  });
-
-  it('lays the crash pads beside the Revi, clear of every dial and plate', () => {
-    const inside = (px, py, poly) => {
-      let hit = false;
-      for (let i = 0, j = poly.length - 1; i < poly.length; j = i, i += 1) {
-        const [xi, yi] = poly[i];
-        const [xj, yj] = poly[j];
-        if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) hit = !hit;
-      }
-      return hit;
-    };
-    const things = [
-      ...Object.entries(L.dials).map(([n, [x, y, , o]]) => [n, [x - o, y - o, x + o, y + o]]),
-      ...Object.entries(L.boxes),
-    ];
-    for (const side of [-1, 1]) {
-      const pad = padPath(side);
-      expect(Math.min(...pad.map(([x]) => side * (x - AXIS)))).toBeGreaterThanOrEqual(FRAME_110.pads.gap - 1e-9);
-      for (const [name, [l, t, r, b]] of things) {
-        for (const [cx, cy] of [[l, t], [r, t], [l, b], [r, b], [(l + r) / 2, t]]) expect(inside(cx, cy, pad), `${side} ${name}`).toBe(false);
-      }
+      const pts = handlePath(side);
+      const [x0, y0] = pts[0];
+      const [x1, y1] = pts[pts.length - 1];
+      expect(y0).toBeCloseTo(top.y, 9); // on the top bar's middle line
+      expect(side * (outerX(side, top.y) - x0)).toBeCloseTo(handles.along, 9);
+      expect(y1).toBeCloseTo(top.y + handles.down, 9);
+      expect(x1).toBeCloseTo(outerX(side, y1), 9); // on the post's middle line
+      // Bowing in: its middle is further from the corner than the chord between its ends.
+      const [xm, ym] = pts[pts.length >> 1];
+      const chordX = x0 + (x1 - x0) * ((ym - y0) / (y1 - y0));
+      expect(side * (chordX - xm)).toBeGreaterThan(0);
+      expect(xm - AXIS).toBeCloseTo(-(handlePath(-side)[pts.length >> 1][0] - AXIS), 9); // symmetric
     }
   });
 
