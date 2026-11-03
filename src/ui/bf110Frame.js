@@ -98,15 +98,16 @@ function postFoot() {
   return TOP_Y;
 }
 /**
- * The posts' slope (product owner, D149): #32's 0.16, more by enough that at their feet the posts stand one post width
- * further out each side, the frame's base two widths wider, its top bar unchanged. Then the posts' feet again, where
- * the panel reaches the wider-set left post.
+ * The posts' slope (product owner, D149, D150): #32's 0.16, more by enough that at their feet the posts stand WIDEN post
+ * widths further out each side, the frame's base twice that wider, its top bar unchanged. Then the posts' feet again,
+ * where the panel reaches the wider-set left post.
  */
+export const WIDEN = 2; // post widths each side: one (D149), then one more (D150)
 {
   const { posts, top } = FRAME_110;
   posts.slope = 0.16;
   posts.foot = postFoot();
-  posts.slope = 0.16 + posts.width / (posts.foot - top.y);
+  posts.slope = 0.16 + (WIDEN * posts.width) / (posts.foot - top.y);
   posts.foot = postFoot();
 }
 /**

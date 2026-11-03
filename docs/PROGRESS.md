@@ -37,7 +37,7 @@ Read this at the start of every session.
 - D145, D146, replaced by D147: the panel's right corner ends just past the Heizung placard, drops a little, then
   angles down to touch the right fuselage side.
 - D148 (inner windscreen widened) undone; D149: the outer windscreen frame's base is widened by two frame widths, its
-  top unchanged.
+  top unchanged; D150: widened again by the same amount.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

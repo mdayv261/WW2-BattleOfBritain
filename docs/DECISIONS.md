@@ -4142,3 +4142,20 @@ D117–D128 again.
 - the base is two post widths wider than at #32's slope;
 - the right corner still touches the post.
 
+## D150. The Bf 110 C's outer windscreen frame widened at its base again by the same amount (3 Nov 2026, product owner's request)
+
+**The request:** widen the outer frame's base again by the same amount (D149).
+
+**The change** (src/ui/bf110Frame.js, `WIDEN` 2):
+- **Posts:** the outer posts' feet now stand two post widths (52 px) further out each side than at #32's slope, their
+  tops at the top bar unchanged. The slope is 0.270 (0.215 in D149). The base is 104 px wider than #32's, 777 px across
+  at the feet.
+- **Feet:** recomputed where the panel's left side reaches the left post (frame y 231). The fuselage sheets start there.
+- **Following the posts:** as D149, the side bars, lower frames, dash covers' feet and grab handles' feet follow the
+  posts.
+- **Panel's right corner** (D147): it touches the right post further out and lower, at (1701, 470.2) on #34's pixels.
+- **Left side:** more of the dark cockpit side shows between the panel's left side and the left post.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that the base is four post widths wider than at #32's slope (within 10 px)
+and that the right corner still touches the post.
+

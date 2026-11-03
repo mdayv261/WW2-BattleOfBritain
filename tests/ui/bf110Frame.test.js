@@ -12,7 +12,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   FRAME_110, outerX, fuselageX, fuselagePath, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths,
-  sideBarPath, ledgePath, lowerFramePath, frameBars110, panelEdgeX, FRAME_SHIFT, framePlacer,
+  sideBarPath, ledgePath, lowerFramePath, frameBars110, panelEdgeX, FRAME_SHIFT, framePlacer, WIDEN,
 } from '../../src/ui/bf110Frame.js';
 import { BRACKET } from '../../src/ui/bf110Layout.js';
 import { dashCoverPath, coamingPath } from '../../src/ui/bf110Covers.js';
@@ -304,11 +304,12 @@ describe('Bf 110 C front frame (D117)', () => {
     for (const [name, [x, , , o]] of Object.entries(L.dials)) expect(x + o, name).toBeLessThan(c[0]);
   });
 
-  it('widens the outer frame\'s base by two post widths, its top bar unchanged (D149)', () => {
+  it('widens the outer frame\'s base by two post widths twice, its top bar unchanged (D149, D150)', () => {
     const { top, posts } = FRAME_110;
+    expect(WIDEN).toBe(2);
     expect(outerX(1, top.y) - AXIS).toBe(top.half); // the top bar's corners as before
     const d117 = (y) => top.half + 0.16 * (y - top.y); // #32's slope
-    expect(2 * (outerX(1, posts.foot) - AXIS) - 2 * d117(posts.foot)).toBeCloseTo(2 * posts.width, 0); // the base
+    expect(2 * (outerX(1, posts.foot) - AXIS) - 2 * d117(posts.foot)).toBeCloseTo(4 * posts.width, -1); // the base
     expect(posts.slope).toBeGreaterThan(0.16);
   });
 
