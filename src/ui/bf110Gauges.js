@@ -145,27 +145,54 @@ export function autopilotIndicator(g, x, y, face) {
 }
 
 /**
- * The elevator trim indicator's hand (product owner, D161): 0° straight out to 9 o'clock, nose-up trim (positive
- * degrees) above it and nose-down below, 5 degrees of arc for each degree of trim, held at the ±15° scale's ends (D74).
+ * The elevator trim indicator's pointer (product owner, D161, D164): 0 at 9 o'clock, nose-up trim (positive) above it
+ * and nose-down below, 3 degrees of arc for each degree of trim, so the ±15° display scale (D74) reaches the outer marks.
  */
 export const TRIM_RANGE = 15;
-export const trimAngle = (deg) => (-90 + Math.max(-TRIM_RANGE, Math.min(TRIM_RANGE, deg)) * 5) * DEG;
+export const TRIM_MARKS = [-45, -22.5, 0, 22.5, 45]; // degrees of arc from 9 o'clock, up positive: dash, dot, square, dot, dash
+export const trimAngle = (deg) => (-90 + Math.max(-TRIM_RANGE, Math.min(TRIM_RANGE, deg)) * 3) * DEG;
 
-/** The elevator trim indicator (D161), in place of #34's AEG indicator: its scale round the left half, figures every 5°. */
+/**
+ * The elevator trim indicator (D161), redrawn after #34's AEG instrument (D164): five marks round the left side (a dash
+ * at each end, a dot either side of the middle, a square at 9 o'clock) and a very short pointer inside them; the dark
+ * round window at its top; and, shown only, the rudder trim's L ▮ R with its upright marker, and AEG at the foot.
+ */
 export function trimIndicator(g, x, y, face, degrees) {
   lwFace(g, x, y, face);
-  centred(g);
-  for (let d = -TRIM_RANGE; d <= TRIM_RANGE; d += 1) {
-    const major = d % 5 === 0;
-    tick(g, x, y, face, trimAngle(d), 0.95, major ? 0.78 : 0.88, major ? 1.8 : 1);
-  }
+  const ink = paint.ink;
+  g.fillStyle = '#0b0b0c'; // the round window
+  g.beginPath();
+  g.arc(x, y - face * 0.55, face * 0.22, 0, Math.PI * 2);
+  g.fill();
+  TRIM_MARKS.forEach((m, i) => {
+    const a = (-90 + m) * DEG;
+    const [mx, my] = at(x, y, a, face * 0.7);
+    g.fillStyle = ink;
+    g.strokeStyle = ink;
+    if (i === 2) g.fillRect(mx - face * 0.06, my - face * 0.05, face * 0.12, face * 0.1); // the square
+    else if (i === 1 || i === 3) {
+      g.beginPath();
+      g.arc(mx, my, face * 0.045, 0, Math.PI * 2);
+      g.fill();
+    } else tick(g, x, y, face, a, 0.78, 0.62, Math.max(2, face * 0.07)); // the dashes
+  });
+  // The very short pointer, inside the marks.
+  g.strokeStyle = ink;
+  g.lineWidth = Math.max(2, face * 0.06);
+  g.lineCap = 'butt';
+  g.beginPath();
+  g.moveTo(...at(x, y, trimAngle(degrees), face * 0.44));
+  g.lineTo(...at(x, y, trimAngle(degrees), face * 0.56));
+  g.stroke();
+  // The rudder trim (shown only, its marker upright) and the maker's name.
   font(g, face * 0.2, true);
-  for (const d of [-15, -10, -5, 0, 5, 10, 15]) g.fillText(d > 0 ? `+${d}` : String(d), ...at(x, y, trimAngle(d), face * 0.6));
-  font(g, face * 0.15, true);
-  g.fillText('Höhen-', x + face * 0.38, y - face * 0.12);
-  g.fillText('trimmung', x + face * 0.38, y + face * 0.06);
-  g.fillText('Grad', x + face * 0.38, y + face * 0.26);
-  lwHand(g, x, y, face, trimAngle(degrees), { counterweight: false });
+  centred(g);
+  g.fillText('L', x - face * 0.26, y + face * 0.5);
+  g.fillText('R', x + face * 0.26, y + face * 0.52);
+  g.fillRect(x - face * 0.04, y + face * 0.4, face * 0.08, face * 0.18);
+  g.fillRect(x - face * 0.01, y + face * 0.24, face * 0.02, face * 0.12);
+  font(g, face * 0.12, true);
+  g.fillText('AEG', x, y + face * 0.84);
 }
 
 /**

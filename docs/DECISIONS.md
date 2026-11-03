@@ -4404,3 +4404,29 @@ air thermometer in D140) are gone. The space beside the outside air thermometer 
 **Tests:** tests/ui/bf110Panel.test.js checks that the Bf 110 has no pitch indicator entries and no
 "Luftschraubenstellung" lettering.
 
+## D164. The Bf 110 C's elevator trim indicator redrawn after #34's AEG instrument (3 Nov 2026, product owner's request)
+
+**The request:** redesign the elevator trim indicator (D161) to match the original instrument in the panel picture (#34,
+the AEG instrument). The rudder trim marked "L | R" is not functional. No degree markings: just the five marks on the
+indicator's left side, and a very short pointer.
+
+**The change** (src/ui/bf110Gauges.js `trimIndicator`, `TRIM_MARKS`, `trimAngle`):
+- **Marks:** measured on #34. Five white marks round the left side at 0.7 of the radius:
+  - a dash at 45° above and below 9 o'clock;
+  - a dot at 22.5° above and below;
+  - a square at 9 o'clock.
+  - There are no figures or lettering; D161's ±15 figures and "Höhentrimmung / Grad" are gone.
+- **Pointer:** a very short white bar inside the marks, between 0.44 and 0.56 of the radius.
+  - It sits at 9 o'clock for neutral trim, above for nose-up and below for nose-down.
+  - It moves 3° of arc for each degree of trim, so the ±15° display scale (D74) reaches the outer dashes.
+- **Shown only:**
+  - the dark round window at the top;
+  - the rudder trim's "L ▮ R" with its upright marker, fixed in the middle;
+  - "AEG" at the foot, as on #34.
+
+**Tests:** tests/ui/bf110Panel.test.js checks that:
+- there are five marks on the left;
+- ±15° reaches the outer marks and 0 is at 9 o'clock;
+- L, R and AEG are lettered;
+- no degree figures or trim lettering remain.
+

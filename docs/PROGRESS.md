@@ -54,6 +54,8 @@ Read this at the start of every session.
 - D162: the airspeed indicator, altimeter, undercarriage lights and round counter stand in the turn and slip
   indicator's black mounting (the red bezels gone).
 - D163: the airscrew pitch indicators are removed (the Bf 110 C had none, product owner).
+- D164: the elevator trim indicator is redrawn after #34's AEG instrument (five marks, a very short pointer, the rudder
+  trim's L R shown only).
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

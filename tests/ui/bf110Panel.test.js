@@ -9,7 +9,7 @@ import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
 import { switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS, GEAR_HOUSING } from '../../src/ui/bf110Fittings.js';
 import {
-  cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle,
+  cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
 } from '../../src/ui/bf110Gauges.js';
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
@@ -229,14 +229,19 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     const [ax, ay, , ao] = L.dials.airspeed;
     expect(ty).toBeGreaterThan(ay + ao); // below the airspeed indicator
     expect(Math.abs(tx - ax)).toBeLessThan(ao);
-    expect(L.dials.aeg).toBeUndefined();
-    const sim = new Simulation(aircraftById.bf110c4, 'air');
+        const sim = new Simulation(aircraftById.bf110c4, 'air');
     sim.plane.surfaces.trim = 0.5;
     const v = instrumentReadings(sim);
     expect(v.trimDegrees).toBeCloseTo(7.5, 9);
+    // As #34's AEG instrument (D164): five marks on the left only, the outer ones at the scale's ends; no figures; the
+    // rudder trim's L and R shown only.
+    expect(TRIM_MARKS).toHaveLength(5);
+    for (const m of TRIM_MARKS) expect(Math.abs(m)).toBeLessThan(90);
+    expect(clockwise(trimAngle(15))).toBeCloseTo(270 + Math.max(...TRIM_MARKS), 6);
+    expect(clockwise(trimAngle(-15))).toBeCloseTo(270 + Math.min(...TRIM_MARKS), 6);
     const words = draw(v).texts.map((t) => t.s);
-    for (const w of ['+15', '-15', 'Höhen-', 'trimmung']) expect(words, w).toContain(w);
-    expect(words).not.toContain('AEG');
+    for (const w of ['L', 'R', 'AEG']) expect(words, w).toContain(w);
+    for (const w of ['+15', '-15', '+5', 'Höhen-', 'Grad']) expect(words, w).not.toContain(w);
   });
 
   it('reads the coolant thermometers 40 to 120 °C, 80 straight up', () => {

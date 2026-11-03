@@ -6,7 +6,7 @@
 //   indicator, the round counter for the two MG FF/M cannon (Durchladen) and the Heizung placard.
 //   Middle: the repeater compass, the 2 MG / 4 MG switch and the Kurs strip; the airspeed indicator, turn and bank (under
 //   the Revi) and climb indicator; the outside air thermometer (no airscrew pitch indicators, D163); the
-//   Siemens course box, the elevator trim indicator (in #34's AEG indicator's place, D161), the horizon and the
+//   Siemens course box, the elevator trim indicator (#34's AEG instrument, D161, D164), the horizon and the
 //   altimeter.
 //   Right: each engine's rev counter and manifold pressure gauge, with their correction cards.
 //   Bottom centre: each engine's coolant thermometer either side of the fuel gauge and its tank lamps, their bottoms on
