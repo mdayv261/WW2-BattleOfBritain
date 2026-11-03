@@ -4284,3 +4284,17 @@ straight down to the bottom of the screen.
 panel. tests/ui/bf110Frame.test.js no longer excuses the bracket where the left lower frame passes behind the panel's top
 left corner.
 
+## D157. The Bf 110 C's undercarriage indicator lights in a round housing (3 Nov 2026, product owner's request)
+
+**The request:** redesign the undercarriage indicator light block to be round, not square.
+
+**The change** (src/ui/bf110Fittings.js, `gearLights`, `GEAR_LAMPS`):
+- **Housing:** the "Fahrgestell Anzeige" block is now a round dark housing filling its square box (115 of #34's pixels
+  across), with a lit inner rim and four small screws on the diagonals.
+- **Lamps:** "Fahrgestell" sits above the lamps and "Anzeige" between the rows. The two EIN lamps above and the two AUS
+  lamps below stand inside the rim.
+- **Working as before:** EIN red with the undercarriage up, AUS green with it down (D95, D106).
+
+**Tests:** tests/ui/bf110Panel.test.js checks that the box is square, all four lamps lie inside the rim, and the housing
+is drawn as a circle of the box's half-width.
+

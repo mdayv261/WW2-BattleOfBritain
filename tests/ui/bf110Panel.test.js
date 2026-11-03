@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 import { lwVarioAngle } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
-import { switchPosition, gearLightState, tBar, T_STEM } from '../../src/ui/bf110Fittings.js';
+import { switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS } from '../../src/ui/bf110Fittings.js';
 import { cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle } from '../../src/ui/bf110Gauges.js';
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
@@ -228,6 +228,22 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     expect(gearLightState({ gearUp: true, gearDown: false })).toEqual({ ein: true, aus: false });
     expect(gearLightState({ gearUp: false, gearDown: true })).toEqual({ ein: false, aus: true });
     expect(gearLightState({ gearUp: false, gearDown: false })).toEqual({ ein: false, aus: false });
+  });
+
+  it('houses the undercarriage lights in a round housing, all four lamps inside it (D157)', () => {
+    const [l, top, r, b] = L.boxes.gearLights;
+    expect(r - l).toBeCloseTo(b - top, 6); // a square box for a round housing
+    for (const [fx, fy] of GEAR_LAMPS.lamps) {
+      expect(Math.hypot(fx, fy) + GEAR_LAMPS.radius * 1.15).toBeLessThan(0.94); // inside the rim, lens ring and all
+    }
+    const arcs = [];
+    const g = new Proxy({}, {
+      get: (t2, p) => (p === 'arc' ? (x, y, rad) => arcs.push(rad) : p in t2 ? t2[p]
+        : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t2, p, v) => { t2[p] = v; return true; },
+    });
+    bf110Panel(g, 1000, 0, 30, readings());
+    expect(arcs.some((rad) => Math.abs(rad - (r - l) / 2) < 1e-6)).toBe(true); // the housing at 30 px per dial radius
   });
 
   it('reads the fuel gauge from the front left main tank, 375 L full (S24), and the radiator from key O', () => {

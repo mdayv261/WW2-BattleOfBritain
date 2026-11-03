@@ -46,6 +46,7 @@ Read this at the start of every session.
   the clock to the lever box (the lights box back); D155: that edge carried on to touch the left fuselage sheet, then
   straight down.
 - D156: the clock is mounted directly in the panel; its bracket is removed.
+- D157: the undercarriage indicator lights are in a round housing.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

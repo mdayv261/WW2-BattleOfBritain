@@ -1,6 +1,6 @@
 // The Bf 110 C panel's plate and fittings (D106, D140), after the product owner's picture of the panel (#34): the dark
-// grey plate on its outline (the clock mounted directly in it, its bracket gone, D156); the "Fahrgestell Anzeige" undercarriage lights (EIN red
-// with it up, AUS green with it down, as the Bf 109's, D95); the Fahrwerk and Landeklappe Ein/Aus switches following the
+// grey plate on its outline (the clock mounted directly in it, its bracket gone, D156); the round "Fahrgestell Anzeige"
+// undercarriage lights (D157; EIN red with it up, AUS green with it down, as the Bf 109's, D95); the Fahrwerk and Landeklappe Ein/Aus switches following the
 // undercarriage and the flaps (their upright T levers, D114); the placards (src/ui/bf110Placards.js); and, shown only,
 // the airscrew lever box (Automatik / Hand, größer / kleiner), the Umschaltwarnung lamps and the tank lamps
 // (Behälter vorn / hinten). The boxes along the top and the course box are in src/ui/bf110Boxes.js.
@@ -54,18 +54,49 @@ function outlinePlate(g, at, outline) {
   g.stroke();
 }
 
-/** The "Fahrgestell Anzeige" lights: an EIN lamp for each leg above, an AUS lamp for each below. */
+/**
+ * Where the undercarriage lights' four lamps stand in their round housing (D157), as fractions of its radius from its
+ * centre: an EIN lamp for each leg above, an AUS lamp for each below; and their radius.
+ */
+export const GEAR_LAMPS = {
+  radius: 0.2,
+  lamps: [[-0.4, -0.3, 'ein'], [0.4, -0.3, 'ein'], [-0.4, 0.36, 'aus'], [0.4, 0.36, 'aus']],
+};
+
+/**
+ * The "Fahrgestell Anzeige" lights in a round housing (product owner, D157) filling its box: a dark disc with a lit rim
+ * and four screws, Fahrgestell over the lamps and Anzeige between the rows; the EIN lamps red with the undercarriage up,
+ * the AUS lamps green with it down (D95, D106).
+ */
 function gearLights(g, b, s, v) {
-  plain(g, b, s);
+  const r = Math.min(b.w, b.h) / 2;
+  const [x, y] = [b.x + b.w / 2, b.y + b.h / 2];
+  g.fillStyle = 'rgba(0,0,0,0.3)';
+  g.beginPath();
+  g.arc(x + r * 0.04, y + r * 0.05, r, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = BLACK;
+  g.beginPath();
+  g.arc(x, y, r, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = '#55585b';
+  g.lineWidth = Math.max(1, r * 0.04);
+  g.beginPath();
+  g.arc(x, y, r * 0.94, 0, Math.PI * 2);
+  g.stroke();
+  for (const a of [45, 135, 225, 315]) {
+    const t = (a * Math.PI) / 180;
+    lens(g, x + Math.cos(t) * r * 0.8, y + Math.sin(t) * r * 0.8, r * 0.05, '#7d8084', false); // the screws
+  }
   const lit = gearLightState(v);
-  text(g, 'Fahrgestell', b.x + b.w / 2, b.y + b.h * 0.1, b.w * 0.09, INK);
-  text(g, 'Anzeige', b.x + b.w / 2, b.y + b.h * 0.52, b.w * 0.09, INK);
-  for (const [fx, fy, word, colour, dark, on] of [[0.3, 0.32, 'EIN', '#e0402c', '#4a1610', lit.ein], [0.7, 0.32, 'EIN', '#e0402c', '#4a1610', lit.ein],
-    [0.3, 0.74, 'AUS', '#3fcf4a', '#14401a', lit.aus], [0.7, 0.74, 'AUS', '#3fcf4a', '#14401a', lit.aus]]) {
-    const x = b.x + b.w * fx;
-    const y = b.y + b.h * fy;
-    lens(g, x, y, b.w * 0.15, on ? colour : dark, on);
-    text(g, word, x, y, b.w * 0.1, on ? '#1a1a1a' : INK, { bold: true });
+  text(g, 'Fahrgestell', x, y - r * 0.66, r * 0.15, INK);
+  text(g, 'Anzeige', x, y + r * 0.03, r * 0.15, INK);
+  const look = { ein: ['EIN', '#e0402c', '#4a1610'], aus: ['AUS', '#3fcf4a', '#14401a'] };
+  for (const [fx, fy, kind] of GEAR_LAMPS.lamps) {
+    const [word, colour, dark] = look[kind];
+    const on = lit[kind];
+    lens(g, x + fx * r, y + fy * r, GEAR_LAMPS.radius * r, on ? colour : dark, on);
+    text(g, word, x + fx * r, y + fy * r, r * 0.13, on ? '#1a1a1a' : INK, { bold: true });
   }
 }
 
