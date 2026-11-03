@@ -274,30 +274,34 @@ describe('Bf 110 C front frame (D117)', () => {
     const path = coamingPath();
     const [lInner, lOuter] = dashCoverPath(-1).slice(-2);
     const [rInner, rOuter] = dashCoverPath(1).slice(-2);
-    expect(path.slice(0, 4)).toEqual([lOuter, lInner, rInner, rOuter]); // along the covers' front edges and the pad's foot
+    expect(path.slice(0, 3)).toEqual([lOuter, lInner, rInner]); // along the left front edge and the pad's foot
     const top = 57 - FRAME_SHIFT; // the panel's top edge in the frame's picture
-    expect(path.slice(4)).toEqual([[rInner[0], top], [lInner[0], top]]); // down to the panel's top under the Revi
+    // On the right only down to the panel's top along the cover's front edge, the panel's corner falling away (D147).
+    const [x, y] = path[3];
+    expect(y).toBeCloseTo(top, 9);
+    expect((x - rInner[0]) * (rOuter[1] - rInner[1]) - (y - rInner[1]) * (rOuter[0] - rInner[0])).toBeCloseTo(0, 6);
+    expect(path[4]).toEqual([lInner[0], top]); // and back along the panel's top
     expect(lInner[1]).toBeLessThan(top); // the pad's foot above the panel's top: a strip to fill
   });
 
-  it('carries the panel\'s top level to the right cover, along its front edge to the post, then down (D146)', () => {
-    const toPanel = ([x, y]) => [x, y + FRAME_SHIFT];
-    const [inner, foot] = dashCoverPath(1).slice(-2).map(toPanel);
-    const onEdge = ([x, y]) => (x - inner[0]) * (foot[1] - inner[1]) - (y - inner[1]) * (foot[0] - inner[0]);
+  it('ends the panel\'s top past the Heizung placard, drops a little, then angles down to touch the right post (D147)', () => {
     const O = L.outline;
     const i = O.findIndex(([x, y]) => y === 57 && x > AXIS); // the top edge's right end
-    const [a, b, c] = [O[i], O[i + 1], O[i + 2]];
+    const [a, b, c, d] = [O[i], O[i + 1], O[i + 2], O[i + 3]];
     expect(O[i - 1][1]).toBe(57); // the top edge runs level to it
-    expect(Math.abs(onEdge(a)) / Math.hypot(foot[0] - inner[0], foot[1] - inner[1])).toBeLessThan(0.1); // on the cover's edge
-    expect(Math.abs(onEdge(b)) / Math.hypot(foot[0] - inner[0], foot[1] - inner[1])).toBeLessThan(0.1); // along it
-    const postInner = outerX(1, b[1] - FRAME_SHIFT) - FRAME_110.posts.width / 2;
-    expect(Math.abs(b[0] - postInner)).toBeLessThan(0.2); // to the right post's inner edge
-    expect(c[1]).toBeGreaterThan(b[1]); // then down
-    expect(c[0]).toBeGreaterThan(b[0]); // angling out
-    for (let y = b[1]; y <= c[1]; y += 2) { // inside the post below the corner
-      const x = b[0] + ((c[0] - b[0]) * (y - b[1])) / (c[1] - b[1]);
-      expect(x, `${y}`).toBeLessThan(outerX(1, y - FRAME_SHIFT) - FRAME_110.posts.width / 2 + 0.2);
+    const heizungRight = L.boxes.heizung[2];
+    expect(a[0]).toBeGreaterThan(heizungRight); // just past the Heizung placard
+    expect(a[0] - heizungRight).toBeLessThan(10);
+    expect(b[1] - a[1]).toBeGreaterThan(5 * (b[0] - a[0])); // almost straight down
+    expect(b[1] - a[1]).toBeLessThan(30); // a short way
+    expect((c[0] - b[0]) / (c[1] - b[1])).toBeCloseTo(115 / 95, 2); // at #34's shoulder slope
+    const postInner = (y) => outerX(1, y - FRAME_SHIFT) - FRAME_110.posts.width / 2;
+    expect(Math.abs(c[0] - postInner(c[1]))).toBeLessThan(0.2); // touching the right fuselage side
+    for (let y = c[1]; y <= d[1]; y += 2) { // then down beside it, inside it
+      const x = c[0] + ((d[0] - c[0]) * (y - c[1])) / (d[1] - c[1]);
+      expect(x, `${y}`).toBeLessThan(postInner(y) + 0.2);
     }
+    for (const [name, [x, , , o]] of Object.entries(L.dials)) expect(x + o, name).toBeLessThan(c[0]);
   });
 
   it('has no canopy latch and lever on the top bar and no knobs on the ledge (D125)', () => {

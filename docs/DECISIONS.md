@@ -4092,3 +4092,28 @@ corner should follow the cover's angle, then angle down as in the panel picture 
 
 The posts and lower frame checks allow for the corner's touch.
 
+## D147. The Bf 110 C panel's right corner reshaped: past the Heizung placard, a short drop, then down to the fuselage side (3 Nov 2026, product owner's request)
+
+**The request:** D146's corner was not right. The panel's top right corner should not meet the frame's corner.
+- It should end just past the right edge of the Heizung placard.
+- Then it should drop almost vertically for a short distance.
+- Then it should run down at an angle until it touches the right fuselage side.
+
+**The change** (src/ui/bf110Layout.js, `RIGHT_CORNER`; replaces D146's):
+- **Top edge:** it ends at 1335 on #34's pixels, 15 past the Heizung placard's right edge (1320).
+- **Drop:** almost straight down to (1340, 172), 18 picture pixels.
+- **Angle:** down at #34's shoulder slope (115 across for 95 down), until it touches the right outer post's inner edge
+  at (1568.4, 360.7). That is the right fuselage side there, above the fuselage sheet.
+- **Side:** down beside the post, inside it, to the right section's foot (1570, 895).
+- **Beyond the corner:** between the angled edge, the right cover and the post, the dark cockpit side shows, as on #34.
+- **Fill limited:** D144's fill on the right now runs only down to the panel's top along the cover's front edge, so it no
+  longer spills past the corner.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that:
+- the top edge ends past the placard by under 10 px;
+- the drop is short and nearly upright;
+- the angled edge has #34's slope and touches the post's inner edge;
+- the side stays inside the post;
+- every dial stays inside the corner;
+- the fill's right end lies on the cover's edge at the panel's top.
+

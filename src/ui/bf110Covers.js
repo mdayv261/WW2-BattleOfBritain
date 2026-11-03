@@ -41,16 +41,19 @@ export function dashCoverPath(side) {
 const PAD_FOOT_Y = TOP_Y - REVI_RAISE * PX;
 
 /**
- * The panel's top uncovered by raising the dash covers' inner feet to the pad (D144): from each cover's outer foot along
- * its front edge to the pad, across under the Revi, and back along where the front edges ran down to the panel's top
- * (D143). Filled in the plate's colour where it lies outside the panel's outline, so the panel's top reaches up to the
- * covers and the Revi.
+ * The panel's top uncovered by raising the dash covers' inner feet to the pad (D144): on the left from the cover's outer
+ * foot along its front edge to the pad; across under the Revi; on the right along the cover's front edge only down to
+ * the panel's top edge, beyond which the panel's right corner falls away (D147); and back along the panel's top and
+ * where the left front edge ran down to it (D143). Filled in the plate's colour where it lies outside the panel's
+ * outline, so the panel's top reaches up to the covers and the Revi.
  */
 export function coamingPath() {
   const [left, right] = [dashCoverPath(-1), dashCoverPath(1)];
   const feet = (pts) => pts.slice(-2); // the inner foot, the outer foot
   const [[lInner, lOuter], [rInner, rOuter]] = [feet(left), feet(right)];
-  return [lOuter, lInner, rInner, rOuter, [rInner[0], TOP_Y], [lInner[0], TOP_Y]];
+  const f = (TOP_Y - rInner[1]) / (rOuter[1] - rInner[1]);
+  const rTop = [rInner[0] + (rOuter[0] - rInner[0]) * f, TOP_Y]; // the right front edge at the panel's top
+  return [lOuter, lInner, rInner, rTop, [lInner[0], TOP_Y]];
 }
 
 /**
