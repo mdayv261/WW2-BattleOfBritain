@@ -103,8 +103,9 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     for (const n of ['rpmLeft', 'ataLeft']) { // the left engine's 15 mm and 5 mm more (D166, D167)
       expect(screenPx(L.dials[n][0] - (440 + (1265 - 882) * 0.46)), n).toBeCloseTo(43 * 2, 0);
     }
-    for (const [n, y34] of [['rpmLeft', 630], ['rpmRight', 630], ['ataLeft', 805], ['ataRight', 805]]) { // 5 mm up (D168)
-      expect(screenPx(57 + (y34 - 132) * 0.46 - L.dials[n][1]), n).toBeCloseTo(43 * 0.5, 0);
+    // 5 mm up (D168), the rev counters 3 mm more (D170).
+    for (const [n, y34, mm] of [['rpmLeft', 630, 8], ['rpmRight', 630, 8], ['ataLeft', 805, 5], ['ataRight', 805, 5]]) {
+      expect(screenPx(57 + (y34 - 132) * 0.46 - L.dials[n][1]), n).toBeCloseTo(4.3 * mm, 0);
     }
   });
 

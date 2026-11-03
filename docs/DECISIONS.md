@@ -4488,3 +4488,14 @@ gauge's, and move it up 5 mm.
 **Tests:** tests/ui/bf110Panel.test.js checks the left edges line up and the 5 mm rise. The layout checks keep it clear of
 every dial and box.
 
+## D170. The Bf 110 C's rev counters moved a further 3 mm up (3 Nov 2026, product owner's request)
+
+**The request:** move the tacho gauges up 3 mm.
+
+**The change** (src/ui/bf110Layout.js, `RPM_UP`): the two rev counters and their correction cards stand 20.8 of #34's
+pixels (3 mm) higher, 8 mm above #34's place in all. The manifold pressure gauges stay where D168 put them. The
+counters' cards now come within a pixel of the outside air thermometer's mounting.
+
+**Tests:** tests/ui/bf110Panel.test.js checks the 8 mm rise of the rev counters and the 5 mm of the manifold pressure
+gauges on a 2560 px screen.
+

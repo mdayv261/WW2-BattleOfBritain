@@ -107,6 +107,7 @@ const altimeter = as109('altimeter', 1085, 730);
 const RIGHT_MOVE = 173.6;
 const LEFT_MOVE = 138.9; // the left engine's, 15 mm (D166) and 5 mm more (D167), the same way
 const ENGINE_UP = 34.7; // both engines' gauges 5 mm up (D168)
+const RPM_UP = ENGINE_UP + 20.8; // the rev counters 3 mm more (D170)
 
 /**
  * Everything on the panel, in the layout's picture pixels: dials [x, y, face radius, mounting half-width]; boxes [left,
@@ -125,8 +126,8 @@ export const LAYOUT = {
     airTemp: dial(1265 + LEFT_MOVE - 86 + 60, 440 - ENGINE_UP, 52, 60),
     // Each engine's rev counter and manifold pressure gauge.
     // The right engine's moved 25 mm right (product owner, D165), the left engine's 20 mm (D166, D167); all 5 mm up
-    // (D168).
-    rpmLeft: dial(1265 + LEFT_MOVE, 630 - ENGINE_UP, 78, 86), rpmRight: dial(1442 + RIGHT_MOVE, 630 - ENGINE_UP, 78, 86),
+    // (D168), the rev counters 3 mm more (D170).
+    rpmLeft: dial(1265 + LEFT_MOVE, 630 - RPM_UP, 78, 86), rpmRight: dial(1442 + RIGHT_MOVE, 630 - RPM_UP, 78, 86),
     ataLeft: dial(1265 + LEFT_MOVE, 805 - ENGINE_UP, 78, 86), ataRight: dial(1442 + RIGHT_MOVE, 805 - ENGINE_UP, 78, 86),
     // Bottom centre: the coolant thermometers either side of the fuel gauge; below them the radiator flap switches either
     // side of the tank selector, now below the screen's foot (D141); the Preßluft gauge on the left wing.
@@ -147,8 +148,8 @@ export const LAYOUT = {
   // The "d 30′ 5′" correction cards above the engine gauges and the "Km" cards above the coolant thermometers: shown
   // only, lying over the tops of their dials' mountings, as photographed.
   cards: {
-    rpmLeft: box(1185 + LEFT_MOVE, 520 - ENGINE_UP, 1345 + LEFT_MOVE, 557 - ENGINE_UP),
-    rpmRight: box(1362 + RIGHT_MOVE, 520 - ENGINE_UP, 1522 + RIGHT_MOVE, 557 - ENGINE_UP),
+    rpmLeft: box(1185 + LEFT_MOVE, 520 - RPM_UP, 1345 + LEFT_MOVE, 557 - RPM_UP),
+    rpmRight: box(1362 + RIGHT_MOVE, 520 - RPM_UP, 1522 + RIGHT_MOVE, 557 - RPM_UP),
     ataLeft: box(1185 + LEFT_MOVE, 697 - ENGINE_UP, 1345 + LEFT_MOVE, 734 - ENGINE_UP),
     ataRight: box(1362 + RIGHT_MOVE, 697 - ENGINE_UP, 1522 + RIGHT_MOVE, 734 - ENGINE_UP),
     tempLeft: box(627, 842, 737, 895), tempRight: box(1017, 842, 1127, 895),
