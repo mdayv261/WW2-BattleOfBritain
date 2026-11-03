@@ -23,8 +23,8 @@ const knob = (X, Y, rad) => [...pt(X, Y), len(rad)];
 /** An Ein/Aus switch: its slot's x, its Ein (top) and Aus (bottom) on #34. */
 const slot = (X, top, bottom) => [pt(X, top)[0], pt(X, top)[1], pt(X, bottom)[1]];
 
-// The outline on #34, levelled, clockwise from the clock's bracket: its slanted top over the panel's top edge, the long
-// top edge, the right corner and side, the manifold pressure gauges' box, the bottom centre section, the gap beside
+// The outline on #34, levelled, clockwise from the top left corner over the clock (mounted directly in the panel, its
+// bracket gone: product owner, D156): the long top edge, the right corner and side, the manifold pressure gauges' box, the bottom centre section, the gap beside
 // it and the left wing with the airscrew lever box. Below the screen's foot it only closes the shape (D129).
 // The right corner (product owner, D147, D151): the top edge carried on level to the right dash cover's front edge, along
 // that edge three quarters of its length from the Revi's pad, then down at #34's shoulder slope (115 across for 95 down)
@@ -36,7 +36,7 @@ const RIGHT_CORNER = [[1292.1, 132], [1479.8, 167.6], [1659.3, 315.9]];
 // right outer post's inner edge to its foot, out to the fuselage sheet's inner edge there, and down it to the right
 // section's foot, whose bottom edge runs out to meet it. Set in #34's pixels, kept with the frame by the same tests.
 const RIGHT_SIDE = [[1688.3, 423.3], [1738.3, 423.3], [1910, 895]]; // the post's foot as moved by D154
-// The left side (product owner, D153-D155): from the clock's bracket's foot a short way left, level, to about 10 mm
+// The left side (product owner, D153-D155): from below the top left corner a short way left, level, to about 10 mm
 // (70 of #34's pixels) left of the clock's bottom left corner; then straight down and left past the airscrew lever
 // box's top left corner until it touches the left fuselage side (the fuselage sheet's inner edge, src/ui/bf110Frame.js;
 // tests/ui/bf110Frame.test.js keeps the touch); then straight down to below the screen's foot.
@@ -47,17 +47,15 @@ const LEFT_SLOPE = (LEVERS[1] - LEFT_START[1]) / (LEFT_START[0] - LEVERS[0]); //
 const LEFT_TOUCH = [FAR_LEFT, LEFT_START[1] + (LEFT_START[0] - FAR_LEFT) * LEFT_SLOPE];
 const LEFT_SIDE = [[FAR_LEFT, 1120], LEFT_TOUCH, LEFT_START, [255, 295]];
 const OUTLINE_34 = [
-  [255, 165], [295, 128], [447, 100], [455, 132], ...RIGHT_CORNER, ...RIGHT_SIDE, [1160, 895], [1160, 1080], [1130, 1120], [640, 1120],
+  [255, 132], ...RIGHT_CORNER, ...RIGHT_SIDE, [1160, 895], [1160, 1080], [1130, 1120], [640, 1120],
   [608, 1090], [605, 835], [345, 835], [335, 960], [320, 1120], ...LEFT_SIDE,
 ];
 export const OUTLINE = OUTLINE_34.map(([X, Y]) => pt(X, Y));
-/** The clock's bracket, standing proud of the panel: drawn lighter, and in front of the dash covers (D140). */
-export const BRACKET = [[255, 165], [295, 128], [447, 100], [400, 138], [400, 295], [255, 295]].map(([X, Y]) => pt(X, Y));
 
 const FOOT = Math.max(...OUTLINE.map(([, y]) => y));
 /** The panel's height below its top edge, in dial radii. */
 export const HEIGHT = (FOOT - TOP) / PX + 0.1;
-/** How far the clock's bracket rises above the top edge, in dial radii: room kept above the panel on its canvas. */
+/** How far the panel rises above its top edge, in dial radii (nothing since the clock's bracket went, D156). */
 export const ABOVE = (TOP - Math.min(...OUTLINE.map(([, y]) => y))) / PX + 0.05;
 // The panel lowered until the screen's foot touches the bottoms of the coolant thermometers (their green rings and
 // mountings, 920 + 60 on #34; product owner, D141). The radiator switches, the tank selector and the Preßluft gauge
@@ -108,7 +106,7 @@ const altimeter = as109('altimeter', 1085, 730);
  */
 export const LAYOUT = {
   dials: {
-    // Top row: the clock on its bracket, the Kurssteuerung indicator and the round counter.
+    // Top row: the clock, mounted directly in the panel (D156), the Kurssteuerung indicator and the round counter.
     clock: dial(325, 230, 50, 62), autopilot: dial(887, 237, 55, 65), counter: dial(1082, 280, 66, 75),
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
     // two the Bf 109's); the AEG indicator, horizon and altimeter (the Bf 109's) below.

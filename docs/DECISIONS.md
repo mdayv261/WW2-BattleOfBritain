@@ -4267,3 +4267,20 @@ straight down to the bottom of the screen.
   runs straight down to the outline's foot without crossing the sheet.
 - tests/ui/bf110Panel.test.js checks that the lever box's corner lies on the straight edge.
 
+## D156. The Bf 110 C's clock mounted directly in the panel; its bracket removed (3 Nov 2026, product owner's request)
+
+**The request:** remove the light grey bracket round the clock, so the clock appears mounted directly in the panel.
+
+**The change:**
+- **Bracket removed** (src/ui/bf110Layout.js, src/ui/bf110Fittings.js): the bracket (D140) is gone, along with its
+  slanted top that rose above the panel's top edge. The panel's outline now starts at the top left corner (255, 132 on
+  #34's pixels), and its top edge runs level from there.
+- **Clock:** it stands in its usual square mounting on the plate.
+- **Dash covers** (src/ui/bf110Covers.js): they leave the clock's mounting in sight in front of them, where they used to
+  leave the bracket.
+- **Canvas:** nothing rises above the top edge now, so the panel's canvas keeps no room above it (`above` is near 0).
+
+**Tests:** tests/ui/bf110Panel.test.js checks that nothing rises above the top edge and that the clock lies inside the
+panel. tests/ui/bf110Frame.test.js no longer excuses the bracket where the left lower frame passes behind the panel's top
+left corner.
+

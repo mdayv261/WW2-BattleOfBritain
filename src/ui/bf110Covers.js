@@ -4,7 +4,7 @@
 // brown pad; and the panel's top filled up to them and under the Revi. (The panel's right corner reaches the right cover
 // itself, D146.)
 
-import { AXIS, BRACKET, BF109_SCALE, REVI_110, REVI_RAISE, PX } from './bf110Layout.js';
+import { AXIS, LAYOUT, BF109_SCALE, REVI_110, REVI_RAISE, PX } from './bf110Layout.js';
 import {
   FRAME_110, TOP_Y, GREY, framePlacer, ledgePath, lowerFramePath, panelPath,
 } from './bf110Frame.js';
@@ -87,11 +87,11 @@ function coaming(g, at, panelAt, width, height) {
  */
 function dashCover(g, at, panelAt, side) {
   g.save();
-  // The clock's bracket stands proud of the panel, in front of the cover (D140).
+  // The clock's mounting stays in sight in front of the cover (D140, D156).
+  const [cx, cy, , co] = panelAt.dial(LAYOUT.dials.clock);
   g.beginPath();
   g.rect(-1e5, -1e5, 2e5, 2e5);
-  BRACKET.forEach((p, i) => (i ? g.lineTo(...panelAt.xy(p)) : g.moveTo(...panelAt.xy(p))));
-  g.closePath();
+  g.rect(cx - co, cy - co, 2 * co, 2 * co);
   g.clip('evenodd');
   const pts = dashCoverPath(side).map((p) => at.xy(p));
   const top = pts.slice(0, -2);

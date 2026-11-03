@@ -1,5 +1,5 @@
 // The Bf 110 C panel's plate and fittings (D106, D140), after the product owner's picture of the panel (#34): the dark
-// grey plate on its outline and the clock's lighter bracket; the "Fahrgestell Anzeige" undercarriage lights (EIN red
+// grey plate on its outline (the clock mounted directly in it, its bracket gone, D156); the "Fahrgestell Anzeige" undercarriage lights (EIN red
 // with it up, AUS green with it down, as the Bf 109's, D95); the Fahrwerk and Landeklappe Ein/Aus switches following the
 // undercarriage and the flaps (their upright T levers, D114); the placards (src/ui/bf110Placards.js); and, shown only,
 // the airscrew lever box (Automatik / Hand, größer / kleiner), the Umschaltwarnung lamps and the tank lamps
@@ -7,7 +7,6 @@
 
 import { text, lens } from './panelParts.js';
 import { BLACK, INK, plain } from './bf109Fittings.js';
-import { BRACKET } from './bf110Layout.js';
 import { achtungPlacard, divePlacardLines, textPlacard } from './bf110Placards.js';
 import { drawBf110Boxes } from './bf110Boxes.js';
 
@@ -24,7 +23,6 @@ export function drawBf110Fittings(g, at, L, v) {
   const s = at.len(30); // one dial radius in pixels
   const B = (name) => at.box(L.boxes[name]);
   outlinePlate(g, at, L.outline);
-  bracket(g, at);
   drawBf110Boxes(g, at, L, s);
   gearLights(g, B('gearLights'), s, v);
   leverBox(g, B('levers'), s);
@@ -53,25 +51,6 @@ function outlinePlate(g, at, outline) {
   pts.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p)));
   g.closePath();
   g.fill();
-  g.stroke();
-}
-
-/** The clock's bracket: a lighter grey sheet standing proud of the plate, its slanted top lit. */
-function bracket(g, at) {
-  const pts = BRACKET.map((p) => at.xy(p));
-  g.fillStyle = '#7b807c';
-  g.strokeStyle = PLATE.edge;
-  g.lineWidth = Math.max(1, at.len(1.5));
-  g.beginPath();
-  pts.forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p)));
-  g.closePath();
-  g.fill();
-  g.stroke();
-  g.strokeStyle = '#b9bdb9';
-  g.lineWidth = Math.max(1, at.len(2));
-  g.beginPath();
-  g.moveTo(...pts[1]);
-  g.lineTo(...pts[2]);
   g.stroke();
 }
 

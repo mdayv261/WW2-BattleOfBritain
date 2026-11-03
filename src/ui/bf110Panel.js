@@ -2,7 +2,7 @@
 // seen a little from the left, a layout reference only: nothing of it is copied into the game). The layout, measured on
 // #34 and levelled, is in src/ui/bf110Layout.js; the plate and fittings in src/ui/bf110Fittings.js and
 // src/ui/bf110Boxes.js; the panel's own gauges in src/ui/bf110Gauges.js.
-//   Top: the clock on its bracket, the red Kurssteuerung button, the SKK 404-2 block for the MG 17s, the Kurssteuerung
+//   Top: the clock (mounted directly in the panel, D156), the red Kurssteuerung button, the SKK 404-2 block for the MG 17s, the Kurssteuerung
 //   indicator, the round counter for the two MG FF/M cannon (Durchladen) and the Heizung placard.
 //   Middle: the repeater compass, the 2 MG / 4 MG switch and the Kurs strip; the airspeed indicator, turn and bank (under
 //   the Revi) and climb indicator; the outside air thermometer and the two airscrew pitch indicators (kept, D109); the
@@ -57,7 +57,7 @@ export const BF110_PANEL = {
   height: HEIGHT,
   screenShare: SHARE,
   sink: SINK, // dial radii below the screen's foot (D129)
-  above: ABOVE, // dial radii the clock's bracket rises above the top edge, kept on the panel's canvas (D140)
+  above: ABOVE, // dial radii the panel rises above its top edge, kept on its canvas (D140; none since D156)
   ownBackground: true,
   outline: OUTLINE,
   ...LAYOUT,

@@ -14,7 +14,6 @@ import {
   FRAME_110, outerX, fuselageX, fuselagePath, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths,
   sideBarPath, ledgePath, lowerFramePath, frameBars110, panelEdgeX, FRAME_SHIFT, framePlacer, WIDEN,
 } from '../../src/ui/bf110Frame.js';
-import { BRACKET } from '../../src/ui/bf110Layout.js';
 import { dashCoverPath, coamingPath } from '../../src/ui/bf110Covers.js';
 import {
   AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, BF109_SCALE, REVI_110, placer, panelTop110,
@@ -219,10 +218,11 @@ describe('Bf 110 C front frame (D117)', () => {
       expect(x1).toBeCloseTo(outerX(side, y1), 9); // on the outer post's middle line
       expect(side * (x1 - x0)).toBeGreaterThan(0); // out going down
       // Clear above the panel (raised FRAME_SHIFT over it, D143): its lower edge above the panel's outline wherever it
-      // crosses over it, but where it passes behind the clock's bracket (D140) and where the panel's right corner meets
+      // crosses over it, but where it passes behind the panel's top left corner (the clock's bracket's place, D140, D156)
+      // and where the panel's right corner meets
       // the right cover's foot under its end (D146).
       for (const [px, py] of L.outline) {
-        if (BRACKET.some(([bx, by]) => bx === px && by === py)) continue;
+        if (side < 0 && py === 57 && px < AXIS) continue;
         if (side > 0 && Math.abs(px - x1) < FRAME_110.posts.width) continue;
         const f = (px - x0) / (x1 - x0);
         if (f > 0 && f < 1) expect(y0 + FRAME_SHIFT + f * (y1 - y0) + FRAME_110.inner.width / 2, `${side} ${px}`).toBeLessThan(py);

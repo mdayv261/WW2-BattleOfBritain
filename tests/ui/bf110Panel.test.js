@@ -150,11 +150,14 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     }
   });
 
-  it('keeps room above the top edge for the clock\'s bracket, which rises over it', () => {
-    const highest = Math.min(...L.outline.map(([, y]) => y));
-    expect(highest).toBeLessThan(57);
-    expect(L.above * 30).toBeGreaterThan(57 - highest);
+  it('mounts the clock directly in the panel: nothing rises above the top edge, the bracket gone (D156)', () => {
+    expect(Math.min(...L.outline.map(([, y]) => y))).toBe(57);
+    const [x, y, , o] = L.dials.clock;
+    expect(y - o).toBeGreaterThan(57); // inside the panel below its top edge
+    expect(x - o).toBeGreaterThan(Math.min(...L.outline.filter(([, oy]) => oy === 57).map(([ox]) => ox)));
+    expect(L.above * 30).toBeLessThan(2);
   });
+
 });
 
 describe('Bf 110 C panel instruments (D106, D140)', () => {

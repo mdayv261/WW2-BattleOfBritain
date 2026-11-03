@@ -45,6 +45,7 @@ Read this at the start of every session.
   undercarriage lights box moved right and narrowed (flagged); D154: replaced by a straight edge from about 10 mm left of
   the clock to the lever box (the lights box back); D155: that edge carried on to touch the left fuselage sheet, then
   straight down.
+- D156: the clock is mounted directly in the panel; its bracket is removed.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 
