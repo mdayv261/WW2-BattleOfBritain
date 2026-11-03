@@ -99,6 +99,12 @@ function knob109(name, of, [x, y]) {
 }
 
 const altimeter = as109('altimeter', 1085, 730);
+/**
+ * How far the right engine's rev counter and manifold pressure gauge stand right of #34's place, in #34's pixels
+ * (product owner, D165): 25 mm on the product owner's 2560 px wide screen, taken as 43 screen px to 10 mm (as D154),
+ * where one of #34's pixels is 0.619 screen px.
+ */
+const RIGHT_MOVE = 173.6;
 
 /**
  * Everything on the panel, in the layout's picture pixels: dials [x, y, face radius, mounting half-width]; boxes [left,
@@ -115,8 +121,9 @@ export const LAYOUT = {
     // The outside air thermometer (the airscrew pitch indicators of D109 removed: the Bf 110 C had none, D163).
     airTemp: dial(1250, 440, 52, 60),
     // Each engine's rev counter and manifold pressure gauge.
-    rpmLeft: dial(1265, 630, 78, 86), rpmRight: dial(1442, 630, 78, 86),
-    ataLeft: dial(1265, 805, 78, 86), ataRight: dial(1442, 805, 78, 86),
+    // The right engine's moved 25 mm right (product owner, D165).
+    rpmLeft: dial(1265, 630, 78, 86), rpmRight: dial(1442 + RIGHT_MOVE, 630, 78, 86),
+    ataLeft: dial(1265, 805, 78, 86), ataRight: dial(1442 + RIGHT_MOVE, 805, 78, 86),
     // Bottom centre: the coolant thermometers either side of the fuel gauge; below them the radiator flap switches either
     // side of the tank selector, now below the screen's foot (D141); the Preßluft gauge on the left wing.
     tempLeft: dial(682, 920, 50, 60), fuel: dial(877, 920, 50, 60), tempRight: dial(1072, 920, 50, 60),
@@ -129,14 +136,14 @@ export const LAYOUT = {
     gearLights: box(202.5, 312.5, 352.5, 462.5), // round, the round counter's diameter (D157, D158)
     achtung: box(250, 590, 345, 730), dive: box(615, 578, 735, 620),
     course: box(360, 550, 580, 830), // the repeater compass's width, under it (D159)
-    umschalt: box(806, 576, 959, 603), window: box(1042, 590, 1122, 630), ataBox: box(1172, 700, 1560, 893),
+    umschalt: box(806, 576, 959, 603), window: box(1042, 590, 1122, 630), ataBox: box(1172, 700, 1560 + RIGHT_MOVE, 893),
     fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(245, 870, 318, 892),
   },
   // The "d 30′ 5′" correction cards above the engine gauges and the "Km" cards above the coolant thermometers: shown
   // only, lying over the tops of their dials' mountings, as photographed.
   cards: {
-    rpmLeft: box(1185, 520, 1345, 557), rpmRight: box(1362, 520, 1522, 557),
-    ataLeft: box(1185, 697, 1345, 734), ataRight: box(1362, 697, 1522, 734),
+    rpmLeft: box(1185, 520, 1345, 557), rpmRight: box(1362 + RIGHT_MOVE, 520, 1522 + RIGHT_MOVE, 557),
+    ataLeft: box(1185, 697, 1345, 734), ataRight: box(1362 + RIGHT_MOVE, 697, 1522 + RIGHT_MOVE, 734),
     tempLeft: box(627, 842, 737, 895), tempRight: box(1017, 842, 1127, 895),
   },
   knobs: {

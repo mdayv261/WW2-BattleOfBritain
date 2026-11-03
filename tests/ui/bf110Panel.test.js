@@ -92,6 +92,17 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     expect(r).toBeCloseTo(x + o, 6);
   });
 
+  it('moves the right engine\'s rev counter and manifold pressure gauge 25 mm right on a 2560 px screen (D165)', () => {
+    const r = panelRadius(L, 2560, 1259);
+    const screenPx = (picture) => (picture / 30) * r;
+    const at34 = 440 + (1442 - 882) * 0.46; // #34's place in the layout's picture pixels
+    for (const n of ['rpmRight', 'ataRight']) {
+      expect(screenPx(L.dials[n][0] - at34), n).toBeCloseTo(43 * 2.5, 0); // 10 mm taken as 43 px (D154)
+      expect(L.dials[n][0] + L.dials[n][3], n).toBeLessThan(L.boxes.ataBox[2] + (n === 'rpmRight' ? 1e3 : 0));
+    }
+    expect(L.dials.rpmLeft[0]).toBeCloseTo(440 + (1265 - 882) * 0.46, 9); // the left engine's stay
+  });
+
   it('keeps the dial radius on screen as before (D106), so the Bf 109\'s instruments keep their size; fits every screen', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);

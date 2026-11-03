@@ -56,6 +56,7 @@ Read this at the start of every session.
 - D163: the airscrew pitch indicators are removed (the Bf 110 C had none, product owner).
 - D164: the elevator trim indicator is redrawn after #34's AEG instrument (five marks, a very short pointer, the rudder
   trim's L R shown only).
+- D165: the right engine's rev counter and manifold pressure gauge moved 25 mm right.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 
