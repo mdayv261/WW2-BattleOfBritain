@@ -83,6 +83,13 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     }
   });
 
+  it('makes the course box as wide as the repeater compass\'s mounting, under it (D159)', () => {
+    const [x, , , o] = L.dials.compass;
+    const [l, , r] = L.boxes.course;
+    expect(l).toBeCloseTo(x - o, 6);
+    expect(r).toBeCloseTo(x + o, 6);
+  });
+
   it('keeps the dial radius on screen as before (D106), so the Bf 109\'s instruments keep their size; fits every screen', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);

@@ -127,7 +127,8 @@ export const LAYOUT = {
     skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: box(790, 312, 975, 382),
     heizung: box(1187, 245, 1320, 352), levers: box(...LEVERS),
     gearLights: box(202.5, 312.5, 352.5, 462.5), // round, the round counter's diameter (D157, D158)
-    achtung: box(250, 590, 345, 730), course: box(352, 550, 594, 830), dive: box(615, 578, 735, 620),
+    achtung: box(250, 590, 345, 730), dive: box(615, 578, 735, 620),
+    course: box(360, 550, 580, 830), // the repeater compass's width, under it (D159)
     umschalt: box(806, 576, 959, 603), window: box(1042, 590, 1122, 630), ataBox: box(1172, 700, 1560, 893),
     fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(245, 870, 318, 892),
   },

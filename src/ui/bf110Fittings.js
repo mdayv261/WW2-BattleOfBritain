@@ -60,7 +60,7 @@ function outlinePlate(g, at, outline) {
  */
 export const GEAR_LAMPS = {
   radius: 0.2,
-  lamps: [[-0.4, -0.3, 'ein'], [0.4, -0.3, 'ein'], [-0.4, 0.36, 'aus'], [0.4, 0.36, 'aus']],
+  lamps: [[-0.44, -0.3, 'ein'], [0.44, -0.3, 'ein'], [-0.44, 0.36, 'aus'], [0.44, 0.36, 'aus']],
 };
 
 /**
@@ -90,7 +90,7 @@ function gearLights(g, b, s, v) {
   }
   const lit = gearLightState(v);
   text(g, 'Fahrgestell', x, y - r * 0.66, r * 0.15, INK);
-  text(g, 'Anzeige', x, y + r * 0.03, r * 0.15, INK);
+  text(g, 'Anzeige', x, y + r * 0.03, r * 0.12, INK); // clear of the lamps either side
   const look = { ein: ['EIN', '#e0402c', '#4a1610'], aus: ['AUS', '#3fcf4a', '#14401a'] };
   for (const [fx, fy, kind] of GEAR_LAMPS.lamps) {
     const [word, colour, dark] = look[kind];

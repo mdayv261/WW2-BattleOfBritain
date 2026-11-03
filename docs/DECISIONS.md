@@ -4310,3 +4310,19 @@ grow with it.
 **Tests:** tests/ui/bf110Panel.test.js checks that its width equals the round counter's diameter. The layout checks keep
 it inside the outline and clear of every dial and box.
 
+## D159. The Bf 110 C's course box as wide as the repeater compass (3 Nov 2026, product owner's request)
+
+**The request:** make the bezel width of the horizontal compass the same as the vertical compass's.
+
+**Interpretation:**
+- The "horizontal compass" is the Siemens course box, with its horizontal compass strip.
+- The "vertical compass" is the round repeater compass above it.
+
+**The change** (src/ui/bf110Layout.js): the course box is now exactly as wide as the repeater compass's square mounting,
+220 of #34's pixels (360–580), and lined up under it. It was 242 wide (352–594). Its height is unchanged.
+
+**Also:** in the larger round undercarriage housing (D158), "Anzeige" was crowded by the lamps. The lamps now stand a
+little further apart (±0.44 of the radius) and the word is smaller.
+
+**Tests:** tests/ui/bf110Panel.test.js checks that the course box's sides line up with the compass mounting's.
+
