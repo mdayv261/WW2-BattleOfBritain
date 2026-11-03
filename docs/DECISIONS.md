@@ -3955,3 +3955,34 @@ panel_5.jpg" (#34).
 - **Updated:** bf110Revi (no strip compass; the Revi over the turn and bank), bf110Frame (the posts' end; the lower frames
   behind the bracket), trimDisplay and gearLabels (no trim gauge).
 
+## D141. The Bf 110 C panel lowered to the coolant thermometers' feet; the Preßluft gauge below the lever box (3 Nov 2026, product owner's requests)
+
+**The requests:**
+- Move the whole panel, gauges included but not the gunsight, so the bottoms of the temperature gauges touch the
+  bottom of the screen.
+- Add the hydraulic pressure gauge shown below the airscrew pitch levers in #34. This is the Preßluft gauge, which
+  D140 had moved down to the lowest row.
+
+**The change:**
+- **Panel** (src/ui/bf110Layout.js): it is lowered so the screen's foot touches the bottoms of the two coolant
+  thermometers (920 + 60 on #34). Their square mountings and green rings end there.
+  - The radiator flap switches and the tank selector below them are now out of sight, below the screen.
+  - The frame (D117–D139) is tied to the panel, so it moves down with it, about one dial radius.
+- **Gunsight:** kept where it stood (`REVI_RAISE`). The guns' line stays at 0.406 of the screen.
+- **Preßluft gauge:** now as #34 has it, below the airscrew lever box and between the Fahrwerk and Landeklappe labels
+  (180, 905 on #34; face 42, mounting 48). It is wholly on screen. The lettering is "Preßluft" (compressed air), as on
+  #34.
+
+**Flagged:**
+- **Revi gap:** the Revi's body no longer stands on the panel. It stands about one dial radius (REVI_RAISE 1.0) above
+  the panel's top edge, with a gap below it.
+- **Hidden switches:** the radiator flap switches and the tank selector are no longer visible. The radiator still works
+  from key O, but its switches can't be seen.
+
+**Tests:**
+- tests/ui/bf110Panel.test.js checks that:
+  - the coolant thermometers' mountings and rings end on the screen's foot on every tested screen;
+  - the radiator switches and selector are below it, and the Preßluft gauge is wholly on screen;
+  - the Preßluft gauge stands below the lever box, between its labels.
+- tests/ui/bf110Revi.test.js checks that the Revi's foot is REVI_RAISE above the panel's top.
+

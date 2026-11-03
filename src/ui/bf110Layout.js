@@ -40,10 +40,17 @@ const FOOT = Math.max(...OUTLINE.map(([, y]) => y));
 export const HEIGHT = (FOOT - TOP) / PX + 0.1;
 /** How far the clock's bracket rises above the top edge, in dial radii: room kept above the panel on its canvas. */
 export const ABOVE = (TOP - Math.min(...OUTLINE.map(([, y]) => y))) / PX + 0.05;
-// The panel lowered until the screen's foot crosses the centres of the lowest row (the radiator flap switches, the tank
-// selector and the Preßluft gauge), so only their upper halves show (product owner, D129, D140).
-const LOWEST = pt(0, 1045)[1];
+// The panel lowered until the screen's foot touches the bottoms of the coolant thermometers (their green rings and
+// mountings, 920 + 60 on #34; product owner, D141). The radiator switches, the tank selector and the Preßluft gauge
+// below them go below the screen's foot.
+const LOWEST = pt(0, 980)[1];
 export const SINK = (FOOT - LOWEST) / PX + 0.1;
+/**
+ * How far the Revi stands above the panel's top edge, in dial radii: the gunsight is kept where it stood in D140 (its
+ * foot on the panel's top while the screen's foot crossed the radiator switches' centres, 1045 on #34) while the panel
+ * moved down (product owner, D141).
+ */
+export const REVI_RAISE = (pt(0, 1045)[1] - LOWEST) / PX;
 /**
  * The share of the screen's height the panel's full height takes: the dial radius kept as a share of the screen's
  * height as since D106 (0.45 of the screen over 14.03 radii), so the Bf 109's instruments keep their size on screen.
@@ -85,10 +92,10 @@ export const LAYOUT = {
     rpmLeft: dial(1265, 630, 78, 86), rpmRight: dial(1442, 630, 78, 86),
     ataLeft: dial(1265, 805, 78, 86), ataRight: dial(1442, 805, 78, 86),
     // Bottom centre: the coolant thermometers either side of the fuel gauge; below them the radiator flap switches either
-    // side of the tank selector, and the Preßluft gauge on the left wing, half below the screen's foot.
+    // side of the tank selector, now below the screen's foot (D141); the Preßluft gauge on the left wing.
     tempLeft: dial(682, 920, 50, 60), fuel: dial(877, 920, 50, 60), tempRight: dial(1072, 920, 50, 60),
     radiatorLeft: dial(725, 1045, 46, 56), selector: dial(867, 1045, 44, 52), radiatorRight: dial(1010, 1045, 46, 56),
-    pressluft: dial(180, 1045, 46, 54),
+    pressluft: dial(180, 905, 42, 48), // below the airscrew lever box, between its labels, as #34 (product owner, D141)
   },
   boxes: {
     skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: box(790, 312, 975, 382),

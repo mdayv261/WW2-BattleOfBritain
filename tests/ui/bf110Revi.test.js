@@ -6,6 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   BF110_PANEL, BF110_REVI, BF110_AIM, BF109_SCALE, GLASS_ABOVE_110, REVI_110, AXIS, bf110Panel, placer, panelTop110,
+  REVI_RAISE,
 } from '../../src/ui/bf110Panel.js';
 import { BF109_PANEL, BF109_PX } from '../../src/ui/bf109Panel.js';
 import { REVI, shortRevi } from '../../src/ui/reviParts.js';
@@ -135,7 +136,7 @@ describe('the Bf 110\'s Revi (D107)', () => {
     expect(b.radii.some((x) => x > r)).toBe(false); // no large round glass on the Bf 109's
   });
 
-  it('stands its body\'s foot on the panel\'s top on every screen (D133), the guns\' line inside the glass', () => {
+  it('stands its body\'s foot REVI_RAISE above the panel\'s top (D133, D141), the guns\' line inside the glass', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);
       const p = reviPlacement(w, h, BF110_REVI);
@@ -144,7 +145,8 @@ describe('the Bf 110\'s Revi (D107)', () => {
       expect(p.glass.y + p.glass.h).toBeGreaterThan(p.y);
       const panelTop = panelTop110(h, r); // as InstrumentPanel draws it
       expect(L.dials.turn[0]).toBe(AXIS); // above the turn and bank, in the middle (D140)
-      expect(p.y + REVI_110.body.y[1] * p.r, `${w}x${h}`).toBeCloseTo(panelTop, 6);
+      // Kept where it stood in D140 while the panel moved down (D141).
+      expect(panelTop - (p.y + REVI_110.body.y[1] * p.r), `${w}x${h}`).toBeCloseTo(REVI_RAISE * r, 6);
     }
     expect(BF110_AIM).toBeGreaterThan(0.35);
     expect(BF110_AIM).toBeLessThan(0.5);

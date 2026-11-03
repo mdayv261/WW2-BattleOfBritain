@@ -27,7 +27,11 @@ Read this at the start of every session.
 - **Removed:** the trim gauge, the speed card, the strip compass and the old ammunition counter.
 - **Guns' line:** now 0.406 of the screen.
 
-**Left:** the product owner's review of the panel, then Phase 6 checkpoint 5 after a plan.
+**Adjustments** (product owner, one at a time):
+- D141: the panel is lowered so the coolant thermometers touch the screen's foot (the gunsight is kept where it was),
+  and the Preßluft gauge is placed below the lever box.
+
+**Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 
 **Known issues:**
 - the left dash cover hides the top of the SKK block;

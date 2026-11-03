@@ -8,10 +8,10 @@
 //   the Revi) and climb indicator; the outside air thermometer and the two airscrew pitch indicators (kept, D109); the
 //   Siemens course box, the AEG indicator, the horizon and the altimeter.
 //   Right: each engine's rev counter and manifold pressure gauge, with their correction cards.
-//   Bottom centre: each engine's coolant thermometer either side of the fuel gauge and its tank lamps; below them the
-//   radiator flap switches either side of the tank selector, half below the screen's foot (D129).
+//   Bottom centre: each engine's coolant thermometer either side of the fuel gauge and its tank lamps, their bottoms on
+//   the screen's foot (D141); below them, out of sight, the radiator flap switches either side of the tank selector.
 //   Left: the undercarriage lights, the airscrew lever box, the Fahrwerk and Landeklappe switches and their placard,
-//   and the Preßluft gauge, half below the screen's foot.
+//   and the Preßluft gauge below the lever box (D141).
 // The airspeed indicator, turn and bank and altimeter are the Bf 109's exactly, at its size on screen, red bezels and
 // the altimeter's setting knob included (D107).
 // Working: the flying and engine instruments, the clock, the pitch indicators, the round counter, the outside air
@@ -28,7 +28,7 @@ import { redBezel, settingKnob } from './bf109Panel.js';
 import { REVI, revi110 } from './reviParts.js';
 import { drawBf110Interior } from './bf110Frame.js';
 import {
-  PX, TOP, AXIS, OUTLINE, HEIGHT, ABOVE, SINK, SHARE, BF109_SCALE, LAYOUT,
+  PX, TOP, AXIS, OUTLINE, HEIGHT, ABOVE, SINK, SHARE, BF109_SCALE, LAYOUT, REVI_RAISE,
 } from './bf110Layout.js';
 import {
   airThermometer, autopilotIndicator, aegIndicator, cannonCounter, coolantGauge, correctionCard, pressluftGauge,
@@ -47,10 +47,11 @@ export const REVI_110 = revi110(REVI);
 export const GLASS_ABOVE_110 = REVI_110.body.y[1] * BF109_SCALE;
 /**
  * Where the guns' line stands looking ahead in the Bf 110's cockpit, as a fraction of the screen's height from its top:
- * GLASS_ABOVE_110 above the panel, which stands SINK below the screen's foot (D107, D129). The camera's picture is
- * shifted to match (`CameraRig.aim`, as the Bf 109's, D93).
+ * GLASS_ABOVE_110 above the Revi's foot, which stands REVI_RAISE above the panel, which stands SINK below the screen's
+ * foot (D107, D129, D141). The camera's picture is shifted to match (`CameraRig.aim`, as the Bf 109's, D93).
  */
-export const BF110_AIM = 1 - (SHARE * (HEIGHT - SINK + GLASS_ABOVE_110)) / HEIGHT;
+export const BF110_AIM = 1 - (SHARE * (HEIGHT - SINK + REVI_RAISE + GLASS_ABOVE_110)) / HEIGHT;
+export { REVI_RAISE };
 
 /** A picture point in dial radii from the axis at the panel's top. */
 export const P = (px, py) => [(px - AXIS) / PX, (py - TOP) / PX];

@@ -98,19 +98,35 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     for (const n of ['airspeed', 'climb']) expect(L.dials[n][1]).toBe(L.dials.turn[1]); // one row, levelled
   });
 
-  it('sits low enough that the screen\'s foot crosses the lowest row\'s and the Preßluft gauge\'s centres (D129)', () => {
-    const lowest = ['radiatorLeft', 'selector', 'radiatorRight', 'pressluft'];
-    const lowestY = L.dials.selector[1];
-    for (const [name, [, y]] of Object.entries(L.dials)) {
-      if (lowest.includes(name)) expect(y, name).toBeCloseTo(lowestY, 9);
-      else expect(y, name).toBeLessThan(lowestY);
-    }
+  it('sits low enough that the coolant thermometers\' bottoms touch the screen\'s foot (D141)', () => {
     expect(L.sink).toBeGreaterThan(0);
+    const bottom = ([, y, , o]) => y + o;
+    expect(bottom(L.dials.tempLeft)).toBe(bottom(L.dials.tempRight));
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);
       const at = placer(w / 2, panelTop110(h, r), r);
-      for (const name of lowest) expect(at.dial(L.dials[name])[1], `${w}x${h} ${name}`).toBeCloseTo(h, 6);
+      for (const name of ['tempLeft', 'tempRight']) {
+        const [, y, face, outer] = at.dial(L.dials[name]);
+        expect(y + outer, `${w}x${h} ${name}`).toBeCloseTo(h, 6); // the mounting's foot on the screen's foot
+        expect(y + face * 1.2, `${w}x${h} ${name}`).toBeCloseTo(h, 6); // and the green ring's
+      }
+      // The radiator switches and the tank selector are now below the screen; the Preßluft gauge is all on it.
+      const [, py, , po] = at.dial(L.dials.pressluft);
+      expect(py + po, 'pressluft').toBeLessThan(h);
+      for (const name of ['radiatorLeft', 'selector', 'radiatorRight']) {
+        expect(at.dial(L.dials[name])[1] - at.dial(L.dials[name])[3], name).toBeGreaterThan(h);
+      }
     }
+  });
+
+  it('stands the Preßluft gauge below the airscrew lever box, between its Fahrwerk and Landeklappe labels (D141)', () => {
+    const [x, y, , o] = L.dials.pressluft;
+    const [ll, , lr, lb] = L.boxes.levers;
+    expect(y - o).toBeGreaterThan(lb);
+    expect(x).toBeGreaterThan(ll);
+    expect(x).toBeLessThan(lr);
+    expect(x - o).toBeGreaterThan(L.boxes.fahrwerkLabel[2]);
+    expect(x + o).toBeLessThan(L.boxes.klappeLabel[0]);
   });
 
   it('keeps room above the top edge for the clock\'s bracket, which rises over it', () => {
