@@ -102,7 +102,8 @@ describe('Bf 110 C front frame (D117)', () => {
     expect(gap(-1, foot)).toBeLessThanOrEqual(0); // the left post meets the panel's left side there
     expect(gap(-1, foot - 1)).toBeGreaterThan(0); // and not above it
     // The right side inside its post, touching it only at its corner under the right cover (D146).
-    for (let y = 57 - FRAME_SHIFT; y <= foot; y += 1) expect(gap(1, y), `right ${y}`).toBeGreaterThan(-0.2);
+    // (At the foot itself the panel's side steps out to the fuselage sheet, D152.)
+    for (let y = 57 - FRAME_SHIFT; y < foot - 0.5; y += 1) expect(gap(1, y), `right ${y}`).toBeGreaterThan(-0.2);
   });
 
   it('runs the fuselage frames as thin sheets from the posts\' outside edges to the screen\'s foot at 70 degrees (D139)', () => {
@@ -318,6 +319,18 @@ describe('Bf 110 C front frame (D117)', () => {
     const angle = Math.acos((u[0] * v[0] + u[1] * v[1]) / (Math.hypot(...u) * Math.hypot(...v))) * (180 / Math.PI);
     expect(angle).toBeGreaterThan(90);
     expect(angle).toBeLessThan(180);
+  });
+
+  it('extends the left edge to touch the left fuselage sheet, then straight down past the screen\'s foot (D155)', () => {
+    const O = L.outline;
+    const j = O.findIndex(([x, y], k) => k > 0 && O[k - 1][0] === x && O[k - 1][1] > y && y > 57);
+    const [bottom, touch] = [O[j - 1], O[j]];
+    const sheetInner = (y) => fuselageX(-1, y - FRAME_SHIFT) + FRAME_110.fuselage.width / 2;
+    expect(Math.abs(touch[0] - sheetInner(touch[1]))).toBeLessThan(0.3); // touching the fuselage side
+    expect(touch[1]).toBeGreaterThan(FRAME_110.posts.foot + FRAME_SHIFT); // on the sheet, below the post
+    expect(bottom[0]).toBe(touch[0]); // then vertical
+    expect(bottom[1]).toBe(Math.max(...O.map(([, y]) => y))); // to the outline's foot, below the screen
+    for (let y = touch[1]; y <= bottom[1]; y += 5) expect(touch[0], `${y}`).toBeGreaterThan(sheetInner(y) - 0.3);
   });
 
   it('has no canopy latch and lever on the top bar and no knobs on the ledge (D125)', () => {

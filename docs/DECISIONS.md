@@ -4226,3 +4226,44 @@ top left corner of the airscrew pitch lever box.
   outline.
 - tests/ui/bf110Frame.test.js keeps the right side on the post and sheet.
 
+## D154. The Bf 110 C panel's left edge starts 10 mm further left and runs straight to the lever box (3 Nov 2026, product owner's request)
+
+**The request:** move the left edge's start, at the clock's bottom left corner, about 10 mm left, and change its angle
+so it joins the airscrew pitch lever box's top left corner.
+
+**The change** (src/ui/bf110Layout.js, `LEFT_SIDE`; replaces D153's edge):
+- **Start:** 70 of #34's pixels left of the clock's bottom left corner, at (185, 295), level with the clock's foot.
+  - **Assumption:** 10 mm on the product owner's 2560 px wide screen is about 43 screen px, which is 70 of #34's
+    pixels.
+  - A short level step joins the start to the clock bracket's foot (255, 295).
+- **Edge:** a straight line from the start to the lever box's top left corner (40, 465), at about 50° from level. D153's
+  75° edge and level ledge are gone.
+- **Gear lights:** the undercarriage lights box is back at its D140 place and size, [220, 330, 335, 445]. D153's move
+  is undone, since the new edge clears it.
+- **Posts' feet:** they move up to frame y 214, where the new edge reaches the left post. The panel's right side (D152)
+  follows the post's foot there: (1688.3, 423.3), (1738.3, 423.3), (1910, 895) on #34.
+
+**Tests:** tests/ui/bf110Panel.test.js checks that:
+- the start is level with the clock's foot, 30–40 picture px left of its corner;
+- a level step joins it to the bracket;
+- the edge clears every dial.
+
+## D155. The Bf 110 C panel's left edge extended to the left fuselage side, then straight down (3 Nov 2026, product owner's request)
+
+**The request:** extend that edge to touch the fuselage side. Then the far left edge, by the lever box, should run
+straight down to the bottom of the screen.
+
+**The change** (src/ui/bf110Layout.js, `LEFT_TOUCH`, `FAR_LEFT`):
+- **Edge extended:** D154's straight edge carries on past the lever box's top left corner, which stays on it. It runs
+  down and left until it touches the left fuselage sheet's inner edge (D139), at (-11.5, 525.3) on #34's pixels, just
+  outside the picture.
+- **Far left edge:** from there the panel's edge runs straight down to the outline's foot, below the screen.
+- **Replaced:** #34's left side of the left wing.
+- **Below the touch:** the sheet leans out going down, so a narrowing strip of the dark cockpit side shows between it
+  and the panel.
+
+**Tests:**
+- tests/ui/bf110Frame.test.js checks that the touch lies on the sheet's inner edge below the post, and that the edge then
+  runs straight down to the outline's foot without crossing the sheet.
+- tests/ui/bf110Panel.test.js checks that the lever box's corner lies on the straight edge.
+

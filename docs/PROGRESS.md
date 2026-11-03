@@ -42,7 +42,9 @@ Read this at the start of every session.
   post.
 - D152: the panel's lower right edge runs down the right fuselage side (the post, then the sheet).
 - D153: the panel's left edge runs down at 75 degrees from just left of the clock, then level to the lever box; the
-  undercarriage lights box moved right and narrowed (flagged).
+  undercarriage lights box moved right and narrowed (flagged); D154: replaced by a straight edge from about 10 mm left of
+  the clock to the lever box (the lights box back); D155: that edge carried on to touch the left fuselage sheet, then
+  straight down.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

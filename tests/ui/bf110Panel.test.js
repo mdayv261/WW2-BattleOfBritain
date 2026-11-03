@@ -129,19 +129,25 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     expect(x + o).toBeLessThan(L.boxes.klappeLabel[0]);
   });
 
-  it('runs the left edge from just left of the clock down at 75 degrees, then level to the lever box (D153)', () => {
+  it('runs the left edge from about 10 mm left of the clock\'s foot straight through the lever box\'s corner (D154)', () => {
     const O = L.outline;
-    const [, , clockBottom] = [0, 0, L.dials.clock[1] + L.dials.clock[3]];
+    const clockBottom = L.dials.clock[1] + L.dials.clock[3];
     const clockLeft = L.dials.clock[0] - L.dials.clock[3];
     const [ll, lt] = L.boxes.levers;
-    const i = O.findIndex(([x, y]) => x === ll && y === lt); // the lever box's top left corner on the outline
-    expect(i).toBeGreaterThan(0);
-    const [, b, c] = [O[i], O[i + 1], O[i + 2]];
-    expect(b[1]).toBeCloseTo(lt, 9); // level along the box's top
-    expect(c[0]).toBeLessThan(clockLeft); // starting just left of the clock's bottom left corner
-    expect(clockLeft - c[0]).toBeLessThan(5);
-    expect(Math.abs(c[1] - clockBottom)).toBeLessThan(3);
-    expect((Math.atan2(b[1] - c[1], c[0] - b[0]) * 180) / Math.PI).toBeCloseTo(75, 6); // down and left at 75 degrees
+    const j = O.findIndex(([x, y], k) => k > 0 && O[k - 1][0] === x && O[k - 1][1] > y && y > 57); // the far left edge's top
+    const [touch, start, step] = [O[j], O[j + 1], O[j + 2]];
+    // The lever box's top left corner on the straight edge from the start to the touch (D155).
+    expect((ll - start[0]) * (touch[1] - start[1]) - (lt - start[1]) * (touch[0] - start[0])).toBeCloseTo(0, 6);
+    expect(touch[1]).toBeGreaterThan(lt);
+    expect(Math.abs(start[1] - clockBottom)).toBeLessThan(3); // level with the clock's foot
+    expect(clockLeft - start[0]).toBeGreaterThan(30); // about 10 mm left of its corner on a 2560 px screen
+    expect(clockLeft - start[0]).toBeLessThan(40);
+    expect(step[1]).toBe(start[1]); // a level step back under the clock's bracket
+    for (const [, [x, y, , o]] of Object.entries(L.dials)) { // the straight edge clear of every dial
+      if (y + o < start[1] || y - o > lt) continue;
+      const edge = ll + ((start[0] - ll) * (lt - Math.min(lt, Math.max(start[1], y - o)))) / (lt - start[1]);
+      expect(x - o).toBeGreaterThan(edge);
+    }
   });
 
   it('keeps room above the top edge for the clock\'s bracket, which rises over it', () => {
