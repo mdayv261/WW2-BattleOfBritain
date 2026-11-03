@@ -20,7 +20,7 @@ Read this at the start of every session.
 
 ## Bf 110 C cockpit view (3 Nov 2026)
 
-**Done** (D117-D133): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code. The product owner asked for
+**Done** (D117-D134): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code. The product owner asked for
 the windscreen frame first:
 - the dash covers are removed;
 - the corner grab handles are arcs from the top bar to the posts (D119);
@@ -33,6 +33,8 @@ the windscreen frame first:
 - bars join the windscreen's top corners to the outer posts just below the handles, angled up slightly into the
   corners (D126, D127);
 - the windscreen's bottom ledge is an arc, its ends a little lower (D128);
+- lower windscreen frames rise from the panel's edge, above the red button on the left and mirrored on the right, to
+  the windscreen's lower corners (D134);
 - the panel is lowered until only the top halves of the lowest gauges show, and the Revi, the guns' line (now 0.450 of
   the screen) and the frame move down with it (D129);
 - the Revi-110: the Bf 110's gunsight with a round glass as wide as its body, in a holder frame of the body's width

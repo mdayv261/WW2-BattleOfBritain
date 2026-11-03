@@ -3710,3 +3710,26 @@ shifted to match, so the reticle still marks where the guns point.
 **Tests:** tests/ui/bf110Revi.test.js checks that the body's foot lies on the panel's top on every tested screen, and
 that there is no lever or pivot.
 
+## D134. The Bf 110 C's lower windscreen frames (3 Nov 2026, product owner's request)
+
+**The request:** draw the left lower windscreen frame, starting in line with the red button on the left of the panel
+and running to the lower left corner of the inner windscreen frame, and mirror it on the right.
+
+**The change** (`src/ui/bf110Frame.js`, `lowerFramePath`, `panelEdgeY`):
+- **Left frame:** it rises from the panel's top edge directly above the red button (x 231, where the left shoulder is at
+  y 72) to the windscreen frame's lower left corner. That corner is where the windscreen's post meets the ledge's end,
+  at (255, 18).
+- **Right frame:** it mirrors the left one about the panel's axis. It starts at x 643, on the right shoulder at y 70,
+  and runs to the lower right corner at (618, 18).
+- **Shape:** each leans in going up, at about 24° from the vertical. It is the windscreen's width (20 px) and welded to
+  its corner.
+  - It starts a little behind the panel's edge along its own line, so it rises from the edge itself.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that each lower frame:
+- ends at the windscreen's lower corner, on its post's middle line;
+- has its line crossing the panel's edge above the red button, mirrored on the right;
+- starts behind the panel;
+- leans in going up.
+
+The weld test now counts seven bars.
+
