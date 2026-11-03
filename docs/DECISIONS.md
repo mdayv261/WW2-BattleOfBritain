@@ -3576,3 +3576,21 @@ bars).
 - rises going in at 5-20°;
 - clears its handle by 0 to 1.5 px.
 
+## D128. The Bf 110 C's windscreen ledge as an arc (3 Nov 2026, product owner's request)
+
+**The request:** make the inner frame's bottom bar an arc, keeping its centre where it is but lowering its ends a
+little.
+
+**The change** (`src/ui/bf110Frame.js`, `ledgePath`, `FRAME_110.ledge`):
+- **Ledge:** it is now a circular arc. Its middle stays at y 6 on the axis, where it was (D117). Its ends are 12 px
+  lower (`sag`), at y 18, on the windscreen posts' middle lines.
+- **Windscreen posts:** they now reach down to the ledge's lower edge at its ends, y 24. They used to stop at y 12;
+  `inner.foot` is now worked out from the ledge.
+- **Welding:** the ledge is still welded to the posts at both ends.
+
+**Tests:** tests/ui/bf110Frame.test.js checks that:
+- the ledge's middle is at y 6 on the axis;
+- its ends are `sag` lower (12 px, no more than 20) on the posts' middle lines;
+- every point lies on one circle, falling away from the middle both ways;
+- the windscreen posts reach the ledge's ends.
+

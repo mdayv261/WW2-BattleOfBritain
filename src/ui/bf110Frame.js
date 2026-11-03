@@ -5,7 +5,8 @@
 //   the panel's top corners (as the Bf 109's hood sides; product owner, D120), then the fuselage frames on down to the
 //   foot of the screen at 75 degrees (as the Bf 109's fuselage frames; product owner, D121), kept behind the panel;
 //   the armoured windscreen's frame below the top bar, its top bar between its own posts only (product owner, D122) and
-//   its posts leaning in a little going down, with a ledge across their feet, its top bar raised until its top corners
+//   its posts leaning in a little going down, with an arched ledge across their feet (its ends lowered a little; product
+//   owner, D128), its top bar raised until its top corners
 //   just touch the grab handles (product owner, D125); a bar each side from its top corner out and slightly down to the
 //   outer post just below the grab handle (product owner, D126, D127); a thin post from each of its top corners
 //   to the outer frame's top corner, as thin as the grab handles (product owner, D123);
@@ -33,14 +34,15 @@ export const FRAME_110 = {
   // its top corners just touch the grab handles (D125).
   crossBar: { y: -181 },
   // The armoured windscreen's posts: `half` apart at height `at`, in this many pixels for each pixel down, from the top
-  // bar down to `foot` (the ledge's lower edge); the width of its posts and top bar.
-  inner: { half: 207, at: -164, lean: 0.14, foot: 12, width: 20 },
+  // bar down to the ledge's ends; the width of its posts and top bar.
+  inner: { half: 207, at: -164, lean: 0.14, width: 20 },
   // The bars each side from the windscreen's top corner out and slightly down to the outer post: their middle line's
   // height at the outer post, just below the grab handles' feet (about 13 degrees; the tubes clear by under 1 px; D126,
   // D127). As wide as the windscreen's posts.
   sideBars: { y: -166 },
-  // The ledge across the windscreen's foot, behind the Revi.
-  ledge: { y: 6, width: 12 },
+  // The ledge across the windscreen's foot, behind the Revi: an arc, its middle line at `y` in the middle and `sag` lower
+  // at its ends on the posts (D128); width.
+  ledge: { y: 6, sag: 12, width: 12 },
   // The grab handles in the top corners: arcs round the corner from the top bar, `along` in from the corner, down to the
   // outer post, `down` below the top bar (#32: about 100 and 50 of its pixels); tube width.
   handles: { along: 112, down: 56, width: 9 },
@@ -108,7 +110,8 @@ export function handlePath(side) {
  * top bar ends at the windscreen's posts, not at the outer posts (D122).
  */
 export function windscreenPath() {
-  const { crossBar: { y }, inner: { foot } } = FRAME_110;
+  const { crossBar: { y }, ledge } = FRAME_110;
+  const foot = ledge.y + ledge.sag + ledge.width / 2; // the ledge's lower edge at its ends
   return [[innerX(-1, foot), foot], [innerX(-1, y), y], [innerX(1, y), y], [innerX(1, foot), foot]];
 }
 
@@ -132,6 +135,23 @@ export function sideBarPath(side) {
   return [[innerX(side, crossBar.y), crossBar.y], [outerX(side, sideBars.y), sideBars.y]];
 }
 
+/**
+ * The ledge's line: a circular arc across the windscreen's feet, its middle at the ledge's height on the axis, its ends
+ * `sag` lower on the windscreen posts' middle lines (D128).
+ */
+export function ledgePath() {
+  const { y, sag } = FRAME_110.ledge;
+  const half = innerX(1, y + sag) - AXIS; // half the chord
+  const radius = (half * half + sag * sag) / (2 * sag);
+  const reach = Math.asin(half / radius);
+  const pts = [];
+  for (let k = -16; k <= 16; k += 1) {
+    const a = (k / 16) * reach;
+    pts.push([AXIS + radius * Math.sin(a), y + radius * (1 - Math.cos(a))]);
+  }
+  return pts;
+}
+
 /** The welded bars in canvas px, each after the bar it ends on (D104). `at` is the panel's placer. */
 export function frameBars110(at) {
   const w = (px) => at.len(px);
@@ -143,7 +163,7 @@ export function frameBars110(at) {
     ...[-1, 1].map((side) => ({
       pts: P(sideBarPath(side)), w: w(inner.width), trim: [w(inner.width / 2), w(posts.width / 2)],
     })),
-    { pts: P([[innerX(-1, ledge.y), ledge.y], [innerX(1, ledge.y), ledge.y]]), w: w(ledge.width),
+    { pts: P(ledgePath()), w: w(ledge.width),
       trim: [w(inner.width / 2), w(inner.width / 2)] },
   ];
 }

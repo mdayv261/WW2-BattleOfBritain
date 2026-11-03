@@ -20,7 +20,7 @@ Read this at the start of every session.
 
 ## Bf 110 C cockpit view (3 Nov 2026)
 
-**Done** (D117-D127): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code. The product owner asked for
+**Done** (D117-D128): the Bf 110's cockpit view drawn from #32 on the Bf 109's frame code. The product owner asked for
 the windscreen frame first:
 - the dash covers are removed;
 - the corner grab handles are arcs from the top bar to the posts (D119);
@@ -31,7 +31,8 @@ the windscreen frame first:
 - the windscreen's top bar is raised to touch the handles, and the ledge knobs, canopy latch and lever are removed
   (D125);
 - bars join the windscreen's top corners to the outer posts just below the handles, angled up slightly into the
-  corners (D126, D127).
+  corners (D126, D127);
+- the windscreen's bottom ledge is an arc, its ends a little lower (D128).
 - **Frame:** the outer canopy frame with the corner grab handles, the fuselage frames, the armoured
   windscreen's own frame, and the dark cockpit sides.
 - **3D:** the 3D frame hides looking ahead; the wings, engines and airscrews stay in view.

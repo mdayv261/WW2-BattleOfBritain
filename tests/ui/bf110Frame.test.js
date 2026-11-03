@@ -5,9 +5,9 @@
 // at 75 degrees (D121); the windscreen's top bar ending at its own posts, with no corner gussets (D122);
 // a thin post from each top corner of the windscreen frame to the outer frame's top corner (D123), behind the grab handles (D124);
 // the windscreen's top bar raised to touch the handles, with no latch, lever or ledge knobs (D125); side bars from its
-// top corners angled down slightly to the outer posts just below the handles (D126, D127).
+// top corners angled down slightly to the outer posts just below the handles (D126, D127); the ledge an arc (D128).
 import { describe, it, expect } from 'vitest';
-import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths, sideBarPath, frameBars110 } from '../../src/ui/bf110Frame.js';
+import { FRAME_110, outerX, fuselageX, innerX, outerPath, windscreenPath, handlePath, cornerPostPath, tubePaths, sideBarPath, ledgePath, frameBars110 } from '../../src/ui/bf110Frame.js';
 import { AXIS, BF110_PANEL, BF110_REVI, GLASS_ABOVE_110, placer, panelTop110 } from '../../src/ui/bf110Panel.js';
 import { reviPlacement } from '../../src/ui/reviSight.js';
 import { panelRadius } from '../../src/ui/instruments.js';
@@ -153,6 +153,28 @@ describe('Bf 110 C front frame (D117)', () => {
       expect(gap, `${side}`).toBeGreaterThanOrEqual(0);
       expect(gap, `${side}`).toBeLessThan(1.5);
     }
+  });
+
+  it('arches the ledge: its middle where it was, its ends a little lower on the windscreen posts (D128)', () => {
+    const { ledge } = FRAME_110;
+    const pts = ledgePath();
+    const mid = pts[pts.length >> 1];
+    expect(mid[0]).toBeCloseTo(AXIS, 9);
+    expect(mid[1]).toBeCloseTo(ledge.y, 9); // D117's height
+    expect(ledge.sag).toBeGreaterThan(0);
+    expect(ledge.sag).toBeLessThanOrEqual(20); // a small amount
+    for (const [side, [x, y]] of [[-1, pts[0]], [1, pts[pts.length - 1]]]) {
+      expect(y).toBeCloseTo(ledge.y + ledge.sag, 9);
+      expect(x).toBeCloseTo(innerX(side, y), 9); // on the post's middle line
+    }
+    // An arc: every point the same distance from one centre below, falling away from the middle both ways.
+    const half = AXIS - pts[0][0];
+    const radius = (half ** 2 + ledge.sag ** 2) / (2 * ledge.sag);
+    for (const [x, y] of pts) expect(Math.hypot(x - AXIS, y - (ledge.y + radius))).toBeCloseTo(radius, 6);
+    for (let i = 1; i <= pts.length >> 1; i += 1) expect(pts[i][1]).toBeLessThan(pts[i - 1][1]);
+    // The windscreen's posts reach down to the ledge's ends.
+    const path = windscreenPath();
+    expect(path[0][1]).toBeCloseTo(ledge.y + ledge.sag + ledge.width / 2, 9);
   });
 
   it('has no canopy latch and lever on the top bar and no knobs on the ledge (D125)', () => {
