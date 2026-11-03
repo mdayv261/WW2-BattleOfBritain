@@ -146,7 +146,7 @@ export const LAYOUT = {
     gearLights: box(202.5, 312.5, 352.5, 462.5), // round, the round counter's diameter (D157, D158)
     achtung: box(250, 590, 345, 730), dive: box(615, 578, 735, 620),
     course: box(360, 550, 580, 830), // the repeater compass's width, under it (D159)
-    umschalt: box(806, 576, 959, 603), window: box(1042, 590, 1122, 630),
+    umschalt: box(806, 576, 959, 603), window: box(1042, 590 - 13.9, 1122, 630 - 13.9), // 2 mm up (D176)
     fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(245, 870, 318, 892),
   },
   // The "d 30′ 5′" correction cards above the engine gauges and the "Km" cards above the coolant thermometers: shown

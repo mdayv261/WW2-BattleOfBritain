@@ -63,6 +63,7 @@ Read this at the start of every session.
 - D171: plate round the manifold pressure gauges (recess removed); D172: the round counter and Heizung placard 4 mm up.
 - D173-D175: the turn and slip indicator, the elevator trim indicator and the climb indicator the airspeed indicator's
   size.
+- D176: the two-bar window above the altimeter 2 mm up.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

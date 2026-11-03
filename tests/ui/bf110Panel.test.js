@@ -117,6 +117,11 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     expect(mm(57 + (340 - 132) * 0.46 - L.knobs.heizungKnob[1])).toBeCloseTo(4, 1);
   });
 
+  it('moves the two-bar window above the altimeter 2 mm up (D176)', () => {
+    const r = panelRadius(L, 2560, 1259);
+    expect((((57 + (590 - 132) * 0.46 - L.boxes.window[1]) / 30) * r) / 4.3).toBeCloseTo(2, 1);
+  });
+
   it('keeps the dial radius on screen as before (D106), so the Bf 109\'s instruments keep their size; fits every screen', () => {
     for (const [w, h] of SCREENS) {
       const r = panelRadius(L, w, h);

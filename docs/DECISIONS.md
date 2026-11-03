@@ -4553,3 +4553,13 @@ and slip, climb) is now three dials of one size.
 **Tests:** tests/ui/bf110Panel.test.js checks it is the airspeed indicator's size. The layout checks keep it clear of
 everything round it.
 
+## D176. The Bf 110 C's two-bar window above the altimeter moved 2 mm up (3 Nov 2026, product owner's request)
+
+**The request:** move the label above the altimeter up 2 mm.
+
+**The change** (src/ui/bf110Layout.js): the small two-bar window above the altimeter (#34, shown only) stands 13.9 of
+#34's pixels (2 mm, 8.6 screen px on a 2560 × 1259 screen) higher. It stays clear of the climb indicator's mounting
+(D175).
+
+**Tests:** tests/ui/bf110Panel.test.js checks the 2 mm rise.
+
