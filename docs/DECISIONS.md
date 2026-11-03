@@ -4200,3 +4200,29 @@ right dash cover's bottom edge.
 - the bottom edge runs out to it;
 - the angle at the touch is obtuse.
 
+## D153. The Bf 110 C panel's left edge: down at 75 degrees from the clock, then level to the lever box (3 Nov 2026, product owner's request)
+
+**The request:** fix the panel's left edge. From just left of the clock's bottom left corner, run it down at 75° to the
+top left corner of the airscrew pitch lever box.
+- A 75° line from there reaches the box's height about 46 picture px left of the clock, well short of the box's corner.
+- Asked which to keep, the product owner chose: 75° down to the box's height, then level left along its top to its
+  corner.
+
+**The change** (src/ui/bf110Layout.js, `LEFT_SIDE`):
+- **Left edge:** from the clock bracket's foot (255, 295 on #34's pixels, just left of the clock's bottom left corner at
+  263, 292), the edge runs down and left at 75° to the lever box's top (209.4, 465). It then runs level to the box's top
+  left corner (40, 465), and down the left side.
+- **Replaced:** #34's near-upright left edge and the wing top.
+- **Gear lights moved:** the undercarriage lights box (Fahrgestell Anzeige) now stood out past the new edge, so it is
+  moved right and narrowed: [250, 330, 355, 445] on #34, was [220, 330, 335, 445]. **Flagged.**
+- **Posts' slope kept:** the posts' slope is now fixed at D150's value (0.270, worked out from the feet at #32's slope).
+  It no longer moves when the panel's outline changes.
+  - The posts' feet, where the new left edge reaches the left post, move down to frame y 234.
+  - The panel's right side (D152) follows the post's foot there.
+
+**Tests:**
+- tests/ui/bf110Panel.test.js checks that the left edge starts just left of the clock's bottom left corner, runs at 75°,
+  then runs level along the lever box's top to its corner. The existing checks keep every dial and box inside the
+  outline.
+- tests/ui/bf110Frame.test.js keeps the right side on the post and sheet.
+

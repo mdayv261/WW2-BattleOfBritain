@@ -41,6 +41,8 @@ Read this at the start of every session.
 - D151: the panel's top right edge runs three quarters of the way along the right dash cover, then angles down to the
   post.
 - D152: the panel's lower right edge runs down the right fuselage side (the post, then the sheet).
+- D153: the panel's left edge runs down at 75 degrees from just left of the clock, then level to the lever box; the
+  undercarriage lights box moved right and narrowed (flagged).
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

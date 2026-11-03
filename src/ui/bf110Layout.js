@@ -35,15 +35,23 @@ const RIGHT_CORNER = [[1292.1, 132], [1479.8, 167.6], [1659.3, 315.9]];
 // The right side (product owner, D152): from the corner's touch, at an obtuse angle, down the right fuselage side: the
 // right outer post's inner edge to its foot, out to the fuselage sheet's inner edge there, and down it to the right
 // section's foot, whose bottom edge runs out to meet it. Set in #34's pixels, kept with the frame by the same tests.
-const RIGHT_SIDE = [[1698, 459.2], [1748, 459.2], [1906.6, 895]];
+const RIGHT_SIDE = [[1699.8, 465.7], [1749.8, 465.7], [1906, 895]]; // the post's foot as moved by D153
+// The left side (product owner, D153): from the clock's bracket's foot, just left of the clock's bottom left corner,
+// down and left at 75 degrees to the height of the airscrew lever box's top, then level to the box's top left corner.
+const LEVERS = [40, 465, 240, 855];
+const LEFT_START = [255, 295];
+const LEFT_SIDE = [
+  [LEVERS[0], LEVERS[1]],
+  [LEFT_START[0] - (LEVERS[1] - LEFT_START[1]) / Math.tan((75 * Math.PI) / 180), LEVERS[1]],
+  LEFT_START,
+];
 const OUTLINE_34 = [
   [255, 165], [295, 128], [447, 100], [455, 132], ...RIGHT_CORNER, ...RIGHT_SIDE, [1160, 895], [1160, 1080], [1130, 1120], [640, 1120],
-  [608, 1090], [605, 835], [345, 835], [335, 960], [320, 1120], [55, 1120], [35, 1100], [35, 460], [200, 450],
-  [205, 320], [222, 300], [258, 295],
+  [608, 1090], [605, 835], [345, 835], [335, 960], [320, 1120], [55, 1120], [35, 1100], ...LEFT_SIDE,
 ];
 export const OUTLINE = OUTLINE_34.map(([X, Y]) => pt(X, Y));
 /** The clock's bracket, standing proud of the panel: drawn lighter, and in front of the dash covers (D140). */
-export const BRACKET = [[255, 165], [295, 128], [447, 100], [400, 138], [400, 295], [258, 295]].map(([X, Y]) => pt(X, Y));
+export const BRACKET = [[255, 165], [295, 128], [447, 100], [400, 138], [400, 295], [255, 295]].map(([X, Y]) => pt(X, Y));
 
 const FOOT = Math.max(...OUTLINE.map(([, y]) => y));
 /** The panel's height below its top edge, in dial radii. */
@@ -118,7 +126,7 @@ export const LAYOUT = {
   },
   boxes: {
     skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: box(790, 312, 975, 382),
-    heizung: box(1187, 245, 1320, 352), gearLights: box(220, 330, 335, 445), levers: box(40, 465, 240, 855),
+    heizung: box(1187, 245, 1320, 352), gearLights: box(250, 330, 355, 445), levers: box(...LEVERS),
     achtung: box(250, 590, 345, 730), course: box(352, 550, 594, 830), dive: box(615, 578, 735, 620),
     umschalt: box(806, 576, 959, 603), window: box(1042, 590, 1122, 630), ataBox: box(1172, 700, 1560, 893),
     fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(245, 870, 318, 892),

@@ -129,6 +129,21 @@ describe('Bf 110 C panel layout after #34 (D140)', () => {
     expect(x + o).toBeLessThan(L.boxes.klappeLabel[0]);
   });
 
+  it('runs the left edge from just left of the clock down at 75 degrees, then level to the lever box (D153)', () => {
+    const O = L.outline;
+    const [, , clockBottom] = [0, 0, L.dials.clock[1] + L.dials.clock[3]];
+    const clockLeft = L.dials.clock[0] - L.dials.clock[3];
+    const [ll, lt] = L.boxes.levers;
+    const i = O.findIndex(([x, y]) => x === ll && y === lt); // the lever box's top left corner on the outline
+    expect(i).toBeGreaterThan(0);
+    const [, b, c] = [O[i], O[i + 1], O[i + 2]];
+    expect(b[1]).toBeCloseTo(lt, 9); // level along the box's top
+    expect(c[0]).toBeLessThan(clockLeft); // starting just left of the clock's bottom left corner
+    expect(clockLeft - c[0]).toBeLessThan(5);
+    expect(Math.abs(c[1] - clockBottom)).toBeLessThan(3);
+    expect((Math.atan2(b[1] - c[1], c[0] - b[0]) * 180) / Math.PI).toBeCloseTo(75, 6); // down and left at 75 degrees
+  });
+
   it('keeps room above the top edge for the clock\'s bracket, which rises over it', () => {
     const highest = Math.min(...L.outline.map(([, y]) => y));
     expect(highest).toBeLessThan(57);
