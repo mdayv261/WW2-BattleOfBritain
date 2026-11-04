@@ -2,6 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { BF110_PANEL } from '../../src/ui/bf110Panel.js';
 import { ACHTUNG, achtungLines, achtungPlacard } from '../../src/ui/bf110Placards.js';
+import { LEVER_TRAVEL, LEVER_LABELS, LEVER_KNOB } from '../../src/ui/bf110Fittings.js';
 
 const L = BF110_PANEL;
 const mid = ([l, , r]) => (l + r) / 2;
@@ -69,5 +70,23 @@ describe('Bf 110 C labels between the flying instruments (D206)', () => {
     expect(rule).toBeLessThan(70); // the flaps' section, below it, the taller
     expect(texts.filter(([, y]) => y < rule)).toHaveLength(4);
     expect(texts.filter(([, y]) => y > rule)).toHaveLength(6);
+  });
+
+  it('shortens the airscrew lever box 10 mm from its foot, its top kept (D209)', () => {
+    const [l, t, r, b] = L.boxes.levers;
+    const K = 0.46;
+    expect((855 - 465 - (b - t) / K) * 0.619).toBeCloseTo(43, 6); // 43 screen px, 10 mm
+    expect(t).toBeCloseTo(57 + (465 - 132) * K, 9);
+    expect(r - l).toBeCloseTo(200 * K, 9);
+  });
+
+  it('keeps each pitch lever\'s knob clear of its größer and kleiner labels in the shorter box (D209)', () => {
+    const [, t, , b] = L.boxes.levers;
+    const h = b - t;
+    const knob = (LEVER_KNOB * 30) / 2; // its radius in the layout's units
+    const half = (LEVER_LABELS.size * h) / 2; // a label's half-height
+    expect(LEVER_TRAVEL[0] * h - knob).toBeGreaterThan(LEVER_LABELS.groesser * h + half);
+    expect(LEVER_TRAVEL[1] * h + knob).toBeLessThan(LEVER_LABELS.kleiner * h - half);
+    expect(LEVER_LABELS.groesser * h - half).toBeGreaterThan(0.37 * h); // below the Hand plate
   });
 });

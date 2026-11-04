@@ -114,7 +114,10 @@ export const LEVER_KNOB = 25 / 40.37;
  * Where a pitch lever's knob stands along its slot (D191), as a share of the lever box's height: at the slot's top
  * (größer Drehzahl) at the fine stop, at its foot (kleiner) at the coarse stop, `fraction` 0 to 1.
  */
-export const LEVER_TRAVEL = [0.54, 0.73]; // the 25 px knob clear of the größer and kleiner labels (0.47, 0.80)
+// The 25 px knob clear of the größer and kleiner labels (LEVER_LABELS) in the box 10 mm shorter (D209; was 0.54 to 0.73
+// with größer at 0.47).
+export const LEVER_TRAVEL = [0.535, 0.715];
+export const LEVER_LABELS = { groesser: 0.45, kleiner: 0.8, size: 0.03 }; // shares of the box's height
 export const leverKnobY = (fraction) => {
   const f = Math.max(0, Math.min(1, fraction ?? 0));
   return LEVER_TRAVEL[0] + (LEVER_TRAVEL[1] - LEVER_TRAVEL[0]) * f;
@@ -141,8 +144,8 @@ function leverBox(g, b, s, v) {
     g.beginPath();
     g.arc(x, b.y + b.h * pitchKnobY(!!v.pitchAutomatik), (PITCH_KNOB * s) / 2, 0, Math.PI * 2);
     g.fill();
-    text(g, 'größer', x, b.y + b.h * 0.47, b.h * 0.03, INK);
-    text(g, 'kleiner', x, b.y + b.h * 0.8, b.h * 0.03, INK);
+    text(g, 'größer', x, b.y + b.h * LEVER_LABELS.groesser, b.h * LEVER_LABELS.size, INK);
+    text(g, 'kleiner', x, b.y + b.h * LEVER_LABELS.kleiner, b.h * LEVER_LABELS.size, INK);
     g.fillStyle = '#0d0e0f';
     g.fillRect(x - b.w * 0.03, b.y + b.h * 0.5, b.w * 0.06, b.h * 0.27); // the lever's slot
     // Its knob, the Heizung knob's green (D189), following its engine's blade angle (left lever left engine, D191).

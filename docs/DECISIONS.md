@@ -5218,3 +5218,19 @@ between the lever box and the course box is only 120 px.
 **Tests** (tests/ui/bf110Labels.test.js): the font 1.5 times the old; ten lines fitting the height; every line, at
 Chrome's measured widths, within 0.92 of the placard's width; the plate centred on the valves and clear of the lever
 box and course box; four lines above the rule and six below.
+
+## D209. The airscrew lever box 10 mm shorter from its foot (4 Nov 2026, product owner's request)
+
+**The request:** reduce the propeller pitch control block's height by 10 mm from the bottom.
+
+**The change** (src/ui/bf110Layout.js `LEVER_FOOT_UP`, `LEVERS`; src/ui/bf110Fittings.js):
+- **Box:** its foot is 69.5 of #34's pixels higher (10 mm on the product owner's screen: 43 screen px, one of #34's
+  pixels 0.619 screen px, as D154). It now runs from 465 to 785.5 (was 855). Its top, sides and the outline's left
+  edge through its top corner are unchanged.
+- **Parts:** the box's parts are placed as shares of its height, so they close up with it. The pitch levers' 25 px
+  knobs then touched the "größer" label. So "größer" moves from 0.47 to 0.45 of the height, and the knobs' travel
+  becomes 0.535 to 0.715 (was 0.54 to 0.73) so they clear both labels.
+- **Unchanged:** the Fahrwerk label stays level with the Landeklappe label (D207), so there's now a gap below the box.
+
+**Tests** (tests/ui/bf110Labels.test.js): the box 43 screen px (10 mm) shorter with its top and width kept; the
+knobs clear of the größer and kleiner labels at both ends of their travel; größer below the Hand plate.

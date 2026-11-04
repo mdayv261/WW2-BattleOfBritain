@@ -41,7 +41,10 @@ const RIGHT_SIDE = [[1688.3, 423.3], [1738.3, 423.3], [1910, 895]]; // the post'
 // (70 of #34's pixels) left of the clock's bottom left corner; then straight down and left past the airscrew lever
 // box's top left corner until it touches the left fuselage side (the fuselage sheet's inner edge, src/ui/bf110Frame.js;
 // tests/ui/bf110Frame.test.js keeps the touch); then straight down to below the screen's foot.
-const LEVERS = [40, 465, 240, 855];
+// The airscrew lever box; its foot 10 mm up from 855 (product owner, D209: 43 screen px to 10 mm and one of #34's pixels
+// 0.619 screen px, as D154), its parts drawn as shares of its height (src/ui/bf110Fittings.js).
+const LEVER_FOOT_UP = 43 / 0.619;
+const LEVERS = [40, 465, 240, 855 - LEVER_FOOT_UP];
 /** The Fahrwerk and Landeklappe switches' line: midway between the lever box's right edge and the compass's mounting's
  * left edge (470 - 110), on #34 (product owner, D198); they stood at 268 and 270. */
 const SWITCH_X = (LEVERS[2] + (470 - 110)) / 2;
