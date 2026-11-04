@@ -96,7 +96,9 @@ Read this at the start of every session.
 - D199: the Fahrwerk and Landeklappe controls redrawn as push/pull valves, two bigger T-grips each (EIN, AUS), the
   one matching the movement shown pushed in (show only, keys unchanged); from unapproved leads, flagged.
 - D200: the valve T-grips 20% then 10% bigger, the EIN / AUS label on the middle of each bar (the thumb's push).
-- D194-D200 not pushed yet.
+- D201: the trim indicator's right side is now a flap indicator (Ein at 12 o'clock, Aus at 4 o'clock, a mark every 10°); the dark window
+  at its top removed.
+- D194-D201 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
 is bought; then Phase 6 checkpoint 5 after a plan.

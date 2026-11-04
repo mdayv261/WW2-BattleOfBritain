@@ -13,6 +13,7 @@ import {
 } from '../../src/ui/bf110Fittings.js';
 import {
   cannonCounter, roundCounter, COUNTER, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
+  flapAngle, flapMarks, FLAP_ARC, trimIndicator,
 } from '../../src/ui/bf110Gauges.js';
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
 import { GREEN_KNOB, SKK, SKK_LAMPS, mgLamps } from '../../src/ui/bf110Boxes.js';
@@ -370,6 +371,34 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     const words = draw(v).texts.map((t) => t.s);
     for (const w of ['L', 'R', 'AEG']) expect(words, w).toContain(w);
     for (const w of ['+15', '-15', '+5', 'Höhen-', 'Grad']) expect(words, w).not.toContain(w);
+  });
+
+  it('reads the flaps on the trim indicator\'s right side: Ein at 12 o\'clock, Aus at 4 o\'clock, a mark every 10 degrees (D201)', () => {
+    const v = instrumentReadings(new Simulation(aircraftById.bf110c4, 'air'));
+    expect(v.flapTravel).toBeCloseTo(50, 9);
+    expect(flapMarks(50)).toEqual([0, 10, 20, 30, 40, 50]);
+    expect(FLAP_ARC).toEqual([0, 120]);
+    expect(clockwise(flapAngle(0, 50))).toBeCloseTo(0, 6); // Ein at 12 o'clock
+    expect(clockwise(flapAngle(50, 50))).toBeCloseTo(120, 6); // Aus at 4 o'clock
+    expect(clockwise(flapAngle(10, 50)) - clockwise(flapAngle(0, 50))).toBeCloseTo(24, 6); // 24 degrees of arc a mark
+    expect(flapAngle(80, 50)).toBe(flapAngle(50, 50)); // held at the ends
+    expect(flapAngle(-5, 50)).toBe(flapAngle(0, 50));
+    for (const m of flapMarks(50)) { // the right side only, clear of the trim's marks on the left
+      expect(clockwise(flapAngle(m, 50))).toBeGreaterThanOrEqual(0);
+      expect(clockwise(flapAngle(m, 50))).toBeLessThan(180);
+    }
+    const words = draw(v).texts.map((t) => t.s);
+    for (const w of ['Ein', 'Aus']) expect(words.filter((x) => x === w).length, w).toBeGreaterThanOrEqual(2); // also the SKK's
+  });
+
+  it('has no dark round window at the top of the trim indicator (D201)', () => {
+    const arcs = [];
+    const g = new Proxy({}, {
+      get: (t, p) => (p === 'arc' ? (...a) => arcs.push({ a, fill: t.fillStyle }) : p in t ? t[p] : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t, p, val) => { t[p] = val; return true; },
+    });
+    trimIndicator(g, 100, 100, 40, 0, { degrees: 0, travel: 50 });
+    expect(arcs.some(({ a: [ax, ay, r], fill }) => fill === '#0b0b0c' && Math.abs(ax - 100) < 1 && ay < 90 && r > 5)).toBe(false);
   });
 
   it('draws the artificial horizon with a round glass face, fixed marks at 9 and 3 o\'clock and no L or R (D181)', () => {

@@ -1,7 +1,7 @@
 // The Bf 110 C panel's own gauges after the product owner's picture (#34, D140), in the look of the Luftwaffe dials
 // (src/ui/lwStyle.js): the round counter for the two MG FF/M cannon (Durchladen), the outside air thermometer, the coolant
 // thermometers in their green rings, the radiator flap switches and the tank selector, and, shown only, the Kurssteuerung
-// indicator and the correction cards; the elevator trim indicator (D161); the Preßluft gauge above the engine gauges. Angles are in
+// indicator and the correction cards; the elevator trim and flap indicator (D161, D201); the Preßluft gauge above the engine gauges. Angles are in
 // radians, 0 straight up, clockwise.
 
 import { DEG, at, font, centred, tick, lwFace, lwHand, paint, screw } from './lwStyle.js';
@@ -215,17 +215,26 @@ export const TRIM_MARKS = [-45, -22.5, 0, 22.5, 45]; // degrees of arc from 9 o'
 export const trimAngle = (deg) => (-90 + Math.max(-TRIM_RANGE, Math.min(TRIM_RANGE, deg)) * 3) * DEG;
 
 /**
- * The elevator trim indicator (D161), redrawn after #34's AEG instrument (D164): five marks round the left side (a dash
- * at each end, a dot either side of the middle, a square at 9 o'clock) and a very short pointer inside them; the dark
- * round window at its top; and, shown only, the rudder trim's L ▮ R with its upright marker, and AEG at the foot.
+ * The flap indicator on the same face's right side (product owner, D201): Ein (flaps up, 0°) at 12 o'clock, Aus (fully
+ * down) at 4 o'clock, a mark for every 10 degrees of flap between. FLAP_ARC is [Ein, Aus] in degrees clockwise from 12.
  */
-export function trimIndicator(g, x, y, face, degrees) {
+export const FLAP_ARC = [0, 120];
+export const flapMarks = (travel) => Array.from({ length: Math.floor(travel / 10 + 1e-9) + 1 }, (_, i) => i * 10);
+export const flapAngle = (deg, travel) => {
+  const f = Math.max(0, Math.min(1, travel > 0 ? deg / travel : 0));
+  return (FLAP_ARC[0] + (FLAP_ARC[1] - FLAP_ARC[0]) * f) * DEG;
+};
+
+/**
+ * The elevator trim and flap indicator (D161, D201), redrawn after #34's AEG instrument (D164): five marks round the
+ * left side (a dash at each end, a dot either side of the middle, a square at 9 o'clock) and a very short pointer inside
+ * them; the flap scale on the right side (D201; the dark round window at its top removed); and, shown only, the rudder
+ * trim's L ▮ R with its upright marker, and AEG at the foot. `flap` is the flaps' { degrees, travel }.
+ */
+export function trimIndicator(g, x, y, face, degrees, flap = { degrees: 0, travel: 50 }) {
   lwFace(g, x, y, face);
   const ink = paint.ink;
-  g.fillStyle = '#0b0b0c'; // the round window
-  g.beginPath();
-  g.arc(x, y - face * 0.55, face * 0.22, 0, Math.PI * 2);
-  g.fill();
+  flapScale(g, x, y, face, flap);
   TRIM_MARKS.forEach((m, i) => {
     const a = (-90 + m) * DEG;
     const [mx, my] = at(x, y, a, face * 0.7);
@@ -255,6 +264,32 @@ export function trimIndicator(g, x, y, face, degrees) {
   g.fillRect(x - face * 0.01, y + face * 0.24, face * 0.02, face * 0.12);
   font(g, face * 0.12, true);
   g.fillText('AEG', x, y + face * 0.84);
+}
+
+/** The flap scale (D201): a mark every 10 degrees, longer at Ein and Aus, the words by them, and a short pointer. */
+function flapScale(g, x, y, face, { degrees, travel }) {
+  const ink = paint.ink;
+  const marks = flapMarks(travel);
+  g.strokeStyle = ink;
+  g.lineCap = 'butt';
+  marks.forEach((m, i) => {
+    const end = i === 0 || i === marks.length - 1;
+    tick(g, x, y, face, flapAngle(m, travel), 0.78, end ? 0.62 : 0.68, Math.max(1.5, face * (end ? 0.06 : 0.04)));
+  });
+  font(g, face * 0.13, true);
+  centred(g);
+  g.fillStyle = ink;
+  const [ex, ey] = at(x, y, flapAngle(0, travel), face * 0.7);
+  const [ax, ay] = at(x, y, flapAngle(travel, travel), face * 0.7);
+  g.fillText('Ein', ex - face * 0.21, ey); // beside its mark at 12 o'clock, clear of the bezel
+  g.fillText('Aus', ax, ay + face * 0.17);
+  g.strokeStyle = ink;
+  g.lineWidth = Math.max(2, face * 0.06);
+  g.lineCap = 'butt';
+  g.beginPath();
+  g.moveTo(...at(x, y, flapAngle(degrees, travel), face * 0.44));
+  g.lineTo(...at(x, y, flapAngle(degrees, travel), face * 0.56));
+  g.stroke();
 }
 
 /**

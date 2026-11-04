@@ -5066,3 +5066,27 @@ pictures the thumb pushing the T in on its label, two fingers pulling it out by 
 
 **Tests** (tests/ui/bf110Valves.test.js): the bar 1.32 times 0.8 by 0.24; the disc centred on the bar, leaving its ends for
 two fingers; the clearance, outline and centre-line tests kept.
+
+## D201. The Bf 110 C's trim indicator doubles as a flap indicator (4 Nov 2026, product owner's request)
+
+**The request:** make the elevator trim indicator dual use. Its blank right side becomes a flap indicator, with Ein at
+the top and Aus at the bottom of an arc of marks, one every 10 degrees. Remove the small dark round window at the top
+of the face. Then: move Ein to 12 o'clock and Aus to 4 o'clock.
+
+**The change** (src/ui/bf110Gauges.js `trimIndicator`, `flapScale`, `flapAngle`, `flapMarks`, `FLAP_ARC`):
+- **Flap scale:** an arc on the right side, 120 degrees of arc from 12 o'clock to 4 o'clock (24 degrees of arc for each
+  10° mark).
+  - **Ein:** flaps up (0°), at 12 o'clock.
+  - **Aus:** fully down, the Bf 110's 50° (`controls.flapTravel`), at 4 o'clock.
+  - **Marks:** six, one for every 10° of flap. The end marks are longer.
+  - **Words:** Ein is lettered left of its mark (above it, it would touch the bezel); Aus below its mark.
+- **Pointer:** a short pointer like the trim's follows the flaps' actual position (`flapDegrees`), not the selection.
+- **Window:** the dark round window at the top of the face is removed.
+- **Trim side:** the trim's marks and pointer and the rudder trim's L ▮ R are unchanged.
+
+**Flagged:** the combined trim and flap indicator is the product owner's design. #34's AEG instrument shows only the
+trim marks and the window. The flap-control leads (D199) put the flap indicator beside the pilot's seat, not on the
+panel, and no approved source has been found for either.
+
+**Tests** (tests/ui/bf110Panel.test.js): the flap marks at 0-50 in 10s; Ein at 12 o'clock and Aus at 4 o'clock, 24
+degrees of arc a mark, held at the ends; the words drawn; no dark window at the top.

@@ -122,7 +122,8 @@ function drawPanel(g, x0, y0, r, v, now) {
     lwAirspeed(g, ...face('airspeed'), v.airspeed);
     airThermometer(g, ...face('airTemp'), v.airTemp);
     autopilotIndicator(g, ...face('autopilot'));
-    trimIndicator(g, ...face('trim'), v.trimDegrees); // the elevator trim, in the AEG indicator's place (D161)
+    // The elevator trim, in the AEG indicator's place (D161), and the flaps on its right side (D201).
+    trimIndicator(g, ...face('trim'), v.trimDegrees, { degrees: v.flapDegrees ?? 0, travel: v.flapTravel ?? 50 });
     pressluftGauge(g, ...dial('pressluft'), pressluftReading(v)); // 0 stopped, 150 running (D142)
     radiatorSwitch(g, ...dial('radiatorLeft'), !!v.radiatorOpen);
     radiatorSwitch(g, ...dial('radiatorRight'), !!v.radiatorOpen);
