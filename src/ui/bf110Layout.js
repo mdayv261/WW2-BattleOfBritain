@@ -140,6 +140,17 @@ const OAT_LEFT = 1265 + LEFT_MOVE - 86;
  * placard, 3 right of it, its foot 4 above the right rev counter's correction card (520 - RPM_UP). Its top right corner
  * overhangs the panel's sloping edge onto the frame.
  */
+/** A box moved sideways to stand centred on the layout's x (product owner, D206: under the dial above it). */
+const centredOn = (x, [l, t, r, b]) => [x - (r - l) / 2, t, x + (r - l) / 2, b];
+// The labels between the flying instruments, each centred under the dial above it (D206): the dive placard under the
+// airspeed indicator, the Umschaltwarnung placard (its lamps with it) under the turn and slip indicator and the two-bar
+// window under the climb indicator.
+const DIVE = centredOn(AIRSPEED[0], box(615, 578, 735, 620));
+const UMSCHALT_34 = box(806, 576, 959, 603);
+const UMSCHALT = centredOn(TURN[0], UMSCHALT_34);
+const UMSCHALT_SHIFT = UMSCHALT[0] - UMSCHALT_34[0];
+const lamp = ([x, y, rad]) => [x + UMSCHALT_SHIFT, y, rad];
+const WINDOW = centredOn(CLIMB[0], box(1042, 590 - 13.9, 1122, 630 - 13.9)); // 2 mm up (D176)
 const MAG_CASE = 55 * 1.2 * 1.25;
 const MAG_HALF = MAG_CASE * (1 + MAG.bracket);
 const MAG_LEFT = OAT_LEFT + 133 + 3;
@@ -183,9 +194,9 @@ export const LAYOUT = {
     heizung: box(OAT_LEFT, 245 - UP_4MM, OAT_LEFT + 133, 352 - UP_4MM), levers: box(...LEVERS),
     // (the Heizung placard: 4 mm up with the round counter, D172; its left edge in line with the thermometer's, D178)
     gearLights: box(202.5, 312.5, 352.5, 462.5), // round, the round counter's diameter (D157, D158)
-    achtung: box(250, 590, 345, 730), dive: box(615, 578, 735, 620),
+    achtung: box(250, 590, 345, 730), dive: DIVE,
     course: box(360, 550, 580, 830), // the repeater compass's width, under it (D159)
-    umschalt: box(806, 576, 959, 603), window: box(1042, 590 - 13.9, 1122, 630 - 13.9), // 2 mm up (D176)
+    umschalt: UMSCHALT, window: WINDOW, // centred under their dials (D206)
     // (the Landeklappe label centred under its switch, its width kept, D198)
     fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(SWITCH_X - 36.5, 870, SWITCH_X + 36.5, 892),
   },
@@ -202,7 +213,7 @@ export const LAYOUT = {
   },
   knobs: {
     redButton: knob(442, 252, 30), heizungKnob: knob(OAT_LEFT + 55, 340 - UP_4MM, 30),
-    umschaltLeft: knob(790, 590, 12), umschaltRight: knob(975, 590, 12),
+    umschaltLeft: lamp(knob(790, 590, 12)), umschaltRight: lamp(knob(975, 590, 12)), // with their placard (D206)
     tankLeftFront: knob(775, 885, 17), tankLeftRear: knob(775, 955, 17),
     tankRightFront: knob(975, 885, 17), tankRightRear: knob(975, 955, 17),
     setAltimeter: knob109('setAltimeter', 'altimeter', altimeter),

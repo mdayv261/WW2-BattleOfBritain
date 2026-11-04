@@ -5165,3 +5165,20 @@ of the case's half-width (82.5), still inside the case and clear of its screws. 
 unchanged.
 
 **Tests** (tests/ui/bf110MagCompass.test.js): the face 27.8 px wider across, inside the case and clear of its screws.
+
+## D206. The labels between the Bf 110 C's flying instruments centred under the dials above (4 Nov 2026, product owner's request)
+
+**The request:** align the three labels between the flying instruments with the vertical centre lines of the
+instruments above them.
+
+**The change** (src/ui/bf110Layout.js `centredOn`, `DIVE`, `UMSCHALT`, `WINDOW`):
+- **Dive speed placard:** centred under the airspeed indicator, 15 of #34's pixels right (about 2.2 mm on the product
+  owner's screen).
+- **Umschaltwarnung placard:** centred under the turn and slip indicator, 32 px right (about 4.6 mm). Its two lamps
+  move with it and stay the same distance either side.
+- **Two-bar window:** centred under the climb indicator, which is also the altimeter's centre line (D186), 57 px right
+  (about 8.3 mm).
+- **Unchanged:** each label's size and height.
+
+**Tests** (new tests/ui/bf110Labels.test.js): each label centred under its dial; the sizes kept; the lamps the same
+distance from their placard; the window on the altimeter's line too. The panel layout test still finds no overlaps.

@@ -104,7 +104,9 @@ Read this at the start of every session.
   (true, no variation).
 - D204: the magnetic compass's lamp removed; its lubber line runs the face's full height.
 - D205: the magnetic compass's face 4 mm wider (2 mm twice).
-- D194-D205 not pushed yet.
+- D206: the dive placard, the Umschaltwarnung placard (with its lamps) and the two-bar window centred under the
+  airspeed, turn and slip and climb indicators.
+- D194-D206 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
 is bought; then Phase 6 checkpoint 5 after a plan.
