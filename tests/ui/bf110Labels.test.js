@@ -57,7 +57,7 @@ describe('Bf 110 C labels between the flying instruments (D206)', () => {
     expect(r - l).toBeCloseTo(112 * 0.46, 9);
   });
 
-  it('draws both sections with the rule between them, the flaps\' section taller', () => {
+  it('draws the flaps\' section above the undercarriage\'s (D210), the rule between them, the flaps\' section taller', () => {
     const texts = [];
     const lines = [];
     const g = new Proxy({}, {
@@ -67,9 +67,9 @@ describe('Bf 110 C labels between the flying instruments (D206)', () => {
     });
     achtungPlacard(g, { x: 0, y: 0, w: 112, h: 140 }, { pilotCard: { flapLimit: 250 } });
     const rule = lines[0];
-    expect(rule).toBeLessThan(70); // the flaps' section, below it, the taller
-    expect(texts.filter(([, y]) => y < rule)).toHaveLength(4);
-    expect(texts.filter(([, y]) => y > rule)).toHaveLength(6);
+    expect(rule).toBeGreaterThan(70); // the flaps' section, above it, the taller
+    expect(texts.filter(([, y]) => y < rule).map(([w]) => w)).toEqual(achtungLines({ pilotCard: { flapLimit: 250 } }).flaps);
+    expect(texts.filter(([, y]) => y > rule).map(([w]) => w)).toEqual(achtungLines({ pilotCard: { flapLimit: 250 } }).gear);
   });
 
   it('shortens the airscrew lever box 10 mm from its foot, its top kept (D209)', () => {

@@ -1,5 +1,5 @@
 // The Bf 110 C panel's lettered placards (D140), white on black with a light border, after the product owner's picture
-// (#34): the dive speed placard below the airspeed indicator, the "Achtung Fahrwerk / Achtung Landeklappe" placard
+// (#34): the dive speed placard below the airspeed indicator, the "Achtung Landeklappe / Achtung Fahrwerk" placard
 // beside the undercarriage and flap switches, and the "Umschaltwarnung" placard. Their figures are the sourced limits
 // (S24: 650 km/h, 250 km/h), not the picture's (product owner, D140).
 
@@ -92,8 +92,8 @@ export function textPlacard(g, b, lines, { border = true } = {}) {
 }
 
 /**
- * The "Achtung" placard in its box: the undercarriage's section above the flaps', a rule between, each section's
- * height in proportion to its lines (D208). Returns the font height.
+ * The "Achtung" placard in its box: the flaps' section above the undercarriage's (product owner, D210), a rule between,
+ * each section's height in proportion to its lines (D208). Returns the font height.
  */
 export function achtungPlacard(g, b, v) {
   const { gear, flaps } = achtungLines(v);
@@ -102,9 +102,9 @@ export function achtungPlacard(g, b, v) {
   setFont(g, px);
   const widest = Math.max(...[...gear, ...flaps].map((s) => widthOf(g, s, px)));
   if (widest > b.w * 0.92) px *= (b.w * 0.92) / widest; // only where the canvas can't measure (the tests' stand-in)
-  const split = b.h * (sectionHeight(gear.length) / (sectionHeight(gear.length) + sectionHeight(flaps.length)));
-  setLines(g, { ...b, h: split }, gear, px);
-  setLines(g, { ...b, y: b.y + split, h: b.h - split }, flaps, px);
+  const split = b.h * (sectionHeight(flaps.length) / (sectionHeight(flaps.length) + sectionHeight(gear.length)));
+  setLines(g, { ...b, h: split }, flaps, px);
+  setLines(g, { ...b, y: b.y + split, h: b.h - split }, gear, px);
   g.strokeStyle = BORDER;
   g.lineWidth = 1;
   g.beginPath();

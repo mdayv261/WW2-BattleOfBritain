@@ -5234,3 +5234,15 @@ box and course box; four lines above the rule and six below.
 
 **Tests** (tests/ui/bf110Labels.test.js): the box 43 screen px (10 mm) shorter with its top and width kept; the
 knobs clear of the größer and kleiner labels at both ends of their travel; größer below the Hand plate.
+
+## D210. The Achtung placard's sections swapped: Landeklappe above Fahrwerk (4 Nov 2026, product owner's request)
+
+**The request:** swap the positions of the Landeklappe and Fahrwerk warnings.
+
+**The change** (src/ui/bf110Placards.js `achtungPlacard`): the Achtung placard between the handles now carries the
+flaps' warning ("Achtung / Landeklappe muß …", 6 lines) above the rule and the undercarriage's ("Achtung Fahrwerk …",
+4 lines) below it. Each section keeps its height in proportion to its lines (D208), so the rule now sits below the
+middle. The wording, font and plate are unchanged.
+
+**Tests** (tests/ui/bf110Labels.test.js): the flaps' lines above the rule, the undercarriage's below, and the rule below
+the middle.
