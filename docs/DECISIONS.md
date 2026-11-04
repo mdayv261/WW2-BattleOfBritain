@@ -5155,13 +5155,13 @@ compass face.
 **Tests** (tests/ui/bf110MagCompass.test.js): no small disc on the face; the lubber line from the face's top to its
 foot, through the centre.
 
-## D205. The magnetic compass's face 2 mm wider (4 Nov 2026, product owner's request)
+## D205. The magnetic compass's face 4 mm wider (4 Nov 2026, product owner's request)
 
-**The request:** enlarge the compass face's diameter by 2 mm.
+**The request:** enlarge the compass face's diameter by 2 mm; then another 2 mm.
 
-**The change** (src/ui/bf110MagCompass.js `MAG.face`): the face's bezel is 13.9 of #34's pixels wider across (2 mm on
-the product owner's 2560 px screen, the measure used in D176). Its radius goes from 0.8 to 0.884 of the case's
-half-width (82.5). The black face and the lubber line grow with it. The case, the bracket and the card window are
+**The change** (src/ui/bf110MagCompass.js `MAG.face`): the face's bezel is 27.8 of #34's pixels wider across (twice
+2 mm on the product owner's 2560 px screen, 13.9 px each, the measure used in D176). Its radius goes from 0.8 to 0.968
+of the case's half-width (82.5), still inside the case and clear of its screws. The black face and the lubber line grow with it. The case, the bracket and the card window are
 unchanged.
 
-**Tests** (tests/ui/bf110MagCompass.test.js): the face 13.9 px wider across and still inside the case.
+**Tests** (tests/ui/bf110MagCompass.test.js): the face 27.8 px wider across, inside the case and clear of its screws.

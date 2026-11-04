@@ -11,10 +11,10 @@ import { text } from './panelParts.js';
  * half-width and half-height, how many degrees of card either side of the lubber line the window shows; and the
  * face's inner (black) share of its bezel, which the lubber line spans.
  */
-// The face's bezel radius: 0.8 of the case's half-width, then 2 mm wider across on the product owner's screen (13.9 of
-// #34's pixels, as D176) on the 165 px case (D205).
+// The face's bezel radius: 0.8 of the case's half-width, then twice 2 mm wider across on the product owner's screen
+// (13.9 of #34's pixels each, as D176) on the 165 px case (D205).
 const FACE_2MM = 13.9 / 2 / 82.5;
-export const MAG = { bracket: 0.16, face: 0.8 + FACE_2MM, window: [0.66, 0.2], span: 40, inner: 0.92 };
+export const MAG = { bracket: 0.16, face: 0.8 + 2 * FACE_2MM, window: [0.66, 0.2], span: 40, inner: 0.92 };
 
 /** The card's figure for a mark every 30 degrees: N at 0, then tens of degrees (3, 6 ... 33), as #36's 27, 24, 21. */
 const figure = (deg) => (deg === 0 ? 'N' : String(deg / 10));

@@ -103,7 +103,7 @@ Read this at the start of every session.
   the panel's edge); its card follows the heading
   (true, no variation).
 - D204: the magnetic compass's lamp removed; its lubber line runs the face's full height.
-- D205: the magnetic compass's face 2 mm wider.
+- D205: the magnetic compass's face 4 mm wider (2 mm twice).
 - D194-D205 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one

@@ -60,9 +60,10 @@ describe('Bf 110 C magnetic compass: the face (D204)', () => {
     return { g, discs, lines };
   }
 
-  it('makes the face 2 mm wider across than first drawn: 13.9 of #34\'s pixels on the 165 px case (D205)', () => {
-    expect(2 * 82.5 * MAG.face - 2 * 82.5 * 0.8).toBeCloseTo(13.9, 9);
+  it('makes the face 4 mm wider across than first drawn (2 mm twice): 27.8 of #34\'s pixels on the 165 px case (D205)', () => {
+    expect(2 * 82.5 * MAG.face - 2 * 82.5 * 0.8).toBeCloseTo(27.8, 9);
     expect(MAG.face).toBeLessThan(1); // inside the case
+    expect(Math.hypot(0.8, 0.8) - 0.06).toBeGreaterThan(MAG.face); // clear of the case's screws
   });
 
   it('has no lamp above the window: no small disc on the face', () => {
