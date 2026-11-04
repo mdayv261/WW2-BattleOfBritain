@@ -13,7 +13,7 @@ import {
 } from '../../src/ui/bf110Fittings.js';
 import {
   cannonCounter, roundCounter, COUNTER, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
-  flapAngle, flapMarks, FLAP_ARC, trimIndicator,
+  flapAngle, flapMarks, FLAP_ARC, trimIndicator, POINTER,
 } from '../../src/ui/bf110Gauges.js';
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
 import { GREEN_KNOB, SKK, SKK_LAMPS, mgLamps } from '../../src/ui/bf110Boxes.js';
@@ -389,6 +389,22 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     }
     const words = draw(v).texts.map((t) => t.s);
     for (const w of ['Ein', 'Aus']) expect(words.filter((x) => x === w).length, w).toBeGreaterThanOrEqual(2); // also the SKK's
+  });
+
+  it('draws the trim and flap pointers twice their first length (0.12 face radii), inside the marks (D202)', () => {
+    expect(POINTER[1] - POINTER[0]).toBeCloseTo(0.24, 9);
+    expect(POINTER[1]).toBeLessThan(0.62); // the inner ends of the trim's dashes and the flaps' long marks
+    const lines = [];
+    let from = null;
+    const g = new Proxy({}, {
+      get: (t, p) => (p === 'moveTo' ? (...a) => { from = a; } : p === 'lineTo' ? (...a) => lines.push([from, a])
+        : p in t ? t[p] : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t, p, val) => { t[p] = val; return true; },
+    });
+    trimIndicator(g, 0, 0, 40, 0, { degrees: 0, travel: 50 });
+    const len = ([[x0, y0], [x1, y1]]) => Math.hypot(x1 - x0, y1 - y0);
+    const pointers = lines.filter((l) => Math.abs(len(l) - 0.24 * 40) < 1e-6 && Math.abs(Math.hypot(...l[0]) - 0.32 * 40) < 1e-6);
+    expect(pointers).toHaveLength(2); // the trim's at 9 o'clock and the flaps' at Ein
   });
 
   it('has no dark round window at the top of the trim indicator (D201)', () => {

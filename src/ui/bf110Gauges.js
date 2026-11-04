@@ -212,6 +212,8 @@ export function autopilotIndicator(g, x, y, face) {
  */
 export const TRIM_RANGE = 15;
 export const TRIM_MARKS = [-45, -22.5, 0, 22.5, 45]; // degrees of arc from 9 o'clock, up positive: dash, dot, square, dot, dash
+/** The trim and flap pointers' inner and outer ends, in face radii: twice D164's 0.12 long, inside the marks (D202). */
+export const POINTER = [0.32, 0.56];
 export const trimAngle = (deg) => (-90 + Math.max(-TRIM_RANGE, Math.min(TRIM_RANGE, deg)) * 3) * DEG;
 
 /**
@@ -247,13 +249,13 @@ export function trimIndicator(g, x, y, face, degrees, flap = { degrees: 0, trave
       g.fill();
     } else tick(g, x, y, face, a, 0.78, 0.62, Math.max(2, face * 0.07)); // the dashes
   });
-  // The very short pointer, inside the marks.
+  // The short pointer, inside the marks (twice its first length, D202).
   g.strokeStyle = ink;
   g.lineWidth = Math.max(2, face * 0.06);
   g.lineCap = 'butt';
   g.beginPath();
-  g.moveTo(...at(x, y, trimAngle(degrees), face * 0.44));
-  g.lineTo(...at(x, y, trimAngle(degrees), face * 0.56));
+  g.moveTo(...at(x, y, trimAngle(degrees), face * POINTER[0]));
+  g.lineTo(...at(x, y, trimAngle(degrees), face * POINTER[1]));
   g.stroke();
   // The rudder trim (shown only, its marker upright) and the maker's name.
   font(g, face * 0.2, true);
@@ -287,8 +289,8 @@ function flapScale(g, x, y, face, { degrees, travel }) {
   g.lineWidth = Math.max(2, face * 0.06);
   g.lineCap = 'butt';
   g.beginPath();
-  g.moveTo(...at(x, y, flapAngle(degrees, travel), face * 0.44));
-  g.lineTo(...at(x, y, flapAngle(degrees, travel), face * 0.56));
+  g.moveTo(...at(x, y, flapAngle(degrees, travel), face * POINTER[0]));
+  g.lineTo(...at(x, y, flapAngle(degrees, travel), face * POINTER[1]));
   g.stroke();
 }
 

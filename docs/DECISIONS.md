@@ -5090,3 +5090,14 @@ panel, and no approved source has been found for either.
 
 **Tests** (tests/ui/bf110Panel.test.js): the flap marks at 0-50 in 10s; Ein at 12 o'clock and Aus at 4 o'clock, 24
 degrees of arc a mark, held at the ends; the words drawn; no dark window at the top.
+
+## D202. The Bf 110 C's trim and flap pointers twice as long (4 Nov 2026, product owner's request)
+
+**The request:** make the trim and flap pointers 2x longer.
+
+**The change** (src/ui/bf110Gauges.js `POINTER`): both pointers run from 0.32 to 0.56 face radii, 0.24 long (were 0.44
+to 0.56, 0.12 long). The outer ends stay where they were, inside the marks (0.62), so the pointers grow inward and stay
+clear of the L ▮ R and the Ein and Aus words.
+
+**Tests** (tests/ui/bf110Panel.test.js): the pointer's length 0.24 and its outer end inside the marks; the trim and
+flap pointers drawn at that length.
