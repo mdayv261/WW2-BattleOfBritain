@@ -1,7 +1,7 @@
 // The Bf 110 C panel's boxes and buttons after the product owner's picture (#34, D140), all shown only (normal
 // operation, no function): the red Kurssteuerung emergency button; the SKK 404-2 switch block standing for the four MG 17
-// (product owner: the only fitting for them), each of its four red lamps lit when its MG 17 is out of rounds (product
-// owner, D195); the 2 MG / 4 MG switch; the Kurs strip; the Heizung placard
+// (product owner: the only fitting for them), drawn after photographs of a replica (D196), each of its four red lamps
+// lit when its MG 17 is out of rounds (product owner, D195); the 2 MG / 4 MG switch; the Kurs strip; the Heizung placard
 // and its knob; the Siemens course box under the compass; and the two-bar window above the altimeter. (The manifold
 // pressure gauges' recess is gone: plate round them, D171.)
 
@@ -49,34 +49,115 @@ function redButton(g, x, y, rad) {
 }
 
 /**
- * The SKK 404-2 lamps, one for each MG 17, in the block's lamp positions: the upper guns on the upper row, the lower guns
- * on the lower, left guns left. Each is lit when its gun has no rounds left (product owner, D195).
+ * The SKK 404-2 block after the product owner's photographs of a replica (D196), in fractions of the block measured on
+ * the square-on view: its raised lamp plate, the lamps, the Ein/Aus toggle, the four ringed push-buttons, the mounting
+ * holes and the lettering. The lamps, one for each MG 17 (the upper guns on the upper row, the lower guns on the lower,
+ * left guns left), each lit when its gun has no rounds left (product owner, D195).
  */
 export const SKK_LAMPS = [
-  ['mg17UpperLeft', 0.5, 0.2], ['mg17UpperRight', 0.74, 0.2], ['mg17LowerLeft', 0.44, 0.42], ['mg17LowerRight', 0.8, 0.42],
+  ['mg17UpperLeft', 0.481, 0.164], ['mg17UpperRight', 0.671, 0.164], ['mg17LowerLeft', 0.424, 0.403], ['mg17LowerRight', 0.729, 0.403],
 ];
+export const SKK = {
+  lampPlate: [0.295, 0.015, 0.852, 0.545], // left, top, right, bottom
+  plateScrews: [[0.343, 0.24], [0.81, 0.24]],
+  lamp: 0.078, // a lens's radius, in the block's height
+  toggle: [0.179, 0.604, 0.11], // x, y, ring radius
+  buttons: [[0.357, 0.836], [0.481, 0.679], [0.662, 0.679], [0.786, 0.836]],
+  button: 0.105, // a push-button's outer radius, in the block's height
+  holes: [[0.08, 0.11], [0.93, 0.11], [0.08, 0.88], [0.93, 0.88]],
+};
 export const mgLamps = (v) => SKK_LAMPS.map(([id]) => {
   const gun = v.rounds?.[id];
   return { id, lit: !!gun && gun.rounds <= 0 };
 });
 
-/** The SKK 404-2 switch block (for the MG 17s): its Ein/Aus toggle, the four guns' red lamps and four knobs. */
+const SKK_GREY = '#232527';
+
+/** A lens in its black rim: lit, the round counter's bright red; dark, a deep red. */
+function skkLamp(g, x, y, r, lit) {
+  g.fillStyle = '#0b0b0c';
+  g.beginPath();
+  g.arc(x, y, r * 1.12, 0, Math.PI * 2);
+  g.fill();
+  lens(g, x, y, r, lit ? '#e0402c' : '#6e1612', lit);
+}
+
+/** A push-button: a black domed collar, its black button with a white ring on its face. */
+function skkButton(g, x, y, r) {
+  const collar = g.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+  collar.addColorStop(0, '#4a4c4e');
+  collar.addColorStop(1, '#070708');
+  g.fillStyle = collar;
+  g.beginPath();
+  g.arc(x, y, r, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#0d0d0e';
+  g.beginPath();
+  g.arc(x, y, r * 0.58, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = '#e9e6dc';
+  g.lineWidth = Math.max(0.6, r * 0.09);
+  g.beginPath();
+  g.arc(x, y, r * 0.3, 0, Math.PI * 2);
+  g.stroke();
+}
+
+/** The Ein/Aus toggle: a black ring and its silver lever, up at Ein (the guns' circuit on). */
+function skkToggle(g, x, y, r) {
+  g.fillStyle = '#0b0b0c';
+  g.beginPath();
+  g.arc(x, y, r, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#2c2e30';
+  g.beginPath();
+  g.arc(x, y, r * 0.6, 0, Math.PI * 2);
+  g.fill();
+  // The lever in worn bare metal, light grey (its finish worn off with use: product owner, D196), shaded on its right
+  // and lit along its left edge, its rounded tip past the ring.
+  g.lineCap = 'round';
+  g.strokeStyle = '#7d8084';
+  g.lineWidth = r * 0.5;
+  g.beginPath();
+  g.moveTo(x, y);
+  g.lineTo(x, y - r * 0.9);
+  g.stroke();
+  g.strokeStyle = '#b4b7ba';
+  g.lineWidth = r * 0.34;
+  g.beginPath();
+  g.moveTo(x - r * 0.06, y);
+  g.lineTo(x - r * 0.06, y - r * 0.9);
+  g.stroke();
+  g.strokeStyle = '#eceef0';
+  g.lineWidth = r * 0.1;
+  g.beginPath();
+  g.moveTo(x - r * 0.12, y - r * 0.15);
+  g.lineTo(x - r * 0.12, y - r * 0.9);
+  g.stroke();
+  g.lineCap = 'butt';
+}
+
+/** The SKK 404-2 switch block (for the MG 17s), as the replica photographed (D196). */
 function skkBlock(g, b, s, lamps) {
-  plain(g, b, s, DARK);
-  corners(b, s, g);
-  const tx = b.x + b.w * 0.2;
-  text(g, 'Ein', tx, b.y + b.h * 0.3, b.h * 0.1, INK, { bold: true });
-  text(g, 'Aus', tx, b.y + b.h * 0.72, b.h * 0.1, INK, { bold: true });
-  g.fillStyle = '#9a9c9a';
-  g.fillRect(tx - b.w * 0.015, b.y + b.h * 0.4, b.w * 0.03, b.h * 0.18); // the toggle
-  plain(g, { x: b.x + b.w * 0.36, y: b.y + b.h * 0.1, w: b.w * 0.56, h: b.h * 0.42 }, s, '#202224');
-  SKK_LAMPS.forEach(([, fx, fy], i) => {
-    const { lit } = lamps[i];
-    lens(g, b.x + b.w * fx, b.y + b.h * fy, b.h * 0.07, lit ? '#e0402c' : '#5a1410', lit); // the round counter's red when lit
-  });
-  for (const [fx, fy] of [[0.48, 0.68], [0.66, 0.68], [0.4, 0.84], [0.74, 0.84]]) roundKnob(g, b.x + b.w * fx, b.y + b.h * fy, b.h * 0.07);
-  text(g, 'Gerät-Nr. 102-84', b.x + b.w * 0.2, b.y + b.h * 0.94, b.h * 0.055, INK);
-  text(g, 'SKK 404-2', b.x + b.w * 0.72, b.y + b.h * 0.95, b.h * 0.07, INK, { bold: true });
+  const X = (f) => b.x + b.w * f;
+  const Y = (f) => b.y + b.h * f;
+  plain(g, b, s, SKK_GREY);
+  for (const [fx, fy] of SKK.holes) screw(g, X(fx), Y(fy), b.h * 0.03);
+  // The raised lamp plate, its shadow below and to the right.
+  const [l, t, r, bt] = SKK.lampPlate;
+  const plate = { x: X(l), y: Y(t), w: b.w * (r - l), h: b.h * (bt - t) };
+  plain(g, plate, s * 0.5, '#2b2d30');
+  g.strokeStyle = '#45484b'; // its edge catching the light
+  g.lineWidth = Math.max(0.6, b.h * 0.012);
+  g.stroke();
+  for (const [fx, fy] of SKK.plateScrews) screw(g, X(fx), Y(fy), b.h * 0.03);
+  SKK_LAMPS.forEach(([, fx, fy], i) => skkLamp(g, X(fx), Y(fy), b.h * SKK.lamp, lamps[i].lit));
+  const [tx, ty, tr] = SKK.toggle;
+  text(g, 'Ein', X(tx), Y(0.433), b.h * 0.09, INK, { bold: true });
+  text(g, 'Aus', X(tx), Y(0.82), b.h * 0.09, INK, { bold: true });
+  skkToggle(g, X(tx), Y(ty), b.h * tr);
+  for (const [fx, fy] of SKK.buttons) skkButton(g, X(fx), Y(fy), b.h * SKK.button);
+  text(g, 'Gerät-Nr. 102-84', X(0.219), Y(0.955), b.h * 0.055, INK, { bold: true });
+  text(g, 'SKK 404-2', X(0.557), Y(0.95), b.h * 0.075, INK, { bold: true });
 }
 
 /** The 2 MG / 4 MG switch: a slide plate between its two white-edged labels. */

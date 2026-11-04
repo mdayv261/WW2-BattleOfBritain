@@ -4908,10 +4908,46 @@ on the left. A lamp lights red, in the round counter's red, when its own gun has
   This supports the product owner's choice of the block as the MG 17s' fitting (D140, D106 had left it unidentified).
   The page has only this list and photos: nothing on the lamps, the Ein/Aus toggle or the knobs. A further search
   found no description either.
+- **Replica pictures (a replica seller's photographs, not an approved source):** the product owner found an eBay
+  listing, https://www.ebay.de/itm/266475283038 (seller "Bf109 Nachbauten", Air Legend Replika Factory, Memmingen,
+  read 4 Nov 2026), and supplied three of its photographs. The listing calls the box a resin cast taken from an
+  original ("Abformung eines SKK404 von einem Original"), and repeats the catalogue's details (Fl.47292, Michel
+  Augsburg, about 1941, "4 Glaslinsen", fitted in Bf 110 versions with MG 17 and the Bf 109 E). Recorded, at the product
+  owner's request, as replica pictures backing the box's appearance only (D196). Like the catalogue, it says nothing
+  on what the lamps showed; the product owner presumes each glows when its MG 17 is empty. (The MG 17s are belt-fed,
+  1,000 rounds each; the drums are the MG FF cannon's.)
+- **Gerät-Nr.:** the replica is engraved "Gerät-Nr. 104-84", the catalogue gives 102-84. The product owner chose to keep
+  102-84 on the drawn block.
 - **The 2 MG / 4 MG switch** is still shown only: all four guns always fire together.
 
 **Tests** (tests/ui/bf110Panel.test.js): one lamp for each MG 17, all dark when loaded; emptying any one gun lights only
 its lamp; holding the MG trigger in the simulation empties all four after their 1,000 rounds, leaves the cannon full,
 and lights all four lamps. Checked in the game: after the trigger was held to empty, all four lamps showed red and the
 cannon lamps stayed dark.
+
+## D196. The SKK 404-2 block redrawn after the replica's photographs (4 Nov 2026, product owner's request)
+
+**The request:** redraw the SKK 404-2 block to match the replica's photographs more closely (D195), keeping its label
+Gerät-Nr. 102-84.
+
+**The change** (src/ui/bf110Boxes.js `SKK`, `SKK_LAMPS`, `skkBlock`), every part measured as a fraction of the block on
+the square-on photograph (the block's proportions, 1.61 wide to 1 high, match the photographed plate's 1.57):
+- **Plate:** dark grey, with a mounting screw in each corner hole.
+- **Lamp plate:** raised, at the top right, its edge catching the light, with its two screws. On it, the four red lenses
+  in black rims: the lower pair set wider apart than the upper, as photographed. Each lights bright red when its MG 17
+  is empty (D195); otherwise a deep red.
+- **Ein/Aus toggle:** on the left, a black ring and its lever between "Ein" above and "Aus" below. The lever stands at
+  Ein, since the guns' circuit is always on in the game. (The photographed replica's lever is at Aus.) The lever is
+  drawn worn bare metal, silver to light grey, not the replica's black: the product owner judges any coating would have
+  worn off with use.
+- **Push-buttons:** four black domed buttons, each with a white ring on its face, the outer two lower than the inner
+  two, where the grey knobs were.
+- **Lettering:** "Gerät-Nr. 102-84" (product owner's choice, not the replica's 104-84) and "SKK 404-2" along the foot.
+  The replica's "Michel Augsburg" and "Fl. 47 292" are left off: too small to read on screen.
+
+**Flagged:** the drawing follows a replica, not a photographed original or a drawing; the buttons stay shown only (what
+they did is not known).
+
+**Tests** (tests/ui/bf110Panel.test.js): the lamps lie on the lamp plate; the toggle lies left of it and the buttons below
+it; none of the round parts touch; the lettering is drawn.
 

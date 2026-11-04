@@ -88,7 +88,9 @@ Read this at the start of every session.
 - D194: the main wheels moved out with the engines to 2.75 m (track 5.5 m, estimate), under the nacelles (S24).
 - D195: the four MG 17s checked (all fire on the MG trigger, 1,000 rounds each, about 54.5 s); each SKK 404-2 lamp
   lights red when its MG 17 is empty (product owner's choice; the block's real purpose is unsourced).
-- D194-D195 not pushed yet.
+- D196: the SKK 404-2 block redrawn after the replica's photographs (raised lamp plate, Ein/Aus toggle, four ringed
+  push-buttons), keeping Gerät-Nr. 102-84; the photos recorded as replica pictures (D195).
+- D194-D196 not pushed yet.
 
 **Left:** two minor changes to the flap and undercarriage levers (product owner, later); then Phase 6 checkpoint 5
 after a plan.

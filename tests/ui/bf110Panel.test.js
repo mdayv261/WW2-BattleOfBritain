@@ -15,7 +15,7 @@ import {
   cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
 } from '../../src/ui/bf110Gauges.js';
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
-import { GREEN_KNOB, SKK_LAMPS, mgLamps } from '../../src/ui/bf110Boxes.js';
+import { GREEN_KNOB, SKK, SKK_LAMPS, mgLamps } from '../../src/ui/bf110Boxes.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { atmosphere } from '../../src/physics/atmosphere.js';
 import { LUMINOUS, INK, HAND, paint, screw } from '../../src/ui/lwStyle.js';
@@ -263,6 +263,26 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
       sim.armament.find((x) => x.id === id).rounds = 0;
       expect(mgLamps(instrumentReadings(sim)).filter((l) => l.lit).map((l) => l.id), id).toEqual([id]);
     }
+  });
+
+  it('draws the SKK 404-2 block as the replica photographed: lamps on the raised plate, the toggle left of it, the buttons below (D196)', () => {
+    const [l, t, r, b] = SKK.lampPlate;
+    const aspect = (775 - 525) / (300 - 145); // the block's width over its height, so the round parts stay round
+    for (const [, fx, fy] of SKK_LAMPS) {
+      const rx = (SKK.lamp * 1.12) / aspect;
+      expect(fx - rx > l && fx + rx < r && fy - SKK.lamp * 1.12 > t && fy + SKK.lamp * 1.12 < b).toBe(true);
+    }
+    const round = [...SKK.buttons.map(([x, y]) => [x, y, SKK.button]), SKK.toggle];
+    for (const [x, y, rad] of round) {
+      if (x === SKK.toggle[0]) expect(x + rad / aspect, 'left of the lamp plate').toBeLessThan(l);
+      else expect(y - rad, 'below the lamp plate').toBeGreaterThan(b);
+      expect(x - rad / aspect > 0 && x + rad / aspect < 1 && y + rad < 1).toBe(true);
+    }
+    round.forEach(([x1, y1, r1], i) => round.slice(i + 1).forEach(([x2, y2, r2]) => {
+      expect(Math.hypot((x1 - x2) * aspect, y1 - y2)).toBeGreaterThan(r1 + r2); // none touching
+    }));
+    const words = draw().texts.map((x) => x.s);
+    for (const w of ['Ein', 'Aus', 'Gerät-Nr. 102-84', 'SKK 404-2']) expect(words, w).toContain(w);
   });
 
   it('fires all four MG 17s on the MG trigger, each running dry after its 1,000 rounds and lighting its lamp (D195)', () => {
