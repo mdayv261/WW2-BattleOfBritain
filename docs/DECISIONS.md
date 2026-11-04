@@ -4894,9 +4894,20 @@ brake and landing tests pass for the Bf 110 with the wider track.
 on the left. A lamp lights red, in the round counter's red, when its own gun has no rounds left.
 
 **Flagged:**
-- **Not from a source:** the SKK 404-2 block's real purpose is not identified in our sources (D106 left it unidentified).
-  Its lamps as one "empty" lamp for each MG 17 is the product owner's choice, as is the block standing for the MG 17s
-  (D140).
+- **Not from a source:** what the SKK 404-2 block's lamps really showed is not described in any source we have. Its
+  lamps as one "empty" lamp for each MG 17 is the product owner's choice.
+- **The block identified (enthusiast catalogue, not an approved source):** the product owner supplied
+  deutscheluftwaffe.de, "Fl.47292 Schalt-Kontrollkasten SKK404-2 1941"
+  (https://www.deutscheluftwaffe.de/fl-47292-schalt-kontrollkasten-skk404-2-1941), read 4 Nov 2026. It is an
+  enthusiast and collector site (it has a forum and a parts market; its operator is not stated), outside the source
+  list in CLAUDE.md. It is recorded, at the product owner's request, as backing only for the box's identity, not
+  for any figure or behaviour:
+  - **Name:** Schalt-Kontrollkasten SKK404-2, Anforderungszeichen Fl.47292, Gerät-Nr. 102-84 (as on the drawn block);
+  - **Maker:** Michel-Werke, Augsburg, about 1941;
+  - **Fitted to:** "Bf 110 Versionen mit 4 MG 17" (B to G) and the Bf 109 E.
+  This supports the product owner's choice of the block as the MG 17s' fitting (D140, D106 had left it unidentified).
+  The page has only this list and photos: nothing on the lamps, the Ein/Aus toggle or the knobs. A further search
+  found no description either.
 - **The 2 MG / 4 MG switch** is still shown only: all four guns always fire together.
 
 **Tests** (tests/ui/bf110Panel.test.js): one lamp for each MG 17, all dark when loaded; emptying any one gun lights only
