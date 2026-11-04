@@ -1,6 +1,6 @@
 // The Bf 110 C's magnetic compass on its bracket at the panel's top right (#36, D203): its card, its place and its size.
 import { describe, it, expect } from 'vitest';
-import { cardMarks, MAG } from '../../src/ui/bf110MagCompass.js';
+import { cardMarks, magCompass, MAG } from '../../src/ui/bf110MagCompass.js';
 import { BF110_PANEL } from '../../src/ui/bf110Panel.js';
 
 const L = BF110_PANEL;
@@ -44,6 +44,40 @@ function inside([px, py]) {
   }
   return hit;
 }
+
+describe('Bf 110 C magnetic compass: the face (D204)', () => {
+  /** A canvas recording discs (with their colour) and lines. */
+  function recorder() {
+    const discs = [];
+    const lines = [];
+    let from = null;
+    const g = new Proxy({}, {
+      get: (t, p) => (p === 'arc' ? (x, y, r) => discs.push({ x, y, r, c: t.fillStyle })
+        : p === 'moveTo' ? (...a) => { from = a; } : p === 'lineTo' ? (...a) => lines.push({ from, to: a, c: t.strokeStyle })
+          : p in t ? t[p] : () => {}),
+      set: (t, p, v) => { t[p] = v; return true; },
+    });
+    return { g, discs, lines };
+  }
+
+  it('has no lamp above the window: no small disc on the face', () => {
+    const { g, discs } = recorder();
+    magCompass(g, 0, 0, 100, 0);
+    const face = 100 * MAG.face * MAG.inner;
+    expect(discs.filter((d) => d.r < 0.2 * face && Math.hypot(d.x, d.y) < face)).toHaveLength(0);
+  });
+
+  it('runs the lubber line from the face\'s top to its foot', () => {
+    const { g, lines } = recorder();
+    magCompass(g, 0, 0, 100, 0);
+    const lubber = lines.find((l) => l.c === '#d9b623');
+    const face = 100 * MAG.face * MAG.inner;
+    expect(lubber.from[0]).toBeCloseTo(0, 9);
+    expect(lubber.to[0]).toBeCloseTo(0, 9);
+    expect(lubber.from[1]).toBeCloseTo(-face, 9);
+    expect(lubber.to[1]).toBeCloseTo(face, 9);
+  });
+});
 
 describe('Bf 110 C magnetic compass: on its bracket next to the Heizung placard (D203)', () => {
   const [l, t, r, b] = L.magCompass;

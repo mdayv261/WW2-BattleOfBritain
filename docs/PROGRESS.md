@@ -102,7 +102,8 @@ Read this at the start of every session.
 - D203: a magnetic compass on a light grey bracket next to the Heizung placard, after #36 (its top right corner over
   the panel's edge); its card follows the heading
   (true, no variation).
-- D194-D203 not pushed yet.
+- D204: the magnetic compass's lamp removed; its lubber line runs the face's full height.
+- D194-D204 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
 is bought; then Phase 6 checkpoint 5 after a plan.

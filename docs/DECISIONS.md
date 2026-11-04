@@ -5140,3 +5140,17 @@ drawn from src/ui/bf110Panel.js):
   moving right to left in a right turn;
 - the case 165 px square, next to the Heizung placard, its foot just above the right rev counter's card; it covers no
   dial, plate or card; the case's left side and foot on the plate, only its top right corner over the edge.
+
+## D204. The magnetic compass's lamp removed and its lubber line the face's full height (4 Nov 2026, product owner's request)
+
+**The request:** remove the white dot above the vertical line, and extend the line to the top and bottom of the
+compass face.
+
+**The change** (src/ui/bf110MagCompass.js):
+- **Lamp:** the small white lamp above the window is gone (`MAG.lamp` removed).
+- **Lubber line:** it now runs from the top to the foot of the black face (`MAG.inner`, 0.92 of the bezel). Before, it
+  ran only just past the window.
+- **Colour:** the line keeps its gold colour (#d9b623), after #36's lubber line. The product owner called it red.
+
+**Tests** (tests/ui/bf110MagCompass.test.js): no small disc on the face; the lubber line from the face's top to its
+foot, through the centre.

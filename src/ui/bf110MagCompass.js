@@ -1,6 +1,6 @@
 // The Bf 110 C's magnetic compass on its bracket next to the Heizung placard (product owner's picture #36, D203): a black
 // rounded-square case on a light grey bracket, a round black face with a level window showing the compass card, a
-// vertical lubber line across it and a small lamp above. As on a direct-reading compass seen from behind its card, the
+// vertical lubber line from the face's top to its foot (no lamp, D204). As on a direct-reading compass seen from behind its card, the
 // figures rise to the left: turning right, the card runs from right to left. Shown in true degrees (no magnetic
 // variation or deviation is modelled).
 
@@ -8,9 +8,10 @@ import { text } from './panelParts.js';
 
 /**
  * Its parts in shares of the case's half-width: the bracket's margin round the case, the face's radius, the window's
- * half-width and half-height, how many degrees of card either side of the lubber line the window shows, the lamp.
+ * half-width and half-height, how many degrees of card either side of the lubber line the window shows; and the
+ * face's inner (black) share of its bezel, which the lubber line spans.
  */
-export const MAG = { bracket: 0.16, face: 0.8, window: [0.66, 0.2], span: 40, lamp: 0.07 };
+export const MAG = { bracket: 0.16, face: 0.8, window: [0.66, 0.2], span: 40, inner: 0.92 };
 
 /** The card's figure for a mark every 30 degrees: N at 0, then tens of degrees (3, 6 ... 33), as #36's 27, 24, 21. */
 const figure = (deg) => (deg === 0 ? 'N' : String(deg / 10));
@@ -42,8 +43,7 @@ export function magCompass(g, x, y, h, heading) {
   }
   const r = h * MAG.face;
   disc(g, x, y, r, '#2a2c2e'); // the bezel
-  disc(g, x, y, r * 0.92, '#08090a'); // the face
-  disc(g, x, y - r * 0.55, h * MAG.lamp, '#d8d6cc'); // the lamp above the window
+  disc(g, x, y, r * MAG.inner, '#08090a'); // the face
   cardWindow(g, x, y, h, heading);
 }
 
@@ -62,7 +62,7 @@ function bracket(g, x, y, h) {
   g.stroke();
 }
 
-/** The level window and the card behind it: the marks, the figures under them and the lubber line. */
+/** The level window and the card behind it: the marks and the figures under them; then the lubber line, the face's height (D204). */
 function cardWindow(g, x, y, h, heading) {
   const [ww, wh] = [h * MAG.window[0], h * MAG.window[1]];
   g.save();
@@ -87,8 +87,9 @@ function cardWindow(g, x, y, h, heading) {
   g.strokeStyle = '#d9b623'; // the lubber line
   g.lineWidth = Math.max(1, h * 0.02); // thin, so the figure under it still reads
   g.beginPath();
-  g.moveTo(x, y - wh * 1.5);
-  g.lineTo(x, y + wh * 1.5);
+  const reach = h * MAG.face * MAG.inner;
+  g.moveTo(x, y - reach);
+  g.lineTo(x, y + reach);
   g.stroke();
 }
 
