@@ -96,8 +96,8 @@ describe('Bf 110 C labels between the flying instruments (D206)', () => {
     const [fl, ft, fr, fb] = L.boxes.fahrwerkLabel;
     expect(gr).toBeCloseTo(lr, 9);
     expect(((gt - lb) / 0.46) * 0.619).toBeCloseTo(4.3, 6); // 1 mm: 4.3 screen px
-    expect(gr - gl).toBeCloseTo(fr - fl, 9); // the first label's size
-    expect(gb - gt).toBeCloseTo(fb - ft, 9);
+    expect(gr - gl).toBeCloseTo(1.5 * (fr - fl), 9); // 1.5 times the first label's size
+    expect(gb - gt).toBeCloseTo(1.5 * (fb - ft), 9);
     expect(gb).toBeLessThan(L.dials.pressluft[1] - L.dials.pressluft[3]); // clear of the Preßluft gauge below
   });
 });

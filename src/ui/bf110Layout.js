@@ -206,8 +206,8 @@ export const LAYOUT = {
     // (the Fahrwerk label level with the Landeklappe label, its top and foot, 870 to 892: D207)
     fahrwerkLabel: box(55, 870, 125, 892), klappeLabel: box(SWITCH_X - 36.5, 870, SWITCH_X + 36.5, 892),
     // A second Fahrwerk label 1 mm below the lever box's foot (5 mm below, 5 mm up, then 1 mm down: a tenth of
-    // LEVER_FOOT_UP), its right edge in line with the box's, the size of the first (product owner, D211).
-    gearLabel: box(LEVERS[2] - 70, LEVERS[3] + LEVER_FOOT_UP / 10, LEVERS[2], LEVERS[3] + LEVER_FOOT_UP / 10 + 22),
+    // LEVER_FOOT_UP), its right edge in line with the box's, 1.5 times the first's size, 70 by 22 (product owner, D211).
+    gearLabel: box(LEVERS[2] - 70 * 1.5, LEVERS[3] + LEVER_FOOT_UP / 10, LEVERS[2], LEVERS[3] + LEVER_FOOT_UP / 10 + 22 * 1.5),
   },
   // The "d 30′ 5′" correction cards above the engine gauges and the "Km" cards above the coolant thermometers: shown
   // only, lying over the tops of their dials' mountings, as photographed.

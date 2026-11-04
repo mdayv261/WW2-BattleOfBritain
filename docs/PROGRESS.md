@@ -110,7 +110,8 @@ Read this at the start of every session.
 - D208: the Achtung placard's lettering 1.5 times larger (the plate widened to 112 px, its lines broken shorter).
 - D209: the airscrew lever box 10 mm shorter from its foot; the pitch knobs' travel adjusted to clear their labels.
 - D210: the Achtung placard's Landeklappe warning above its Fahrwerk warning.
-- D211: a second Fahrwerk label 1 mm below the lever box's foot at its right edge (the first still shown).
+- D211: a second Fahrwerk label, 1.5 times the first's size, 1 mm below the lever box's foot at its right edge (the
+  first still shown).
 - D194-D211 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
