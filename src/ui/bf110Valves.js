@@ -1,6 +1,6 @@
 // The Bf 110 C's Fahrwerk and Landeklappe controls (product owner, D199): two push/pull hydraulic valves for each, EIN
-// (einfahren, up) above and AUS (ausfahren, down) below, as #34's two buttons. Each has a lettered disc beside a
-// two-finger T-grip. Pushing a T in runs the undercarriage or flaps that way; with both pulled out the control is in
+// (einfahren, up) above and AUS (ausfahren, down) below, as #34's two buttons. Each is a two-finger T-grip with its
+// lettered disc in the middle of the bar, where the thumb pushes it in (D200). Pushing a T in runs the undercarriage or flaps that way; with both pulled out the control is in
 // neutral. The leads for this (no approved source) are in D199. Shown only: the keys don't change, and the T that
 // matches the way the undercarriage or flaps are moving shows pushed in, popping out once they stop.
 
@@ -16,24 +16,24 @@ export const valve = {
 };
 
 /**
- * The parts' sizes in dial radii: the T's bar (width, height), its shaft's width, the collar's radius where the shaft
- * enters the panel, how far below its collar a pulled-out bar stands (as seen from the pilot's seat), the lettered
- * disc's radius (D198's, kept) and the gap between the disc and the bar.
+ * The parts' sizes in dial radii: the T's bar (width, height), its shaft's width and the collar's radius where the
+ * shaft enters the panel, all 1.2 then 1.1 times D199's (product owner, D200); how far below its collar a pulled-out
+ * bar stands (as seen from the pilot's seat); and the lettered thumb disc's radius (D198's, kept).
  */
-export const VALVE = { bar: [0.8, 0.24], shaft: 0.15, collar: 0.17, out: 0.25, disc: 0.3, gap: 0.06 };
+export const T_SCALE = 1.2 * 1.1;
+export const VALVE = { bar: [0.8 * T_SCALE, 0.24 * T_SCALE], shaft: 0.15 * T_SCALE, collar: 0.17 * T_SCALE, out: 0.25, disc: 0.3 };
 
 /**
  * Where one valve's parts stand, in pixels, for a button whose row is at (x, y) on the switch line; `s` is one dial
- * radius in pixels. The disc and T are centred on the line together, and on the row with the T halfway out.
+ * radius in pixels. The T is centred on the line, and on the row halfway out; its disc rides in the bar's middle.
  */
 export function valveGeometry(x, y, s, pushed) {
   const [bw, bh] = VALVE.bar;
-  const left = x - (s * (2 * VALVE.disc + VALVE.gap + bw)) / 2;
-  const tx = left + s * (2 * VALVE.disc + VALVE.gap + bw / 2);
+  const tx = x;
   const collarY = y - (s * VALVE.out) / 2;
   const barY = pushed ? collarY : collarY + s * VALVE.out;
   return {
-    disc: [left + s * VALVE.disc, y, s * VALVE.disc],
+    disc: [tx, barY, s * VALVE.disc],
     collar: [tx, collarY, s * VALVE.collar],
     bar: { x: tx - (s * bw) / 2, y: barY - (s * bh) / 2, w: s * bw, h: s * bh },
     shaft: pushed ? null : { x: tx - (s * VALVE.shaft) / 2, y: collarY, w: s * VALVE.shaft, h: barY - collarY },
@@ -50,11 +50,8 @@ export function drawValvePair(g, at, [px, top, bottom], state, s) {
   }
 }
 
-/** One valve: its lettered disc, its collar, then the T (its shadow, shaft and two-finger bar). */
+/** One valve: its collar, the T (its shadow, shaft and two-finger bar), then the lettered thumb disc on the bar. */
 function drawValve(g, p, word, pushed) {
-  const [dx, dy, dr] = p.disc;
-  disc(g, dx, dy, dr, pushed ? '#f2efe6' : '#a9aba8');
-  text(g, word, dx, dy, dr * 0.6, '#1a1a1a', { bold: pushed });
   const [cx, cy, cr] = p.collar;
   disc(g, cx, cy, cr, '#3a3d40');
   disc(g, cx, cy, cr * 0.8, '#0b0c0d');
@@ -76,7 +73,7 @@ function drawValve(g, p, word, pushed) {
   g.fillStyle = '#070708'; // a finger's recess either side of the shaft
   for (const side of [-1, 1]) {
     g.beginPath();
-    g.ellipse(x + w / 2 + side * w * 0.26, y + h * 0.55, w * 0.14, h * 0.24, 0, 0, Math.PI * 2);
+    g.ellipse(x + w / 2 + side * w * 0.4, y + h * 0.55, w * 0.08, h * 0.24, 0, 0, Math.PI * 2);
     g.fill();
   }
   g.strokeStyle = 'rgba(200, 205, 210, 0.45)'; // lit along its top
@@ -85,6 +82,11 @@ function drawValve(g, p, word, pushed) {
   g.moveTo(x + h * 0.5, y + h * 0.12);
   g.lineTo(x + w - h * 0.5, y + h * 0.12);
   g.stroke();
+  const [dx, dy, dr] = p.disc;
+  disc(g, dx + p.shadow, dy + p.shadow, dr, 'rgba(0, 0, 0, 0.45)');
+  disc(g, dx, dy, dr, '#0e0f10'); // its dark rim
+  disc(g, dx, dy, dr * 0.9, pushed ? '#f2efe6' : '#a9aba8');
+  text(g, word, dx, dy, dr * 0.6, '#1a1a1a', { bold: pushed });
 }
 
 function disc(g, x, y, r, colour) {

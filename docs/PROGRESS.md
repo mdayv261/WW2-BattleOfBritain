@@ -95,7 +95,8 @@ Read this at the start of every session.
 - D198: the flap and undercarriage levers centred between the lever box and the compass, their T levers 15% larger.
 - D199: the Fahrwerk and Landeklappe controls redrawn as push/pull valves, two bigger T-grips each (EIN, AUS), the
   one matching the movement shown pushed in (show only, keys unchanged); from unapproved leads, flagged.
-- D194-D199 not pushed yet.
+- D200: the valve T-grips 20% then 10% bigger, the EIN / AUS label on the middle of each bar (the thumb's push).
+- D194-D200 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
 is bought; then Phase 6 checkpoint 5 after a plan.

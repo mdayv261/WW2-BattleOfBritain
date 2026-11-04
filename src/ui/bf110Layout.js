@@ -196,6 +196,7 @@ export const LAYOUT = {
   },
   // Both on the vertical centre line between the airscrew lever box and the compass's mounting (product owner, D198).
   // The Landeklappe pair 20 up from 775 / 835, so its pulled-out AUS T stays on the plate above the step beside the
-  // course box (D199).
-  switches: { gear: slot(SWITCH_X, 505, 565), flaps: slot(SWITCH_X, 755, 815) },
+  // course box (D199). Each pair then spread 5 apart (D200), its thumb discs riding on the T, clear of the boxes above
+  // and below.
+  switches: { gear: slot(SWITCH_X, 500, 560), flaps: slot(SWITCH_X, 760, 820) },
 };

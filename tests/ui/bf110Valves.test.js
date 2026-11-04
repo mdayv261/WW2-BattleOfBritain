@@ -68,9 +68,9 @@ describe('Bf 110 C Fahrwerk and Landeklappe valves: which is pushed in (D199)', 
 });
 
 describe('Bf 110 C valves: the bigger two-finger T (D199)', () => {
-  it('draws the T bigger than D198\'s (bar 0.63 dial radii wide), keeping the discs at 0.3', () => {
-    expect(VALVE.bar[0]).toBeGreaterThanOrEqual(0.75);
-    expect(VALVE.bar[1]).toBeGreaterThan(0.16);
+  it('draws the T 20% then 10% bigger than D199\'s 0.8 by 0.24 dial radii (D200), keeping the discs at 0.3', () => {
+    expect(VALVE.bar[0]).toBeCloseTo(0.8 * 1.32, 9);
+    expect(VALVE.bar[1]).toBeCloseTo(0.24 * 1.32, 9);
     expect(valveGeometry(0, 0, S, false).disc[2]).toBeCloseTo(0.3 * S, 9);
   });
 
@@ -83,10 +83,14 @@ describe('Bf 110 C valves: the bigger two-finger T (D199)', () => {
     expect(out.shaft.h).toBeCloseTo(VALVE.out * S, 9);
     expect(out.shadow).toBeGreaterThan(inn.shadow);
     expect(out.bar.x + out.bar.w / 2).toBeCloseTo(out.collar[0], 9); // the bar across its shaft
-    expect(out.bar.x).toBeGreaterThan(out.disc[0] + out.disc[2]); // the disc beside it, clear
+    for (const p of [inn, out]) { // the lettered disc in the middle of the bar, where the thumb pushes (D200)
+      expect(p.disc[0]).toBeCloseTo(p.bar.x + p.bar.w / 2, 9);
+      expect(p.disc[1]).toBeCloseTo(p.bar.y + p.bar.h / 2, 9);
+      expect(p.bar.w / 2 - p.disc[2]).toBeGreaterThan(0.15 * p.bar.w); // leaving the bar's ends for two fingers
+    }
   });
 
-  it('centres each disc and T together on the switch line', () => {
+  it('centres each T and its disc on the switch line', () => {
     const p = valveGeometry(300, 0, S, false);
     const [l, , r] = extent({ ...p, shadow: 0 });
     expect((l + r) / 2).toBeCloseTo(300, 9);

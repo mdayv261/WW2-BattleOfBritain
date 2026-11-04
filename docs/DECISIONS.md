@@ -5047,3 +5047,22 @@ describes the handle.
 undercarriage and flaps travel, out once they stop); the bigger T with the discs kept at 0.3; pushed in on the
 collar, pulled out off it; each pair centred on the line, between the lever box and the compass and course box,
 clear of the boxes above and below, and inside the panel's outline. The old T lever tests are removed.
+
+## D200. The Bf 110 C valve T-grips 20% bigger, their labels on the bar for the thumb (4 Nov 2026, product owner's request)
+
+**The request:** make the handles 20% bigger and put the button labels in the centre of the T-bar. The product owner
+pictures the thumb pushing the T in on its label, two fingers pulling it out by the bar's ends. Then: make the T-bar
+10% bigger again.
+
+**The change** (src/ui/bf110Valves.js `T_SCALE`, `VALVE`, `valveGeometry`):
+- **Size:** the bar, shaft and collar are 1.2 × 1.1 = 1.32 times D199's. The bar is 1.06 by 0.32 dial radii (was 0.8
+  by 0.24).
+  How far a pulled-out T stands off its collar (0.25) is unchanged.
+- **Label:** the EIN or AUS disc (still 0.3 dial radii, D198) now rides on the middle of the bar, ringed in black and
+  shadowed with it. The finger recesses moved out to the bar's ends. Each T is centred on the switch line.
+- **Spacing:** with the discs on the T, each valve stands taller. Each pair is spread 5 px further apart on #34 so
+  it clears the boxes above and below: Fahrwerk EIN 500 and AUS 560 (were 505, 565); Landeklappe 760 and 820 (were
+  755, 815).
+
+**Tests** (tests/ui/bf110Valves.test.js): the bar 1.32 times 0.8 by 0.24; the disc centred on the bar, leaving its ends for
+two fingers; the clearance, outline and centre-line tests kept.
