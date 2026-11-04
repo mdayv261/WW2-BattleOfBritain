@@ -1,6 +1,6 @@
 // The Bf 110 C's magnetic compass on its bracket at the panel's top right (#36, D203): its card, its place and its size.
 import { describe, it, expect } from 'vitest';
-import { cardMarks, bracketArm, MAG } from '../../src/ui/bf110MagCompass.js';
+import { cardMarks, MAG } from '../../src/ui/bf110MagCompass.js';
 import { BF110_PANEL } from '../../src/ui/bf110Panel.js';
 
 const L = BF110_PANEL;
@@ -44,39 +44,37 @@ function inside([px, py]) {
   }
   return hit;
 }
-/** How far a point is from the outline's nearest edge. */
-function toEdge([px, py]) {
-  const pts = L.outline;
-  let best = Infinity;
-  for (let i = 0, j = pts.length - 1; i < pts.length; j = i, i += 1) {
-    const [ax, ay] = pts[j];
-    const [bx, by] = pts[i];
-    const k = Math.max(0, Math.min(1, ((px - ax) * (bx - ax) + (py - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)));
-    best = Math.min(best, Math.hypot(px - ax - k * (bx - ax), py - ay - k * (by - ay)));
-  }
-  return best;
-}
 
-describe('Bf 110 C magnetic compass: on its bracket in the right corner (D203)', () => {
-  const [l, t, r, b] = L.boxes.magCompass;
+describe('Bf 110 C magnetic compass: on its bracket next to the Heizung placard (D203)', () => {
+  const [l, t, r, b] = L.magCompass;
   const half = (r - l) / 2 / (1 + MAG.bracket);
+  const overlap = ([al, at, ar, ab], [bl, bt, br, bb]) => al < br && bl < ar && at < bb && bt < ab;
 
-  it('is 20% larger than first drawn: a case 132 of #34\'s pixels square (was 110)', () => {
-    expect(2 * half).toBeCloseTo(132 * 0.46, 6);
+  it('is 20% then 25% larger than first drawn: a case 165 of #34\'s pixels square (first 110)', () => {
+    expect(2 * half).toBeCloseTo(110 * 1.2 * 1.25 * 0.46, 6);
     expect(r - l).toBeCloseTo(b - t, 9); // square
   });
 
-  it('stands in the right corner: its bracket\'s top right corner at the sloping edge, its foot above the rev counter', () => {
-    expect(inside([r, t])).toBe(true);
-    expect(toEdge([r, t])).toBeLessThan(3 * 0.46); // within 3 of #34's pixels of the edge
-    expect(b).toBeLessThan(L.cards.rpmRight[1]); // clear of the right rev counter's correction card
-    expect(b).toBeLessThan(L.dials.rpmRight[1] - L.dials.rpmRight[3]);
-    expect(l).toBeGreaterThan(L.boxes.heizung[2]);
+  it('stands next to the Heizung placard, its foot just above the right rev counter\'s correction card', () => {
+    const [, ht, hr, hb] = L.boxes.heizung;
+    expect(l - hr).toBeGreaterThan(0);
+    expect(l - hr).toBeLessThan(2); // 3 of #34's pixels
+    expect(t).toBeLessThan(hb); // level with the placard
+    expect(b).toBeGreaterThan(ht);
+    expect(L.cards.rpmRight[1] - b).toBeGreaterThan(0);
+    expect(L.cards.rpmRight[1] - b).toBeLessThan(2); // 4 of #34's pixels
   });
 
-  it('keeps the bracket\'s arm on the plate, reaching the right edge', () => {
-    const arm = bracketArm((l + r) / 2, (t + b) / 2, half);
-    for (const p of arm) expect(inside(p), String(p)).toBe(true);
-    expect(Math.min(toEdge(arm[1]), toEdge(arm[2]))).toBeLessThan(6 * 0.46);
+  it('covers no instrument, plate or card', () => {
+    const squares = Object.entries(L.dials).map(([name, [x, y, , h]]) => [name, [x - h, y - h, x + h, y + h]]);
+    for (const [name, box] of [...squares, ...Object.entries(L.boxes), ...Object.entries(L.cards)]) {
+      expect(overlap([l, t, r, b], box), name).toBe(false);
+    }
+  });
+
+  it('keeps its case\'s left side and foot on the plate; only the top right corner overhangs the edge onto the frame', () => {
+    const [cx, cy] = [(l + r) / 2, (t + b) / 2];
+    for (const p of [[cx - half, cy - half], [cx - half, cy + half], [cx + half, cy + half]]) expect(inside(p), String(p)).toBe(true);
+    expect(inside([r, t])).toBe(false);
   });
 });

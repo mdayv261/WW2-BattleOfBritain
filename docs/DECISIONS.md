@@ -5106,14 +5106,18 @@ flap pointers drawn at that length.
 
 **The request:** draw a magnetic compass as in the product owner's picture #36 (a photograph of a compass on a light
 grey bracket). Put it on a bracket at the panel's top right, small enough not to cover any instrument. Then: move it
-to the panel's right corner and enlarge it 20%.
+to the panel's right corner and enlarge it 20%. Then: enlarge it 25% more and move it up next to the Heizung placard.
 
 **The change** (new src/ui/bf110MagCompass.js; placed in src/ui/bf110Layout.js `MAG_COMPASS`, `boxes.magCompass`;
 drawn from src/ui/bf110Panel.js):
-- **Place:** in the panel's right corner, as far into it as the plate allows. The bracket's top right corner is at
-  the sloping edge, and its foot sits just above the right rev counter's correction card.
-- **Size:** the case is centred at (1571.5, 383.5) on #34 and is 132 of #34's pixels square (first 110, at (1530, 370),
-  then 20% larger). The bracket is 16% wider all round, with a short arm reaching right to the panel's edge.
+- **Size:** the case is 165 of #34's pixels square (first 110, then 20% and 25% larger). The bracket is 16% wider all
+  round.
+- **Place:** next to the Heizung placard, 3 px right of it on #34, the bracket's foot 4 px above the right rev
+  counter's correction card. (Its earlier places: right of the placard at (1530, 370); then the right corner.)
+- **Over the edge:** at this size it can't fit inside the plate there. Its top right corner overhangs the panel's
+  sloping edge onto the frame, as a bracket fixed to the frame would. So it's kept in its own layout entry
+  (`magCompass`), apart from the plates that must stay inside the outline. The bracket's arm is gone: the corner
+  itself now reaches the frame.
 - **Looks, after #36:**
   - a black rounded-square case with four screws on a light grey bracket;
   - a round black face in a bezel;
@@ -5134,6 +5138,5 @@ drawn from src/ui/bf110Panel.js):
 **Tests** (tests/ui/bf110MagCompass.test.js; the panel layout test covers the bracket too):
 - the heading under the lubber line, the figures rising to the left (27, 24, 21), the card wrapping through north and
   moving right to left in a right turn;
-- the case 132 px square; the bracket's top right corner at the sloping edge, its foot above the right rev counter
-  and its card, right of the Heizung placard, inside the outline and overlapping no dial or plate; the arm on the
-  plate, reaching the right edge.
+- the case 165 px square, next to the Heizung placard, its foot just above the right rev counter's card; it covers no
+  dial, plate or card; the case's left side and foot on the plate, only its top right corner over the edge.

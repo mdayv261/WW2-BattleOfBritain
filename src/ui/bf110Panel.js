@@ -3,8 +3,8 @@
 // #34 and levelled, is in src/ui/bf110Layout.js; the plate and fittings in src/ui/bf110Fittings.js and
 // src/ui/bf110Boxes.js; the panel's own gauges in src/ui/bf110Gauges.js.
 //   Top: the clock (mounted directly in the panel, D156), the red Kurssteuerung button, the SKK 404-2 block for the MG 17s, the Kurssteuerung
-//   indicator, the round counter for the two MG FF/M cannon (Durchladen), the Heizung placard and the magnetic compass
-//   on its bracket at the top right (#36, D203).
+//   indicator, the round counter for the two MG FF/M cannon (Durchladen), the Heizung placard and, next to it, the
+//   magnetic compass on its bracket (#36, D203).
 //   Middle: the repeater compass, the 2 MG / 4 MG switch and the Kurs strip; the airspeed indicator, turn and bank (under
 //   the Revi) and climb indicator; the outside air thermometer (no airscrew pitch indicators, D163); the
 //   Siemens course box, the elevator trim indicator (#34's AEG instrument, D161, D164), the horizon and the
@@ -146,6 +146,6 @@ function drawPanel(g, x0, y0, r, v, now) {
   const tank = v.fuelSelected;
   lwFuelGauge(g, ...face('fuel'), tank ? tank.litres : 0, tank ? tank.capacity : 0, { ring: '#d9b623' });
   // The magnetic compass on its bracket at the top right (#36, D203).
-  const m = at.box(L.boxes.magCompass);
+  const m = at.box(L.magCompass);
   magCompass(g, m.x + m.w / 2, m.y + m.h / 2, m.w / 2 / (1 + MAG.bracket), v.heading);
 }

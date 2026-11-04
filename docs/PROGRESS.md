@@ -99,7 +99,8 @@ Read this at the start of every session.
 - D201: the trim indicator's right side is now a flap indicator (Ein at 12 o'clock, Aus at 4 o'clock, a mark every 10°); the dark window
   at its top removed.
 - D202: the trim and flap pointers twice as long.
-- D203: a magnetic compass on a light grey bracket in the panel's right corner, after #36; its card follows the heading
+- D203: a magnetic compass on a light grey bracket next to the Heizung placard, after #36 (its top right corner over
+  the panel's edge); its card follows the heading
   (true, no variation).
 - D194-D203 not pushed yet.
 

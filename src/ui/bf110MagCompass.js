@@ -1,4 +1,4 @@
-// The Bf 110 C's magnetic compass on its bracket in the panel's right corner (product owner's picture #36, D203): a black
+// The Bf 110 C's magnetic compass on its bracket next to the Heizung placard (product owner's picture #36, D203): a black
 // rounded-square case on a light grey bracket, a round black face with a level window showing the compass card, a
 // vertical lubber line across it and a small lamp above. As on a direct-reading compass seen from behind its card, the
 // figures rise to the left: turning right, the card runs from right to left. Shown in true degrees (no magnetic
@@ -8,10 +8,9 @@ import { text } from './panelParts.js';
 
 /**
  * Its parts in shares of the case's half-width: the bracket's margin round the case, the face's radius, the window's
- * half-width and half-height, how many degrees of card either side of the lubber line the window shows, the lamp,
- * and how far the bracket's arm reaches right (in the bracket's half-widths from its centre).
+ * half-width and half-height, how many degrees of card either side of the lubber line the window shows, the lamp.
  */
-export const MAG = { bracket: 0.16, face: 0.8, window: [0.66, 0.2], span: 40, lamp: 0.07, arm: 1.2 };
+export const MAG = { bracket: 0.16, face: 0.8, window: [0.66, 0.2], span: 40, lamp: 0.07 };
 
 /** The card's figure for a mark every 30 degrees: N at 0, then tens of degrees (3, 6 ... 33), as #36's 27, 24, 21. */
 const figure = (deg) => (deg === 0 ? 'N' : String(deg / 10));
@@ -48,23 +47,9 @@ export function magCompass(g, x, y, h, heading) {
   cardWindow(g, x, y, h, heading);
 }
 
-/**
- * The bracket's arm, from the bracket's right side out to the panel's right edge in its corner (D203): its four
- * corners for a case of half-width `h` centred at (x, y).
- */
-export function bracketArm(x, y, h) {
-  const m = h * (1 + MAG.bracket);
-  return [[x + m * 0.9, y - m * 0.75], [x + m * MAG.arm, y - m * 0.55], [x + m * MAG.arm, y - m * 0.2], [x + m * 0.9, y - m * 0.05]];
-}
-
-/** The light grey bracket behind the case, with its arm reaching right to the panel's edge. */
+/** The light grey bracket behind the case; its top right corner reaches over the panel's edge to the frame (D203). */
 function bracket(g, x, y, h) {
   const m = h * (1 + MAG.bracket);
-  g.fillStyle = '#8f9295';
-  g.beginPath();
-  bracketArm(x, y, h).forEach((p, i) => (i ? g.lineTo(...p) : g.moveTo(...p)));
-  g.closePath();
-  g.fill();
   g.fillStyle = '#9da0a3';
   g.beginPath();
   g.roundRect(x - m, y - m, 2 * m, 2 * m, m * 0.35);
