@@ -100,4 +100,12 @@ describe('Bf 110 C labels between the flying instruments (D206)', () => {
     expect(gb - gt).toBeCloseTo(1.5 * (fb - ft), 9);
     expect(gb).toBeLessThan(L.dials.pressluft[1] - L.dials.pressluft[3]); // clear of the Preßluft gauge below
   });
+
+  it('sets the Preßluft gauge 5 mm from the Fahrwerk and Landeklappe labels either side (D212)', () => {
+    const [x, , , o] = L.dials.pressluft;
+    const mm = (d) => ((d / 0.46) * 0.619) / 4.3; // layout units to mm on the product owner's screen
+    expect(mm(x - o - L.boxes.fahrwerkLabel[2])).toBeCloseTo(5, 6);
+    expect(mm(L.boxes.klappeLabel[0] - (x + o))).toBeCloseTo(5, 6);
+    expect(L.boxes.fahrwerkLabel[2] - L.boxes.fahrwerkLabel[0]).toBeCloseTo(70 * 0.46, 9); // its size kept
+  });
 });

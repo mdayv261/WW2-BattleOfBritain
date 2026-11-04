@@ -5262,3 +5262,18 @@ right edge. Then: move it up 5 mm. Then: move it down 1 mm. Then: make it 50% la
 
 **Tests** (tests/ui/bf110Labels.test.js): its top 1 mm below the box's foot, its right edge in line, 1.5 times the first label's size,
 and clear of the Preßluft gauge. The panel layout test finds no overlaps.
+
+## D212. The Preßluft gauge 5 mm from the Fahrwerk and Landeklappe labels (4 Nov 2026, product owner's request)
+
+**The request:** set the gaps between the pressure gauge (the Preßluft gauge, D141) and the Fahrwerk and Landeklappe
+labels to 5 mm.
+
+**The change** (src/ui/bf110Layout.js `GAP_5MM`, `PRESSLUFT_X`): the gaps are measured from the gauge's square
+mounting (48 either side of its centre). 5 mm is 34.7 of #34's pixels.
+- **Landeklappe label:** stays centred under its handles (D198). The gauge moves 0.8 px right (centre 180.8, was 180)
+  so the gap on this side is exactly 5 mm (it was 35.5 px, about 5.1 mm).
+- **Fahrwerk label** (the first one, level with the Landeklappe label): moves 27 px left to 28.1 to 98.1 (was 55 to
+  125) so the gap on this side is 5 mm too (it was 7 px, about 1 mm). Its size and height are unchanged.
+
+**Tests** (tests/ui/bf110Labels.test.js): both gaps 5 mm on the product owner's screen, and the label's size kept. The
+D141 test still finds the gauge below the lever box, between its labels.

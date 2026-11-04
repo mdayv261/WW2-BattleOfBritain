@@ -112,7 +112,8 @@ Read this at the start of every session.
 - D210: the Achtung placard's Landeklappe warning above its Fahrwerk warning.
 - D211: a second Fahrwerk label, 1.5 times the first's size, 1 mm below the lever box's foot at its right edge (the
   first still shown).
-- D194-D211 not pushed yet.
+- D212: the Preßluft gauge 5 mm from the Fahrwerk and Landeklappe labels either side.
+- D194-D212 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
 is bought; then Phase 6 checkpoint 5 after a plan.

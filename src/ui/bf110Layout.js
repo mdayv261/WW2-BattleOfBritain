@@ -48,6 +48,12 @@ const LEVERS = [40, 465, 240, 855 - LEVER_FOOT_UP];
 /** The Fahrwerk and Landeklappe switches' line: midway between the lever box's right edge and the compass's mounting's
  * left edge (470 - 110), on #34 (product owner, D198); they stood at 268 and 270. */
 const SWITCH_X = (LEVERS[2] + (470 - 110)) / 2;
+/**
+ * The Preßluft gauge's centre on #34 (D212): its mounting (48 either side) 5 mm left of the Landeklappe label's left
+ * edge; the Fahrwerk label 5 mm left of it in turn. 5 mm is half of LEVER_FOOT_UP's 10 mm.
+ */
+const GAP_5MM = LEVER_FOOT_UP / 2;
+const PRESSLUFT_X = SWITCH_X - 36.5 - GAP_5MM - 48;
 const LEFT_START = [185, 295];
 const FAR_LEFT = -11.5; // the touch's x on #34, left of its frame
 const LEFT_SLOPE = (LEVERS[1] - LEFT_START[1]) / (LEFT_START[0] - LEVERS[0]); // down for each pixel left
@@ -190,7 +196,9 @@ export const LAYOUT = {
     // side of the tank selector, now below the screen's foot (D141); the Preßluft gauge on the left wing.
     tempLeft: dial(682, 920, 50, 60), fuel: dial(877, 920, 50, 60), tempRight: dial(1072, 920, 50, 60),
     radiatorLeft: dial(725, 1045, 46, 56), selector: dial(867, 1045, 44, 52), radiatorRight: dial(1010, 1045, 46, 56),
-    pressluft: dial(180, 905, 42, 48), // below the airscrew lever box, between its labels, as #34 (product owner, D141)
+    // Below the airscrew lever box, between its labels, as #34 (product owner, D141); 5 mm from the Landeklappe label
+    // (was 180, D212).
+    pressluft: dial(PRESSLUFT_X, 905, 42, 48),
   },
   boxes: {
     skk: box(525, 145, 775, 300), mgSwitch: box(590, 307, 785, 367), kurs: KURS,
@@ -204,7 +212,9 @@ export const LAYOUT = {
     umschalt: UMSCHALT, window: WINDOW, // centred under their dials (D206)
     // (the Landeklappe label centred under its switch, its width kept, D198)
     // (the Fahrwerk label level with the Landeklappe label, its top and foot, 870 to 892: D207)
-    fahrwerkLabel: box(55, 870, 125, 892), klappeLabel: box(SWITCH_X - 36.5, 870, SWITCH_X + 36.5, 892),
+    // (the Fahrwerk label 5 mm left of the Preßluft gauge's mounting, D212: was 55 to 125)
+    fahrwerkLabel: box(PRESSLUFT_X - 48 - GAP_5MM - 70, 870, PRESSLUFT_X - 48 - GAP_5MM, 892),
+    klappeLabel: box(SWITCH_X - 36.5, 870, SWITCH_X + 36.5, 892),
     // A second Fahrwerk label 1 mm below the lever box's foot (5 mm below, 5 mm up, then 1 mm down: a tenth of
     // LEVER_FOOT_UP), its right edge in line with the box's, 1.5 times the first's size, 70 by 22 (product owner, D211).
     gearLabel: box(LEVERS[2] - 70 * 1.5, LEVERS[3] + LEVER_FOOT_UP / 10, LEVERS[2], LEVERS[3] + LEVER_FOOT_UP / 10 + 22 * 1.5),
