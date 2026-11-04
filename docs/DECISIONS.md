@@ -5182,3 +5182,14 @@ instruments above them.
 
 **Tests** (new tests/ui/bf110Labels.test.js): each label centred under its dial; the sizes kept; the lamps the same
 distance from their placard; the window on the altimeter's line too. The panel layout test still finds no overlaps.
+
+## D207. The Fahrwerk label level with the Landeklappe label (4 Nov 2026, product owner's request)
+
+**The request:** align the Fahrwerk label below the airscrew lever box with the Landeklappe label.
+
+**The change** (src/ui/bf110Layout.js `boxes.fahrwerkLabel`): the label now runs from 870 to 892 on #34, the same top
+and foot as the Landeklappe label. It was 858 to 878, so it is 12 px lower and 2 px taller. It stays at its x (55 to
+125), under the lever box.
+
+**Tests** (tests/ui/bf110Labels.test.js): the two labels' tops and feet level, and the Fahrwerk label still below the
+lever box.

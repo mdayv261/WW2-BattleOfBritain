@@ -198,7 +198,8 @@ export const LAYOUT = {
     course: box(360, 550, 580, 830), // the repeater compass's width, under it (D159)
     umschalt: UMSCHALT, window: WINDOW, // centred under their dials (D206)
     // (the Landeklappe label centred under its switch, its width kept, D198)
-    fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(SWITCH_X - 36.5, 870, SWITCH_X + 36.5, 892),
+    // (the Fahrwerk label level with the Landeklappe label, its top and foot, 870 to 892: D207)
+    fahrwerkLabel: box(55, 870, 125, 892), klappeLabel: box(SWITCH_X - 36.5, 870, SWITCH_X + 36.5, 892),
   },
   // The "d 30′ 5′" correction cards above the engine gauges and the "Km" cards above the coolant thermometers: shown
   // only, lying over the tops of their dials' mountings, as photographed.

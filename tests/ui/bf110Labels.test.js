@@ -25,4 +25,12 @@ describe('Bf 110 C labels between the flying instruments (D206)', () => {
   it('keeps the window above the altimeter, on its centre line too', () => {
     expect(mid(L.boxes.window)).toBeCloseTo(L.dials.altimeter[0], 9);
   });
+
+  it('levels the Fahrwerk label under the lever box with the Landeklappe label (D207)', () => {
+    const [, ft, , fb] = L.boxes.fahrwerkLabel;
+    const [, kt, , kb] = L.boxes.klappeLabel;
+    expect(ft).toBeCloseTo(kt, 9);
+    expect(fb).toBeCloseTo(kb, 9);
+    expect(ft).toBeGreaterThan(L.boxes.levers[3]); // still below the lever box
+  });
 });
