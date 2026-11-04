@@ -6,6 +6,7 @@
 
 import { BF109_PANEL, BF109_PX } from './bf109Panel.js';
 import { REVI, revi110 } from './reviParts.js';
+import { MAG } from './bf110MagCompass.js';
 
 export const PX = 30; // picture pixels per dial radius
 export const TOP = 57; // the panel's top edge (as D106, so the cockpit frame's sizes keep their meaning)
@@ -133,6 +134,13 @@ const UP_4MM = 27.8; // the round counter and the Heizung placard 4 mm up (D172)
 // The outside air thermometer's mounting's left edge, in line with the left manifold pressure gauge's (D169); the
 // Heizung placard's left edge in line with it too (D178).
 const OAT_LEFT = 1265 + LEFT_MOVE - 86;
+/**
+ * The magnetic compass on its bracket (product owner's picture #36, D203): in the panel's right corner, the bracket's
+ * top right corner just inside the sloping edge and its foot just above the right rev counter's correction card; its
+ * case's centre and half-width on #34 (66: first 55, then 20% larger), the bracket MAG.bracket wider all round.
+ */
+const MAG_COMPASS = [1571.5, 383.5, 66];
+const MAG_HALF = MAG_COMPASS[2] * (1 + MAG.bracket);
 
 /**
  * Everything on the panel, in the layout's picture pixels: dials [x, y, face radius, mounting half-width]; boxes [left,
@@ -174,6 +182,8 @@ export const LAYOUT = {
     gearLights: box(202.5, 312.5, 352.5, 462.5), // round, the round counter's diameter (D157, D158)
     achtung: box(250, 590, 345, 730), dive: box(615, 578, 735, 620),
     course: box(360, 550, 580, 830), // the repeater compass's width, under it (D159)
+    // The magnetic compass's bracket, the case centred in it (D203).
+    magCompass: box(MAG_COMPASS[0] - MAG_HALF, MAG_COMPASS[1] - MAG_HALF, MAG_COMPASS[0] + MAG_HALF, MAG_COMPASS[1] + MAG_HALF),
     umschalt: box(806, 576, 959, 603), window: box(1042, 590 - 13.9, 1122, 630 - 13.9), // 2 mm up (D176)
     // (the Landeklappe label centred under its switch, its width kept, D198)
     fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(SWITCH_X - 36.5, 870, SWITCH_X + 36.5, 892),

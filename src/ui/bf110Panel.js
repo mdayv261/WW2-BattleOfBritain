@@ -3,7 +3,8 @@
 // #34 and levelled, is in src/ui/bf110Layout.js; the plate and fittings in src/ui/bf110Fittings.js and
 // src/ui/bf110Boxes.js; the panel's own gauges in src/ui/bf110Gauges.js.
 //   Top: the clock (mounted directly in the panel, D156), the red Kurssteuerung button, the SKK 404-2 block for the MG 17s, the Kurssteuerung
-//   indicator, the round counter for the two MG FF/M cannon (Durchladen) and the Heizung placard.
+//   indicator, the round counter for the two MG FF/M cannon (Durchladen), the Heizung placard and the magnetic compass
+//   on its bracket at the top right (#36, D203).
 //   Middle: the repeater compass, the 2 MG / 4 MG switch and the Kurs strip; the airspeed indicator, turn and bank (under
 //   the Revi) and climb indicator; the outside air thermometer (no airscrew pitch indicators, D163); the
 //   Siemens course box, the elevator trim indicator (#34's AEG instrument, D161, D164), the horizon and the
@@ -15,12 +16,13 @@
 //   and the Preßluft gauge below the lever box (D141).
 // The airspeed indicator, turn and bank and altimeter are the Bf 109's exactly, at its size on screen, the altimeter's
 // setting knob included (D107); all three in the black square mounting, as every dial (D162).
-// Working: the flying and engine instruments, the clock, the trim indicator, the round counter, the outside air
+// Working: the flying and engine instruments, the clock, the magnetic compass, the trim indicator, the round counter, the outside air
 // thermometer, the undercarriage and flap switches and lights, the radiator switches and the fuel gauge (the tank the
 // selector chooses, full: fuel use is not modelled). The rest shows normal operation. The dials' markings and hands are
 // white and the mountings' screws black (product owner, D160; the luminous paint of D105 gone).
 
 import { drawBf110Fittings } from './bf110Fittings.js';
+import { magCompass, MAG } from './bf110MagCompass.js';
 import { mount, lwRpm, lwAta, lwClock, lwFuelGauge, RPM_110 } from './luftwaffeDials.js';
 import { lwAirspeed, lwFineAltimeter, lwVario, lwHorizon, lwPatinCompass, lwTurnBank } from './lwFlightDials.js';
 import { whiteDials, blackScrews } from './lwStyle.js';
@@ -143,4 +145,7 @@ function drawPanel(g, x0, y0, r, v, now) {
   // The fuel contents of the tank the selector chooses (front left, at 1), white, in its yellow ring (D105, #34).
   const tank = v.fuelSelected;
   lwFuelGauge(g, ...face('fuel'), tank ? tank.litres : 0, tank ? tank.capacity : 0, { ring: '#d9b623' });
+  // The magnetic compass on its bracket at the top right (#36, D203).
+  const m = at.box(L.boxes.magCompass);
+  magCompass(g, m.x + m.w / 2, m.y + m.h / 2, m.w / 2 / (1 + MAG.bracket), v.heading);
 }

@@ -5101,3 +5101,39 @@ clear of the L ▮ R and the Ein and Aus words.
 
 **Tests** (tests/ui/bf110Panel.test.js): the pointer's length 0.24 and its outer end inside the marks; the trim and
 flap pointers drawn at that length.
+
+## D203. A magnetic compass on a bracket at the Bf 110 C panel's top right (4 Nov 2026, product owner's request)
+
+**The request:** draw a magnetic compass as in the product owner's picture #36 (a photograph of a compass on a light
+grey bracket). Put it on a bracket at the panel's top right, small enough not to cover any instrument. Then: move it
+to the panel's right corner and enlarge it 20%.
+
+**The change** (new src/ui/bf110MagCompass.js; placed in src/ui/bf110Layout.js `MAG_COMPASS`, `boxes.magCompass`;
+drawn from src/ui/bf110Panel.js):
+- **Place:** in the panel's right corner, as far into it as the plate allows. The bracket's top right corner is at
+  the sloping edge, and its foot sits just above the right rev counter's correction card.
+- **Size:** the case is centred at (1571.5, 383.5) on #34 and is 132 of #34's pixels square (first 110, at (1530, 370),
+  then 20% larger). The bracket is 16% wider all round, with a short arm reaching right to the panel's edge.
+- **Looks, after #36:**
+  - a black rounded-square case with four screws on a light grey bracket;
+  - a round black face in a bezel;
+  - a small lamp above the window;
+  - a level window showing the compass card: a mark every 5°, longer every 10°, and a figure every 30° (N, then tens
+    of degrees: 3, 6 ... 33, as #36's 27, 24, 21);
+  - a thin yellow lubber line.
+- **Working:** the card follows the heading. As on a direct-reading compass seen from behind its card, the figures rise
+  to the left (#36 reads 27, 24, 21 from left to right), so in a right turn the card runs right to left.
+
+**Flagged:**
+- **Unsourced type and place:** #36 is unidentified (the compass type and where it was fitted are not sourced). The
+  Bf 110 C's own compass and its position are not confirmed by an approved source.
+- **True heading:** it reads true heading like the repeater compass. Magnetic variation and deviation are not
+  modelled (about 10° west over south-east England in 1940, unsourced here).
+- **Card figures:** N plus numbers follows #36's numbered card; whether the C's card showed O, S and W is not known.
+
+**Tests** (tests/ui/bf110MagCompass.test.js; the panel layout test covers the bracket too):
+- the heading under the lubber line, the figures rising to the left (27, 24, 21), the card wrapping through north and
+  moving right to left in a right turn;
+- the case 132 px square; the bracket's top right corner at the sloping edge, its foot above the right rev counter
+  and its card, right of the Heizung placard, inside the outline and overlapping no dial or plate; the arm on the
+  plate, reaching the right edge.
