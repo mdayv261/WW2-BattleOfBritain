@@ -3,7 +3,8 @@
 // undercarriage lights (D157; EIN red with it up, AUS green with it down, as the Bf 109's, D95); the Fahrwerk and Landeklappe
 // push/pull valves (src/ui/bf110Valves.js, D199); the placards (src/ui/bf110Placards.js); and, shown only,
 // the airscrew lever box (Automatik / Hand, größer / kleiner), the Umschaltwarnung lamps and the tank lamps
-// (Behälter vorn / hinten). The boxes along the top and the course box are in src/ui/bf110Boxes.js.
+// (Behälter vorn / hinten); the knurled emergency hand-wheels under the Fahrwerk and Landeklappe labels (D213). The
+// boxes along the top and the course box are in src/ui/bf110Boxes.js.
 
 import { text, lens } from './panelParts.js';
 import { BLACK, INK, plain } from './bf109Fittings.js';
@@ -35,6 +36,7 @@ export function drawBf110Fittings(g, at, L, v) {
   textPlacard(g, B('umschalt'), ['Umschaltwarnung', 'links\trechts']);
   for (const k of ['umschaltLeft', 'umschaltRight']) lens(g, ...at.knob(L.knobs[k]), '#3a3c3e', false);
   tankLamps(g, at, L, s);
+  for (const k of ['gearAirWheel', 'flapAirWheel']) knurledKnob(g, ...at.knob(L.knobs[k])); // the emergency hand-wheels (D213)
 }
 
 /** The plate along its outline, shaded from its top to its foot. */
@@ -167,4 +169,55 @@ function tankLamps(g, at, L, s) {
     text(g, side, x, mid + s * 0.08, s * 0.12, INK);
     text(g, 'hinten', x, y1 + rad * 1.6, s * 0.12, INK);
   }
+}
+
+/** The knurled teeth round an emergency hand-wheel's rim (D213). */
+export const KNURL_TEETH = 40;
+
+/**
+ * A knurled hand-wheel seen from the front (D213): a black wheel with KNURL_TEETH teeth round its rim, lit from the top
+ * left, a smooth dished face and a domed hub with its screw.
+ */
+function knurledKnob(g, x, y, r) {
+  g.fillStyle = 'rgba(0, 0, 0, 0.35)'; // its shadow on the plate
+  g.beginPath();
+  g.arc(x + r * 0.08, y + r * 0.1, r, 0, Math.PI * 2);
+  g.fill();
+  for (let i = 0; i < KNURL_TEETH; i += 1) {
+    const a0 = (i / KNURL_TEETH) * Math.PI * 2;
+    const a1 = ((i + 0.5) / KNURL_TEETH) * Math.PI * 2;
+    const lit = Math.cos(a0 + Math.PI * 0.75) * 0.5 + 0.5; // brightest at the top left
+    g.fillStyle = `rgb(${Math.round(18 + 50 * lit)}, ${Math.round(19 + 50 * lit)}, ${Math.round(21 + 50 * lit)})`;
+    g.beginPath();
+    g.moveTo(x, y);
+    g.arc(x, y, r, a0, a1);
+    g.closePath();
+    g.fill();
+    g.fillStyle = '#0a0a0b';
+    g.beginPath();
+    g.moveTo(x, y);
+    g.arc(x, y, r * 0.96, a1, a0 + (Math.PI * 2) / KNURL_TEETH);
+    g.closePath();
+    g.fill();
+  }
+  const face = g.createRadialGradient(x - r * 0.25, y - r * 0.3, r * 0.1, x, y, r * 0.86);
+  face.addColorStop(0, '#3a3c3f');
+  face.addColorStop(1, '#141517');
+  g.fillStyle = face;
+  g.beginPath();
+  g.arc(x, y, r * 0.86, 0, Math.PI * 2);
+  g.fill();
+  const hub = g.createRadialGradient(x - r * 0.08, y - r * 0.1, r * 0.02, x, y, r * 0.3);
+  hub.addColorStop(0, '#6a6d70');
+  hub.addColorStop(1, '#202224');
+  g.fillStyle = hub;
+  g.beginPath();
+  g.arc(x, y, r * 0.3, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = '#0a0a0b'; // the hub's screw slot
+  g.lineWidth = Math.max(1, r * 0.05);
+  g.beginPath();
+  g.moveTo(x - r * 0.15, y);
+  g.lineTo(x + r * 0.15, y);
+  g.stroke();
 }

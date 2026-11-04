@@ -160,6 +160,16 @@ const UMSCHALT = centredOn(TURN[0], UMSCHALT_34);
 const UMSCHALT_SHIFT = UMSCHALT[0] - UMSCHALT_34[0];
 const lamp = ([x, y, rad]) => [x + UMSCHALT_SHIFT, y, rad];
 const WINDOW = centredOn(CLIMB[0], box(1042, 590 - 13.9, 1122, 630 - 13.9)); // 2 mm up (D176)
+/**
+ * The compressed-air emergency hand-wheels for the undercarriage and the flaps (product owner, D213): knurled knobs
+ * 44 mm across in life, at the panel's scale with the airspeed indicator's face taken as 80 mm, each 1 mm below its
+ * Fahrwerk or Landeklappe label and centred under it. The Landeklappe knob stands 6 of #34's pixels left of its
+ * label's centre, so it stays on the plate where the edge slopes in beside the bottom centre section.
+ */
+const REAL_MM = (2 * AIRSPEED[2]) / 80; // layout units per real millimetre
+const AIR_WHEEL = 22 * REAL_MM; // the hand-wheels' radius, layout units
+const AIR_WHEEL_Y = pt(0, 892 + 43 / 0.619 / 10)[1] + AIR_WHEEL; // 1 mm below the labels' foot
+const AIR_WHEEL_SHIFT = 6 * K; // the Landeklappe knob's shift left
 const MAG_CASE = 55 * 1.2 * 1.25;
 const MAG_HALF = MAG_CASE * (1 + MAG.bracket);
 const MAG_LEFT = OAT_LEFT + 133 + 3;
@@ -232,6 +242,9 @@ export const LAYOUT = {
   },
   knobs: {
     redButton: knob(442, 252, 30), heizungKnob: knob(OAT_LEFT + 55, 340 - UP_4MM, 30),
+    // The emergency hand-wheels under their labels (D213), [x, y, radius] in the layout's units.
+    gearAirWheel: [(pt(PRESSLUFT_X - 48 - GAP_5MM - 70, 0)[0] + pt(PRESSLUFT_X - 48 - GAP_5MM, 0)[0]) / 2, AIR_WHEEL_Y, AIR_WHEEL],
+    flapAirWheel: [pt(SWITCH_X, 0)[0] - AIR_WHEEL_SHIFT, AIR_WHEEL_Y, AIR_WHEEL],
     umschaltLeft: lamp(knob(790, 590, 12)), umschaltRight: lamp(knob(975, 590, 12)), // with their placard (D206)
     tankLeftFront: knob(775, 885, 17), tankLeftRear: knob(775, 955, 17),
     tankRightFront: knob(975, 885, 17), tankRightRear: knob(975, 955, 17),

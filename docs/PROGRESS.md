@@ -113,7 +113,8 @@ Read this at the start of every session.
 - D211: a second Fahrwerk label, 1.5 times the first's size, 1 mm below the lever box's foot at its right edge (the
   first still shown).
 - D212: the Preßluft gauge 5 mm from the Fahrwerk and Landeklappe labels either side.
-- D194-D212 not pushed yet.
+- D213: knurled emergency hand-wheels (44 mm in life) under the Fahrwerk and Landeklappe labels, shown only.
+- D194-D213 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
 is bought; then Phase 6 checkpoint 5 after a plan.

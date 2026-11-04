@@ -5277,3 +5277,32 @@ mounting (48 either side of its centre). 5 mm is 34.7 of #34's pixels.
 
 **Tests** (tests/ui/bf110Labels.test.js): both gaps 5 mm on the product owner's screen, and the label's size kept. The
 D141 test still finds the gauge below the lever box, between its labels.
+
+## D213. Knurled emergency hand-wheels under the Fahrwerk and Landeklappe labels (4 Nov 2026, product owner's request)
+
+**The request:** add two 44 mm knurled knobs, to the left and right of the Preßluft gauge, centred on the Fahrwerk
+and Landeklappe labels. Asked to clarify:
+- **Size:** 44 mm in life, to the panel's scale.
+- **Place:** each knob below its label.
+
+**What they are:** read as the compressed-air emergency hand-wheels for the undercarriage and the flaps. The D199
+leads (not approved sources) mention them as "Handräder für Pressluft (Fahrwerk-/Landeklappennotbetätigung)". The
+44 mm size is the product owner's.
+
+**The change** (src/ui/bf110Layout.js `REAL_MM`, `AIR_WHEEL`, `knobs.gearAirWheel`, `knobs.flapAirWheel`;
+src/ui/bf110Fittings.js `knurledKnob`):
+- **Scale:** the airspeed indicator's face is taken as 80 mm, which makes about 1.9 of #34's pixels a millimetre. Each
+  wheel is 83 px across on #34 (about 12 mm on the product owner's screen), almost the Preßluft gauge's dial size.
+- **Place:** each wheel's top is 1 mm below its label, centred under it.
+  - **Deviation:** the Landeklappe wheel stands 6 px (about 0.9 mm) left of its label's centre. Centred, its right
+    side would cross the panel's edge, which slopes in beside the bottom centre section.
+- **Looks:** a black wheel with 40 knurled teeth round its rim, lit from the top left; a dished face; a domed hub
+  with a screw slot. Shown only: they don't work.
+- **Partly off screen:** the wheels' lower part runs below the screen's foot, as the Preßluft gauge's lower part
+  does (the panel is cut at the coolant thermometers' feet, D141).
+
+**Flagged:** the wheels' size, look and place are the product owner's. #34 doesn't show them, and no approved
+source gives them.
+
+**Tests** (tests/ui/bf110Labels.test.js): 44 mm at that scale; 1 mm below and centred under each label (the
+Landeklappe one 6 px left); every point of each rim on the plate and clear of the Preßluft gauge's mounting.

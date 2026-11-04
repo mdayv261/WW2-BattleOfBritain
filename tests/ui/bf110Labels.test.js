@@ -108,4 +108,44 @@ describe('Bf 110 C labels between the flying instruments (D206)', () => {
     expect(mm(L.boxes.klappeLabel[0] - (x + o))).toBeCloseTo(5, 6);
     expect(L.boxes.fahrwerkLabel[2] - L.boxes.fahrwerkLabel[0]).toBeCloseTo(70 * 0.46, 9); // its size kept
   });
+
+  describe('the knurled emergency hand-wheels under the Fahrwerk and Landeklappe labels (D213)', () => {
+    const wheels = [['gearAirWheel', 'fahrwerkLabel', 0], ['flapAirWheel', 'klappeLabel', 6 * 0.46]];
+    /** Whether a layout point lies inside the panel's outline. */
+    const inside = ([px, py]) => {
+      let hit = false;
+      const pts = L.outline;
+      for (let i = 0, j = pts.length - 1; i < pts.length; j = i, i += 1) {
+        const [xi, yi] = pts[i];
+        const [xj, yj] = pts[j];
+        if ((yi > py) !== (yj > py) && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) hit = !hit;
+      }
+      return hit;
+    };
+
+    it('makes each 44 mm across in life, the airspeed indicator\'s face taken as 80 mm', () => {
+      for (const [k] of wheels) expect(2 * L.knobs[k][2], k).toBeCloseTo((44 / 80) * 2 * L.dials.airspeed[2], 9);
+    });
+
+    it('stands each 1 mm below its label, centred under it (the Landeklappe one 6 px left to stay on the plate)', () => {
+      for (const [k, label, shift] of wheels) {
+        const [x, y, r] = L.knobs[k];
+        const [l, , rt, b] = L.boxes[label];
+        expect(x, k).toBeCloseTo((l + rt) / 2 - shift, 9);
+        expect((((y - r - b) / 0.46) * 0.619)).toBeCloseTo(4.3, 6); // 1 mm: 4.3 screen px
+      }
+    });
+
+    it('keeps each wheel on the plate and clear of the Preßluft gauge\'s mounting', () => {
+      const [px, py, , po] = L.dials.pressluft;
+      for (const [k] of wheels) {
+        const [x, y, r] = L.knobs[k];
+        for (let a = 0; a < 360; a += 5) {
+          const p = [x + r * Math.cos((a * Math.PI) / 180), y + r * Math.sin((a * Math.PI) / 180)];
+          expect(inside(p), `${k} ${a}`).toBe(true);
+          expect(Math.abs(p[0] - px) > po || Math.abs(p[1] - py) > po, `${k} ${a}`).toBe(true);
+        }
+      }
+    });
+  });
 });
