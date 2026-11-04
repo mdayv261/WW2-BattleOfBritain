@@ -195,5 +195,7 @@ export const LAYOUT = {
     setAltimeter: knob109('setAltimeter', 'altimeter', altimeter),
   },
   // Both on the vertical centre line between the airscrew lever box and the compass's mounting (product owner, D198).
-  switches: { gear: slot(SWITCH_X, 505, 565), flaps: slot(SWITCH_X, 775, 835) },
+  // The Landeklappe pair 20 up from 775 / 835, so its pulled-out AUS T stays on the plate above the step beside the
+  // course box (D199).
+  switches: { gear: slot(SWITCH_X, 505, 565), flaps: slot(SWITCH_X, 755, 815) },
 };

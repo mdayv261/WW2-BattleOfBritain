@@ -93,13 +93,15 @@ Read this at the start of every session.
 - D197: the round counter redrawn round after #34 (rivets, four-screw flange, raised lens plate, digit drums, ringed
   buttons), its lenses the SKK 404-2's, its size the climb indicator's.
 - D198: the flap and undercarriage levers centred between the lever box and the compass, their T levers 15% larger.
-- D194-D198 not pushed yet.
+- D199: the Fahrwerk and Landeklappe controls redrawn as push/pull valves, two bigger T-grips each (EIN, AUS), the
+  one matching the movement shown pushed in (show only, keys unchanged); from unapproved leads, flagged.
+- D194-D199 not pushed yet.
 
-**Left:** any further lever changes from the product owner; then Phase 6 checkpoint 5 after a plan.
-
-**Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
+**Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
+is bought; then Phase 6 checkpoint 5 after a plan.
 
 **Known issues:**
+- flaps jammed by damage leave the Landeklappe AUS T pushed in (D199);
 - the left dash cover hides the top of the SKK block;
 - the pitch indicators are small.
 

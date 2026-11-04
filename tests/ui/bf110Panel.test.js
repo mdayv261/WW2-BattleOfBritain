@@ -8,7 +8,7 @@ import { lwVarioAngle, lwHorizon } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
 import {
-  switchPosition, gearLightState, tBar, T_STEM, LEVER_SCALE, GEAR_LAMPS, GEAR_HOUSING, pitchKnobY, PITCH_KNOB, LEVER_KNOB,
+  gearLightState, GEAR_LAMPS, GEAR_HOUSING, pitchKnobY, PITCH_KNOB, LEVER_KNOB,
   leverKnobY, LEVER_TRAVEL,
 } from '../../src/ui/bf110Fittings.js';
 import {
@@ -395,19 +395,10 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
   it('stands the Fahrwerk and Landeklappe switches on the centre line between the lever box and the compass (D198)', () => {
     const mid = (L.boxes.levers[2] + L.dials.compass[0] - L.dials.compass[3]) / 2;
     for (const sw of ['gear', 'flaps']) expect(L.switches[sw][0], sw).toBeCloseTo(mid, 6);
-    const half = 0.3 * 30; // the Ein and Aus discs, the widest part (30 picture px a dial radius)
-    expect(mid - half).toBeGreaterThan(L.boxes.levers[2]);
-    expect(mid + half).toBeLessThan(L.dials.compass[0] - L.dials.compass[3]);
+    // The valves' own extent either side of the line: tests/ui/bf110Valves.test.js (D199).
     const [kl, , kr] = L.boxes.klappeLabel;
     expect((kl + kr) / 2).toBeCloseTo(mid, 6); // the Landeklappe label centred under its switch
     expect(kr - kl).toBeCloseTo(73 * 0.46, 6); // its width kept
-  });
-
-  it('turns the Landeklappe and Fahrwerk switches to Aus with the flaps and undercarriage down, Ein with them up', () => {
-    expect(switchPosition.flaps({ flapSelected: 0 })).toBe(0);
-    expect(switchPosition.flaps({ flapSelected: 0.5 })).toBe(1);
-    expect(switchPosition.gear({ gearSelected: false })).toBe(0);
-    expect(switchPosition.gear({ gearSelected: true })).toBe(1);
   });
 
   it('lights EIN red with the undercarriage up, AUS green with it down, none while it moves', () => {
@@ -561,34 +552,6 @@ describe('Bf 110 C items taken off for #34 (D140)', () => {
     for (const n of ['speedCard', 'placard', 'magnetos', 'ammo']) expect(L.boxes[n], n).toBeUndefined();
     const words = new Set(draw().texts.map((t) => t.s));
     for (const w of ['SPEEDS', 'NOSE', 'Achtung!', 'M1+2', 'Fahrwerk ', 'Kühlst.']) expect(words.has(w), w).toBe(false);
-  });
-});
-
-describe('Bf 110 C flap and undercarriage levers (D114)', () => {
-  it('ends each lever in an upright T: a stem rising to a bar across its top, clear of the box above it', () => {
-    const rects = [];
-    const bars = [];
-    const g = new Proxy({}, {
-      get: (t, p) => (p === 'fillRect' ? (...a) => rects.push(a) : p === 'roundRect' ? (...a) => bars.push(a) : p in t ? t[p] : () => {}),
-      set: (t, p, v) => { t[p] = v; return true; },
-    });
-    tBar(g, 100, 200, 30);
-    const [sx, sy, sw, sh] = rects[0]; // the stem: upright, from the foot up
-    expect(sh).toBeGreaterThan(2 * sw);
-    expect(sy + sh).toBeCloseTo(200, 9);
-    const [bx, by, bw, bh] = bars[0]; // the bar: across, on the stem's top
-    expect(bw).toBeGreaterThan(3 * bh);
-    expect(by + bh / 2).toBeCloseTo(sy, 9);
-    expect(bx + bw / 2).toBeCloseTo(sx + sw / 2, 9);
-    expect(sh).toBeCloseTo(T_STEM * 30 * 1.15, 9); // 15% larger than first drawn (D198)
-    expect(bw).toBeCloseTo(0.55 * 30 * 1.15, 9);
-    expect(LEVER_SCALE).toBe(1.15);
-    // At Ein, each bar stays below the box above its switch.
-    const PXR = 30 * LEVER_SCALE;
-    for (const [sw2, above] of [['gear', 'gearLights'], ['flaps', 'achtung']]) {
-      const [, top] = L.switches[sw2];
-      expect(top - T_STEM * PXR - 0.07 * PXR, sw2).toBeGreaterThan(L.boxes[above][3]);
-    }
   });
 });
 

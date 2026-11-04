@@ -1,7 +1,7 @@
 // The Bf 110 C panel's plate and fittings (D106, D140), after the product owner's picture of the panel (#34): the dark
 // grey plate on its outline (the clock mounted directly in it, its bracket gone, D156); the round "Fahrgestell Anzeige"
-// undercarriage lights (D157; EIN red with it up, AUS green with it down, as the Bf 109's, D95); the Fahrwerk and Landeklappe Ein/Aus switches following the
-// undercarriage and the flaps (their upright T levers, D114); the placards (src/ui/bf110Placards.js); and, shown only,
+// undercarriage lights (D157; EIN red with it up, AUS green with it down, as the Bf 109's, D95); the Fahrwerk and Landeklappe
+// push/pull valves (src/ui/bf110Valves.js, D199); the placards (src/ui/bf110Placards.js); and, shown only,
 // the airscrew lever box (Automatik / Hand, größer / kleiner), the Umschaltwarnung lamps and the tank lamps
 // (Behälter vorn / hinten). The boxes along the top and the course box are in src/ui/bf110Boxes.js.
 
@@ -10,11 +10,9 @@ import { BLACK, INK, plain } from './bf109Fittings.js';
 import { mount } from './lwStyle.js';
 import { achtungPlacard, divePlacardLines, textPlacard } from './bf110Placards.js';
 import { drawBf110Boxes, greenKnob } from './bf110Boxes.js';
+import { valve, drawValvePair } from './bf110Valves.js';
 
 const PLATE = { top: '#4d524c', foot: '#3c403b', edge: '#1d1f1d' };
-
-/** Where an Ein/Aus switch's knob stands along its travel (0 at Ein, the top; 1 at Aus, the bottom). */
-export const switchPosition = { flaps: (v) => ((v.flapSelected ?? 0) > 0 ? 1 : 0), gear: (v) => (v.gearSelected ? 1 : 0) };
 
 /** Which undercarriage lights glow: the EIN pair red with it fully up, the AUS pair green with it down (D95, D106). */
 export const gearLightState = (v) => ({ ein: !!v.gearUp, aus: !!v.gearDown });
@@ -27,8 +25,8 @@ export function drawBf110Fittings(g, at, L, v) {
   drawBf110Boxes(g, at, L, s, v);
   gearLights(g, B('gearLights'), s, v);
   leverBox(g, B('levers'), s, v);
-  einAus(g, at, L.switches.gear, switchPosition.gear(v), s);
-  einAus(g, at, L.switches.flaps, switchPosition.flaps(v), s);
+  drawValvePair(g, at, L.switches.gear, valve.gear(v), s);
+  drawValvePair(g, at, L.switches.flaps, valve.flaps(v), s);
   achtungPlacard(g, B('achtung'), v);
   textPlacard(g, B('fahrwerkLabel'), ['Fahrwerk']);
   textPlacard(g, B('klappeLabel'), ['Landeklappe']);
@@ -151,49 +149,6 @@ function leverBox(g, b, s, v) {
     greenKnob(g, x, b.y + b.h * leverKnobY(v.engines?.[engine]?.pitchFraction), (LEVER_KNOB * s) / 2);
   });
   text(g, 'Drehzahl', b.x + b.w / 2, b.y + b.h * 0.88, b.h * 0.03, INK);
-}
-
-/**
- * An Ein/Aus switch: a slot with Ein at the top and Aus at the bottom, and a lever at `position` (0-1): an upright T, its
- * stem rising from the slot behind the Ein and Aus discs, its bar across the top (product owner, D114).
- */
-function einAus(g, at, [px, top, bottom], position, s) {
-  const [x, y0] = at.xy([px, top]);
-  const [, y1] = at.xy([px, bottom]);
-  g.fillStyle = BLACK;
-  g.fillRect(x - s * 0.1, y0, s * 0.2, y1 - y0);
-  tBar(g, x, y0 + (y1 - y0) * position, s);
-  for (const [word, wy, on] of [['EIN', y0, position === 0], ['AUS', y1, position === 1]]) {
-    g.fillStyle = on ? '#f2efe6' : '#a9aba8';
-    g.beginPath();
-    g.arc(x, wy, s * 0.3, 0, Math.PI * 2);
-    g.fill();
-    text(g, word, x, wy, s * 0.18, '#1a1a1a', { bold: on });
-  }
-}
-
-/**
- * The lever's T: a black stem rising T_STEM from its foot at (x, y) to a bar across its top, the bar lit along its top.
- * The whole T is LEVER_SCALE times its first size (product owner, D198); the Ein and Aus discs keep theirs.
- */
-export const T_STEM = 0.45; // dial radii: the bar clears the Ein and Aus discs (0.3)
-export const LEVER_SCALE = 1.15;
-export function tBar(g, x, y, s) {
-  const k = s * LEVER_SCALE;
-  const top = y - k * T_STEM;
-  const w = k * 0.55;
-  const h = k * 0.14;
-  g.fillStyle = '#0e0f10';
-  g.fillRect(x - k * 0.05, top, k * 0.1, y - top);
-  g.beginPath();
-  g.roundRect(x - w / 2, top - h / 2, w, h, h / 2);
-  g.fill();
-  g.strokeStyle = 'rgba(200, 205, 210, 0.45)';
-  g.lineWidth = Math.max(1, h * 0.18);
-  g.beginPath();
-  g.moveTo(x - w / 2 + h * 0.5, top - h * 0.22);
-  g.lineTo(x + w / 2 - h * 0.5, top - h * 0.22);
-  g.stroke();
 }
 
 /** The tank lamps either side of the fuel gauge (shown only, dark): Behälter vorn / hinten, links and rechts. */

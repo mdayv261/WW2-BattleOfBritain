@@ -3277,6 +3277,8 @@ The tests are restored with it and read the Bf 110's guns.
 
 ## D114. T-bar flap and undercarriage levers on the Bf 110 C panel (3 Nov 2026, product owner)
 
+**Replaced by D199:** the sliding T levers became two push/pull T-handle valves per control.
+
 **The request:** the Landeklappe and Fahrwerk levers are a "T" bar shape: an upright T, not one on its side.
 
 **The change** (`tBar` in `src/ui/bf110Fittings.js`):
@@ -4979,6 +4981,8 @@ plate; the buttons lie inside the rim, clear of every rivet; the digits and lett
 
 ## D198. The flap and undercarriage levers centred between the lever box and the compass, and 15% larger (4 Nov 2026, product owner's request)
 
+**Partly replaced by D199:** the centre line stays; the sliding T and its 15% scale gave way to the push/pull valves.
+
 **The request:** move the Fahrwerk and Landeklappe levers onto the vertical centre line between the airscrew lever box
 and the compass; then make the levers 15% larger, but not their EIN and AUS labels.
 
@@ -4998,3 +5002,48 @@ placard); the switches clear the lever box and the compass's mounting; the label
 **Tests** (tests/ui/bf110Panel.test.js): both switches on the centre line, clear of the lever box and the compass;
 the label centred under its switch; the T 15% larger and clear of the box above it at EIN.
 
+## D199. Push/pull T-handle valves for the Bf 110 C's Fahrwerk and Landeklappe (4 Nov 2026, product owner's decision)
+
+**The question:** how were the flap and undercarriage controls worked: flip switches or push/pull?
+
+**No approved source found.** The Bf 110 C Betriebsanleitung (works edition, June 1939, chapter "2 Fahrwerk") exists,
+but only for sale: reproduced in a published German book of Bf 110 handbooks
+(https://www.amazon.de/dp/3939847496) and as scans from onlineaviationlibrary.com. Neither was bought.
+
+**The leads (not approved sources under CLAUDE.md; read from search summaries, as the pages would not load):**
+- a translated "Bf 110 C manual" on the Team Fusion (game-mod) wiki
+  (https://www.theairtacticalassaultgroup.com/wiki/doku.php?id=hbf110c): push the control marked "Aus" until the
+  indicator by the seat reaches the setting, then pull it out; the undercarriage control is unlocked before it is
+  pressed; blue hand-wheels are the compressed-air emergency valves;
+- the same wiki's C-4/C-7 page: a two-button, three-position control left on the panel, below the undercarriage
+  lights;
+- Chuck's Il-2 Cliffs of Dover Bf 110 guide (a sim guide): EIN (up) / neutral / AUS (down);
+- a 1C forum thread quoting cockpit diagrams: push-button switches (Druckknopfschalter).
+
+**The product owner's decision:** accept the push/pull lead. Each control is two hydraulic pilot valves worked by a
+two-finger T-grip, larger than the D198 T. Picture #34 shows two round buttons per control, EIN above and AUS below,
+so there are two Ts per control, four in all.
+
+**Flagged:** the T-grip follows the product owner's reading. #34 shows round buttons, and no approved source
+describes the handle.
+
+**The change** (src/ui/bf110Valves.js; called from src/ui/bf110Fittings.js, which loses `einAus`, `tBar`,
+`T_STEM`, `LEVER_SCALE` and `switchPosition`):
+- **Layout:** each valve is a lettered disc (EIN or AUS, D198's size, 0.3 dial radii) beside its T, the pair centred
+  on the switch line (x 300 on #34, D198). The black slot between them is gone.
+- **The T:** a bar 0.8 dial radii wide (was 0.63) and 0.24 tall (was 0.16), with a finger recess either side of its
+  shaft and a lit top edge, on a dark collar where the shaft enters the panel.
+- **Pulled out (neutral):** its shaft shows and the bar stands 0.25 dial radii off the collar, casting a shadow.
+  **Pushed in:** the bar sits on the collar, its disc lit white.
+- **Show only:** the keys don't change (F / Shift+F the flaps, U the undercarriage, and the joystick buttons). The AUS
+  T shows pushed in while the undercarriage or flaps run down, the EIN T while they run up; both pop out (neutral)
+  once they stop.
+- **Landeklappe pair moved up 20** on #34 (EIN 755, AUS 815; were 775, 835): pulled out, the AUS T crossed the
+  plate's edge where it steps in beside the course box. The Fahrwerk pair is unchanged.
+
+**Known limitation:** flaps jammed by damage short of their setting leave the AUS T pushed in.
+
+**Tests** (tests/ui/bf110Valves.test.js): which T is pushed in, from the readings and in flight (pushed while the
+undercarriage and flaps travel, out once they stop); the bigger T with the discs kept at 0.3; pushed in on the
+collar, pulled out off it; each pair centred on the line, between the lever box and the compass and course box,
+clear of the boxes above and below, and inside the panel's outline. The old T lever tests are removed.
