@@ -92,10 +92,10 @@ Read this at the start of every session.
   push-buttons), keeping Gerät-Nr. 102-84; the photos recorded as replica pictures (D195).
 - D197: the round counter redrawn round after #34 (rivets, four-screw flange, raised lens plate, digit drums, ringed
   buttons), its lenses the SKK 404-2's, its size the climb indicator's.
-- D194-D197 not pushed yet.
+- D198: the flap and undercarriage levers centred between the lever box and the compass, their T levers 15% larger.
+- D194-D198 not pushed yet.
 
-**Left:** two minor changes to the flap and undercarriage levers (product owner, later); then Phase 6 checkpoint 5
-after a plan.
+**Left:** any further lever changes from the product owner; then Phase 6 checkpoint 5 after a plan.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

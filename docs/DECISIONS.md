@@ -4977,3 +4977,24 @@ counter any more.
 mounting; its round body fills its place; the flange's corners stand out past the body; the lenses lie on the raised
 plate; the buttons lie inside the rim, clear of every rivet; the digits and lettering are drawn.
 
+## D198. The flap and undercarriage levers centred between the lever box and the compass, and 15% larger (4 Nov 2026, product owner's request)
+
+**The request:** move the Fahrwerk and Landeklappe levers onto the vertical centre line between the airscrew lever box
+and the compass; then make the levers 15% larger, but not their EIN and AUS labels.
+
+**The change:**
+- **Position** (src/ui/bf110Layout.js `SWITCH_X`, `switches`): both switches stand at x 300 on #34, midway between the
+  lever box's right edge (240) and the compass's mounting's left edge (470 − 110 = 360). They stood at 268 and 270.
+  Their heights are unchanged.
+- **Landeklappe label:** centred under its switch, its width kept. (Moved by the same 30 px instead, it would have
+  run past the panel's edge, which steps in below the flap switch.) The Fahrwerk label stays where it is, under the
+  lever box.
+- **Size** (src/ui/bf110Fittings.js `LEVER_SCALE`, `tBar`): each lever's T (its stem and the bar across its top) is
+  1.15 times its first size. The EIN and AUS discs and their lettering, and the slot, keep their size.
+
+**Checked:** at EIN, each larger T still clears the box above its switch (the undercarriage lights and the Achtung
+placard); the switches clear the lever box and the compass's mounting; the label stays on the panel.
+
+**Tests** (tests/ui/bf110Panel.test.js): both switches on the centre line, clear of the lever box and the compass;
+the label centred under its switch; the T 15% larger and clear of the box above it at EIN.
+

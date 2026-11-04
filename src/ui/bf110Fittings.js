@@ -172,14 +172,19 @@ function einAus(g, at, [px, top, bottom], position, s) {
   }
 }
 
-/** The lever's T: a black stem rising T_STEM from its foot at (x, y) to a bar across its top, the bar lit along its top. */
+/**
+ * The lever's T: a black stem rising T_STEM from its foot at (x, y) to a bar across its top, the bar lit along its top.
+ * The whole T is LEVER_SCALE times its first size (product owner, D198); the Ein and Aus discs keep theirs.
+ */
 export const T_STEM = 0.45; // dial radii: the bar clears the Ein and Aus discs (0.3)
+export const LEVER_SCALE = 1.15;
 export function tBar(g, x, y, s) {
-  const top = y - s * T_STEM;
-  const w = s * 0.55;
-  const h = s * 0.14;
+  const k = s * LEVER_SCALE;
+  const top = y - k * T_STEM;
+  const w = k * 0.55;
+  const h = k * 0.14;
   g.fillStyle = '#0e0f10';
-  g.fillRect(x - s * 0.05, top, s * 0.1, y - top);
+  g.fillRect(x - k * 0.05, top, k * 0.1, y - top);
   g.beginPath();
   g.roundRect(x - w / 2, top - h / 2, w, h, h / 2);
   g.fill();

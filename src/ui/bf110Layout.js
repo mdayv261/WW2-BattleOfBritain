@@ -41,6 +41,9 @@ const RIGHT_SIDE = [[1688.3, 423.3], [1738.3, 423.3], [1910, 895]]; // the post'
 // box's top left corner until it touches the left fuselage side (the fuselage sheet's inner edge, src/ui/bf110Frame.js;
 // tests/ui/bf110Frame.test.js keeps the touch); then straight down to below the screen's foot.
 const LEVERS = [40, 465, 240, 855];
+/** The Fahrwerk and Landeklappe switches' line: midway between the lever box's right edge and the compass's mounting's
+ * left edge (470 - 110), on #34 (product owner, D198); they stood at 268 and 270. */
+const SWITCH_X = (LEVERS[2] + (470 - 110)) / 2;
 const LEFT_START = [185, 295];
 const FAR_LEFT = -11.5; // the touch's x on #34, left of its frame
 const LEFT_SLOPE = (LEVERS[1] - LEFT_START[1]) / (LEFT_START[0] - LEVERS[0]); // down for each pixel left
@@ -172,7 +175,8 @@ export const LAYOUT = {
     achtung: box(250, 590, 345, 730), dive: box(615, 578, 735, 620),
     course: box(360, 550, 580, 830), // the repeater compass's width, under it (D159)
     umschalt: box(806, 576, 959, 603), window: box(1042, 590 - 13.9, 1122, 630 - 13.9), // 2 mm up (D176)
-    fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(245, 870, 318, 892),
+    // (the Landeklappe label centred under its switch, its width kept, D198)
+    fahrwerkLabel: box(55, 858, 125, 878), klappeLabel: box(SWITCH_X - 36.5, 870, SWITCH_X + 36.5, 892),
   },
   // The "d 30′ 5′" correction cards above the engine gauges and the "Km" cards above the coolant thermometers: shown
   // only, lying over the tops of their dials' mountings, as photographed.
@@ -190,5 +194,6 @@ export const LAYOUT = {
     tankRightFront: knob(975, 885, 17), tankRightRear: knob(975, 955, 17),
     setAltimeter: knob109('setAltimeter', 'altimeter', altimeter),
   },
-  switches: { gear: slot(268, 505, 565), flaps: slot(270, 775, 835) },
+  // Both on the vertical centre line between the airscrew lever box and the compass's mounting (product owner, D198).
+  switches: { gear: slot(SWITCH_X, 505, 565), flaps: slot(SWITCH_X, 775, 835) },
 };

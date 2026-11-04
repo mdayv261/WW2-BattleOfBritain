@@ -8,7 +8,7 @@ import { lwVarioAngle, lwHorizon } from '../../src/ui/lwFlightDials.js';
 import { lwRpmAngle, RPM_110 } from '../../src/ui/luftwaffeDials.js';
 import { BF110_PANEL, AXIS, bf110Panel, panelTop110, placer } from '../../src/ui/bf110Panel.js';
 import {
-  switchPosition, gearLightState, tBar, T_STEM, GEAR_LAMPS, GEAR_HOUSING, pitchKnobY, PITCH_KNOB, LEVER_KNOB,
+  switchPosition, gearLightState, tBar, T_STEM, LEVER_SCALE, GEAR_LAMPS, GEAR_HOUSING, pitchKnobY, PITCH_KNOB, LEVER_KNOB,
   leverKnobY, LEVER_TRAVEL,
 } from '../../src/ui/bf110Fittings.js';
 import {
@@ -392,6 +392,17 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     expect(draw().texts.filter((t) => t.s === '120').length).toBeGreaterThanOrEqual(2);
   });
 
+  it('stands the Fahrwerk and Landeklappe switches on the centre line between the lever box and the compass (D198)', () => {
+    const mid = (L.boxes.levers[2] + L.dials.compass[0] - L.dials.compass[3]) / 2;
+    for (const sw of ['gear', 'flaps']) expect(L.switches[sw][0], sw).toBeCloseTo(mid, 6);
+    const half = 0.3 * 30; // the Ein and Aus discs, the widest part (30 picture px a dial radius)
+    expect(mid - half).toBeGreaterThan(L.boxes.levers[2]);
+    expect(mid + half).toBeLessThan(L.dials.compass[0] - L.dials.compass[3]);
+    const [kl, , kr] = L.boxes.klappeLabel;
+    expect((kl + kr) / 2).toBeCloseTo(mid, 6); // the Landeklappe label centred under its switch
+    expect(kr - kl).toBeCloseTo(73 * 0.46, 6); // its width kept
+  });
+
   it('turns the Landeklappe and Fahrwerk switches to Aus with the flaps and undercarriage down, Ein with them up', () => {
     expect(switchPosition.flaps({ flapSelected: 0 })).toBe(0);
     expect(switchPosition.flaps({ flapSelected: 0.5 })).toBe(1);
@@ -569,8 +580,11 @@ describe('Bf 110 C flap and undercarriage levers (D114)', () => {
     expect(bw).toBeGreaterThan(3 * bh);
     expect(by + bh / 2).toBeCloseTo(sy, 9);
     expect(bx + bw / 2).toBeCloseTo(sx + sw / 2, 9);
+    expect(sh).toBeCloseTo(T_STEM * 30 * 1.15, 9); // 15% larger than first drawn (D198)
+    expect(bw).toBeCloseTo(0.55 * 30 * 1.15, 9);
+    expect(LEVER_SCALE).toBe(1.15);
     // At Ein, each bar stays below the box above its switch.
-    const PXR = 30;
+    const PXR = 30 * LEVER_SCALE;
     for (const [sw2, above] of [['gear', 'gearLights'], ['flaps', 'achtung']]) {
       const [, top] = L.switches[sw2];
       expect(top - T_STEM * PXR - 0.07 * PXR, sw2).toBeGreaterThan(L.boxes[above][3]);
