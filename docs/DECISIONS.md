@@ -5250,14 +5250,14 @@ the middle.
 ## D211. A second Fahrwerk label under the airscrew lever box (4 Nov 2026, product owner's request)
 
 **The request:** place a new "Fahrwerk" label 5 mm below the propeller pitch control block, aligned with the block's
-right edge. Then: move it up 5 mm.
+right edge. Then: move it up 5 mm. Then: move it down 1 mm.
 
 **The change** (src/ui/bf110Layout.js `boxes.gearLabel`; drawn in src/ui/bf110Fittings.js):
-- **Place:** its top on the lever box's foot (785.5 on #34: 5 mm below, then 5 mm up), its right edge at the box's
-  right edge (240).
+- **Place:** its top 1 mm (6.9 of #34's pixels) below the lever box's foot (5 mm below, then 5 mm up, then 1 mm
+  down), its right edge at the box's right edge (240).
 - **Size:** the same as the first Fahrwerk label (70 by 22).
 - **The first label kept:** the original Fahrwerk label (D207, level with the Landeklappe label) is still there, so the
   panel now shows "Fahrwerk" twice. The product owner may want the first one removed.
 
-**Tests** (tests/ui/bf110Labels.test.js): its top on the box's foot, its right edge in line, the first label's size,
+**Tests** (tests/ui/bf110Labels.test.js): its top 1 mm below the box's foot, its right edge in line, the first label's size,
 and clear of the Preßluft gauge. The panel layout test finds no overlaps.

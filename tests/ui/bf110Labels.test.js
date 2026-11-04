@@ -90,12 +90,12 @@ describe('Bf 110 C labels between the flying instruments (D206)', () => {
     expect(LEVER_LABELS.groesser * h - half).toBeGreaterThan(0.37 * h); // below the Hand plate
   });
 
-  it('adds a Fahrwerk label on the lever box\'s foot (5 mm below, then 5 mm up), its right edge in line (D211)', () => {
+  it('adds a Fahrwerk label 1 mm below the lever box\'s foot, its right edge in line (D211)', () => {
     const [, , lr, lb] = L.boxes.levers;
     const [gl, gt, gr, gb] = L.boxes.gearLabel;
     const [fl, ft, fr, fb] = L.boxes.fahrwerkLabel;
     expect(gr).toBeCloseTo(lr, 9);
-    expect(gt).toBeCloseTo(lb, 9); // its top on the box's foot
+    expect(((gt - lb) / 0.46) * 0.619).toBeCloseTo(4.3, 6); // 1 mm: 4.3 screen px
     expect(gr - gl).toBeCloseTo(fr - fl, 9); // the first label's size
     expect(gb - gt).toBeCloseTo(fb - ft, 9);
     expect(gb).toBeLessThan(L.dials.pressluft[1] - L.dials.pressluft[3]); // clear of the Preßluft gauge below
