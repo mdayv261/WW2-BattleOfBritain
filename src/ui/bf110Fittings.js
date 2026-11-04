@@ -29,6 +29,7 @@ export function drawBf110Fittings(g, at, L, v) {
   drawValvePair(g, at, L.switches.flaps, valve.flaps(v), s);
   achtungPlacard(g, B('achtung'), v);
   textPlacard(g, B('fahrwerkLabel'), ['Fahrwerk']);
+  textPlacard(g, B('gearLabel'), ['Fahrwerk']); // under the lever box, at its right edge (D211)
   textPlacard(g, B('klappeLabel'), ['Landeklappe']);
   textPlacard(g, B('dive'), divePlacardLines(v));
   textPlacard(g, B('umschalt'), ['Umschaltwarnung', 'links\trechts']);
