@@ -194,7 +194,9 @@ export const LAYOUT = {
     heizung: box(OAT_LEFT, 245 - UP_4MM, OAT_LEFT + 133, 352 - UP_4MM), levers: box(...LEVERS),
     // (the Heizung placard: 4 mm up with the round counter, D172; its left edge in line with the thermometer's, D178)
     gearLights: box(202.5, 312.5, 352.5, 462.5), // round, the round counter's diameter (D157, D158)
-    achtung: box(250, 590, 345, 730), dive: DIVE,
+    // The Achtung placard as wide as fits between the lever box and the course box, centred on the valves' line, for its
+    // larger lettering (was 250 to 345, D208).
+    achtung: box(SWITCH_X - 56, 590, SWITCH_X + 56, 730), dive: DIVE,
     course: box(360, 550, 580, 830), // the repeater compass's width, under it (D159)
     umschalt: UMSCHALT, window: WINDOW, // centred under their dials (D206)
     // (the Landeklappe label centred under its switch, its width kept, D198)

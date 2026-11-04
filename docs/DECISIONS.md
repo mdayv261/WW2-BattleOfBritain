@@ -5193,3 +5193,28 @@ and foot as the Landeklappe label. It was 858 to 878, so it is 12 px lower and 2
 
 **Tests** (tests/ui/bf110Labels.test.js): the two labels' tops and feet level, and the Fahrwerk label still below the
 lever box.
+
+## D208. The Achtung placard's lettering 1.5 times larger (4 Nov 2026, product owner's request)
+
+**The request:** make the font on the flap and undercarriage warning placard, between the levers, 1.5 times larger.
+
+**The problem:** the lettering was already as large as the placard's width allowed. Its widest line ("bei
+Geschwindigkeit über") filled 0.9 of the 95 px plate. At 1.5 times, the old lines would need about 145 px, and the gap
+between the lever box and the course box is only 120 px.
+
+**The change** (src/ui/bf110Placards.js `ACHTUNG`, `achtungLines`, `achtungPlacard`; src/ui/bf110Layout.js):
+- **Font:** exactly 1.5 times the old one, 0.0756 of the placard's height (was 0.0504; the old figure is from Chrome's
+  measured widths).
+- **Plate:** 112 px wide on #34 (was 95), centred on the valves' line (x 300), clear of the lever box and the course
+  box. Its height (590 to 730) is unchanged.
+- **Lines broken shorter,** hyphenated as the picture's "voll-ständig":
+  - Fahrwerk (4 lines): "Achtung Fahrwerk / bei Geschwindig- / keit über 250 km/St / nicht betätigen";
+  - Landeklappe (6 lines): "Achtung / Landeklappe muß / bei Geschwindig- / keit über 250 km/St / vollständig /
+    eingefahren sein".
+  - The words and the 250 km/h limit (S24) are unchanged.
+- **Spacing:** lines 1.15 font heights apart (was 1.3) and margins 0.3 (was 0.6), so the ten lines fit the height.
+  Each section's height is in proportion to its lines, so the rule between them sits higher.
+
+**Tests** (tests/ui/bf110Labels.test.js): the font 1.5 times the old; ten lines fitting the height; every line, at
+Chrome's measured widths, within 0.92 of the placard's width; the plate centred on the valves and clear of the lever
+box and course box; four lines above the rule and six below.

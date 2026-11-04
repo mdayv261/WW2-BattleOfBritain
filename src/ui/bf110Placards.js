@@ -18,10 +18,29 @@ export const divePlacardLines = (v) => ['Maximale Sturzflug-', 'Geschwindigkeit'
  */
 export function achtungLines(v) {
   const limit = v.pilotCard?.flapLimit ?? '—';
+  // Broken shorter (hyphenated, as the picture's "voll-ständig") so the lettering fits 1.5 times larger (D208).
   return {
-    gear: ['Achtung Fahrwerk', 'bei Geschwindigkeit über', `${limit} km/St`, 'nicht betätigen'],
-    flaps: ['Achtung Landeklappe', 'muß bei Geschwindigkeit', `über ${limit} km/St voll-`, 'ständig eingefahren sein'],
+    gear: ['Achtung Fahrwerk', 'bei Geschwindig-', `keit über ${limit} km/St`, 'nicht betätigen'],
+    flaps: ['Achtung', 'Landeklappe muß', 'bei Geschwindig-', `keit über ${limit} km/St`, 'vollständig', 'eingefahren sein'],
   };
+}
+
+/**
+ * The "Achtung" placard's lettering (product owner, D208): 1.5 times the font it had (0.0504 of the placard's height,
+ * where its widest line, "bei Geschwindigkeit über", filled 0.9 of the old 95 px width), with closer lines and
+ * margins so its ten lines fit; each section's height in proportion to its lines.
+ */
+export const ACHTUNG = { font: 1.5 * 0.0504, line: 1.15, pad: 0.3 };
+const sectionHeight = (n) => n * ACHTUNG.line + 2 * ACHTUNG.pad; // in font heights
+
+/** Sets `lines` centred in the box { x, y, w, h } at font `px`, `ACHTUNG.line` apart. */
+function setLines(g, b, lines, px) {
+  setFont(g, px);
+  g.fillStyle = INK;
+  g.textBaseline = 'middle';
+  g.textAlign = 'center';
+  const top = b.y + (b.h - lines.length * px * ACHTUNG.line) / 2;
+  lines.forEach((s, i) => g.fillText(s, b.x + b.w / 2, top + px * ACHTUNG.line * (i + 0.5)));
 }
 
 function setFont(g, px) {
@@ -72,16 +91,25 @@ export function textPlacard(g, b, lines, { border = true } = {}) {
   return px;
 }
 
-/** The "Achtung" placard in its box: the undercarriage's section above the flaps', a rule between. */
+/**
+ * The "Achtung" placard in its box: the undercarriage's section above the flaps', a rule between, each section's
+ * height in proportion to its lines (D208). Returns the font height.
+ */
 export function achtungPlacard(g, b, v) {
   const { gear, flaps } = achtungLines(v);
   plate(g, b.x, b.y, b.w, b.h);
-  const half = { ...b, h: b.h / 2 };
-  textPlacard(g, half, gear, { border: false });
-  textPlacard(g, { ...half, y: b.y + b.h / 2 }, flaps, { border: false });
+  let px = ACHTUNG.font * b.h;
+  setFont(g, px);
+  const widest = Math.max(...[...gear, ...flaps].map((s) => widthOf(g, s, px)));
+  if (widest > b.w * 0.92) px *= (b.w * 0.92) / widest; // only where the canvas can't measure (the tests' stand-in)
+  const split = b.h * (sectionHeight(gear.length) / (sectionHeight(gear.length) + sectionHeight(flaps.length)));
+  setLines(g, { ...b, h: split }, gear, px);
+  setLines(g, { ...b, y: b.y + split, h: b.h - split }, flaps, px);
   g.strokeStyle = BORDER;
+  g.lineWidth = 1;
   g.beginPath();
-  g.moveTo(b.x + 3, b.y + b.h / 2);
-  g.lineTo(b.x + b.w - 3, b.y + b.h / 2);
+  g.moveTo(b.x + 3, b.y + split);
+  g.lineTo(b.x + b.w - 3, b.y + split);
   g.stroke();
+  return px;
 }

@@ -107,7 +107,8 @@ Read this at the start of every session.
 - D206: the dive placard, the Umschaltwarnung placard (with its lamps) and the two-bar window centred under the
   airspeed, turn and slip and climb indicators.
 - D207: the Fahrwerk label level with the Landeklappe label.
-- D194-D207 not pushed yet.
+- D208: the Achtung placard's lettering 1.5 times larger (the plate widened to 112 px, its lines broken shorter).
+- D194-D208 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
 is bought; then Phase 6 checkpoint 5 after a plan.

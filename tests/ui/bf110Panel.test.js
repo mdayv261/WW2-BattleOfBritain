@@ -578,7 +578,7 @@ describe('Bf 110 C placards with the sourced figures (S24, D140)', () => {
     expect(flaps.join(' ')).toContain('250 km/St');
     const texts = draw(v).texts.map((t) => t.s);
     const words = texts.join(' | ');
-    for (const w of ['650 km/h', 'Achtung Fahrwerk', 'Achtung Landeklappe', 'Umschaltwarnung', 'Heizung', 'SKK 404-2', 'Kurs',
+    for (const w of ['650 km/h', 'Achtung Fahrwerk', 'Landeklappe muß', 'Umschaltwarnung', 'Heizung', 'SKK 404-2', 'Kurs',
       'Preßluft', 'Umschalter', 'Schalter f. Kühlkl.', 'Fahrgestell']) expect(words, w).toContain(w);
     for (const w of ['700 km/h', '400 km/St']) expect(texts.some((s) => s.includes(w)), w).toBe(false);
   });
