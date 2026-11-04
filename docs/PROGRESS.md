@@ -103,7 +103,8 @@ Read this at the start of every session.
   the panel's edge); its card follows the heading
   (true, no variation).
 - D204: the magnetic compass's lamp removed; its lubber line runs the face's full height.
-- D194-D204 not pushed yet.
+- D205: the magnetic compass's face 2 mm wider.
+- D194-D205 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
 is bought; then Phase 6 checkpoint 5 after a plan.
