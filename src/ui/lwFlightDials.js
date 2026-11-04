@@ -96,6 +96,13 @@ export function lwVario(g, x, y, r, ms) {
 }
 
 /**
+ * Where the Wendezeiger's ball stands along its tube, radians about the tube's centre, + to the right: it swings away
+ * from the sideways push the pilot feels (`sideG`, + right), as a real ball does, so a skid to the right (too much right
+ * rudder) sends it left; 8 degrees of tube at a quarter g. (It ran the wrong way until D214.)
+ */
+export const lwBallAngle = (sideG) => Math.max(-1, Math.min(1, -sideG / 0.25)) * 8 * DEG;
+
+/**
  * Wendezeiger Fl. 22402: a long needle pivoted near the bottom, its white flag moving over DREHT under a fixed index
  * (a rate-one turn of 3 deg/s moves it 10 degrees); the ball in a white tube above HÄNGT. `turnRate` deg/s (+ right),
  * `sideG` (+ right).
@@ -135,8 +142,8 @@ export function lwTurnBank(g, x, y, r, turnRate, sideG) {
   g.arc(x, cy, R, (90 + 9.5) * DEG, (90 - 9.5) * DEG, true);
   g.stroke();
   g.lineCap = 'butt';
-  const ball = Math.max(-1, Math.min(1, -sideG / 0.25)) * 8 * DEG;
-  const [bx, by] = [x - Math.sin(ball) * R, cy + Math.cos(ball) * R];
+  const ball = lwBallAngle(sideG);
+  const [bx, by] = [x + Math.sin(ball) * R, cy + Math.cos(ball) * R];
   g.fillStyle = '#5b5e61';
   g.beginPath();
   g.arc(bx, by, r * 0.07, 0, Math.PI * 2);

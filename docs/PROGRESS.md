@@ -114,12 +114,15 @@ Read this at the start of every session.
   first still shown).
 - D212: the Preßluft gauge 5 mm from the Fahrwerk and Landeklappe labels either side.
 - D213: knurled emergency hand-wheels (44 mm in life) under the Fahrwerk and Landeklappe labels, shown only.
-- D194-D213 not pushed yet.
+- D214: the Luftwaffe turn indicator's ball ran the wrong way (Bf 109 and Bf 110): fixed; the Bf 110 course box's
+  ball now follows the sideways push too.
+- D194-D214 not pushed yet.
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
 is bought; then Phase 6 checkpoint 5 after a plan.
 
 **Known issues:**
+- half rudder at cruise gives about 20° of sideslip and over 1 g sideways in the Bf 110 (D214): to check against sources;
 - flaps jammed by damage leave the Landeklappe AUS T pushed in (D199);
 - the left dash cover hides the top of the SKK block;
 - the pitch indicators are small.

@@ -5306,3 +5306,32 @@ source gives them.
 
 **Tests** (tests/ui/bf110Labels.test.js): 44 mm at that scale; 1 mm below and centred under each label (the
 Landeklappe one 6 px left); every point of each rim on the plate and clear of the Preßluft gauge's mounting.
+
+## D214. The slip balls fixed: the Luftwaffe turn indicator's ran the wrong way; the course box's now works (4 Nov 2026, product owner's request)
+
+**The request:** check that the slip ball moves correctly in the "gyro compass". The product owner then named it as the
+horizontal compass below the round repeater compass: the Siemens course box (D159).
+
+**What was found:**
+- **Course box:** its ball (the dark band in the curved white tube) was drawn fixed in the middle, shown only. It never
+  moved.
+- **Turn indicator** (the Wendezeiger, under the Revi, `lwTurnBank`, shared by the Bf 109 and Bf 110): its ball moved
+  the wrong way, because two minus signs cancelled. A skid to the right (right rudder, wings level) sent the ball
+  right; a real ball goes left, to the outside.
+- **Checked in flight:** with right rudder, the sideways push the pilot feels (`sideG`) is to the right, as it should
+  be. The RAF and generic slip indicators already moved the right way.
+
+**The change:**
+- **Turn indicator** (src/ui/lwFlightDials.js `lwBallAngle`): the ball swings away from the push, left in a right skid.
+  This fixes the Bf 109 as well.
+- **Course box** (src/ui/bf110Boxes.js `courseBall`, `COURSE_TUBE`, `courseTubeAt`): the ball rides along the sagging
+  tube with `sideG`. It reaches the tube's ends at a quarter g, as the other balls do, and stays inside the tube.
+- **Unchanged:** the course box's cards (3 and N) are still shown only and don't follow the heading.
+
+**Noticed, not changed (flight model):** half rudder at cruise gives about 20° of sideslip and over 1 g sideways after
+a second, with a lightly damped swing. That seems large and should be checked against sources in a later physics
+task.
+
+**Tests** (new tests/ui/slipBalls.test.js): `sideG` to the right in a right skid and to the left in a left skid (Bf 109
+and Bf 110); both balls left in a right skid, right in a left skid, centred when balanced and held at the ends; the
+turn indicator's ball drawn left of centre for a push to the right; the course box's tube sagging in the middle.

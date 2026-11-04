@@ -2,7 +2,8 @@
 // operation, no function): the red Kurssteuerung emergency button; the SKK 404-2 switch block standing for the four MG 17
 // (product owner: the only fitting for them), drawn after photographs of a replica (D196), each of its four red lamps
 // lit when its MG 17 is out of rounds (product owner, D195); the 2 MG / 4 MG switch; the Kurs strip; the Heizung placard
-// and its knob; the Siemens course box under the compass; and the two-bar window above the altimeter. (The manifold
+// and its knob; the Siemens course box under the compass (its ball working, D214); and the two-bar window above the
+// altimeter. (The manifold
 // pressure gauges' recess is gone: plate round them, D171.)
 
 import { text, lens } from './panelParts.js';
@@ -19,7 +20,7 @@ export function drawBf110Boxes(g, at, L, s, v = {}) {
   mgSwitch(g, B('mgSwitch'), s);
   kursStrip(g, B('kurs'), s);
   heizung(g, B('heizung'), at.knob(L.knobs.heizungKnob), s);
-  courseBox(g, B('course'), s);
+  courseBox(g, B('course'), s, v.sideG ?? 0);
   twoBars(g, B('window'), s);
 }
 
@@ -227,10 +228,25 @@ export function greenKnob(g, x, y, r) {
 }
 
 /**
- * The Siemens course box under the compass: two course cards (3 and N, their arrows) behind a window, the bubble
- * tube below it and the note "Bei eingedrücktem Knopf Kurssteuerung ausgekuppelt".
+ * Where the course box's ball stands in its tube (D214), -1 (the left end) to 1 (the right): it swings away from the
+ * sideways push the pilot feels (`sideG`, + right), as the turn indicator's ball does, the ends at a quarter g.
  */
-function courseBox(g, b, s) {
+export const courseBall = (sideG) => Math.max(-1, Math.min(1, -sideG / 0.25));
+/** The ball tube's ends and sagging middle, and the ball's width, as shares of the course box. */
+export const COURSE_TUBE = { left: [0.25, 0.63], mid: [0.5, 0.72], right: [0.75, 0.63], ball: 0.1 };
+
+/** The point on the ball tube's curve a share `t` (0 left, 1 right) along it, as shares of the course box. */
+export function courseTubeAt(t) {
+  const { left: [x0, y0], mid: [xc, yc], right: [x1, y1] } = COURSE_TUBE;
+  const u = 1 - t;
+  return [u * u * x0 + 2 * t * u * xc + t * t * x1, u * u * y0 + 2 * t * u * yc + t * t * y1];
+}
+
+/**
+ * The Siemens course box under the compass: two course cards (3 and N, their arrows) behind a window, the ball tube
+ * below it, its ball following `sideG` (D214), and the note "Bei eingedrücktem Knopf Kurssteuerung ausgekuppelt".
+ */
+function courseBox(g, b, s, sideG) {
   plain(g, b, s, '#1c1d1f');
   corners(b, s, g);
   const win = { x: b.x + b.w * 0.2, y: b.y + b.h * 0.25, w: b.w * 0.6, h: b.h * 0.3 };
@@ -253,17 +269,20 @@ function courseBox(g, b, s) {
     text(g, word, win.x + win.w * fx, win.y + win.h * 0.18, win.h * 0.22, INK, { bold: true });
     text(g, word, win.x + win.w * fx, win.y + win.h * 0.84, win.h * 0.22, INK, { bold: true });
   }
-  // The bubble tube: a white curved tube with a dark band in its middle.
+  // The ball tube: a white tube sagging in the middle, the ball a dark band in it, riding the curve with sideG (D214).
+  const { left, mid, right, ball } = COURSE_TUBE;
   g.strokeStyle = '#e8e8e2';
   g.lineWidth = b.h * 0.05;
   g.lineCap = 'round';
   g.beginPath();
-  g.moveTo(b.x + b.w * 0.25, b.y + b.h * 0.63);
-  g.quadraticCurveTo(b.x + b.w * 0.5, b.y + b.h * 0.72, b.x + b.w * 0.75, b.y + b.h * 0.63);
+  g.moveTo(b.x + b.w * left[0], b.y + b.h * left[1]);
+  g.quadraticCurveTo(b.x + b.w * mid[0], b.y + b.h * mid[1], b.x + b.w * right[0], b.y + b.h * right[1]);
   g.stroke();
   g.lineCap = 'butt';
+  const reach = (ball / 2) / (right[0] - left[0]); // the ball's half-width along the tube, so it stays inside
+  const [fx, fy] = courseTubeAt(0.5 + courseBall(sideG) * (0.5 - reach));
   g.fillStyle = '#2a2b2c';
-  g.fillRect(b.x + b.w * 0.45, b.y + b.h * 0.63, b.w * 0.1, b.h * 0.07);
+  g.fillRect(b.x + b.w * (fx - ball / 2), b.y + b.h * fy - b.h * 0.035, b.w * ball, b.h * 0.07);
   text(g, 'SIEMENS-LGW', b.x + b.w / 2, b.y + b.h * 0.79, b.h * 0.035, INK);
   text(g, 'Bei eingedrücktem Knopf', b.x + b.w / 2, b.y + b.h * 0.86, b.h * 0.03, INK);
   text(g, 'Kurssteuerung ausgekuppelt', b.x + b.w / 2, b.y + b.h * 0.9, b.h * 0.03, INK);
