@@ -12,7 +12,7 @@ import {
   leverKnobY, LEVER_TRAVEL,
 } from '../../src/ui/bf110Fittings.js';
 import {
-  cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
+  cannonCounter, roundCounter, COUNTER, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
 } from '../../src/ui/bf110Gauges.js';
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
 import { GREEN_KNOB, SKK, SKK_LAMPS, mgLamps } from '../../src/ui/bf110Boxes.js';
@@ -250,7 +250,33 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     const v = instrumentReadings(sim);
     expect(cannonCounter(v)).toEqual([{ rounds: 0, empty: true }, { rounds: 23, empty: false }]);
     const words = draw(v).texts.map((t) => t.s);
-    for (const w of ['00', '23', 'Durchladen']) expect(words, w).toContain(w);
+    for (const w of ['0', '2', '3', 'Durchladen']) expect(words, w).toContain(w); // each digit on its own drum (D197)
+  });
+
+  it('draws the round counter round, as large as the climb indicator, after #34 (D197)', () => {
+    expect(L.dials.counter.slice(2)).toEqual(L.dials.climb.slice(2)); // the VSI's size
+    expect(L.dials.counter[0]).toBe(L.dials.climb[0]);
+    const C = COUNTER;
+    const arcs = [];
+    const g = new Proxy({}, {
+      get: (t2, p) => (p === 'arc' ? (x, y, rad) => arcs.push([x, y, rad]) : p in t2 ? t2[p]
+        : String(p).startsWith('create') ? () => ({ addColorStop() {} }) : () => {}),
+      set: (t2, p, v) => { t2[p] = v; return true; },
+    });
+    roundCounter(g, 0, 0, 30, 40, [{ rounds: 60, empty: false }, { rounds: 0, empty: true }]);
+    expect(arcs.some(([x, y, rad]) => x === 0 && y === 0 && rad === 40)).toBe(true); // the round body fills its place
+    expect(C.flange).toBeLessThan(1); // the flange's sides stay inside the body's circle...
+    expect(Math.SQRT2 * C.screws).toBeGreaterThan(1); // ...its corner screws stand out past it, as photographed
+    for (const [lx, ly] of C.lenses) expect(ly + C.lens * 1.12).toBeLessThan(-C.lensPlate); // the lenses on the raised plate
+    for (const [bx, by] of C.buttons) {
+      expect(Math.hypot(bx, by) + C.button).toBeLessThan(0.93); // inside the rim
+      for (const deg of C.rivets) { // between the rivets, touching none
+        const [rx, ry] = [Math.sin(deg * DEG) * C.rivetRadius, -Math.cos(deg * DEG) * C.rivetRadius];
+        expect(Math.hypot(bx - rx, by - ry), `${deg}`).toBeGreaterThan(C.button + 0.045);
+      }
+    }
+    const words = draw().texts.map((t) => t.s);
+    for (const w of ['6', '0', 'Durchladen', 'RB', 'BA']) expect(words, w).toContain(w);
   });
 
   it('lights each SKK 404-2 lamp red when its own MG 17 is out of rounds, the others dark (D195)', () => {
@@ -382,7 +408,7 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
   it('houses the undercarriage lights in a round housing, all four lamps inside it (D157)', () => {
     const [l, top, r, b] = L.boxes.gearLights;
     expect(r - l).toBeCloseTo(b - top, 6); // a square box for a round housing
-    expect(r - l).toBeCloseTo(2 * L.dials.counter[3], 6); // as wide as the round counter (D158)
+    expect(r - l).toBeCloseTo(150 * 0.46, 6); // the round counter's width when matched (D158), kept as it grew (D197)
     for (const [fx, fy] of GEAR_LAMPS.lamps) {
       expect(Math.hypot(fx, fy) + GEAR_LAMPS.radius * 1.15).toBeLessThan(0.94); // inside the rim, lens ring and all
     }
@@ -396,7 +422,7 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     expect(arcs.some((rad) => Math.abs(rad - (GEAR_HOUSING * (r - l)) / 2) < 1e-6)).toBe(true); // in its mounting (D162)
   });
 
-  it('stands every dial, the undercarriage lights and the round counter in the turn and slip\'s black mounting (D162)', () => {
+  it('stands every dial and the undercarriage lights in the turn and slip\'s black mounting, the round counter on its own (D162, D197)', () => {
     const squares2 = [];
     const g = new Proxy({}, {
       get: (t2, p) => (p === 'roundRect' ? (x, y, w, h) => squares2.push([x + w / 2, y + h / 2, w / 2]) : p in t2 ? t2[p]
@@ -407,10 +433,12 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     const has = ([x, y, half]) => squares2.some(([sx, sy, sh]) => Math.abs(sx - x) < 1e-6 && Math.abs(sy - y) < 1e-6
       && Math.abs(sh - half) < 1e-6);
     const at = (x, y) => [x - AXIS, y - 57];
-    for (const n of ['airspeed', 'altimeter', 'turn', 'counter']) {
+    for (const n of ['airspeed', 'altimeter', 'turn']) {
       const [x, y, , o] = L.dials[n];
       expect(has([...at(x, y), o]), n).toBe(true);
     }
+    const [cx, cy, , co] = L.dials.counter;
+    expect(has([...at(cx, cy), co]), 'counter: round, no square mounting').toBe(false);
     const [l, t3, r, b] = L.boxes.gearLights;
     expect(has([...at((l + r) / 2, (t3 + b) / 2), (r - l) / 2]), 'gearLights').toBe(true);
   });

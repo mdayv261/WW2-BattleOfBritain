@@ -140,7 +140,9 @@ export const LAYOUT = {
     // Top row: the clock, mounted directly in the panel (D156), the Kurssteuerung indicator and the round counter.
     clock: dial(325, 230, 50, 62),
     autopilot: [KURS_X, pt(0, 237)[1], len(55), len(65)], // on the Kurs strip's centre line (D187)
-    counter: [CLIMB[0], pt(0, 280 - UP_4MM)[1], len(66), len(75)], // on the climb indicator's centre line (D186)
+    // On the climb indicator's centre line (D186), and its size: the round body as wide as the climb indicator's
+    // mounting (product owner, D197).
+    counter: [CLIMB[0], pt(0, 280 - UP_4MM)[1], ...SIZE],
     // The flying instruments: the repeater compass; the airspeed indicator, turn and bank and climb indicator (the first
     // two the Bf 109's); the elevator trim indicator (D161), horizon and altimeter (the Bf 109's) below.
     compass: dial(470, 418, 92, 110), airspeed: AIRSPEED, turn: TURN, climb: CLIMB,

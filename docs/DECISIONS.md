@@ -4951,3 +4951,29 @@ they did is not known).
 **Tests** (tests/ui/bf110Panel.test.js): the lamps lie on the lamp plate; the toggle lies left of it and the buttons below
 it; none of the round parts touch; the lettering is drawn.
 
+## D197. The round counter redrawn round after #34, the VSI's size, its lenses the SKK 404-2's (4 Nov 2026, product owner's request)
+
+**The request:** the cannon round counter should be round, its profile as in #34 (Bf110C panel_5.jpg), its lenses the
+same colour as the SKK 404-2's; then, its size the same as the climb indicator's (VSI).
+
+**The change** (src/ui/bf110Gauges.js `COUNTER`, `roundCounter`; src/ui/bf110Layout.js `dials.counter`;
+src/ui/bf110Panel.js), every part in fractions of the body's radius, measured on #34:
+- **Round, on its own flange:** the square black mounting (D162) is gone from the counter. A round body with a lit rim
+  and eight rivets round it stands on a dark flange whose corners, each with a large screw, stand out past the body
+  on the diagonals.
+- **Lenses:** on a raised plate at the top (the rim's arc above, a flat foot below, two small screws), one over each
+  cannon's window, drawn exactly as the SKK 404-2's lenses: deep red, bright red when that cannon's drum is empty.
+- **Windows:** each cannon's two digit drums, white on black, a grey band beneath, a dot between the windows.
+- **Lettering:** Durchladen, with the two makers' marks either side (RB, BA, as on #34).
+- **Buttons:** the two charging buttons below, black with white rings, as the SKK's (shown only).
+- **Size:** the round body is as wide as the climb indicator's mounting, and the counter stays on its centre line
+  (D186), at its height (D172). It grows from 34.5 to 42.6 picture px in radius, clear of the Kurssteuerung
+  indicator, the Heizung placard and the climb indicator.
+
+**Kept:** the undercarriage light housing keeps its size (matched to the old counter in D158); it is not tied to the
+counter any more.
+
+**Tests** (tests/ui/bf110Panel.test.js): the counter has the climb indicator's size and centre line; it has no square
+mounting; its round body fills its place; the flange's corners stand out past the body; the lenses lie on the raised
+plate; the buttons lie inside the rim, clear of every rivet; the digits and lettering are drawn.
+

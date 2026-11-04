@@ -4,8 +4,9 @@
 // indicator and the correction cards; the elevator trim indicator (D161); the Preßluft gauge above the engine gauges. Angles are in
 // radians, 0 straight up, clockwise.
 
-import { DEG, at, font, centred, tick, lwFace, lwHand, paint } from './lwStyle.js';
-import { lens, text } from './panelParts.js';
+import { DEG, at, font, centred, tick, lwFace, lwHand, paint, screw } from './lwStyle.js';
+import { text, roundRect } from './panelParts.js';
+import { skkLamp, skkButton } from './bf110Boxes.js';
 
 const WHITE = '#e9e6dc';
 const RING = { green: '#1f5a4a', blue: '#27407a' };
@@ -29,24 +30,85 @@ export function cannonCounter(v) {
 }
 
 /**
- * The round counter (Durchladen) for the two MG FF/M cannon (product owner, D140): a red lamp over each cannon's digit
- * window, lit when its drum is empty, the windows counting each drum's rounds left, and two knobs below.
+ * The round counter (Durchladen) after #34 (D197), in fractions of its body's radius: a round body with a rim of rivets on
+ * a four-screw flange; a raised plate at the top with a red lens over each cannon's window, lit when its drum is empty,
+ * in the SKK 404-2's red (D196); each window's two digit drums counting its drum's rounds left; Durchladen and the
+ * makers' marks; and the two charging buttons below, ringed as the SKK's.
  */
+export const COUNTER = {
+  flange: 0.9, // the flange's half-width
+  screws: 0.77, // the flange screws, out along each diagonal
+  rivets: [0, 52, 75, 128, 180, -128, -75, -52], // degrees clockwise from the top, round the rim
+  rivetRadius: 0.84,
+  lensPlate: 0.3, // the raised plate's flat foot, above the centre
+  lenses: [[-0.33, -0.5], [0.33, -0.5]],
+  lens: 0.14,
+  windows: [-0.24, 0.24], // each cannon's window, across from the centre
+  buttons: [[-0.27, 0.63], [0.27, 0.63]],
+  button: 0.18,
+};
+
 export function roundCounter(g, x, y, face, outer, counts) {
-  // In the turn and slip indicator's black square mounting (src/ui/bf110Panel.js, D162), its old round flange gone.
-  g.fillStyle = '#2a2c2e';
-  g.beginPath();
-  g.arc(x, y, face, 0, Math.PI * 2);
+  const R = outer; // the body fills the dial's place: round, no square mounting (D197)
+  const C = COUNTER;
+  // The flange behind, its corners with their screws standing out past the round body.
+  g.fillStyle = '#1a1b1d';
+  roundRect(g, x - R * C.flange, y - R * C.flange, 2 * R * C.flange, 2 * R * C.flange, R * 0.32);
   g.fill();
+  for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) screw(g, x + sx * R * C.screws, y + sy * R * C.screws, R * 0.1);
+  // The body: a lit rim, its face a little darker inside.
+  const rim = g.createLinearGradient(x - R, y - R, x + R, y + R);
+  rim.addColorStop(0, '#4a4c4f');
+  rim.addColorStop(1, '#0c0d0e');
+  disc(g, x, y, R, rim);
+  disc(g, x, y, R * 0.93, '#232527');
+  for (const deg of C.rivets) screw(g, x + Math.sin(deg * DEG) * R * C.rivetRadius, y - Math.cos(deg * DEG) * R * C.rivetRadius, R * 0.045);
+  // The raised lens plate: the rim's arc above, a flat foot below.
+  const top = Math.asin(C.lensPlate / 0.72);
+  g.fillStyle = '#2d2f32';
+  g.beginPath();
+  g.arc(x, y, R * 0.72, Math.PI + top, -top);
+  g.closePath();
+  g.fill();
+  g.strokeStyle = '#46494c';
+  g.lineWidth = Math.max(0.6, R * 0.02);
+  g.stroke();
+  for (const dx of [-0.07, 0.09]) screw(g, x + dx * R, y - R * 0.64, R * 0.035);
   counts.forEach(({ rounds, empty }, i) => {
-    const cx = x + (i ? 1 : -1) * face * 0.42;
-    lens(g, cx, y - face * 0.5, face * 0.17, empty ? '#e0402c' : '#4a100c', empty);
-    g.fillStyle = '#0c0c0c';
-    g.fillRect(cx - face * 0.3, y - face * 0.2, face * 0.6, face * 0.32);
-    text(g, String(rounds).padStart(2, '0'), cx, y - face * 0.04, face * 0.26, WHITE, { bold: true });
-    lens(g, cx, y + face * 0.62, face * 0.13, '#151617', false); // the knobs
+    const [lx, ly] = C.lenses[i];
+    skkLamp(g, x + lx * R, y + ly * R, R * C.lens, empty);
+    // Two digit drums, white on black, a grey band beneath.
+    const cx = x + C.windows[i] * R;
+    const digits = String(rounds).padStart(2, '0');
+    for (const k of [0, 1]) {
+      const dx = cx + (k ? 1 : -1) * R * 0.085;
+      g.fillStyle = '#060607';
+      g.fillRect(dx - R * 0.075, y - R * 0.13, R * 0.15, R * 0.24);
+      text(g, digits[k], dx, y - R * 0.01, R * 0.19, WHITE, { bold: true });
+    }
+    g.fillStyle = '#8a8c8e';
+    g.fillRect(cx - R * 0.17, y + R * 0.11, R * 0.34, R * 0.06);
+    const [bx, by] = C.buttons[i];
+    skkButton(g, x + bx * R, y + by * R, R * C.button);
   });
-  text(g, 'Durchladen', x, y + face * 0.33, face * 0.15, WHITE, { bold: true });
+  disc(g, x, y + R * 0.02, R * 0.02, WHITE); // the dot between the windows
+  text(g, 'Durchladen', x, y + R * 0.35, R * 0.12, WHITE, { bold: true });
+  for (const [mx, my, mark] of [[-0.5, 0.29, 'RB'], [0.58, 0.4, 'BA']]) { // the makers' marks
+    g.strokeStyle = WHITE;
+    g.lineWidth = Math.max(0.5, R * 0.012);
+    g.beginPath();
+    g.arc(x + mx * R, y + my * R, R * 0.075, 0, Math.PI * 2);
+    g.stroke();
+    text(g, mark, x + mx * R, y + my * R, R * 0.06, WHITE, { bold: true });
+  }
+}
+
+/** A filled disc. */
+function disc(g, x, y, r, fill) {
+  g.fillStyle = fill;
+  g.beginPath();
+  g.arc(x, y, r, 0, Math.PI * 2);
+  g.fill();
 }
 
 /** The outside air thermometer's hand: -40 °C to +40 °C over the top of the face, 0 straight up. */

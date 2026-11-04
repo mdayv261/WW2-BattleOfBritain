@@ -90,7 +90,9 @@ Read this at the start of every session.
   lights red when its MG 17 is empty (product owner's choice; the block's real purpose is unsourced).
 - D196: the SKK 404-2 block redrawn after the replica's photographs (raised lamp plate, Ein/Aus toggle, four ringed
   push-buttons), keeping Gerät-Nr. 102-84; the photos recorded as replica pictures (D195).
-- D194-D196 not pushed yet.
+- D197: the round counter redrawn round after #34 (rivets, four-screw flange, raised lens plate, digit drums, ringed
+  buttons), its lenses the SKK 404-2's, its size the climb indicator's.
+- D194-D197 not pushed yet.
 
 **Left:** two minor changes to the flap and undercarriage levers (product owner, later); then Phase 6 checkpoint 5
 after a plan.

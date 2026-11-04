@@ -73,8 +73,8 @@ export const mgLamps = (v) => SKK_LAMPS.map(([id]) => {
 
 const SKK_GREY = '#232527';
 
-/** A lens in its black rim: lit, the round counter's bright red; dark, a deep red. */
-function skkLamp(g, x, y, r, lit) {
+/** A lens in its black rim: lit, a bright red; dark, a deep red. The round counter's lenses too (D197). */
+export function skkLamp(g, x, y, r, lit) {
   g.fillStyle = '#0b0b0c';
   g.beginPath();
   g.arc(x, y, r * 1.12, 0, Math.PI * 2);
@@ -82,8 +82,8 @@ function skkLamp(g, x, y, r, lit) {
   lens(g, x, y, r, lit ? '#e0402c' : '#6e1612', lit);
 }
 
-/** A push-button: a black domed collar, its black button with a white ring on its face. */
-function skkButton(g, x, y, r) {
+/** A push-button: a black domed collar, its black button with a white ring on its face. The round counter's too (D197). */
+export function skkButton(g, x, y, r) {
   const collar = g.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
   collar.addColorStop(0, '#4a4c4e');
   collar.addColorStop(1, '#070708');

@@ -104,7 +104,9 @@ function drawPanel(g, x0, y0, r, v, now) {
   drawBf110Fittings(g, at, L, v);
   for (const [name, entry] of Object.entries(L.dials)) {
     const [x, y, , outer] = at.dial(entry);
-    mount(g, x, y, outer); // every dial in the turn and slip indicator's black mounting (the red bezels gone, D162)
+    // Every dial in the turn and slip indicator's black mounting (the red bezels gone, D162), but the round counter,
+    // round on its own flange (D197).
+    if (name !== 'counter') mount(g, x, y, outer);
   }
   settingKnob(g, ...at.knob(L.knobs.setAltimeter));
   const dial = (name) => at.dial(L.dials[name]);
