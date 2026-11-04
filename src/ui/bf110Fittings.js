@@ -24,7 +24,7 @@ export function drawBf110Fittings(g, at, L, v) {
   const s = at.len(30); // one dial radius in pixels
   const B = (name) => at.box(L.boxes[name]);
   outlinePlate(g, at, L.outline);
-  drawBf110Boxes(g, at, L, s);
+  drawBf110Boxes(g, at, L, s, v);
   gearLights(g, B('gearLights'), s, v);
   leverBox(g, B('levers'), s, v);
   einAus(g, at, L.switches.gear, switchPosition.gear(v), s);

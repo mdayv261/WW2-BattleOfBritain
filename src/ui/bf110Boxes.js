@@ -1,6 +1,7 @@
 // The Bf 110 C panel's boxes and buttons after the product owner's picture (#34, D140), all shown only (normal
 // operation, no function): the red Kurssteuerung emergency button; the SKK 404-2 switch block standing for the four MG 17
-// (product owner: the only fitting for them), its lamps dark; the 2 MG / 4 MG switch; the Kurs strip; the Heizung placard
+// (product owner: the only fitting for them), each of its four red lamps lit when its MG 17 is out of rounds (product
+// owner, D195); the 2 MG / 4 MG switch; the Kurs strip; the Heizung placard
 // and its knob; the Siemens course box under the compass; and the two-bar window above the altimeter. (The manifold
 // pressure gauges' recess is gone: plate round them, D171.)
 
@@ -10,11 +11,11 @@ import { screw } from './lwStyle.js';
 
 const DARK = '#151618';
 
-/** Draws the boxes and buttons; `at` is the panel's placer, `L` its layout, `s` one dial radius in pixels. */
-export function drawBf110Boxes(g, at, L, s) {
+/** Draws the boxes and buttons; `at` is the panel's placer, `L` its layout, `s` one dial radius in pixels, `v` the readings. */
+export function drawBf110Boxes(g, at, L, s, v = {}) {
   const B = (name) => at.box(L.boxes[name]);
   redButton(g, ...at.knob(L.knobs.redButton));
-  skkBlock(g, B('skk'), s);
+  skkBlock(g, B('skk'), s, mgLamps(v));
   mgSwitch(g, B('mgSwitch'), s);
   kursStrip(g, B('kurs'), s);
   heizung(g, B('heizung'), at.knob(L.knobs.heizungKnob), s);
@@ -47,8 +48,20 @@ function redButton(g, x, y, rad) {
   text(g, 'Auslösung', x, y + rad * 0.5, rad * 0.2, '#f2efe6');
 }
 
-/** The SKK 404-2 switch block (for the MG 17s): its Ein/Aus toggle, four red lamps (dark) and four knobs. */
-function skkBlock(g, b, s) {
+/**
+ * The SKK 404-2 lamps, one for each MG 17, in the block's lamp positions: the upper guns on the upper row, the lower guns
+ * on the lower, left guns left. Each is lit when its gun has no rounds left (product owner, D195).
+ */
+export const SKK_LAMPS = [
+  ['mg17UpperLeft', 0.5, 0.2], ['mg17UpperRight', 0.74, 0.2], ['mg17LowerLeft', 0.44, 0.42], ['mg17LowerRight', 0.8, 0.42],
+];
+export const mgLamps = (v) => SKK_LAMPS.map(([id]) => {
+  const gun = v.rounds?.[id];
+  return { id, lit: !!gun && gun.rounds <= 0 };
+});
+
+/** The SKK 404-2 switch block (for the MG 17s): its Ein/Aus toggle, the four guns' red lamps and four knobs. */
+function skkBlock(g, b, s, lamps) {
   plain(g, b, s, DARK);
   corners(b, s, g);
   const tx = b.x + b.w * 0.2;
@@ -57,7 +70,10 @@ function skkBlock(g, b, s) {
   g.fillStyle = '#9a9c9a';
   g.fillRect(tx - b.w * 0.015, b.y + b.h * 0.4, b.w * 0.03, b.h * 0.18); // the toggle
   plain(g, { x: b.x + b.w * 0.36, y: b.y + b.h * 0.1, w: b.w * 0.56, h: b.h * 0.42 }, s, '#202224');
-  for (const [fx, fy] of [[0.5, 0.2], [0.74, 0.2], [0.44, 0.42], [0.8, 0.42]]) lens(g, b.x + b.w * fx, b.y + b.h * fy, b.h * 0.07, '#5a1410', false);
+  SKK_LAMPS.forEach(([, fx, fy], i) => {
+    const { lit } = lamps[i];
+    lens(g, b.x + b.w * fx, b.y + b.h * fy, b.h * 0.07, lit ? '#e0402c' : '#5a1410', lit); // the round counter's red when lit
+  });
   for (const [fx, fy] of [[0.48, 0.68], [0.66, 0.68], [0.4, 0.84], [0.74, 0.84]]) roundKnob(g, b.x + b.w * fx, b.y + b.h * fy, b.h * 0.07);
   text(g, 'Gerät-Nr. 102-84', b.x + b.w * 0.2, b.y + b.h * 0.94, b.h * 0.055, INK);
   text(g, 'SKK 404-2', b.x + b.w * 0.72, b.y + b.h * 0.95, b.h * 0.07, INK, { bold: true });

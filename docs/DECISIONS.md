@@ -4877,3 +4877,30 @@ estimated 2.3 m, so they sat at the nacelles' inner edge. S24 says the wheels re
 
 **Tests:** a new test checks the main wheels stand under the engines (tests/physics/ground.test.js); the parked,
 brake and landing tests pass for the Bf 110 with the wider track.
+
+## D195. The Bf 110 C's four MG 17s checked, and the SKK 404-2 lamps light when each gun is empty (4 Nov 2026, product owner's request)
+
+**The request:** verify the four nose MG 17s work, and make the MG ammunition display light red when each gun runs out.
+
+**Checked, already working:**
+- **Trigger:** the MG trigger (Space, or joystick button 1) fires all four MG 17s together; the cannon trigger (Enter)
+  fires only the two MG FF/M.
+- **Rate and rounds:** each MG 17 fires 1,100 rounds a minute (unsynchronised in the nose, S27) from its 1,000-round
+  belt, so the four run dry together after about 54.5 s of firing.
+- **Each gun is separate:** it counts its own rounds and stops at empty.
+
+**The change** (src/ui/bf110Boxes.js `SKK_LAMPS`, `mgLamps`): the four red lamps of the SKK 404-2 block, dark until now
+(shown only), each stand for one MG 17: the upper row for the upper guns, the lower row for the lower guns, left guns
+on the left. A lamp lights red, in the round counter's red, when its own gun has no rounds left.
+
+**Flagged:**
+- **Not from a source:** the SKK 404-2 block's real purpose is not identified in our sources (D106 left it unidentified).
+  Its lamps as one "empty" lamp for each MG 17 is the product owner's choice, as is the block standing for the MG 17s
+  (D140).
+- **The 2 MG / 4 MG switch** is still shown only: all four guns always fire together.
+
+**Tests** (tests/ui/bf110Panel.test.js): one lamp for each MG 17, all dark when loaded; emptying any one gun lights only
+its lamp; holding the MG trigger in the simulation empties all four after their 1,000 rounds, leaves the cannon full,
+and lights all four lamps. Checked in the game: after the trigger was held to empty, all four lamps showed red and the
+cannon lamps stayed dark.
+

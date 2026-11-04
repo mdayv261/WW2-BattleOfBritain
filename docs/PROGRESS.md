@@ -86,7 +86,9 @@ Read this at the start of every session.
 - D193: the Bf 110's nose rears up as the flaps go down, then sinks (S24); it dips as they come up. Size and duration
   are estimates.
 - D194: the main wheels moved out with the engines to 2.75 m (track 5.5 m, estimate), under the nacelles (S24).
-  Not pushed yet.
+- D195: the four MG 17s checked (all fire on the MG trigger, 1,000 rounds each, about 54.5 s); each SKK 404-2 lamp
+  lights red when its MG 17 is empty (product owner's choice; the block's real purpose is unsourced).
+- D194-D195 not pushed yet.
 
 **Left:** two minor changes to the flap and undercarriage levers (product owner, later); then Phase 6 checkpoint 5
 after a plan.

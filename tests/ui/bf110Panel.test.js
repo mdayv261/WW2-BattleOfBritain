@@ -15,7 +15,7 @@ import {
   cannonCounter, airTempAngle, coolantAngle, pressluftReading, pressluftAngle, trimAngle, TRIM_MARKS,
 } from '../../src/ui/bf110Gauges.js';
 import { achtungLines, divePlacardLines, textPlacard } from '../../src/ui/bf110Placards.js';
-import { GREEN_KNOB } from '../../src/ui/bf110Boxes.js';
+import { GREEN_KNOB, SKK_LAMPS, mgLamps } from '../../src/ui/bf110Boxes.js';
 import { instrumentReadings, panelRadius } from '../../src/ui/instruments.js';
 import { atmosphere } from '../../src/physics/atmosphere.js';
 import { LUMINOUS, INK, HAND, paint, screw } from '../../src/ui/lwStyle.js';
@@ -251,6 +251,31 @@ describe('Bf 110 C panel instruments (D106, D140)', () => {
     expect(cannonCounter(v)).toEqual([{ rounds: 0, empty: true }, { rounds: 23, empty: false }]);
     const words = draw(v).texts.map((t) => t.s);
     for (const w of ['00', '23', 'Durchladen']) expect(words, w).toContain(w);
+  });
+
+  it('lights each SKK 404-2 lamp red when its own MG 17 is out of rounds, the others dark (D195)', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    const mgs = sim.armament.filter((x) => x.spec.type === 'mg17').map((x) => x.id).sort();
+    expect(SKK_LAMPS.map(([id]) => id).sort()).toEqual(mgs); // one lamp for each of the four nose MG 17s
+    expect(mgLamps(instrumentReadings(sim)).every((l) => !l.lit)).toBe(true);
+    for (const id of mgs) {
+      for (const gun of sim.armament) gun.rounds = gun.capacity;
+      sim.armament.find((x) => x.id === id).rounds = 0;
+      expect(mgLamps(instrumentReadings(sim)).filter((l) => l.lit).map((l) => l.id), id).toEqual([id]);
+    }
+  });
+
+  it('fires all four MG 17s on the MG trigger, each running dry after its 1,000 rounds and lighting its lamp (D195)', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    const mg = () => sim.armament.filter((x) => x.spec.type === 'mg17');
+    sim.input.fireMg = true;
+    for (let t = 0; t < 10; t += 1 / 120) sim.step(1 / 120);
+    for (const gun of mg()) expect(gun.rounds, gun.id).toBeCloseTo(1000 - (1100 / 60) * 10, -1); // about 817 left each
+    expect(mgLamps(instrumentReadings(sim)).some((l) => l.lit)).toBe(false);
+    for (let t = 0; t < 46; t += 1 / 120) sim.step(1 / 120);
+    for (const gun of mg()) expect(gun.rounds, gun.id).toBe(0);
+    for (const gun of sim.armament.filter((x) => x.spec.type === 'mgffm')) expect(gun.rounds, gun.id).toBe(60); // cannon untouched
+    expect(mgLamps(instrumentReadings(sim)).every((l) => l.lit)).toBe(true);
   });
 
   it('reads the outside air temperature of the standard atmosphere at the aircraft\'s height', () => {
