@@ -78,7 +78,7 @@ export const bf110c4 = {
   slats: { openAlpha: 12.4 * DEG, fullAlpha: 14.4 * DEG, clMaxClosed: 1.22, sectionGain: 0.3, rate: 4 },
   // Undercarriage and ground contact: main wheels under the engine nacelles, a fixed tailwheel (S24).
   gear: {
-    main: { x: 0.45, y: -1.6, z: 2.3, radius: 0.42 },
+    main: { x: 0.45, y: -1.6, z: 2.75, radius: 0.42 }, // out from 2.3 with the engines, under the nacelles (product owner, D194)
     tail: { x: -7.4, y: -0.27, radius: 0.15, castor: 1 },
     groundAngle: 11 * DEG,
     mainDeflection: 0.12,

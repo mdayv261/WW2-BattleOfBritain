@@ -54,6 +54,12 @@ describe('parked on the ground', () => {
     }
   });
 
+  it('puts the Bf 110 main wheels under its engines, which they retract into (S24, D194)', () => {
+    const { bf110c4 } = aircraftById;
+    expect(bf110c4.gear.main.z).toBe(bf110c4.engines.right.z);
+    expect(-bf110c4.gear.main.z).toBe(bf110c4.engines.left.z);
+  });
+
   it('clears the propeller on the ground in the three-point attitude', () => {
     for (const ac of aircraftList) {
       const plane = createOnGround(ac);

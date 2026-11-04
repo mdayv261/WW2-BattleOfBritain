@@ -85,9 +85,11 @@ Read this at the start of every session.
   kept. The main wheels' track not moved (decision pending).
 - D193: the Bf 110's nose rears up as the flaps go down, then sinks (S24); it dips as they come up. Size and duration
   are estimates.
+- D194: the main wheels moved out with the engines to 2.75 m (track 5.5 m, estimate), under the nacelles (S24).
+  Not pushed yet.
 
-**Left:** two minor changes to the flap and undercarriage levers (product owner, later); the main wheels' track (D192,
-decision pending); then Phase 6 checkpoint 5 after a plan.
+**Left:** two minor changes to the flap and undercarriage levers (product owner, later); then Phase 6 checkpoint 5
+after a plan.
 
 **Left:** the product owner's further adjustments, then Phase 6 checkpoint 5 after a plan.
 

@@ -4819,7 +4819,7 @@ the engines outward.
 
 **Flagged:** the main wheels keep their own estimated track (`gear.main.z` 2.3 m, "under the engines", S24), so they now
 sit at the nacelles' inner edge rather than under the engines. **Decision needed:** whether to move them out with the
-engines. That would widen the wheel track and change ground handling.
+engines. That would widen the wheel track and change ground handling. **Decided:** moved out with them (D194).
 
 **Tests:** the existing tests pass, including the data rows check (tests/aircraftCode.test.js) with the new figures.
 
@@ -4855,3 +4855,25 @@ Bf 110 only.
 - the moment dies away once the flaps stop;
 - the other aircraft have no lag.
 
+## D194. The Bf 110 C's main wheels moved out with the engines (4 Nov 2026, product owner's decision)
+
+**The question (D192):** the engines moved out to 2.75 m from the centreline, but the main wheels stayed at their own
+estimated 2.3 m, so they sat at the nacelles' inner edge. S24 says the wheels retract into the engine nacelles.
+
+**The decision:** the product owner chose to move the main wheels out with the engines.
+
+**The change** (src/aircraft/bf110c4.js `gear.main.z`; docs/AIRCRAFT_DATA.md row `gear.main.z`):
+- **Track:** half the track goes from 2.3 m to 2.75 m (the whole track from 4.6 m to 5.5 m), under the airscrew hubs.
+  It is still an estimate: no scaled drawing has been found.
+- **Following it:** the drawn undercarriage legs (they are placed from `gear.main.z`).
+- **Effects:**
+  - **Ground handling:** a wider track makes the aircraft steadier on the ground, harder to tip onto a wingtip. One
+    braked wheel gives a little more turning moment.
+  - **Parked:** the weight, its share on the tailwheel and the ground angle are unchanged (they depend on the wheels'
+    fore and aft position, not their spread).
+  - **Validation:** `npm run validate` is unchanged (it flies in the air).
+
+**Flagged:** the track is an estimate, as before; it now follows the estimated engine position.
+
+**Tests:** a new test checks the main wheels stand under the engines (tests/physics/ground.test.js); the parked,
+brake and landing tests pass for the Bf 110 with the wider track.

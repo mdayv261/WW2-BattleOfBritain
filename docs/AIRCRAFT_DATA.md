@@ -1092,7 +1092,7 @@ Bf 109's (same designer, engine and airscrew).
 | Slat travel rate (`slats.rate`) | 4 | 1/s | — | ASSUMPTION | estimate | Taken as the Bf 109's value. |
 | Main wheel centre, ahead of the centre of gravity (`gear.main.x`) | 0.45 | m | — | ASSUMPTION | estimate | No scaled drawing found. S24: the tail is fairly heavy and slow to rise, so the wheels are not far ahead of the centre of gravity. |
 | Main wheel centre, height (`gear.main.y`) | -1.6 | m | — | ASSUMPTION | estimate | From the height (3.3 m, S23) and the wheel size. |
-| Half the main wheel track (`gear.main.z`) | 2.3 | m | — | ASSUMPTION | estimate | The wheels retract into the engine nacelles (S24), so they sit under the engines. |
+| Half the main wheel track (`gear.main.z`) | 2.75 | m | — | ASSUMPTION | estimate | The wheels retract into the engine nacelles (S24), so they sit under the engines: moved out with them from 2.3 m (product owner, D194). No scaled drawing found. |
 | Main wheel radius (`gear.main.radius`) | 0.42 | m | — | ASSUMPTION | estimate | No source; sized for a 6.5 t aircraft. |
 | Tailwheel centre, x (`gear.tail.x`) | -7.4 | m | — | ASSUMPTION | estimate | Near the tail end of the 12.0 m fuselage (S23). |
 | Tailwheel centre, height (`gear.tail.y`) | -0.27 | m | — | ASSUMPTION | estimate | Set so the parked aircraft sits at the assumed ground angle. |
