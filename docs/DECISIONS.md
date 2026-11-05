@@ -5335,3 +5335,18 @@ task.
 **Tests** (new tests/ui/slipBalls.test.js): `sideG` to the right in a right skid and to the left in a left skid (Bf 109
 and Bf 110); both balls left in a right skid, right in a left skid, centred when balanced and held at the ends; the
 turn indicator's ball drawn left of centre for a push to the right; the course box's tube sagging in the middle.
+
+## D215. The twelve-aircraft timing test warms up for 3 s, not 1 (5 Nov 2026, product owner's approval)
+
+**What happened:** pushing D194–D214, the deploy failed on one test on GitHub's runner, twice: twelve AI aircraft for
+ten simulated seconds took 103.5, then 100.9 ms per simulated second, against a budget of 100.
+
+**Not a slowdown:** timed on this Mac, the run is the same before this batch (the last deploy, 3 November) and after
+it: about 27 ms per second on the first timed run, then about 10 ms once warm. The batch was almost all panel drawing,
+which the test doesn't run.
+
+**The cause:** GitHub's runner is about four times slower. After the test's one second of warm-up it was still timing
+the code while it was being compiled, which D88 meant to leave out ("time the steady running, not the start-up").
+
+**The change** (tests/core/scenarios.test.js): three seconds of warm-up before the ten timed seconds. The 100 ms budget
+is unchanged, so a real slowdown still fails it.

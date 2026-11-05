@@ -116,7 +116,9 @@ Read this at the start of every session.
 - D213: knurled emergency hand-wheels (44 mm in life) under the Fahrwerk and Landeklappe labels, shown only.
 - D214: the Luftwaffe turn indicator's ball ran the wrong way (Bf 109 and Bf 110): fixed; the Bf 110 course box's
   ball now follows the sideways push too.
-- D194-D214 not pushed yet.
+- D215: the twelve-aircraft timing test warms up for 3 s (GitHub's slower runner was still warming up after 1 s);
+  its 100 ms budget unchanged.
+- D194-D215 pushed (5 Nov 2026).
 
 **Left:** the product owner's further adjustments; an approved source for the valves (the Bf 110 C handbook) if one
 is bought; then Phase 6 checkpoint 5 after a plan.

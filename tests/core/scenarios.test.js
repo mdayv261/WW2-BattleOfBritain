@@ -120,7 +120,9 @@ describe('many aircraft', () => {
     bomberScenario(sim); // 5
     for (let i = 0; i < 6; i += 1) chaser(sim, i % 2 ? 'bf109e4' : 'bf110c4', 1500 + 200 * i);
     expect(sim.others).toHaveLength(11);
-    for (let i = 0; i < 120; i += 1) sim.step(DT); // a second of warm-up: time the steady running, not the start-up (D88)
+    // Three seconds of warm-up: time the steady running, not the start-up (D88), on slower machines too (D215: one second
+    // left GitHub's runner still warming up, just over the budget).
+    for (let i = 0; i < 120 * 3; i += 1) sim.step(DT);
     const t0 = performance.now();
     for (let i = 0; i < 120 * 10; i += 1) sim.step(DT);
     const msPerSecond = (performance.now() - t0) / 10;
