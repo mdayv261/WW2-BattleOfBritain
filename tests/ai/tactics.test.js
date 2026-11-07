@@ -1,5 +1,5 @@
 // Fighter tactics (Phase 6 checkpoint 3, D81), in seeded fights run headless (skill: tests/ai/skill.test.js): the
-// Bf 109 fights by the Luftwaffe's doctrine (S22: height, no turning fights, climb away or push over to escape); a
+// Bf 109 fights by the Luftwaffe's doctrine (S22: no turning fights, climb away or push over to escape); a
 // pilot breaks when fired on from behind; the Bf 110 meets an attacker seen early head-on (S25); out of ammunition, a
 // fighter goes home; RAF fighters attack bombers from ahead or below (S29, S38); a Schwarm keeps its places.
 import { describe, it, expect } from 'vitest';
@@ -17,10 +17,11 @@ import { FORMATIONS } from '../../src/ai/formation.js';
 const DT = 1 / 120;
 
 describe('fighter tactics', () => {
-  it('a Bf 109 against a Hurricane keeps above it and never settles into a turning fight (S22)', () => {
+  // S22's "keeps above it" is no longer checked (product owner's choice (a), D217, D218): the model's +12 lb Hurricane
+  // out-climbs the 109, so the 109 climbs away only from slower climbers (tests/ai/escape.test.js).
+  it('a Bf 109 against a Hurricane never settles into a turning fight (S22)', () => {
     for (const seed of [1, 2, 3]) {
       const r = duel('hurricane', 'regular', 'bf109e4', 'regular', seed, { up: 500 });
-      expect(r.above).toBeGreaterThan(0.6);
       expect(r.longestTurn).toBeLessThan(12);
     }
   });

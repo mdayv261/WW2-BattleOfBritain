@@ -5353,8 +5353,8 @@ is unchanged, so a real slowdown still fails it.
 
 ## D216. Phase 6 checkpoint 5, part 1: aggression, the duels, and the AI pilot out of trouble (5-6 Nov 2026)
 
-Under the approved checkpoint 5 plan (5 Nov 2026). The frame-rate measurement (D218) and the proposed acceptance test
-(D219) are still to come; D217 continues this work.
+Under the approved checkpoint 5 plan (5 Nov 2026). The frame-rate measurement (D219) and the proposed acceptance test
+(D220) are still to come; D217 and D218 continue this work.
 
 **Aggression, a new skill setting** (src/ai/skill.js, src/ai/fighter.js), game-design estimates as in the plan:
 - `press`: how close a fighter presses a diving pass or a run on a bomber before breaking off (it replaces the fixed
@@ -5509,3 +5509,77 @@ Hits given / taken over the same fights:
   and not on patrol;
 - new tests/ai/skill.test.js: an RAF Ace does more damage to a Regular 109 than an RAF Novice (Spitfire and Hurricane,
   six seeds, net hits). It replaces the same-type Spitfire test.
+
+## D218. Phase 6 checkpoint 5, part 3: the +12 lb sources, diving limits, and duels at 20,000 ft (7-8 Nov 2026)
+
+**Why:** D217 left the Bf 109 landing almost no hits at any skill level. The product owner chose (7 Nov) to do both:
+(a) check the +12 lb RAF performance against sources, and (b) fight the duels higher.
+
+**(a) The +12 lb sources:**
+- **Combat use:** the archive site's Hurricane I page collects some thirty 1940 combat reports and record books
+  (May-October) in which pilots "pulled the plug" for +12 lb, which supports D217's decision 4.
+- **Speed:** S3's pencilled +12 lb line starts at 316 mph at sea level (already validated, model 312.0, −1.3%). Its
+  figure at the full-throttle height can't be read on the scan, so no point is added. The archive page quotes "RAE
+  figures" of 359 mph at 11,500 ft without naming the document; the model gives 359.4 mph, noted but not used.
+- **Climb:** still no source at +12 lb. The model's (about 4,000-4,250 ft/min low down) follows from the validated
+  power and the validated +6¼ lb climb (S4). **The flight model is not changed.**
+- **New source S43, A.F.C. 99** (a captured Me 109 against a "Rotol" Spitfire): at +6¼ lb and 2,650 rpm the
+  Spitfire "was then able to overtake and outclimb the Me.109". It stayed on the 109's tail "despite all efforts of
+  the pilot of the Me.109 to shake him off", and was "considerably the faster… without having to make use of the
+  emergency + 12 lb. boost". This supports the model: the constant-speed Spitfire out-climbs the 109 E. S22's
+  contrary verdict stays flagged (D217); it likely compared Spitfires with other airscrews.
+
+**(b) Fighting higher:**
+- **The duels' height:** `npm run duels` now fights at 6,000 m (about 20,000 ft, `HIGH`), within the Battle's
+  fighting heights (S38 para. 126: German escorts stepped up to 30,000 ft), then low (2,000 m) for comparison.
+  `duel()` takes an `altitude`; its default is unchanged.
+- **The fault this exposed:** at 6,000 m the 109 Ace flew into the ground in every fight, at up to 905 km/h against
+  his 750 km/h diving limit (S15). His escapes and dives began high at full power with nothing limiting the speed.
+  Three causes:
+  - the ground rule allowed only 300 m plus 6 s of descent;
+  - a push-over goal (at most 1 g) stopped him pulling out;
+  - inverted at 800 km/h the 109's heavy ailerons (S32) took about 4 s to roll him upright.
+- **Diving limits for every AI pilot** (src/ai/basic.js `keepInLimits`, `pullOutHeight`, inside `keepClear`):
+  - above 90% of the type's sourced `limits.diveEas`, less 25% times the sine of the dive angle (so a vertical dive
+    starts at 65%), a goal steeper than 10° down is raised to 10°, the push-over ends (he may pull 80% of the g his
+    skill pulls), and the throttle comes back to 0.3 without +12 lb;
+  - the ground floor adds the pull-out's height loss, `v² / (g (n − 1)) × (1 − cos γ)` at that g, plus 2 s of
+    descent while he is more than 90° banked (to roll upright);
+  - all of these are game-design values. The diving limits themselves are sourced (S15, S6, S24; the Hurricane's an
+    estimate, D61).
+- **Results:** in 40 high fights of a 109 Ace against Regular RAF fighters, crashes of the 109 fell from 10 to none;
+  one Hurricane still crashed. The Ace's peak fell from 905 to 807 km/h, with 9 s over the limit in all.
+- **The S22 test's height check is dropped** (the product owner's choice (a), D217): the 109 kept above the Hurricane
+  57% of the time against 60%. Its "never a turning fight" check is kept.
+
+**Duel table** (`npm run duels`, 20 seeds; the varied pilot's hits given / taken; net = given − taken):
+
+| Varied pilot (against a Regular) | Novice | Regular | Ace | Net rises? |
+|---|---|---|---|---|
+| 6,000 m: Bf 109 v Spitfire | 0 / 42 | 0 / 30 | 0 / 2 | yes |
+| 6,000 m: Bf 109 v Hurricane | 0 / 3 | 0 / 0 | 0 / 0 | no |
+| 6,000 m: Spitfire v Bf 109 | 0 / 1 | 30 / 0 | 41 / 0 | yes |
+| 6,000 m: Hurricane v Bf 109 | 15 / 0 | 0 / 0 | 12 / 0 | no |
+| 2,000 m: Bf 109 v Spitfire | 0 / 90 | 0 / 36 | 0 / 6 | yes |
+| 2,000 m: Bf 109 v Hurricane | 0 / 28 | 4 / 20 | 2 / 12 | yes |
+| 2,000 m: Spitfire v Bf 109 | 4 / 0 | 36 / 0 | 52 / 0 | yes |
+| 2,000 m: Hurricane v Bf 109 | 8 / 2 | 20 / 4 | 57 / 4 | yes |
+
+- Low down all four groups now rise; at 6,000 m two do. The Hurricane-against-109 fights there are nearly hitless.
+- **tests/ai/skill.test.js:** the Spitfire test moves to 6,000 m (Ace net +17, Novice 0 over its six seeds). The
+  Hurricane test stays low, since at 6,000 m its skills don't separate.
+
+**Open: the 109 still lands almost no hits** (at most 4 in 20 fights at any height). Measured over 40 Ace fights:
+- **Passes:** 120 at 6,000 m and 185 low, about two thirds ending 400-800 m out, before gun range.
+- **Why they end:** of 258 passes, 145 ended because the RAF fighter broke more than 45° off the 109's path inside
+  800 m, so the 109 broke off rather than turn (S22's doctrine); 39 as head-on; 26 to evade a threat; 48 otherwise.
+- **Inside fire range** (1-2 s per pass): his nose 5-15° off at 144 m/s closing, never within the Ace's 2° firing
+  cone. He never takes the deflection shot as the target breaks.
+- **Not changed** (the plan's step 4: report first). Put to the product owner.
+
+**Tests:**
+- tests/ai/escape.test.js: near the diving limit a steep goal is raised to 10° down with the push ended and the
+  throttle back; the pull-out height grows with speed and dive angle; a 109 told to keep diving at 60° from 4,000 m
+  pulls out under 750 km/h without hitting the ground;
+- tests/ai/recovery.test.js: the ground-rule cases given an attitude;
+- `npm run validate` is unchanged.

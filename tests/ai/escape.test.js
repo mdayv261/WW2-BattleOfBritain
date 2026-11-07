@@ -1,7 +1,8 @@
 // The fighter's judgement of the enemy (D217): an enemy is a threat only if he can reach you; a pilot counts himself
 // out-matched only within gun reach; the Bf 109 chooses its escape by the attacker's real climb, speed and carburettor
 // (src/ai/performance.js); its zoom climbs smoothly; its dive gives up a chase it can't win, dives on a slow target
-// even head-on, and doesn't start again within ZOOM_MIN of a zoom; and in a fight a pilot uses +12 lb.
+// even head-on, and doesn't start again within ZOOM_MIN of a zoom; in a fight a pilot uses +12 lb; and every pilot
+// keeps within his diving limit and pulls out in time (D218).
 import { describe, it, expect } from 'vitest';
 import { Vector3 } from 'three';
 import { aircraftById, engineFor } from '../../src/aircraft/index.js';
@@ -9,6 +10,8 @@ import { threatens, GUN_REACH } from '../../src/ai/tactics.js';
 import { escape109, zoomClimb } from '../../src/ai/fighter.js';
 import { combatPerformance } from '../../src/ai/performance.js';
 import { emptySky, fighter } from '../../src/dev/duels.js';
+import { keepClear, keepInLimits, pullOutHeight } from '../../src/ai/basic.js';
+import { equivalentAirspeed } from '../../src/physics/atmosphere.js';
 
 const DT = 1 / 120;
 const DEG = Math.PI / 180;
@@ -161,5 +164,58 @@ describe('out-matched, and +12 lb in a fight', () => {
     for (let t = 0; t < 1; t += DT) sim.step(DT);
     expect(alone.pilot.state).toBe('patrol');
     expect(alone.input.emergency).toBe(false);
+  });
+});
+
+describe('diving limits and pull-outs (D218)', () => {
+  /** A Regular Bf 109 at `altitude`, diving at `dive` (rad) at `speed` (m/s, true). */
+  function diving(altitude, dive, speed) {
+    const { sim, centre } = emptySky();
+    const craft = fighter(sim, 'bf109e4', 'regular', 'Luftwaffe', new Vector3(centre.x, altitude, centre.z), 0);
+    craft.plane.body.velocity.set(0, -Math.sin(dive), -Math.cos(dive)).multiplyScalar(speed);
+    return { sim, craft };
+  }
+  const steepDown = () => ({ direction: new Vector3(0, -Math.sin(60 * DEG), -Math.cos(60 * DEG)), push: true, gMin: -1.5, gMax: 1, throttle: 1 });
+
+  it('near his diving limit, a steep goal is raised to 10° down, the push ended and the throttle back', () => {
+    const limit = aircraftById.bf109e4.limits.diveEas;
+    const { craft } = diving(3000, 30 * DEG, 0);
+    const tas = (eas) => { // the true speed for an equivalent airspeed at 3,000 m, by bisection
+      let lo = eas;
+      let hi = 2 * eas;
+      for (let i = 0; i < 40; i += 1) { const mid = (lo + hi) / 2; if (equivalentAirspeed(mid, 3000) < eas) lo = mid; else hi = mid; }
+      return lo;
+    };
+    craft.plane.body.velocity.set(0, -0.5, -0.866).multiplyScalar(tas(0.95 * limit));
+    const g = keepInLimits(craft, steepDown());
+    expect(g.direction.y).toBeGreaterThanOrEqual(-Math.sin(10 * DEG) - 1e-9);
+    expect(g.push).toBe(false);
+    expect(g.gMax).toBeGreaterThan(4);
+    expect(g.throttle).toBeLessThanOrEqual(0.3);
+    expect(g.emergency).toBe(false);
+    craft.plane.body.velocity.set(0, -0.5, -0.866).multiplyScalar(tas(0.5 * limit));
+    const slow = steepDown();
+    expect(keepInLimits(craft, slow)).toBe(slow);
+  });
+
+  it('the ground floor allows more for a fast, steep dive than a slow, shallow one', () => {
+    expect(pullOutHeight(diving(3000, 60 * DEG, 250).craft)).toBeGreaterThan(5 * pullOutHeight(diving(3000, 20 * DEG, 120).craft));
+    expect(pullOutHeight(diving(3000, 0, 150).craft)).toBe(0);
+  });
+
+  it('a Bf 109 told to keep diving at 60° from 4,000 m pulls out, without passing 750 km/h or hitting the ground', () => {
+    const { sim, craft } = diving(4000, 0, 110);
+    craft.pilot.decide = (c, s) => keepClear(c, s, steepDown());
+    let fastest = 0;
+    let lowest = Infinity;
+    for (let t = 0; t < 40; t += DT) {
+      sim.step(DT);
+      const b = craft.plane.body;
+      fastest = Math.max(fastest, equivalentAirspeed(b.velocity.length(), b.position.y));
+      lowest = Math.min(lowest, b.position.y - sim.world.terrain.surfaceAt(b.position.x, b.position.z).height);
+    }
+    expect(sim.others.includes(craft)).toBe(true);
+    expect(lowest).toBeGreaterThan(50);
+    expect(fastest).toBeLessThan(aircraftById.bf109e4.limits.diveEas);
   });
 });

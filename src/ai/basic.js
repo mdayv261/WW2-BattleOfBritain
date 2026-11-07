@@ -14,6 +14,8 @@ import { roundFlight } from './gunnery.js';
 import { seededRandom } from '../weapons/random.js';
 import { attitude } from '../core/autopilot.js';
 import { cruiseSpeed } from '../core/target.js';
+import { equivalentAirspeed } from '../physics/atmosphere.js';
+import { G } from '../core/constants.js';
 
 const DECIDE = 0.05; // s between decisions
 const ENGAGE_RANGE = 2500; // m: an escort leaves its place for an enemy this close (game design, D79)
@@ -21,6 +23,17 @@ const FLOOR = 300; // m above the ground: below this a pilot won't point the nos
 const FLOOR_TIME = 6; // s: ...and he keeps this many seconds of his descent rate above it as well, to pull out in
 const LOOKAHEAD = 3; // s: a wingman steers for where his place will be this far ahead
 const AIM_CHANGE = 1.5; // s: how often a pilot's aim error wanders to a new value
+// Diving limits (D218): above DIVE_SHARE of the aircraft's diving limit (limits.diveEas, from the sources), less
+// DIVE_STEEP_SHARE times the sine of his dive angle (a steep dive gains speed faster, so he starts sooner), he points no
+// steeper than DIVE_STEEPEST down and eases the throttle back to DIVE_THROTTLE; and the ground floor allows for the
+// height a pull-out at his speed and dive angle needs, at PULL_SHARE of the g his skill pulls, plus ROLL_TIME seconds
+// of descent while he is upside down (at speed the ailerons are heavy, S32). Game-design values.
+const DIVE_SHARE = 0.9;
+const DIVE_STEEP_SHARE = 0.25;
+const ROLL_TIME = 2; // s
+const DIVE_STEEPEST = 10 * (Math.PI / 180);
+const DIVE_THROTTLE = 0.3;
+const PULL_SHARE = 0.8;
 // Breaking off (D216): an enemy coming head-on (pointing within HEAD_ON_PASS of him and closing) is broken off at the
 // skill's press range plus the distance the two close in PASS_CLOSING s; one he is overhauling from behind, inside half
 // that press range. He breaks for PASS_BREAK s, up if he is the higher of the two and down if the lower (decided once,
@@ -189,20 +202,62 @@ export function formationSpeed(ac, altitude) {
   return Math.min(ac.formationSpeed ?? Infinity, cruiseSpeed(ac, altitude));
 }
 
+/** The dive angle (rad, 0 when level or climbing) of a velocity. */
+const diveAngle = (v) => Math.asin(Math.min(1, Math.max(0, -v.y / Math.max(v.length(), 1))));
+
 /**
- * Keep clear of the ground: below FLOOR, plus FLOOR_TIME seconds of the present descent, climb away (unless he is
- * climbing and means to climb hard), pulling as hard as the pilot will. A goal that points up is not enough while he
- * is still diving (D216): a spiral after a target above him held him diving into the ground.
+ * The height (m) a pull-out from the present dive needs (D218): the drop of a circle of radius v² / (g (n - 1)) from
+ * the dive angle to level, at PULL_SHARE of the g his skill pulls; plus ROLL_TIME seconds of descent if he must first
+ * roll upright.
+ */
+export function pullOutHeight(craft) {
+  const v = craft.plane.body.velocity;
+  const speed = Math.max(v.length(), 1);
+  const n = PULL_SHARE * (craft.ac.limits?.g?.damage ?? 4) * (craft.pilot?.skill?.gShare ?? 1);
+  const pull = n > 1 ? ((speed * speed) / (G * (n - 1))) * (1 - Math.cos(diveAngle(v))) : 0;
+  const inverted = Math.abs(attitude(craft.plane).bank) > Math.PI / 2;
+  return pull + (inverted ? ROLL_TIME * Math.max(0, -v.y) : 0);
+}
+
+/**
+ * Within the diving limit (D218): above DIVE_SHARE of the aircraft's limits.diveEas (less, the steeper his dive), a
+ * goal pointing steeper than DIVE_STEEPEST down is raised to it, he may pull out (no push-over), and the throttle comes back (without the
+ * emergency rating). Types without a limit are left alone.
+ */
+export function keepInLimits(craft, goal) {
+  const { body } = craft.plane;
+  const limit = craft.ac.limits?.diveEas;
+  const share = DIVE_SHARE - DIVE_STEEP_SHARE * Math.sin(diveAngle(body.velocity));
+  if (!limit || equivalentAirspeed(body.velocity.length(), body.position.y) < share * limit) return goal;
+  let { direction } = goal;
+  if (direction.y < -Math.sin(DIVE_STEEPEST)) {
+    const flat = direction.clone().setY(0);
+    if (flat.lengthSq() < 1e-6) flat.copy(body.velocity).setY(0);
+    direction = flat.normalize().multiplyScalar(Math.cos(DIVE_STEEPEST)).setY(-Math.sin(DIVE_STEEPEST));
+  }
+  // A push-over's "push, no more than 1 g" would forbid the pull-out: he pulls as the pull-out height allows for.
+  const pull = PULL_SHARE * (craft.ac.limits?.g?.damage ?? 4) * (craft.pilot?.skill?.gShare ?? 1);
+  return {
+    ...goal, direction, push: false, gMin: 0, gMax: Math.max(goal.gMax ?? 2, pull),
+    throttle: Math.min(goal.throttle ?? DIVE_THROTTLE, DIVE_THROTTLE), speed: undefined, emergency: false,
+  };
+}
+
+/**
+ * Keep clear of the ground: below FLOOR, plus FLOOR_TIME seconds of the present descent, plus the height a pull-out
+ * needs (D218), climb away (unless he is climbing and means to climb hard), pulling as hard as the pilot will. A goal
+ * that points up is not enough while he is still diving (D216): a spiral after a target above him held him diving into
+ * the ground. Every goal is also kept within the diving limit.
  */
 export function keepClear(craft, sim, goal) {
   const { body } = craft.plane;
   const ground = sim.world.terrain.surfaceAt(body.position.x, body.position.z).height;
-  const floor = FLOOR + FLOOR_TIME * Math.max(0, -body.velocity.y);
-  if (body.position.y - ground > floor || (goal.direction.y > 0.3 && body.velocity.y > 0)) return goal;
+  const floor = FLOOR + FLOOR_TIME * Math.max(0, -body.velocity.y) + pullOutHeight(craft);
+  if (body.position.y - ground > floor || (goal.direction.y > 0.3 && body.velocity.y > 0)) return keepInLimits(craft, goal);
   // Climb away, banking no more than 60° so that the lift holds him up, however he was turning.
   const out = body.velocity.clone().setY(0).normalize().setY(0.4).normalize();
   const gLimit = craft.ac.limits?.g?.damage ?? 4;
-  return { ...goal, direction: out, gMax: Math.max(goal.gMax ?? 2, gLimit * 0.8), maxBank: 1.05, push: false, fireMg: false, fireCannon: false };
+  return keepInLimits(craft, { ...goal, direction: out, gMax: Math.max(goal.gMax ?? 2, gLimit * 0.8), maxBank: 1.05, push: false, fireMg: false, fireCannon: false });
 }
 
 /** A pilot of these first behaviours alone (the game's pilots are made by src/ai/pilots.js). */

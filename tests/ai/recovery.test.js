@@ -1,7 +1,7 @@
 // The AI pilot out of trouble (D216): he recovers from a spin with the usual recovery, eases the stick back (not
 // further forward) at a negative stall, and pulls out of a dive near the ground even when his goal points up.
 import { describe, it, expect } from 'vitest';
-import { Vector3 } from 'three';
+import { Vector3, Quaternion } from 'three';
 import { aircraftById } from '../../src/aircraft/index.js';
 import { stepAircraft } from '../../src/physics/flightModel.js';
 import { start, run, stallEas } from '../../src/dev/flightTests.js';
@@ -103,7 +103,7 @@ describe('the negative stall', () => {
 describe('keeping clear of the ground', () => {
   const sim = { world: { terrain: { surfaceAt: () => ({ height: 0 }) } } };
   const craft = (y, vy) => ({
-    plane: { body: { position: new Vector3(0, y, 0), velocity: new Vector3(0, vy, -120) } },
+    plane: { body: { position: new Vector3(0, y, 0), velocity: new Vector3(0, vy, -120), quaternion: new Quaternion() } }, // wings level
     ac: { limits: { g: { damage: 9 } } },
   });
   const upward = { direction: new Vector3(0, 0.5, -1).normalize(), gMax: 4, fireMg: true };

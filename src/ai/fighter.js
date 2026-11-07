@@ -79,7 +79,8 @@ export class FighterPilot extends Pilot {
   decide(craft, sim) {
     const goal = keepClear(craft, sim, this.choose(craft, sim));
     // In a fight, the emergency rating (D217): the Merlin's +12 lb; ignored by engines without one.
-    if (this.state === 'engage' || this.state === 'attack' || this.state === 'evade') goal.emergency = true;
+    const fighting = this.state === 'engage' || this.state === 'attack' || this.state === 'evade';
+    if (fighting && goal.emergency === undefined) goal.emergency = true; // unless held back in a fast dive (D218)
     return goal;
   }
 

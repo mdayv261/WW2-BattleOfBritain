@@ -33,14 +33,14 @@ export function fighter(sim, id, skill, side, at, heading, { seed = 1, speed = 1
 export const lost = (sim, c) => !sim.others.includes(c) || c.abandoned || c.plane.damage.pilot <= 0 || c.pilot.home;
 
 /**
- * A fight from 2.5 km apart, head-on, 500 m above the air start: A (RAF) against B (Luftwaffe); B starts `up` m higher
- * (A starts -`up` m higher when it is negative; D217).
+ * A fight from 2.5 km apart, head-on, at `altitude` (m; 500 m above the air start unless given, D218): A (RAF) against
+ * B (Luftwaffe); B starts `up` m higher (A starts -`up` m higher when it is negative; D217).
  * Returns the winner ('A', 'B' or 'draw' after `seconds`), the time it took, the hits each took, how much of the fight B
  * spent above A, and B's longest spell turning faster than 12°/s.
  */
-export function duel(idA, skillA, idB, skillB, seed, { up = 0, seconds = 180 } = {}) {
+export function duel(idA, skillA, idB, skillB, seed, { up = 0, seconds = 180, altitude } = {}) {
   const { sim, centre } = emptySky();
-  const alt = centre.y + 500;
+  const alt = altitude ?? centre.y + 500;
   const A = fighter(sim, idA, skillA, 'RAF', new Vector3(centre.x, alt + Math.max(0, -up), centre.z + 1250), 0, { seed: seed * 31 + 1 });
   const B = fighter(sim, idB, skillB, 'Luftwaffe', new Vector3(centre.x, alt + Math.max(0, up), centre.z - 1250), Math.PI, { seed: seed * 31 + 2 });
   let above = 0;
@@ -68,14 +68,19 @@ export function duel(idA, skillA, idB, skillB, seed, { up = 0, seconds = 180 } =
 /** The height edge in the skill duels (D217): each side starts this much higher in turn. */
 export const EDGE = 1000;
 
+/** The skill duels' height (D218): about 20,000 ft, within the Battle's fighting heights (S38 para. 126). */
+export const HIGH = 6000;
+
 /**
- * `count` seeded duels of `skillA` against `skillB`, each side starting EDGE m higher in turn (B on odd seeds, A on
- * even): { a, b, draws } wins, and the mean time.
+ * `count` seeded duels of `skillA` against `skillB` at `altitude` (m, or the default), each side starting EDGE m higher
+ * in turn (B on odd seeds, A on even): { a, b, draws } wins, the hits each took, and the mean time.
  */
-export function duelSeries(idA, skillA, idB, skillB, count, first = 1) {
-  const out = { a: 0, b: 0, draws: 0, time: 0 };
+export function duelSeries(idA, skillA, idB, skillB, count, { first = 1, altitude } = {}) {
+  const out = { a: 0, b: 0, draws: 0, time: 0, hitsOnA: 0, hitsOnB: 0 };
   for (let seed = first; seed < first + count; seed += 1) {
-    const r = duel(idA, skillA, idB, skillB, seed, { up: seed % 2 ? EDGE : -EDGE });
+    const r = duel(idA, skillA, idB, skillB, seed, { up: seed % 2 ? EDGE : -EDGE, altitude });
+    out.hitsOnA += r.hitsOnA;
+    out.hitsOnB += r.hitsOnB;
     if (r.winner === 'A') out.a += 1;
     else if (r.winner === 'B') out.b += 1;
     else out.draws += 1;
