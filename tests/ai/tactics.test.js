@@ -1,13 +1,14 @@
-// Fighter tactics (Phase 6 checkpoint 3, D81), in seeded fights run headless: skill tells; the Bf 109 fights by the
-// Luftwaffe's doctrine (S22: height, no turning fights, climb away or push over to escape); a pilot breaks when fired
-// on from behind; the Bf 110 meets an attacker seen early head-on (S25); out of ammunition, a fighter goes home; RAF
-// fighters attack bombers from ahead or below (S29, S38); a Schwarm keeps its places.
+// Fighter tactics (Phase 6 checkpoint 3, D81), in seeded fights run headless (skill: tests/ai/skill.test.js): the
+// Bf 109 fights by the Luftwaffe's doctrine (S22: height, no turning fights, climb away or push over to escape); a
+// pilot breaks when fired on from behind; the Bf 110 meets an attacker seen early head-on (S25); out of ammunition, a
+// fighter goes home; RAF fighters attack bombers from ahead or below (S29, S38); a Schwarm keeps its places.
 import { describe, it, expect } from 'vitest';
 import { Vector3 } from 'three';
 import { aircraftById } from '../../src/aircraft/index.js';
 import { Simulation, levelThrottle } from '../../src/core/simulation.js';
 import { Craft } from '../../src/core/craft.js';
 import { createPilot } from '../../src/ai/pilots.js';
+import { emptySky, fighter, lost, duel } from '../../src/dev/duels.js';
 import { homeDirection } from '../../src/ai/tactics.js';
 import { nextFighterScenario } from '../../src/core/scenarios.js';
 import { slotPoint } from '../../src/ai/basic.js';
@@ -15,63 +16,10 @@ import { FORMATIONS } from '../../src/ai/formation.js';
 
 const DT = 1 / 120;
 
-/** A simulation with the player parked far away (out of every pilot's sight). */
-function emptySky() {
-  const sim = new Simulation(aircraftById.spitfire, 'air');
-  const centre = sim.plane.body.position.clone();
-  sim.plane.body.position.x += 100000;
-  return { sim, centre };
-}
-
-/** An AI fighter of `id` and `skill` on `side` at `at` (Vector3), heading `heading`, flying `speed`. */
-function fighter(sim, id, skill, side, at, heading, { seed = 1, speed = 110, role = 'fighter' } = {}) {
-  const ac = aircraftById[id];
-  const craft = new Craft(ac, {
-    start: { altitude: at.y, speed, heading, throttle: levelThrottle(ac, at.y, speed, 1), rpm: 1, x: at.x, z: at.z },
-    pilot: createPilot({ role, skill, seed }), side, skill, seed: seed + 7, label: `${id}-${skill}`,
-  });
-  sim.others.push(craft);
-  return craft;
-}
-
-const lost = (sim, c) => !sim.others.includes(c) || c.abandoned || c.plane.damage.pilot <= 0 || c.pilot.home;
-
-/** A 1 v 1 fight from 2.5 km apart, head-on; B starts `up` m higher. Returns the winner and how B flew. */
-function duel(idA, skillA, idB, skillB, seed, up = 0) {
-  const { sim, centre } = emptySky();
-  const alt = centre.y + 500;
-  const A = fighter(sim, idA, skillA, 'RAF', new Vector3(centre.x, alt, centre.z + 1250), 0, { seed: seed * 31 + 1 });
-  const B = fighter(sim, idB, skillB, 'Luftwaffe', new Vector3(centre.x, alt + up, centre.z - 1250), Math.PI, { seed: seed * 31 + 2 });
-  let above = 0;
-  let n = 0;
-  let run = 0;
-  let longest = 0;
-  let heading = null;
-  for (let t = 0; t < 180; t += DT) {
-    sim.step(DT);
-    n += 1;
-    if (B.plane.body.position.y > A.plane.body.position.y) above += 1;
-    const v = B.plane.body.velocity;
-    const h = Math.atan2(v.x, -v.z);
-    const rate = heading === null ? 0 : Math.abs(Math.atan2(Math.sin(h - heading), Math.cos(h - heading))) / DT;
-    heading = h;
-    run = rate > 0.21 ? run + DT : 0; // turning faster than 12°/s
-    longest = Math.max(longest, run);
-    if (lost(sim, A) || lost(sim, B)) break;
-  }
-  const winner = lost(sim, A) && !lost(sim, B) ? 'B' : lost(sim, B) && !lost(sim, A) ? 'A' : 'draw';
-  return { winner, above: above / n, longestTurn: longest };
-}
-
 describe('fighter tactics', () => {
-  it('an Ace beats a Novice in most of six seeded Spitfire fights', () => {
-    const wins = [1, 2, 3, 4, 5, 6].map((seed) => duel('spitfire', 'ace', 'spitfire', 'novice', seed).winner);
-    expect(wins.filter((w) => w === 'A').length).toBeGreaterThanOrEqual(4);
-  });
-
   it('a Bf 109 against a Hurricane keeps above it and never settles into a turning fight (S22)', () => {
     for (const seed of [1, 2, 3]) {
-      const r = duel('hurricane', 'regular', 'bf109e4', 'regular', seed, 500);
+      const r = duel('hurricane', 'regular', 'bf109e4', 'regular', seed, { up: 500 });
       expect(r.above).toBeGreaterThan(0.6);
       expect(r.longestTurn).toBeLessThan(12);
     }

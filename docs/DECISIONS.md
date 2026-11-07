@@ -5350,3 +5350,162 @@ the code while it was being compiled, which D88 meant to leave out ("time the st
 
 **The change** (tests/core/scenarios.test.js): three seconds of warm-up before the ten timed seconds. The 100 ms budget
 is unchanged, so a real slowdown still fails it.
+
+## D216. Phase 6 checkpoint 5, part 1: aggression, the duels, and the AI pilot out of trouble (5-6 Nov 2026)
+
+Under the approved checkpoint 5 plan (5 Nov 2026). The frame-rate measurement (D218) and the proposed acceptance test
+(D219) are still to come; D217 continues this work.
+
+**Aggression, a new skill setting** (src/ai/skill.js, src/ai/fighter.js), game-design estimates as in the plan:
+- `press`: how close a fighter presses a diving pass or a run on a bomber before breaking off (it replaces the fixed
+  150 m): Novice 250 m, Regular 150 m, Ace 100 m.
+- `attackMargin`: a multiple of the energy-height advantage he wants before a diving pass (`DIVE_MARGIN` 200 m,
+  `ZOOM_MARGIN` 450 m): Novice 1.5, Regular 1.0, Ace 0.75.
+
+**The duels** (new src/dev/duels.js; `npm run duels`, scripts/duels.mjs): seeded one-against-one AI fights on the full
+flight model, 2.5 km apart head-on, the better pilot on each side for half the seeds. The tactics tests now use the same
+duel code.
+
+**Breaking off a pass** (src/ai/basic.js `headOnBreak`): the first duels ended in head-on mid-air collisions. An enemy
+coming head-on is now broken off at the skill's press range plus 0.7 s of closing; one being overhauled from behind,
+inside half that range. He breaks up if he is the higher, down if the lower (a level pass decided by label, so two
+pilots breaking at once part), and a little to his right, for 2 s, without firing. Game-design estimates. A sign error
+made the closing speed zero at first; with it fixed, no collisions remain in the duels.
+
+**The AI pilot out of trouble** (product owner's choice: "add spin recovery now"). With the collisions gone, AI pilots
+flew into the ground instead: 21 crashes in 100 duels (Spitfires, Hurricanes and Bf 109s). Traced:
+1. **19 of the 21 were a negative stall, not a spin.** The hands' "ease off at the buffet" rule always asked for 0.5 g
+   less than the aircraft was pulling. That unloads a wing stalled pulling, but at a wing stalled *pushing* it pushed
+   harder, and the push fed itself: full forward stick, −3 to −4 g, −20° angle of attack, the aircraft tumbling at
+   100-200°/s all the way down. **Fix** (src/ai/pilot.js): at the buffet he eases the stick towards the middle, forward
+   when stalled pulling, back when stalled pushing.
+2. **The other 2 (and 2 more seen after fix 1)** were a steep diving spiral after a target above: the ground rule
+   (`keepClear`) left any goal that pointed up alone, so a pilot diving at 45° in a 6 g spiral was never made to pull
+   out. **Fix** (src/ai/basic.js): it leaves an upward goal alone only once the aircraft itself is climbing.
+3. **Spin recovery** (src/ai/pilot.js `recoverSpin`): once he has felt a spin for his reaction time (a wing more than
+   half stalled and the nose yawing faster than 34°/s), he leaves his goal: throttle closed, ailerons central, full
+   rudder against the rotation, the stick eased forward (back from a spin pushing). When the rotation stops he centres
+   the rudder and holds the stick until the wing flies again; then his goal, and the ground rule, pull him out. This is
+   the usual recovery the spin tests already fly (FLIGHT_VALIDATION.md, D30). The Pilot's Notes wording has not been
+   checked against the scans (S33), so no source is claimed for it beyond those tests.
+   - Holding the stick until the wing unstalls was needed: stopping at the end of the rotation, at 67° angle of attack,
+     handed the controls back too early and the spin restarted.
+   - Felt spin time builds while it spins and runs down while it doesn't, so a stall that flickers still adds up.
+
+**Results:** no crashes in the same 100 duels (from 21). From a 6 s spin, all four fighters recover in under 0.55 turns
+after the AI takes over, losing 220-650 m, and then climb away.
+- **Flagged, honestly:** without `recoverSpin` the ordinary hands also got out of these spins, because easing off the
+  buffet and centring the ball already work against the rotation. The recovery mostly makes an Ace quicker (a
+  Spitfire's left spin: 0.15 turns, against 0.5) and is a safety net. Fixes 1 and 2 are what stopped the crashes.
+- **Noticed, not changed:** before he recognises a spin, a pilot's speed-hold opens the throttle, since he is far below
+  the speed he wants. That is the ordinary hands' behaviour.
+
+**Duel table after these fixes** (`npm run duels`, 20 seeds; the better pilot's wins / losses / draws):
+
+| Pairing | Spitfire | Bf 109 E |
+|---|---|---|
+| Ace v Novice | 13 / 0 / 7 | 0 / 4 / 16 |
+| Ace v Regular | 6 / 4 / 10 | 2 / 9 / 9 |
+| Regular v Novice | 8 / 0 / 12 | 0 / 5 / 15 |
+
+Mixed types at Regular (10 seeds, RAF / Luftwaffe / draws): Spitfire v Bf 109 10/0/0, Hurricane v Bf 109 10/0/0,
+Hurricane v Bf 110 4/6/0, Spitfire v Bf 110 4/6/0.
+
+**Open: Bf 109 against Bf 109 no longer separates the skills.** Nobody hits anybody in 3 minutes. The better 109 pilot's
+"losses" are him going home out-matched after 40 s with the other behind him, not being shot down. Before fix 1 the
+109 Ace won 14 of 20 against a Novice, though under the old rule the Novice spent 9-11 s of each fight in negative
+stalls. He was hit later, flying level, after the tumbles had cost him height and speed. Two 109s flying dive-and-zoom
+at each other is the tactics question this checkpoint now has to answer, before the plan's proof of the skill levels
+holds.
+
+**Tests:** new tests/ai/recovery.test.js:
+- a Regular recovers from a 6 s spin within a turn, with rudder against the rotation, the stick forward and the
+  throttle closed, then climbs (Hurricane, Spitfire both ways, Bf 109, Bf 110);
+- a hard turn with the ball in the middle is not taken for a spin;
+- a Novice stalled pushing unstalls within 2 s (failed under the old buffet rule);
+- the ground rule pulls a diving pilot out even when his goal points up (failed under the old rule), and leaves the
+  goal alone once he climbs or is high enough.
+
+## D217. Phase 6 checkpoint 5, part 2: skills proved in real match-ups, Bf 109 tactics, +12 lb in combat (6-7 Nov 2026)
+
+**Why:** after D216, Bf 109 against Bf 109 never scored, and at Regular the RAF fighters beat the 109 in 20 of 20
+fights, mostly by the 109 going home "out-matched", unhit. **The product owner decided (6 Nov):**
+1. prove the skills in the fights the game has (RAF against Luftwaffe), not same-type duels;
+2. each side starts 1,000 m higher in turn;
+3. fix the 109's tactics;
+4. AI RAF pilots use +12 lb in combat;
+5. (later) fix three more faults found on the way, and judge the S22 escape by real performance.
+
+**The duels** (src/dev/duels.js, scripts/duels.mjs):
+- each skill of one type fights a Regular of the other side, 20 seeds, the higher side alternating (`EDGE` 1,000 m);
+- 109 against Spitfire and Hurricane, both ways, and the Bf 110 for interest.
+
+**+12 lb in combat** (src/ai/fighter.js `decide`, src/ai/pilot.js):
+- an AI fighter pulls the boost cut-out while engaging, attacking or evading, not on patrol or going home;
+- engines without an emergency rating (DB 601, Jumo) ignore it;
+- in 12 Ace duels (32 min at +12 lb) the hottest coolant was 116 °C, under the Merlin's 120 °C (Pilot's Notes); no
+  engine seized.
+
+**Bf 109 tactics** (src/ai/fighter.js; all new values game-design estimates):
+- **Smooth zoom** (`zoomClimb`): the climb angle runs 0-24° with speed, 12° at 290 km/h (S22). It had jumped between
+  12° and level, the hands lurching from -1.5 to +3 g and gaining 9-12 m/s of energy height against a best of 15-17.
+- **Escapes by the attacker's real performance** (`escape109`, new src/ai/performance.js `combatPerformance`: best climb
+  and top speed at full combat power, from the flight model, coarse and cached per type and 1,000 m band, about 10 ms
+  each the first time):
+  - climb away (attacker 400 m or more back) only from one that climbs at least 1 m/s worse;
+  - push over only from an engine that cuts out under negative g (the Merlin), or a split-S 40% of the time with
+    1,500 m of room;
+  - from one that can follow both (another 109, a Bf 110): a split-S with room, else a break;
+  - low down: extend only from one that is slower here, else a break.
+- **A dive that can't win:** with no energy-height advantage, closing under 5 m/s inside 2,500 m and outside his fire
+  range, he goes back to the zoom.
+- **Slow targets:** one slower than 72 m/s (hanging nose-high) isn't treated as head-on, so he dives on it.
+- **Minimum zoom:** 3 s before the next dive (except to close on a target beyond 3,000 m).
+- **The phase bug, found on the way:** `set()` cleared the tactic's phase whenever the state changed, so the move from
+  a dive (attack) to its zoom (engage) was forgotten at once and re-decided from scratch: he dived again at 200 m of
+  advantage instead of building 450 m, and the dive and zoom flipped every 2 s. The phase is now cleared only when the
+  tactic changes. (The bomber run had worked by the same accident; it now keeps its phases.)
+
+**Threats and staying power** (src/ai/tactics.js `threatens`, src/ai/fighter.js `choose`):
+- an enemy behind and nose-on is a threat only if he can reach you: his energy height at least your height, and,
+  beyond `GUN_REACH` (400 m, the Ace's fire range), closing. A slow Spitfire 500 m below had sent a 109 Ace fleeing.
+- the out-matched count fills only while a threat is within 400 m. It had filled whenever a threat was noticed, so the
+  Ace, who notices everything, went home first.
+
+**Flagged against a source (the product owner's choice (a), 6 Nov):** with real performance, the model's +12 lb
+Spitfire and Hurricane out-climb the 109 at 2,000 m (21.3 and 19.4 m/s against 17.0). S22 says the 109 out-climbs
+them; the +12 lb climb is not checked by any source (AIRCRAFT_DATA.md open research gap), and the model isn't changed
+for it. So the 109 no longer climbs away from them; it still climbs away from the Bf 110. The S22 test ("keeps above a
+Hurricane, never a turning fight") passes again since the phase fix, so it is kept.
+
+**Results** (`npm run duels`, 20 seeds; the varied pilot's wins / losses / draws):
+
+| Varied pilot (against a Regular) | Novice | Regular | Ace |
+|---|---|---|---|
+| Bf 109 v Spitfire | 0 / 7 / 13 | 2 / 5 / 13 | 1 / 5 / 14 |
+| Bf 109 v Hurricane | 5 / 4 / 11 | 2 / 2 / 16 | 2 / 0 / 18 |
+| Spitfire v Bf 109 | 0 / 0 / 20 | 5 / 2 / 13 | 7 / 1 / 12 |
+| Hurricane v Bf 109 | 0 / 2 / 18 | 2 / 2 / 16 | 3 / 3 / 14 |
+
+Hits given / taken over the same fights:
+
+| Varied pilot (against a Regular) | Novice | Regular | Ace |
+|---|---|---|---|
+| Bf 109 v Spitfire | 0 / 81 | 0 / 13 | 0 / 29 |
+| Bf 109 v Hurricane | 0 / 52 | 4 / 30 | 2 / 24 |
+| Spitfire v Bf 109 | 9 / 0 | 13 / 0 | 44 / 0 |
+| Hurricane v Bf 109 | 0 / 2 | 30 / 4 | 63 / 4 |
+
+- The fights are now even in wins (before: the 109 lost 9 in 10), but most end undecided after 3 minutes, so wins are
+  too few to rank three skills. Hits rank the RAF skills clearly in both types.
+- **Open:** the 109 lands almost no hits at any skill. In 10 Ace fights against a Hurricane it spent 183 s within
+  400 m, 172 s of them with the Hurricane on its tail; it is on the defensive nearly throughout, because at low level
+  the model's +12 lb RAF fighters out-climb and out-turn it (and the Spitfire is faster). Skill figures can't change
+  that. Put to the product owner.
+
+**Tests:**
+- new tests/ai/escape.test.js: threats that can and can't reach; the 109's escape against each type; the smooth zoom;
+  the dive that gives up; the slow head-on target; the minimum zoom; out-matched only within 400 m; +12 lb in a fight
+  and not on patrol;
+- new tests/ai/skill.test.js: an RAF Ace does more damage to a Regular 109 than an RAF Novice (Spitfire and Hurricane,
+  six seeds, net hits). It replaces the same-type Spitfire test.

@@ -14,9 +14,46 @@ Read this at the start of every session.
 - **Phase 6** (AI pilots and gunners): in progress (plan approved 27 Oct 2026, D76). Checkpoint 1 (research) done (D77,
   D78); checkpoint 2 (many aircraft, the AI pilot's hands, scenario keys) done (D79); checkpoint 2b (bailing out and
   parachutes, the product owner's addition) done (D80); checkpoint 3 (fighter tactics and formations) done (D81);
-  checkpoint 4 (bombers' routes and air gunners) done (D83); next checkpoint 5 (skill levels and the Phase 6 acceptance
-  test).
+  checkpoint 4 (bombers' routes and air gunners) done (D83); checkpoint 5 (skill levels and the Phase 6 acceptance
+  test) in progress (D216, D217).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751).
+
+## Phase 6 checkpoint 5: skill levels (6 Nov 2026)
+
+**Done** (D216, not yet committed): aggression added to the skills (`press`, `attackMargin`); `npm run duels`; head-on
+passes broken off (no more head-on collisions); the AI pilot out of trouble, which took the duels' ground crashes from
+21 in 100 to none:
+- the buffet rule eases the stick back at a negative stall instead of pushing on into a tumble;
+- the ground rule makes a diving pilot pull out even when his target is above him;
+- spin recovery: throttle closed, opposite rudder, stick forward, held until the wing flies again.
+
+**Left:**
+- Bf 109 against Bf 109 no longer separates the skills: nobody scores in 3 minutes (D216).
+- Investigated 6 Nov (no code changed; decisions with the product owner): at Regular the RAF beats the 109 in 20 of
+  20 duels. From the level head-on start the 109 refuses the pass and climbs out, the RAF fighter takes its tail, and
+  the 109 goes home out-matched after 20 s, mostly unhit. The 109's climb angle also flips between 12° and level
+  around 290 km/h, wasting energy (9-12 m/s gained against a best climb of 15-17). Climb-away and push-over are used
+  even against another 109, which neither shakes. The AI never uses +12 lb boost; at +12 the model's Spitfire would
+  out-climb the 109 below 4 km (21 against 17 m/s, not validated by any source).
+- The rest of the plan: the Novice-gunner test, the twelve-aircraft frame rate (D217), the proposed acceptance test
+  (D218).
+
+**Done** (D217, 6-7 Nov 2026, not committed):
+- the duels pit each skill against a Regular of the other side, each side 1,000 m higher in turn;
+- AI fighters use +12 lb in a fight;
+- the 109's smooth zoom, escapes chosen by real performance, the dive that gives up, slow head-on targets and the
+  minimum zoom;
+- threats only if they can reach; out-matched only within 400 m;
+- the phase bug (dive and zoom flipping) fixed.
+
+The RAF skills now separate clearly by hits (tests/ai/skill.test.js).
+
+**Left:**
+- **Open, for the product owner:** the 109 lands almost no hits at any skill. It is on the defensive nearly
+  throughout against the model's +12 lb RAF fighters, which out-climb and out-turn it at low level (D217).
+- Then the Novice-gunner test, the twelve-aircraft frame rate (D218) and the proposed acceptance test (D219).
+
+**Known issues:** before he recognises a spin, a pilot's speed-hold opens the throttle (ordinary hands, unchanged).
 
 ## Bf 110 C panel after the product owner's picture #34 (3 Nov 2026)
 

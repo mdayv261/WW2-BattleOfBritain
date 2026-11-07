@@ -5,40 +5,49 @@
 //     sighting range, not under his own tail).
 //   Engage and attack, by type:
 //     Bf 109 and Bf 110, boom-and-zoom (S22, S25): with height or speed to spare, dive on the target and fire in the
-//       pass; pull out before 150 m, or as soon as staying would mean a turning fight; then zoom away in a shallow
-//       climb at about 290 km/h (S22: "shallow climb angle and higher speeds", 280-300 km/h) to build the height for
-//       the next pass. They never stay to turn: the RAF fighters turn tighter (S21, S22, S25).
+//       pass; pull out at his skill's press range, or as soon as staying would mean a turning fight, or when with no
+//       height to spare he can't close (D217); then zoom away in a shallow climb held at about 290 km/h (S22: "shallow
+//       climb angle and higher speeds", 280-300 km/h) to build the height for the next pass. They never stay to turn:
+//       the RAF fighters turn tighter (S21, S22, S25).
 //     Hurricane and Spitfire, turning fight (S21): pursue with full turns; a skilled pilot won't pull his speed away.
 //     Against bombers (S29, S38): set up out of the guns' reach, ahead and above or below and to the side, then the
 //       run, then break away below.
-//   Evade, when he notices an enemy sitting on his tail: the RAF break turn into the attacker; the Bf 109's push-over
-//     into a dive with negative g, which the RAF's carburettors cannot follow (S22), or a split-S, when the attacker is
-//     close; further back, a shallow, fast climb away, which they cannot match (S22); low down, where a
-//     dive has nowhere to go, it extends away at full power on its speed (S22: faster than both RAF fighters at sea
-//     level); the Bf 110's turn to meet an attacker seen early head-on, or its steep climb to make him overshoot (S25).
+//   Evade, when he notices an enemy sitting on his tail: the RAF break turn into the attacker; the Bf 109's escapes
+//     (S22), each used only against an attacker it works on (D217, src/ai/performance.js): further back, a shallow,
+//     fast climb away from one that climbs worse; a push-over into a dive with negative g from one whose carburettor
+//     cuts out, or a split-S; from one that can follow both, a split-S or a break; low down, where a dive has nowhere
+//     to go, it extends away at full power from one that is slower, or breaks. The Bf 110's turn to meet an attacker
+//     seen early head-on, or its steep climb to make him overshoot (S25).
 //   Disengage: out of ammunition, damaged, or out-matched too long (his skill's staying power): home in a shallow dive.
+// In a fight (engage, attack, evade) he uses the emergency rating where the engine has one: the Merlin's +12 lb (D217,
+// product owner's decision; D14 sets no time limit, and the engine's heat model applies).
 // A wingman covers his leader in a fight and goes for anyone attacking him; an escort keeps station behind and above
 // its bombers (S38) and engages only fighters coming near them. Thresholds are game-design values (D81).
 
 import { Vector3 } from 'three';
 import { Pilot, keepClear } from './basic.js';
 import { seen } from './perception.js';
-import { energyHeight, threatens, canSee, bomberSetup, homeDirection } from './tactics.js';
+import { energyHeight, threatens, canSee, bomberSetup, homeDirection, GUN_REACH } from './tactics.js';
 import { COVER } from './formation.js';
+import { combatPerformance } from './performance.js';
 
 const DECIDE = 0.05; // s between decisions (as basic.js)
 const NOTICE_EVERY = 1; // s between a pilot's chances to notice an enemy on his tail
 const ENGAGE_RANGE = 2500; // m: an escort engages fighters this close to it or its bombers (D79)
-const DIVE_MARGIN = 200; // m of energy height above the target needed to start a diving pass...
+const DIVE_MARGIN = 200; // m of energy height above the target needed to start a diving pass (times the skill's attackMargin)...
 const ZOOM_MARGIN = 450; // ...and built up in the zoom before the next one
-const PULL_OUT = 150; // m: a diving pass breaks off this close
 const NO_TURNING = 45 * (Math.PI / 180); // rad: off the target's line by this much, a pass would become a turning fight
 const PASS_G = 4; // g: the most a diving pass pulls (he won't turn with the target)
 const ZOOM_CLIMB = 12 * (Math.PI / 180); // rad: the zoom's shallow climb
 const ZOOM_SPEED = 80.5; // m/s: 290 km/h, the middle of S22's 280-300 km/h
+const CLIMB_PER_SPEED = 0.02; // rad of climb per m/s above ZOOM_SPEED: the zoom holds its speed smoothly (D217)
+const NO_CLOSING = 5; // m/s: a dive closing slower than this, with no height to spare, can't catch the target (D217)...
+const NO_CLOSING_RANGE = 2500; // m: ...inside this range (further out, the dive is the way to close in)
+const CLIMB_EDGE = 1; // m/s: a Bf 109 climbs away only from an enemy that climbs at least this much worse
 const LOW_ENERGY_SPEED = 72; // m/s: a diving fighter this slow gives up the pass
 const HEAD_ON = 45 * (Math.PI / 180); // rad: a target pointing within this of him is coming head-on: no pass from there
 const ZOOM_TIME = 15; // s: after this long in the zoom he attacks with any advantage he has
+const ZOOM_MIN = 3; // s: the shortest zoom before the next dive, unless the target is far off (D217: no dive-zoom flip)
 const RUN_START = 400; // m from the set-up point at which the run on a bomber begins
 const BREAK_TIME = 4; // s of breakaway after a run
 const AMMO_LOW = 0.1; // share of the rounds left at which he goes home
@@ -68,7 +77,10 @@ export class FighterPilot extends Pilot {
   }
 
   decide(craft, sim) {
-    return keepClear(craft, sim, this.choose(craft, sim));
+    const goal = keepClear(craft, sim, this.choose(craft, sim));
+    // In a fight, the emergency rating (D217): the Merlin's +12 lb; ignored by engines without one.
+    if (this.state === 'engage' || this.state === 'attack' || this.state === 'evade') goal.emergency = true;
+    return goal;
   }
 
   /** The enemies he can see now: [{ craft, position, velocity, range }], his current target kept a little further. */
@@ -115,7 +127,9 @@ export class FighterPilot extends Pilot {
     const view = this.look(craft, sim);
     const reach = craft.ac.id === 'bf110c4' ? WATCH_110 : undefined;
     const threat = view.find((e) => threatens(body, e, reach) && this.notices(e, now));
-    this.outmatched = threat ? this.outmatched + DECIDE : Math.max(0, this.outmatched - DECIDE / 2);
+    // Out-matched only while he could be shot (D217): seeing an enemy far back doesn't drive him home.
+    const danger = threat && threat.range < GUN_REACH;
+    this.outmatched = danger ? this.outmatched + DECIDE : Math.max(0, this.outmatched - DECIDE / 2);
     if (!this.home && (this.outOfAmmo(craft) || this.hurt(craft) || this.outmatched > this.skill.stay)) this.home = true;
 
     // Evade: keep the manoeuvre going, or start one.
@@ -160,8 +174,12 @@ export class FighterPilot extends Pilot {
     return this.keepSlot(craft, sim, false, this.slot, lead) ?? this.level(craft, 110);
   }
 
+  /**
+   * Sets the state and tactic. A new tactic starts its phases afresh; within one tactic the phase is kept, so that the
+   * move from a dive (attack) to its zoom (engage) isn't forgotten at once (D217: it was, and he dived straight again).
+   */
   set(state, tactic) {
-    if (state !== this.state || tactic !== this.tactic) this.phase = null;
+    if (tactic !== this.tactic) this.phase = null;
     this.state = state;
     this.tactic = tactic;
   }
@@ -192,18 +210,24 @@ export class FighterPilot extends Pilot {
     const mine = energyHeight(body.position, body.velocity);
     const theirs = energyHeight(target.position, target.velocity);
     const speed = body.velocity.length();
-    // Never a pass head-on: from behind or the beam only, so he comes round first.
+    // Never a pass head-on: from behind or the beam only, so he comes round first. A target too slow to hold its aim
+    // (hanging nose-high below him) is fair game from any side (D217).
     const toMe = body.position.clone().sub(target.position);
-    const headOn = target.velocity.angleTo(toMe) < HEAD_ON && body.velocity.dot(target.velocity) < 0;
+    const slow = target.velocity.length() < LOW_ENERGY_SPEED;
+    const headOn = !slow && target.velocity.angleTo(toMe) < HEAD_ON && body.velocity.dot(target.velocity) < 0;
     const zoomed = sim.clock - (this.zoomSince ?? sim.clock);
-    if (!this.phase) this.phase = mine > theirs + DIVE_MARGIN && !headOn ? 'dive' : 'zoom';
+    if (!this.phase) this.phase = mine > theirs + DIVE_MARGIN * this.skill.attackMargin && !headOn ? 'dive' : 'zoom';
     if (this.phase === 'dive') {
-      const off = body.velocity.angleTo(target.position.clone().sub(body.position));
-      if (target.range < PULL_OUT || (off > NO_TURNING && target.range < 800) || speed < LOW_ENERGY_SPEED || (headOn && target.range > 600)) {
+      const toTarget = target.position.clone().sub(body.position);
+      const off = body.velocity.angleTo(toTarget);
+      // With no height to spare and not closing, the dive is only a chase he can't win: back to the zoom (D217).
+      const closing = body.velocity.clone().sub(target.velocity).dot(toTarget.normalize());
+      const stuck = mine < theirs && closing < NO_CLOSING && target.range < NO_CLOSING_RANGE && target.range > this.skill.fireRange;
+      if (target.range < this.skill.press || (off > NO_TURNING && target.range < 800) || speed < LOW_ENERGY_SPEED || (headOn && target.range > 600) || stuck) {
         this.phase = 'zoom';
         this.zoomSince = sim.clock;
       }
-    } else if (!headOn && (mine > theirs + ZOOM_MARGIN || target.range > 3000 || (zoomed > ZOOM_TIME && mine > theirs))) this.phase = 'dive';
+    } else if (!headOn && (target.range > 3000 || (zoomed >= ZOOM_MIN && (mine > theirs + ZOOM_MARGIN * this.skill.attackMargin || (zoomed > ZOOM_TIME && mine > theirs))))) this.phase = 'dive';
     if (this.phase === 'zoom') this.zoomSince ??= sim.clock;
     else this.zoomSince = null;
     if (this.phase === 'dive') {
@@ -215,7 +239,7 @@ export class FighterPilot extends Pilot {
     this.set('engage', 'boom-and-zoom');
     // The zoom: a shallow climb at about 290 km/h, flattened if he is slower; against a target coming head-on, a
     // climbing turn out to its side, to come round behind it.
-    const climb = speed > ZOOM_SPEED ? ZOOM_CLIMB : 0;
+    const climb = zoomClimb(speed);
     let track = horizontal(body.velocity);
     if (headOn) {
       const across = horizontal(toMe).cross(up);
@@ -249,7 +273,7 @@ export class FighterPilot extends Pilot {
       }
     }
     if (this.phase === 'run') {
-      if (target.range < PULL_OUT) {
+      if (target.range < this.skill.press) { // he presses the run as close as his skill dares (D216)
         this.phase = 'break';
         this.until = sim.clock + BREAK_TIME;
       } else {
@@ -268,10 +292,7 @@ export class FighterPilot extends Pilot {
     const ground = sim.world.terrain.surfaceAt(craft.plane.body.position.x, craft.plane.body.position.z).height;
     let move = 'break';
     const room = craft.plane.body.position.y - ground;
-    if (id === 'bf109e4') {
-      if (threat.range >= CLOSE_BEHIND) move = 'climb away'; // S22: away in a shallow, fast climb, which they can't match
-      else move = room > 1500 && this.random() < 0.4 ? 'split-S' : room > DIVE_ROOM ? 'push-over' : 'extend';
-    }
+    if (id === 'bf109e4') move = escape109(craft, threat.craft, threat.range, room, this.random());
     if (id === 'bf110c4') move = threat.range >= 900 ? 'head-on' : 'zoom climb';
     this.set('evade', move);
     this.threat = threat.craft;
@@ -288,7 +309,7 @@ export class FighterPilot extends Pilot {
         return { direction: horizontal(body.velocity).add(new Vector3(0, -1.2, 0)).normalize(), push: true, gMin: -1.5, gMax: 1, throttle: 1 };
       case 'climb away': { // full power, a shallow climb at about 290 km/h, turning away from him (S22)
         const away = attacker ? horizontal(body.position.clone().sub(attacker.position)) : horizontal(body.velocity);
-        const climb = body.velocity.length() > ZOOM_SPEED ? ZOOM_CLIMB : 0;
+        const climb = zoomClimb(body.velocity.length());
         const track = away.multiplyScalar(0.3).add(horizontal(body.velocity)).normalize(); // mostly straight on
         return { direction: track.multiplyScalar(Math.cos(climb)).addScaledVector(up, Math.sin(climb)).normalize(), gMax: 3, throttle: 1 };
       }
@@ -313,6 +334,26 @@ export class FighterPilot extends Pilot {
     }
     return { direction: path, gMax: gLimit, throttle: 1 };
   }
+}
+
+/** The zoom's climb angle (rad) at `speed` (m/s): ZOOM_CLIMB at about 290 km/h, steeper faster, flatter slower (D217). */
+export const zoomClimb = (speed) => Math.max(0, Math.min(2 * ZOOM_CLIMB, ZOOM_CLIMB + CLIMB_PER_SPEED * (speed - ZOOM_SPEED)));
+
+/**
+ * The Bf 109's escape from `attacker` (craft) `range` m behind, with `room` m above the ground and a random draw
+ * `chance` (0..1), each only where it works (S22, D217): climb away from one that climbs worse here; push over from
+ * one whose carburettor cuts out (or a split-S, 40% of the time with room); a split-S or a break from one that can
+ * follow both; low down, extend from one that is slower, or break.
+ */
+export function escape109(craft, attacker, range, room, chance) {
+  const altitude = craft.plane.body.position.y;
+  const mine = combatPerformance(craft.ac, altitude);
+  const his = combatPerformance(attacker.ac, altitude);
+  if (range >= CLOSE_BEHIND && mine.climb > his.climb + CLIMB_EDGE) return 'climb away';
+  const cutsOut = !!attacker.plane.engine.negativeG;
+  if (room > 1500 && (!cutsOut || chance < 0.4)) return 'split-S';
+  if (room > DIVE_ROOM && cutsOut) return 'push-over';
+  return mine.speed > his.speed ? 'extend' : 'break';
 }
 
 const nearest = (list) => list.reduce((a, b) => (!a || b.range < a.range ? b : a), null);

@@ -13,6 +13,7 @@
     "fit:ballistics": "node scripts/fitBallistics.mjs",
     "fit:rig": "node scripts/fitRig.mjs",
     "handling": "node scripts/handling.mjs",
+    "duels": "node scripts/duels.mjs",
     "build:terrain": "node scripts/buildTerrain.mjs",
     "build:features": "node scripts/buildFeatures.mjs"
   },

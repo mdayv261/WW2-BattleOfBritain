@@ -11,7 +11,13 @@
 //   - pull or push for the g that lift needs, between gMin and gMax, easing off at the stall buffet the skill feels;
 //   - keep the ball in the middle with the rudder, and hold the speed with the throttle;
 //   - mind the engine as a pilot would: the radiator opened as the coolant nears its limit and closed when it has
-//     cooled, and the rpm lever at the goal's setting (full in a fight, cruising rpm otherwise).
+//     cooled, the rpm lever at the goal's setting (full in a fight, cruising rpm otherwise), and the boost cut-out
+//     pulled when the goal asks for the emergency rating (D217);
+//   - recover from a spin (D216): once he has felt it for his reaction time (a wing stalled and the nose yawing round
+//     faster than SPIN_RATE), he leaves the goal, closes the throttle, centres the ailerons, puts on full rudder against
+//     the rotation and eases the stick towards the middle (forward from a spin pulling, back from one pushing); once
+//     the rotation stops he centres the rudder and holds the stick until the wing flies again; then he flies the goal
+//     again, which pulls him out. The usual recovery, as the spin tests fly it (src/dev/flightTests.js).
 
 import { Vector3 } from 'three';
 import { G } from '../core/constants.js';
@@ -32,6 +38,10 @@ const SPEED_P = 0.04; // ...and per m/s straight away
 export const RADIATOR_OPEN = 15; // °C below the coolant limit at which the radiator is opened
 const RADIATOR_CLOSE = 30; // °C below it at which it is closed again
 const CRUISE_RPM = 0.8; // rpm lever away from a fight
+const SPIN_STALL = 0.5; // stalled share of a wing at which a fast yaw is a spin, not a hard turn
+const SPIN_RATE = 0.6; // rad/s of yaw (34°/s): he is spinning; a turn with the ball in the middle yaws far slower
+const SPIN_OVER = 0.3; // rad/s: the rotation has stopped (as the spin tests judge it)
+const SPIN_STICK = 0.3; // stick eased towards the middle by this much in the recovery (as the spin tests)
 
 const _v = new Vector3();
 const _d = new Vector3();
@@ -70,6 +80,7 @@ export function liftWanted(velocity, direction, out = new Vector3(), turnGain = 
 
 /** Flies one physics step of dt towards `goal`, moving `craft.input` as a pilot's hands would. */
 export function fly(craft, hands, goal, dt) {
+  if (recoverSpin(craft, hands, dt)) return;
   const { plane, input } = craft;
   const { body } = plane;
   const d = plane.last ?? {};
@@ -109,7 +120,9 @@ export function fly(craft, hands, goal, dt) {
   let gWanted = clamp(gNeeded, goal.gMin ?? 0, goal.gMax ?? 4);
   const n = d.loadFactor ?? 1;
   const buffet = Math.max(d.stalledLeft ?? 0, d.stalledRight ?? 0);
-  if (buffet > skill.buffet) gWanted = Math.min(gWanted, n - 0.5);
+  // At the buffet he eases the stick towards the middle: forward when the wing is stalled pulling, back when it is
+  // stalled pushing (D216; easing forward at a negative stall only pushed him deeper into it).
+  if (buffet > skill.buffet) gWanted = (d.alpha ?? 0) >= 0 ? Math.min(gWanted, n - 0.5) : Math.max(gWanted, n + 0.5);
   hands.pull ??= input.pitch ?? 0;
   hands.pull = clamp(hands.pull + PULL_RATE * (gWanted - n) * dt, -1, 1);
   const pitchWanted = clamp(hands.pull + PULL_GAIN * (gWanted - n), -1, 1);
@@ -133,9 +146,44 @@ export function fly(craft, hands, goal, dt) {
   input.yaw = move(input.yaw ?? 0, yawWanted, 2, t, dt);
   input.throttle = move(input.throttle ?? 0, throttleWanted, 1, t, dt);
   input.rpm = goal.rpm ?? (goal.throttle === 1 ? 1 : CRUISE_RPM);
+  input.emergency = !!goal.emergency; // the boost cut-out pulled (+12 lb) when the goal asks for it (D217)
   mindRadiator(plane, input);
   input.fireMg = !!goal.fireMg;
   input.fireCannon = !!goal.fireCannon;
+}
+
+/**
+ * Spin recovery (D216): true while he is recovering, his hands on the controls for this step. `hands.spinning` counts
+ * how long he has felt the spin; `hands.spin` is the way it was turning (+1 right, -1 left) when he began to recover.
+ */
+function recoverSpin(craft, hands, dt) {
+  const { plane, input } = craft;
+  const d = plane.last ?? {};
+  const yawRate = -plane.body.angularVelocity.y;
+  const stalled = Math.max(d.stalledLeft ?? 0, d.stalledRight ?? 0) > SPIN_STALL;
+  if (!hands.spin) {
+    // Felt time builds while it spins and runs down while it doesn't, so a flickering stall still adds up.
+    hands.spinning = Math.max(0, (hands.spinning ?? 0) + (stalled && Math.abs(yawRate) > SPIN_RATE ? dt : -dt));
+    if (hands.spinning < hands.skill.reaction) return false;
+    hands.spin = Math.sign(yawRate);
+  }
+  if (Math.abs(yawRate) < SPIN_OVER && !stalled) {
+    hands.spin = 0;
+    hands.spinning = 0;
+    hands.pull = null; // the goal's pull starts again from where the stick is
+    return false;
+  }
+  const t = hands.skill.stickTime;
+  const stick = (d.alpha ?? 0) >= 0 ? -SPIN_STICK : SPIN_STICK;
+  input.pitch = move(input.pitch ?? 0, stick, 2, t, dt);
+  input.roll = move(input.roll ?? 0, 0, 2, t, dt);
+  input.yaw = move(input.yaw ?? 0, Math.abs(yawRate) < SPIN_OVER ? 0 : -Math.sign(yawRate), 2, t, dt);
+  input.throttle = move(input.throttle ?? 0, 0, 1, t, dt);
+  input.emergency = false;
+  mindRadiator(plane, input);
+  input.fireMg = false;
+  input.fireCannon = false;
+  return true;
 }
 
 /** Opens the radiator as the hottest engine's coolant nears its limit, and closes it once it has cooled. */

@@ -9,6 +9,7 @@ import { G } from '../core/constants.js';
 export const THREAT_RANGE = 800; // m: an enemy this close behind can shoot
 export const THREAT_TAIL = 60 * (Math.PI / 180); // rad: "behind" is within this of the tail
 export const NOSE_ON = 25 * (Math.PI / 180); // rad: an enemy pointing within this of us is aiming at us
+export const GUN_REACH = 400; // m: the longest range a fighter opens fire at (the Ace's fireRange, src/ai/skill.js; D217)
 const BLIND_BACK = 0.6; // share of the range behind...
 const BLIND_LOW = 0.25; // ...and below, where a pilot can't see (under the tail)
 
@@ -18,14 +19,21 @@ const _b = new Vector3();
 /** Energy height (m): height plus the height the speed would buy in a zoom, v²/2g. */
 export const energyHeight = (position, velocity) => position.y + velocity.lengthSq() / (2 * G);
 
-/** True when `enemy` ({ position, velocity }) sits behind `body` within `reach` (THREAT_RANGE), pointing at it. */
+/**
+ * True when `enemy` ({ position, velocity }) sits behind `body` within `reach` (THREAT_RANGE), pointing at it, and can
+ * reach it (D217): he has the energy to zoom up to its height, and beyond GUN_REACH he is closing. A slow enemy far
+ * below, or one falling behind, is no threat.
+ */
 export function threatens(body, enemy, reach = THREAT_RANGE) {
   _a.copy(body.position).sub(enemy.position); // from the enemy to us
   const range = _a.length();
   if (range > reach || range < 1) return false;
   const behind = _b.copy(body.velocity).normalize().negate().angleTo(_a.clone().negate()) < THREAT_TAIL;
   const noseOn = enemy.velocity.lengthSq() > 1 && enemy.velocity.angleTo(_a) < NOSE_ON;
-  return behind && noseOn;
+  if (!behind || !noseOn) return false;
+  if (energyHeight(enemy.position, enemy.velocity) < body.position.y) return false;
+  const closing = _b.copy(enemy.velocity).sub(body.velocity).dot(_a.divideScalar(range)); // m/s
+  return range < GUN_REACH || closing > 0;
 }
 
 /** True when a pilot in `body` can see something at `position`: within his sighting range (m), not hidden

@@ -21,6 +21,15 @@ const FLOOR = 300; // m above the ground: below this a pilot won't point the nos
 const FLOOR_TIME = 6; // s: ...and he keeps this many seconds of his descent rate above it as well, to pull out in
 const LOOKAHEAD = 3; // s: a wingman steers for where his place will be this far ahead
 const AIM_CHANGE = 1.5; // s: how often a pilot's aim error wanders to a new value
+// Breaking off (D216): an enemy coming head-on (pointing within HEAD_ON_PASS of him and closing) is broken off at the
+// skill's press range plus the distance the two close in PASS_CLOSING s; one he is overhauling from behind, inside half
+// that press range. He breaks for PASS_BREAK s, up if he is the higher of the two and down if the lower (decided once,
+// so that two pilots breaking at once part; a level pass decided by name), and a little to his right. Up or down needs
+// no roll first, so it parts them in the second there is. Game-design estimates.
+const HEAD_ON_PASS = 45 * (Math.PI / 180);
+const PASS_CLOSING = 0.7;
+const PASS_BREAK = 2;
+const UP = new Vector3(0, 1, 0);
 
 const _f = new Vector3();
 const _r = new Vector3();
@@ -107,9 +116,37 @@ export class Pilot {
     return best;
   }
 
+  /**
+   * Breaking off a pass (D216): once `enemy` comes head-on within the skill's press range plus PASS_CLOSING s of
+   * closing, or he is overhauling it inside half his press range, he breaks up or down (and a little right) for
+   * PASS_BREAK s, without firing. Null while the attack goes on.
+   */
+  headOnBreak(craft, enemy, sim) {
+    const { body } = craft.plane;
+    const gMax = (craft.ac.limits?.g?.damage ?? 6) * this.skill.gShare;
+    const away = () => {
+      const path = body.velocity.clone().normalize();
+      const dir = path.clone().addScaledVector(path.clone().cross(UP).normalize(), 0.3).addScaledVector(UP, 0.8 * this.passUp);
+      return this.passUp > 0 ? { direction: dir.normalize(), gMax, throttle: 1 }
+        : { direction: dir.normalize(), push: true, gMin: -1.5, gMax: 1, throttle: 1 };
+    };
+    if (sim.clock < (this.passUntil ?? -Infinity)) return away();
+    const toMe = body.position.clone().sub(enemy.position);
+    const closing = Math.max(0, enemy.velocity.clone().sub(body.velocity).dot(toMe.clone().normalize())); // m/s
+    const headOn = enemy.velocity.angleTo(toMe) < HEAD_ON_PASS && body.velocity.dot(enemy.velocity) < 0;
+    const overhauling = !headOn && closing > 0 && enemy.range < this.skill.press / 2;
+    if (!overhauling && (!headOn || enemy.range > this.skill.press + closing * PASS_CLOSING)) return null;
+    const above = body.position.y - enemy.position.y;
+    this.passUp = Math.abs(above) > 0.5 ? Math.sign(above) : (craft.label ?? '') < (enemy.craft?.label ?? '') ? 1 : -1;
+    this.passUntil = sim.clock + PASS_BREAK;
+    return away();
+  }
+
   /** Pursuit with lead, firing within range when the aim is close enough. */
   pursue(craft, enemy, sim) {
     const { body } = craft.plane;
+    const pass = this.headOnBreak(craft, enemy, sim);
+    if (pass) return pass;
     const gun = craft.armament[0];
     const flight = gun ? roundFlight(gun.ballistics, enemy.range) : { time: 0, drop: 0 };
     // The aim wanders by the skill's error, a new value every AIM_CHANGE seconds.
@@ -153,14 +190,15 @@ export function formationSpeed(ac, altitude) {
 }
 
 /**
- * Keep clear of the ground: below FLOOR, plus FLOOR_TIME seconds of the present descent, climb away (unless already
- * climbing hard), pulling as hard as the pilot will.
+ * Keep clear of the ground: below FLOOR, plus FLOOR_TIME seconds of the present descent, climb away (unless he is
+ * climbing and means to climb hard), pulling as hard as the pilot will. A goal that points up is not enough while he
+ * is still diving (D216): a spiral after a target above him held him diving into the ground.
  */
 export function keepClear(craft, sim, goal) {
   const { body } = craft.plane;
   const ground = sim.world.terrain.surfaceAt(body.position.x, body.position.z).height;
   const floor = FLOOR + FLOOR_TIME * Math.max(0, -body.velocity.y);
-  if (body.position.y - ground > floor || goal.direction.y > 0.3) return goal;
+  if (body.position.y - ground > floor || (goal.direction.y > 0.3 && body.velocity.y > 0)) return goal;
   // Climb away, banking no more than 60° so that the lift holds him up, however he was turning.
   const out = body.velocity.clone().setY(0).normalize().setY(0.4).normalize();
   const gLimit = craft.ac.limits?.g?.damage ?? 4;
