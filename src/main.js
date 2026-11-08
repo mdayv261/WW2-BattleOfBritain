@@ -125,7 +125,11 @@ renderer.setAnimationLoop((now) => {
     if (stick?.view) view.rig.toggleCockpit();
     sim.advance(dt);
     game.frame();
-  } else keyboard.pressed.clear(); // keys pressed on a menu don't act once the flight starts
+  } else {
+    keyboard.pressed.clear(); // keys pressed on a menu don't act once the flight starts
+    joystick.poll(); // keep reading the joystick on the menus, so Chrome connects it from a press there (D226)
+    game.menus.setStatus?.(joystick.status());
+  }
   view.rig.hatLook = stick && stick.hat !== null ? HAT_LOOKS[stick.hat] : null;
   view.update(sim, sim.loop.alpha, dt);
   shots.update(sim.projectiles);

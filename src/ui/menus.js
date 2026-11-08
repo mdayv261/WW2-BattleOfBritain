@@ -76,7 +76,13 @@ export class Menus {
     }
     this.panel.appendChild(box);
     if (note) this.panel.appendChild(Object.assign(document.createElement('p'), { className: 'menu-note', textContent: note }));
+    this.statusLine = screen === 'main' ? this.panel.appendChild(Object.assign(document.createElement('p'), { className: 'menu-note' })) : null;
     this.overlay.style.display = 'flex';
+  }
+
+  /** The main menu's status line (the joystick's connection, D226); other screens have none. */
+  setStatus(text) {
+    if (this.statusLine && this.statusLine.textContent !== text) this.statusLine.textContent = text;
   }
 
   /** The main menu. */

@@ -5777,3 +5777,18 @@ rule) and `setSkyTime` for the mission's time of day.
 - tests/core/gameState.test.js: the state changes, advancing only while flying, Fly again, a mission ending by
   itself, the test flight, settings;
 - tests/ui/missionSetup.test.js: daylight times, units per side, a consistent setup.
+
+## D226. The joystick is read on the menus too (8 Nov 2026, the product owner's report)
+
+**The report:** "The joystick is not working in the browser!" after checkpoint 1.
+
+**The cause:** Chrome shows a joystick to a page only after a button press or stick movement while the page is asking
+for gamepads. Before checkpoint 1 the game asked from the moment it loaded. Since D225 it asked only while flying, so a
+press on the menus went unseen, and in flight Chrome could still be waiting for a first press. macOS saw the
+"Logitech Extreme 3D Pro" throughout.
+
+**The fix:**
+- src/input/joystick.js listens for `gamepadconnected` from the start;
+- src/main.js reads the joystick on every screen, not only in flight;
+- the main menu shows the joystick's state: "Joystick: none seen yet. Press a joystick button to connect it.", or
+  "Joystick: Logitech Extreme 3D Pro connected." (src/ui/menus.js `setStatus`, `Joystick.status`).

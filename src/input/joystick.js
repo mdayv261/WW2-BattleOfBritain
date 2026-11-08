@@ -109,6 +109,16 @@ export class Joystick {
     this.throttleStart = null;
     this.wasPressed = {};
     this.output = { roll: 0, pitch: 0, yaw: 0 }; // what the flight controls last received, for the panel
+    // Chrome shows a joystick only after a button press or stick movement while the page is listening for gamepads:
+    // listen from the start, so a press on a menu screen connects it too (D226).
+    if (typeof window !== 'undefined') window.addEventListener('gamepadconnected', () => this.poll());
+  }
+
+  /** "Logitech Extreme 3D Pro connected", or how to connect one (shown on the main menu, D226). */
+  status() {
+    const pad = this.poll();
+    if (!pad) return 'Joystick: none seen yet. Press a joystick button to connect it.';
+    return `Joystick: ${pad.id.replace(/\s*\(.*$/, '')} connected.`;
   }
 
   saveMapping() {
