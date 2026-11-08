@@ -5353,8 +5353,8 @@ is unchanged, so a real slowdown still fails it.
 
 ## D216. Phase 6 checkpoint 5, part 1: aggression, the duels, and the AI pilot out of trouble (5-6 Nov 2026)
 
-Under the approved checkpoint 5 plan (5 Nov 2026). The frame-rate measurement (D219) and the proposed acceptance test
-(D220) are still to come; D217 and D218 continue this work.
+Under the approved checkpoint 5 plan (5 Nov 2026). The frame-rate measurement (D220) and the proposed acceptance test
+(D221) are still to come; D217-D219 continue this work.
 
 **Aggression, a new skill setting** (src/ai/skill.js, src/ai/fighter.js), game-design estimates as in the plan:
 - `press`: how close a fighter presses a diving pass or a run on a bomber before breaking off (it replaces the fixed
@@ -5583,3 +5583,26 @@ Hits given / taken over the same fights:
   pulls out under 750 km/h without hitting the ground;
 - tests/ai/recovery.test.js: the ground-rule cases given an attitude;
 - `npm run validate` is unchanged.
+
+## D219. The Bf 109's diving pass: a full pull and a parting burst tried, and taken out (8 Nov 2026)
+
+**Why:** after D218 the 109 lands at most 4 hits in 20 duels at any skill. The product owner approved the proposed
+fix (8 Nov):
+- in the last 800 m of a pass, the 109 pulls what its skill pulls, not 4 g;
+- before breaking off from a target that breaks away, it fires a short snapshot burst within three times its usual
+  firing cone, for 1 s.
+
+**Result: no gain, so both were taken out.**
+- **Duels:** over 20 duels per skill against Regular Spitfires and Hurricanes, the 109 still landed 0-4 hits and
+  fired for at most 0.2 s.
+- **Why the burst can't help:** it triggered 21 times, always within 400 m, but with the RAF fighter 102-166° off the
+  109's nose, already behind it. At about 144 m/s of closing speed the RAF fighter breaks and the 109 overshoots, so
+  there is no crossing shot to take. Holding the pass for the burst kept the 109 flying straight for a second with
+  the enemy behind it.
+- **Not left in:** logic that never helps and can hurt. The diff is kept outside the repository.
+
+**What the measurements point to (not done; for the product owner):** the 109 dives in far too fast to shoot. From
+400 m to its break-off range it has about 2 s, against a turning target, with a 2° firing cone. A pass that arrives
+behind the target with a smaller overtake would give it time on target. That means curving onto the target's tail
+and easing the throttle in the last kilometre to keep the closing speed moderate. Any such figure would be a
+game-design estimate, as no source in the project gives one.

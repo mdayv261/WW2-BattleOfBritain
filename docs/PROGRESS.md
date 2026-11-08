@@ -15,7 +15,7 @@ Read this at the start of every session.
   D78); checkpoint 2 (many aircraft, the AI pilot's hands, scenario keys) done (D79); checkpoint 2b (bailing out and
   parachutes, the product owner's addition) done (D80); checkpoint 3 (fighter tactics and formations) done (D81);
   checkpoint 4 (bombers' routes and air gunners) done (D83); checkpoint 5 (skill levels and the Phase 6 acceptance
-  test) in progress (D216-D218).
+  test) in progress (D216-D219).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751).
 
 ## Phase 6 checkpoint 5: skill levels (6 Nov 2026)
@@ -45,10 +45,10 @@ passes broken off (no more head-on collisions); the AI pilot out of trouble, whi
 Low down all four duel groups now separate the skills by net hits; at 6,000 m two do.
 
 **Left:**
-- **Open, for the product owner:** the 109 still lands almost no hits. Two thirds of its passes end 400-800 m out,
-  mostly because the RAF fighter breaks more than 45° off and the 109 won't turn with it; inside range it never
-  takes the deflection shot (D218).
-- Then the Novice-gunner test, the twelve-aircraft frame rate (D219) and the proposed acceptance test (D220).
+- **Open, for the product owner:** the 109 still lands almost no hits (D218). A full pull and a parting burst were
+  tried and taken out (D219): the 109 overshoots, so the target is behind it before it can shoot. It dives in at
+  about 144 m/s of closing speed; a pass that arrives behind the target with less overtake is the next idea.
+- Then the Novice-gunner test, the twelve-aircraft frame rate (D220) and the proposed acceptance test (D221).
 
 **Known issues:** before he recognises a spin, a pilot's speed-hold opens the throttle (ordinary hands, unchanged).
 
