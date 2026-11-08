@@ -39,8 +39,9 @@ export class Keyboard {
     target.addEventListener('keydown', (e) => {
       if (e.repeat || e.metaKey || e.ctrlKey) return;
       this.down.add(e.code);
-      // Shift+P is its own key (the Bf 110's pitch control switch, D188), so it does not also pause (P).
-      this.pressed.add(e.code === 'KeyP' && e.shiftKey ? 'Shift+KeyP' : e.code);
+      // Shift+P is its own key (the Bf 110's pitch control switch, D188), so it does not also pause (P); Shift+7 loads
+      // twelve aircraft, not the bomber scenario (D221).
+      this.pressed.add((e.code === 'KeyP' || e.code === 'Digit7') && e.shiftKey ? `Shift+${e.code}` : e.code);
       if (e.code.startsWith('Arrow') || e.code === 'Space' || e.code === 'Enter' || e.code === 'Backspace') e.preventDefault();
     });
     target.addEventListener('keyup', (e) => this.down.delete(e.code));

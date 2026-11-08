@@ -165,6 +165,29 @@ export function bomberScenario(sim) {
   return `Scenario: ${sim.scenario} (${SKILLS[sim.skill].name})`;
 }
 
+/**
+ * Shift+7: the bomber scenario (7) plus six fighters of the other side chasing the player from behind, 500 m up: twelve
+ * aircraft with the player, for checking the frame rate (D221; the same set as the twelve-aircraft timing test).
+ */
+export function crowdScenario(sim) {
+  bomberScenario(sim);
+  const side = otherSide(sim.ac.side);
+  const types = side === 'Luftwaffe' ? ['bf109e4', 'bf110c4'] : ['spitfire', 'hurricane'];
+  const { heading, fwd } = frame(sim);
+  for (let i = 0; sim.others.length < MAX_AI; i += 1) {
+    const ac = aircraftById[types[i % 2]];
+    const at = sim.plane.body.position.clone().addScaledVector(fwd, -(1500 + 200 * i)).add(new Vector3(0, 500, 0));
+    const craft = new Craft(ac, {
+      start: { altitude: at.y, speed: 110, heading, throttle: levelThrottle(ac, at.y, 110, 1), rpm: 1, x: at.x, z: at.z },
+      pilot: createPilot({ role: 'fighter', skill: sim.skill, seed: sim.aiSeed + i }), side, skill: sim.skill, seed: sim.aiSeed + i,
+      label: `${ac.name} #${sim.others.length + 1}`,
+    });
+    sim.others.push(craft);
+  }
+  sim.scenario = `${sim.scenario}, with six fighters behind you`;
+  return `Scenario: ${sim.scenario}: ${sim.others.length + 1} aircraft (${SKILLS[sim.skill].name})`;
+}
+
 /** 8: the next skill, for every AI pilot now and from now on. */
 export function cycleSkill(sim) {
   sim.skill = nextSkill(sim.skill);

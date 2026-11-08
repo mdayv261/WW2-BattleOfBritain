@@ -5353,8 +5353,8 @@ is unchanged, so a real slowdown still fails it.
 
 ## D216. Phase 6 checkpoint 5, part 1: aggression, the duels, and the AI pilot out of trouble (5-6 Nov 2026)
 
-Under the approved checkpoint 5 plan (5 Nov 2026). The frame-rate measurement (D220) and the proposed acceptance test
-(D221) are still to come; D217-D219 continue this work.
+Under the approved checkpoint 5 plan (5 Nov 2026). The frame-rate measurement (D221) and the proposed acceptance test
+(D222) are still to come; D217-D220 continue this work.
 
 **Aggression, a new skill setting** (src/ai/skill.js, src/ai/fighter.js), game-design estimates as in the plan:
 - `press`: how close a fighter presses a diving pass or a run on a bomber before breaking off (it replaces the fixed
@@ -5606,3 +5606,89 @@ fix (8 Nov):
 behind the target with a smaller overtake would give it time on target. That means curving onto the target's tail
 and easing the throttle in the last kilometre to keep the closing speed moderate. Any such figure would be a
 game-design estimate, as no source in the project gives one.
+
+## D220. The Bf 109 can't yet attack a single RAF fighter: prototypes and findings (8 Nov 2026)
+
+**Decision (product owner, 8 Nov):** record the limitation and move on to the rest of checkpoint 5. A proper fix is
+a dedicated later plan. **No code was changed:** every prototype below ran in memory, replacing methods at run time.
+
+**What was found:**
+- **The guns work.** Dead astern at 300 m, 20 m/s faster than a Hurricane flying straight, a 109 Ace fires at once and
+  lands 8 hits in about a second.
+- **Head-on duels can't give it a shot.** The RAF fighter's turning-fight AI always points its nose at the 109, so
+  every pass is head-on and is cancelled by the "no head-on pass" rule. Over 20 Ace fights: 224 passes of about 1 s,
+  1,645 s zooming and about 1,700 s evading. A slower pass gave no hits: aiming 300 m behind and 150 m below the
+  target, with the overtake held to 30 m/s inside 1 km.
+- **Bounces from 4.5 km behind and 1 km above** (the 109's real way of fighting) gave no shots either:
+  - spotting is instant within a set range, and only behind-and-below is hidden, so the RAF Regular saw the 109 at
+    4 km and turned in;
+  - the 109's dive was shallow (about 12°) and closed at only about 25 m/s.
+- **A rear blind cone** (within 30° of a pilot's tail, sight limited to 35% of his sighting range) delayed spotting
+  to about 1.3 km. Still no shots.
+- **Spotting that takes time** (in view, a chance each second of the skill's `notice` × (1 − range / sighting),
+  halved in the rear cone):
+  - an unaware Hurricane didn't spot a bouncing 109 for 49 s;
+  - yet the 109 sat astern within 600 m for only 1 s and overshot, passing 89 m from it. It steered for a point 400 m
+    behind and 50 m below, attacking from within 20° of the tail inside 600 m, overtake held to 40 m/s;
+  - this spotting also changed the RAF skill results (Spitfire Novice net +6 against the Ace's 0 over six low
+    seeds), so it would need tuning.
+
+**The missing piece:** a stern-approach guidance that curves onto the target's tail, matches its speed and holds a
+steady overtake into gun range. Proposed as a dedicated later plan:
+- that guidance, for the 109's bounce;
+- time-to-spot and a rear blind cone, for both sides;
+- bounce duels to prove the Luftwaffe skills.
+
+The prototype values above are kept as a starting point; all are game-design estimates, none sourced.
+
+**Where it shows in the game:** an AI 109 does poorly against an alert RAF fighter in a one-against-one. It also meets
+the player, who doesn't always turn to face it, and RAF fighters busy with bombers; those cases weren't measured.
+The RAF skill proof (tests/ai/skill.test.js) is unaffected.
+
+## D221. Twelve aircraft run at the screen's full rate; Shift+7 loads them (8 Nov 2026)
+
+**The measurement** (the approved checkpoint 5 plan, section 3), in Chrome on this Mac on the dev server:
+- the player's Spitfire in the air, with 11 AI aircraft: an He 111 Kette, its two Bf 109 escorts and six fighters;
+- the F3 overlay's frame line sampled twice a second for 20 s in each view, the fight going on throughout;
+- the frame rate is held at the screen's refresh rate (75 Hz here), so the work each frame takes is the headroom
+  measure, against the 16.7 ms a 60 fps frame allows.
+
+| View | Frame rate | Longest frame | Work per frame (mean / peak) | Draw calls | Triangles |
+|---|---|---|---|---|---|
+| Cockpit | 75 fps throughout | 14 ms | 4.0 / 4.3 ms | 592-836 | 322-344k |
+| Outside | 75 fps throughout | 14 ms | 4.0 / 5.8 ms | up to 612 | up to 322k |
+
+- No console errors; all 11 AI aircraft still flying at the end.
+- **Result:** well within 60 fps (about four times the headroom), so the draw-call merge the plan held in reserve
+  isn't needed. Screenshots were shown to the product owner with this report.
+
+**A change from the plan's method, flagged:** the plan said to load scenario 7 and then 6, but each scenario key
+clears the last, so no key gave twelve aircraft. New **Shift+7** (src/core/scenarios.js `crowdScenario`) loads the
+bomber scenario plus six fighters of the other side behind the player, 500 m up. That is the same set as the
+twelve-aircraft timing test, and gives twelve with the player from either side. It's listed in the in-game help, and
+the product owner can use it for the acceptance test. Test: tests/core/scenarios.test.js.
+
+**Checkpoint 5's gunner proof** (plan section 2) already exists from checkpoint 4 (tests/ai/gunner.test.js: an Ace
+gunner hits a fighter crossing 300 m behind more than twice as often as a Novice), so no new test was added.
+
+## D222. The proposed Phase 6 acceptance test (8 Nov 2026, for the product owner to agree and fly)
+
+From the approved checkpoint 5 plan, updated for D216-D221:
+1. **Tests:** `npm test` passes and `npm run validate` is unchanged.
+2. **Key 6 fighter scenarios, from each side:** AI fighters patrol, spot, engage, attack and evade, and go home when
+   out of ammunition, hurt or out-matched in gun range.
+   - RAF fighters turn and break.
+   - The Bf 109 and 110 dive and zoom.
+   - Known limitation (D220): an AI Bf 109 rarely scores against a single RAF fighter.
+3. **Key 7 raid:** He 111s in formation on a route with escorts; their gunners fire with tracer and change drums; the
+   escorts defend them.
+4. **Key 8 skill:** Novices are clearly easier (they spot you later, shoot wider, break off early and bleed their
+   speed), Aces clearly harder. `npm run duels` shows the RAF skills rising Novice < Regular < Ace by net hits (low
+   down all four groups rise, D218).
+5. **Bf 110:** your rear gunner fires at attackers within his arc.
+6. **Endings:** bail-outs, parachutes, collisions and wrecks behave as before. AI pilots no longer fly into the ground
+   from stalls, spirals or fast dives (D216, D218), and recover from spins.
+7. **Frame rate:** Shift+7 (twelve aircraft) holds 60 fps on your machine (F3), with no console errors (D221: 75 fps,
+   4 ms of work per frame here).
+
+Phase 7 doesn't start until the product owner signs Phase 6 off.

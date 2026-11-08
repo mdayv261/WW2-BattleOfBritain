@@ -7,7 +7,7 @@ import { attitude } from '../../src/core/autopilot.js';
 import { Simulation, levelThrottle } from '../../src/core/simulation.js';
 import { Craft } from '../../src/core/craft.js';
 import { createPilot } from '../../src/ai/pilots.js';
-import { nextFighterScenario, bomberScenario, cycleSkill, clearAI, MAX_AI } from '../../src/core/scenarios.js';
+import { nextFighterScenario, bomberScenario, crowdScenario, cycleSkill, clearAI, MAX_AI } from '../../src/core/scenarios.js';
 
 const DT = 1 / 120;
 const kinds = (sim) => sim.others.map((c) => `${c.ac.id}:${c.side}`);
@@ -113,6 +113,17 @@ describe('many aircraft', () => {
     expect(sim.others).toHaveLength(0);
     expect(sim.falling.length).toBe(2);
     expect(sim.notice.text).toBe(`${c.label} destroyed: The tail broke away`);
+  });
+
+  it('Shift+7 loads twelve aircraft (the bomber scenario and six fighters behind you), from either side (D221)', () => {
+    for (const id of ['spitfire', 'bf109e4']) {
+      const sim = new Simulation(aircraftById[id], 'air');
+      crowdScenario(sim);
+      expect(sim.others).toHaveLength(MAX_AI);
+      expect(sim.others.every((c) => c.side !== sim.ac.side || c.pilot.role === 'bomber' || c.pilot.role === 'escort')).toBe(true);
+      for (let i = 0; i < 120; i += 1) sim.step(DT);
+      expect(sim.others.every((c) => c.alive)).toBe(true);
+    }
   });
 
   it('twelve aircraft, all flying and fighting, run in well under real time', () => {

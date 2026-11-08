@@ -8,7 +8,7 @@ import { WreckView } from './render/wrecks.js';
 import { ParachuteView } from './render/parachutes.js';
 import { HAT_LOOKS } from './render/cameras.js';
 import { Simulation } from './core/simulation.js';
-import { nextFighterScenario, bomberScenario, cycleSkill, clearAI } from './core/scenarios.js';
+import { nextFighterScenario, bomberScenario, crowdScenario, cycleSkill, clearAI } from './core/scenarios.js';
 import { Keyboard } from './input/keyboard.js';
 import { Joystick } from './input/joystick.js';
 import { MouseLook } from './input/mouse.js';
@@ -71,6 +71,7 @@ function gameKeys() {
   const say = (text) => { sim.notice = { text, until: sim.plane.time + 4 }; };
   if (keyboard.took('Digit6')) say(nextFighterScenario(sim));
   if (keyboard.took('Digit7')) say(bomberScenario(sim));
+  if (keyboard.took('Shift+Digit7')) say(crowdScenario(sim)); // twelve aircraft, for the frame rate (D221)
   if (keyboard.took('Digit8')) say(cycleSkill(sim));
   if (keyboard.took('Digit0')) say(clearAI(sim));
   if (keyboard.took('KeyC')) view.rig.toggleCockpit();
