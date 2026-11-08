@@ -175,10 +175,11 @@ Every deviation from a historical or published figure is flagged to the product 
   - escorting bombers (Luftwaffe): the player may fly the Luftwaffe side (product owner, 24 Oct 2026, D14).
 - **RAF radar display (RAF aircraft only, D17):**
   - a transparent radar screen with a 360° compass ring and enemy blips;
-  - whether a blip shows the bearing only or the bearing and the distance is settled in the Phase 7 plan;
+  - a blip shows the bearing only, on the compass ring (product owner, 8 Nov 2026, D224);
   - height and numbers are not shown.
 - **Cockpit:**
-  - full 3D period cockpits for the four flyable aircraft (D16), with instruments matching each aircraft's period
+  - period cockpits for the four flyable aircraft: the 2D panels as the forward view, with 3D cockpit sides, sills and
+    rear (D16, updated by D224), with instruments matching each aircraft's period
     layout and its side's units;
   - an optional modern HUD;
   - each aircraft's period reflector gunsight (types to be researched).

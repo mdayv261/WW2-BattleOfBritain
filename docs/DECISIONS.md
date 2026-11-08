@@ -303,7 +303,8 @@ Archive found two period documents, S28 and S29 in AIRCRAFT_DATA.md.
    source and its licence, and the exact extent, are proposed in the Phase 4 plan.
 5. **Modes:** one realistic mode with optional assists.
 6. **Units:** each side's own units only, as in CLAUDE.md.
-7. **Cockpits:** full 3D period cockpits for the four flyable aircraft.
+7. **Cockpits:** full 3D period cockpits for the four flyable aircraft. (Updated by D224: the 2D panels stay as the
+   forward view, with 3D cockpit sides, sills and rear added.)
 8. **Ranks:** based on kills only. Only single-player kills count (confirmed by the product owner, 24 Oct 2026).
 
 **Why:** the product owner's answers to the last Phase 0 questions. All Phase 0 questions are now answered.
@@ -317,7 +318,7 @@ Archive found two period documents, S28 and S29 in AIRCRAFT_DATA.md.
 2. **RAF radar display:** RAF aircraft only.
    - A transparent radar screen with enemy blips and a 360° compass ring.
    - This supersedes the "bearing only" text information of D14, item 8.
-   - Still to settle in the Phase 7 plan: whether a blip shows only the bearing (a blip on the compass ring) or the
+   - Settled by D224: bearing only. Before that, still to settle in the Phase 7 plan: whether a blip shows only the bearing (a blip on the compass ring) or the
      bearing and the distance.
 
 **Why:** the product owner's instruction. Public-domain data avoids any licence or credit obligations.
@@ -5701,3 +5702,24 @@ The product owner agreed the acceptance test as written (D222) and signed Phase 
 - **Pushed:** the product owner asked for all outstanding work (D216-D223) to be pushed to GitHub. A push to `main`
   runs the tests, builds and deploys.
 - **Next:** Phase 7, after a plan.
+
+## D224. The Phase 7 plan: missions and the game loop (8 Nov 2026, product owner's approval)
+
+**Decisions (product owner, 8 Nov 2026):**
+- **RAF radar:** blips show the bearing only, on the compass ring (settles D17).
+- **Cockpits:** the 2D panels stay as the forward view; simple 3D cockpit sides, sills and rear are added for looking
+  round (updates D16).
+
+**Checkpoints:**
+1. menus and the game loop (main menu, mission setup, pause, results, kill credit, time of day; dogfights);
+2. missions (interception, escort, friendly wingmen);
+3. ranks (single-player kills; rank names from an allowed source);
+4. the RAF radar display;
+5. sound (Web Audio, generated in code);
+6. cockpit sides, HUD and settings;
+7. the Bf 110 rear-gun swap;
+8. the Phase 7 acceptance test.
+
+Each later checkpoint gets its own detailed plan when it starts. Checkpoint 1's detail is in the approved plan: a
+game-state machine, DOM menu screens, src/core/mission.js, kill credit from round owners (30 s window, a game-design
+rule) and `setSkyTime` for the mission's time of day.
