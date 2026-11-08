@@ -5692,3 +5692,12 @@ From the approved checkpoint 5 plan, updated for D216-D221:
    4 ms of work per frame here).
 
 Phase 7 doesn't start until the product owner signs Phase 6 off.
+
+## D223. Phase 6 signed off (8 Nov 2026, product owner)
+
+The product owner agreed the acceptance test as written (D222) and signed Phase 6 (AI pilots and gunners) off.
+- **Carried forward as a known limitation:** the AI Bf 109 can't yet attack a single RAF fighter (D220); a dedicated
+  plan later.
+- **Pushed:** the product owner asked for all outstanding work (D216-D223) to be pushed to GitHub. A push to `main`
+  runs the tests, builds and deploys.
+- **Next:** Phase 7, after a plan.

@@ -2,7 +2,7 @@
 
 Read this at the start of every session.
 
-## Current status (27 Oct 2026)
+## Current status (8 Nov 2026)
 
 - **Phase 0** (foundations and research): signed off (24 Oct 2026, D14). The game is live at
   https://mdayv261.github.io/WW2-BattleOfBritain/ (repository https://github.com/mdayv261/WW2-BattleOfBritain).
@@ -11,11 +11,10 @@ Read this at the start of every session.
 - **Phase 3** (twin-engine aircraft: Bf 110 C-4 and He 111 H): signed off (26 Oct 2026, D50).
 - **Phase 4** (world and visuals): signed off (26 Oct 2026, D57).
 - **Phase 5** (weapons and damage): signed off (27 Oct 2026, D75).
-- **Phase 6** (AI pilots and gunners): in progress (plan approved 27 Oct 2026, D76). Checkpoint 1 (research) done (D77,
-  D78); checkpoint 2 (many aircraft, the AI pilot's hands, scenario keys) done (D79); checkpoint 2b (bailing out and
-  parachutes, the product owner's addition) done (D80); checkpoint 3 (fighter tactics and formations) done (D81);
-  checkpoint 4 (bombers' routes and air gunners) done (D83); checkpoint 5 (skill levels and the Phase 6 acceptance
-  test) in progress (D216-D222): acceptance test proposed (D222).
+- **Phase 6** (AI pilots and gunners): signed off (8 Nov 2026, D223), against the acceptance test in D222. Checkpoints
+  1-5 done (D77-D83, D216-D222). Known limitation carried forward: the AI Bf 109 can't yet attack a single RAF fighter
+  (D220).
+- **Phase 7:** not started; it needs a plan first.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751).
 
 ## Phase 6 checkpoint 5: skill levels (6 Nov 2026)
@@ -52,8 +51,7 @@ Low down all four duel groups now separate the skills by net hits; at 6,000 m tw
 - new Shift+7 loads twelve aircraft;
 - the proposed Phase 6 acceptance test written (D222).
 
-**Left:** the product owner agrees the acceptance test (D222), flies it and signs Phase 6 off; then Phase 7 after a
-plan.
+**Left:** nothing in Phase 6: signed off (D223). Next, Phase 7 after a plan.
 
 **Known issues:**
 - **AI Bf 109 can't yet attack a single RAF fighter** (D218-D220; recorded and deferred, product owner 8 Nov). It
