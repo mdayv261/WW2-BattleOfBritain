@@ -5792,3 +5792,9 @@ press on the menus went unseen, and in flight Chrome could still be waiting for 
 - src/main.js reads the joystick on every screen, not only in flight;
 - the main menu shows the joystick's state: "Joystick: none seen yet. Press a joystick button to connect it.", or
   "Joystick: Logitech Extreme 3D Pro connected." (src/ui/menus.js `setStatus`, `Joystick.status`).
+
+**What actually fixed it:** restarting Chrome (product owner, 8 Nov 2026). Chrome had stopped passing the joystick to
+any page; a bare test page with no game code saw nothing either, while macOS still listed the stick. The changes above
+stay: the joystick is now read on every screen, and the main menu's status line shows whether it's connected. If the
+status line says "none seen yet" after a stick button is pressed, quitting and reopening Chrome is the first thing to
+try.
