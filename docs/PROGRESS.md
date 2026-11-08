@@ -14,9 +14,28 @@ Read this at the start of every session.
 - **Phase 6** (AI pilots and gunners): signed off (8 Nov 2026, D223), against the acceptance test in D222. Checkpoints
   1-5 done (D77-D83, D216-D222). Known limitation carried forward: the AI Bf 109 can't yet attack a single RAF fighter
   (D220).
-- **Phase 7** (missions and the game loop): plan approved 8 Nov 2026 (D224); checkpoint 1 (menus and the game loop)
-  next, not yet started in code.
+- **Phase 7** (missions and the game loop): plan approved 8 Nov 2026 (D224). Checkpoint 1 (menus and the game loop)
+  done (D225); next, checkpoint 2 (missions: interception, escort, friendly wingmen), after its plan.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383).
+
+## Phase 7 checkpoint 1: menus and the game loop (8 Nov 2026)
+
+**Done** (D225):
+- the game opens on a main menu (Fly a mission, Test flight, Settings);
+- mission setup (side, aircraft, enemy type and number, skill, height in each side's units, daylight time);
+- dogfight missions, a pause menu (Esc), results with kill credit, and Fly again or back to the menu without
+  reloading;
+- the sun moves to the mission's time;
+- the test flight keeps all its keys.
+
+**Left in Phase 7:** checkpoints 2-8 (missions, ranks, radar, sound, cockpit sides and settings, the Bf 110 swap, the
+acceptance test), each after its own plan.
+
+**Known issues:**
+- times are shown in UTC only;
+- the settings screen is a placeholder;
+- the HUD's crash notice still says "press R to restart", which works only in the test flight (a mission shows its
+  results instead).
 
 ## Phase 6 checkpoint 5: skill levels (6 Nov 2026)
 

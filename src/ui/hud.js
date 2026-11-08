@@ -96,6 +96,7 @@ const HELP = `
 <tr><td>Backspace</td><td>hold 1 s to bail out (you also bail out when the aircraft is lost)</td></tr>
 <tr><td>6 &nbsp; 7 &nbsp; 8 &nbsp; 0</td><td>AI: enemy fighters (each press: the next group) / a bomber formation / AI skill / clear the AI</td></tr>
 <tr><td>Shift+7</td><td>Twelve aircraft: the bomber formation and six fighters behind you (frame-rate check)</td></tr>
+<tr><td>Esc</td><td>Pause menu (resume, restart or end the mission, main menu). Keys 1-5, R, N, 9 and 6-0 work in the test flight only</td></tr>
 <tr><td>Joystick</td><td>trigger: machine guns; thumb button: cannon; hat: look around (the panel hides while you look away); 5 / 3 trim nose up / down; 4 / 6 flaps up / down; 12 brakes; 10 cockpit view; 11 undercarriage; 7 / 9 propeller pitch fine / coarse (or the rpm lever up / down)</td></tr>
 <tr><td>J &nbsp; H</td><td>joystick panel (change the buttons there), this help</td></tr>
 </table>

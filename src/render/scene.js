@@ -159,5 +159,11 @@ export function createScene(container, terrain = null) {
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  return { renderer, scene, camera, sea, update };
+  /** Moves the sun (the sky's disc and glow, and the light) for a mission's time of day (Phase 7, D225). */
+  const setSkyTime = (time) => {
+    sunDir.set(...Object.values(sunDirection(time)));
+    sun.position.copy(sunDir);
+  };
+
+  return { renderer, scene, camera, sea, update, setSkyTime };
 }

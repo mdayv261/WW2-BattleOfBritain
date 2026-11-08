@@ -29,10 +29,24 @@ export function hittable(sim) {
   return list;
 }
 
+/**
+ * Who hit whom (Phase 7, D225): each aircraft struck keeps the count of hits from each shooter (`hitsBy`, a Map keyed by
+ * the round's owner: the simulation for the player and his Bf 110 gunner, else the AI craft) and the last shooter and
+ * the time (`lastHitBy`, `lastHitAt`, simulation time), for the missions' kill credit.
+ */
+export function noteShooter(sim, who, owner) {
+  if (!owner) return;
+  who.hitsBy ??= new Map();
+  who.hitsBy.set(owner, (who.hitsBy.get(owner) ?? 0) + 1);
+  who.lastHitBy = owner;
+  who.lastHitAt = sim.clock;
+}
+
 /** Applies a hit to whichever aircraft was struck, and tells the pilot what it did. */
 export function resolveHit(sim, struck, hit) {
   const text = applyHit(struck.plane, hit, struck.random);
   noteHit(sim, struck.plane, hit);
+  noteShooter(sim, struck.who, hit.owner);
   const time = sim.plane.time;
   if (struck.who === sim) sim.notice = { text: `Hit: ${text}`, until: time + 2 };
   else {

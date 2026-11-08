@@ -64,11 +64,12 @@ function place(origin, heading, { ahead = 0, side = 0, up = 0 }) {
 /**
  * Puts a group of aircraft of type `id` in the air in `formation` around `origin` (the leader's place), all on `heading`,
  * flown by AI pilots of `role`. `leader`: the craft its places are kept from (an escort's bombers), else its own first.
+ * `count`: only the formation's first places (a mission's numbers, D225). Exported for the missions (src/core/mission.js).
  */
-function spawnGroup(sim, { id, formation, origin, heading, role, side, speed, leader = null, offset = {}, group = null }) {
+export function spawnGroup(sim, { id, formation, origin, heading, role, side, speed, leader = null, offset = {}, group = null, count = Infinity }) {
   const ac = aircraftById[id];
   const out = [];
-  FORMATIONS[formation].forEach((slot, i) => {
+  FORMATIONS[formation].slice(0, count).forEach((slot, i) => {
     if (sim.others.length >= MAX_AI) return;
     const s = { side: (slot.side ?? 0) + (offset.side ?? 0), back: (slot.back ?? 0) + (offset.back ?? 0), up: (slot.up ?? 0) + (offset.up ?? 0) };
     const at = place(origin, heading, { ahead: -s.back, side: s.side, up: s.up });
@@ -114,10 +115,10 @@ function arriveCool(craft) {
   }
 }
 
-const otherSide = (side) => (side === 'RAF' ? 'Luftwaffe' : 'RAF');
+export const otherSide = (side) => (side === 'RAF' ? 'Luftwaffe' : 'RAF');
 
 /** Takes every AI aircraft out of the sky (its crew with it: nobody bails out of an aircraft that has been cleared). */
-function dropAll(sim) {
+export function dropAll(sim) {
   for (const c of sim.others) c.gone = true;
   sim.others = [];
 }

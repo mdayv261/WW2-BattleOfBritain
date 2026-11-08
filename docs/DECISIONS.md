@@ -5723,3 +5723,57 @@ The product owner agreed the acceptance test as written (D222) and signed Phase 
 Each later checkpoint gets its own detailed plan when it starts. Checkpoint 1's detail is in the approved plan: a
 game-state machine, DOM menu screens, src/core/mission.js, kill credit from round owners (30 s window, a game-design
 rule) and `setSkyTime` for the mission's time of day.
+
+## D225. Phase 7 checkpoint 1: menus and the game loop (8 Nov 2026)
+
+**What was built** (the approved plan, D224):
+- **The game's states** (new src/core/gameState.js): main menu, mission setup, settings, flying (a mission or the
+  test flight), paused and results.
+  - The 3D view draws in every state; the simulation advances only while flying.
+  - Every flight starts afresh in the same simulation, so the game goes from the results back to the menu, and on to
+    another flight, without reloading.
+  - src/main.js opens on the main menu with the key list shut. Esc pauses and resumes.
+  - The test keys (aircraft 1-5, R, N, 9 and the AI scenarios 6-0) work only in the test flight.
+  - Keys pressed on a menu are dropped, so they don't act once a flight starts.
+- **Screens** (new src/ui/menus.js and src/ui/missionSetup.js, page overlays):
+  - **Main menu:** Fly a mission; Test flight; Settings (a placeholder until checkpoint 6).
+  - **Mission setup:** side, aircraft (each side's flyable types), mission (dogfight), enemy type, number (1-6, inside
+    the 12-aircraft limit), enemy skill, start height (1,000-8,000 m, shown in feet for the RAF and metres for the
+    Luftwaffe), and time (15 August 1940, half-hour steps, daylight only: the sun at least 5° up, src/world/sun.js).
+    A side change keeps the choices consistent.
+  - **Pause:** Resume, Restart mission, End mission, Main menu. The test flight has no mission actions.
+  - **Results:** the outcome; kills, shared, damaged; enemy destroyed and gone home; hits given and taken; rounds
+    fired; flight time; Fly again and Main menu.
+- **Missions** (new src/core/mission.js), the dogfight:
+  - the player in the air at the chosen height over his home field, facing the enemy's side of the Channel;
+  - the enemy 4 km ahead and 300 m higher, coming the other way, in its side's formations (Luftwaffe Schwarms of
+    four, then a Rotte or a single; RAF vics of three);
+  - it ends when every enemy is lost (destroyed, abandoned or gone home), when the player is lost, or when he has
+    landed on a friendly field and stopped. The results follow 5 s later.
+- **Kill credit** (src/core/combat.js `noteShooter`; the hit now carries its round's `owner`, src/weapons/projectiles.js):
+  - each aircraft keeps the hits from each shooter, and the last shooter and time;
+  - an enemy destroyed within 30 s of the player's last hit is his kill, one he hit that was finished otherwise is
+    shared, and one that goes home with his hits is damaged (game-design rule);
+  - his Bf 110 gunner's rounds count as his.
+- **Time of day** (src/render/scene.js `setSkyTime`): the sun's disc, glow and light move to the mission's time; the
+  test flight keeps 14:00 UTC.
+- **Start override** (src/core/simulation.js `startOverride`): a mission sets the air start's height and heading.
+  src/core/scenarios.js exports `spawnGroup` (with a `count` of a formation's first places), `dropAll` and
+  `otherSide`.
+- **Times are shown in UTC.** Local times (British and German summer time in 1940) would need a source and are left
+  for later.
+
+**Checked in Chrome** (dev server, no reloads, no console errors, 75 fps throughout):
+- menu → setup → a dogfight (3 Bf 109s) → pause, with the simulation frozen (height unchanged over 2 s);
+- End mission → results → Fly again (a fresh mission) → Main menu → Test flight (on the ground, no AI);
+- at 06:00 UTC the sun is low in the east;
+- a mission ending by itself: a hands-off Bf 109 against six Ace Spitfires came down in a belly landing, and the
+  results appeared 5 s later.
+- **Seen again, as recorded in D220:** six Ace Bf 109s never hit a hands-off Spitfire in 2½ minutes.
+
+**Tests:**
+- tests/core/mission.test.js: building a dogfight, the formations, each ending, kill credit (kill, shared, damaged,
+  none, and the 30 s window), the player's rounds credited to him, and three missions in a row;
+- tests/core/gameState.test.js: the state changes, advancing only while flying, Fly again, a mission ending by
+  itself, the test flight, settings;
+- tests/ui/missionSetup.test.js: daylight times, units per side, a consistent setup.

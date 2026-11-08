@@ -83,8 +83,11 @@ export function createInput(plane, throttle, rpm = START.rpm) {
   };
 }
 
-/** Builds the aircraft and its inputs for a start mode, at the aircraft's side's start in the world. */
-function startPlane(ac, mode, world) {
+/**
+ * Builds the aircraft and its inputs for a start mode, at the aircraft's side's start in the world. `override` changes
+ * the air start's { altitude, heading, x, z } (a mission's start, D225).
+ */
+function startPlane(ac, mode, world, override = null) {
   const { terrain } = world;
   const starts = world.starts(ac.side);
   if (mode === 'ground') {
@@ -99,7 +102,7 @@ function startPlane(ac, mode, world) {
     return { plane, input: { ...createInput(plane, throttle), rpm: 1 } };
   }
   // In the air: full throttle and full rpm, level at the speed that power holds, where the rigging is solved (D84).
-  const { altitude, heading, x, z } = starts.air;
+  const { altitude, heading, x, z } = { ...starts.air, ...override };
   const { speed, radiator } = fullPowerStart(ac, altitude);
   const plane = createAircraft(ac, { ...START, altitude, heading, x, z, speed, throttle: 1, rpm: 1, terrain, radiator });
   return { plane, input: { ...createInput(plane, 1, 1), radiator } };
@@ -111,13 +114,14 @@ export class Simulation {
     this.loop = new FixedStepLoop({ step: (dt) => this.step(dt) });
     this.paused = false;
     this.mode = mode;
+    this.startOverride = null; // a mission's air start: { altitude, heading } (D225)
     this.reset(ac);
   }
 
   /** Starts (or restarts) a flight in the given aircraft, in the current start mode. */
   reset(ac = this.ac) {
     this.ac = ac;
-    ({ plane: this.plane, input: this.input } = startPlane(ac, this.mode, this.world));
+    ({ plane: this.plane, input: this.input } = startPlane(ac, this.mode, this.world, this.startOverride));
     const engines = engineMounts(ac).length;
     this.twin = engines > 1 ? createTwinLevers(this.input, engines) : null;
     // A single engine's own switch (no levers of its own: it uses the shared throttle and rpm).
@@ -143,6 +147,9 @@ export class Simulation {
     this.notice = null; // a short message for the pilot: { text, until } (simulation time)
     this.crashed = false;
     this.crashCause = null;
+    this.hitsBy = null; // who has hit the player, for the missions (D225)
+    this.lastHitBy = null;
+    this.lastHitAt = null;
     clearLosses(this); // wrecks, debris, crash sites and hits for the effects (D69)
     this.bailouts = []; // crews bailing out, and the men under parachutes (D80)
     this.jumpers = [];

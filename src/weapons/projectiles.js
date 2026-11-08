@@ -65,7 +65,7 @@ export class Projectiles {
     if (!best) return null;
     const { body } = best.target.plane;
     const velocity = new Vector3(r.v.x, r.v.y, r.v.z).sub(body.velocity);
-    return { target: best.target, hit: { zone: best.hit.zone, point: best.hit.point, kind: r.kind, velocity } };
+    return { target: best.target, hit: { zone: best.hit.zone, point: best.hit.point, kind: r.kind, velocity, owner: r.owner } };
   }
 
   clear() {
