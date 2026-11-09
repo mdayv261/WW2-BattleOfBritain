@@ -2,11 +2,11 @@
 // distances are game design.
 //   Dogfight (D225): the player over his home field at the chosen height, facing the enemy's side of the Channel; the
 //     enemy 4 km ahead and 300 m higher, coming the other way, in its side's formations.
-//   Interception (RAF, D227): the raid (src/core/raid.js) over its field near Calais at the chosen height; the player
-//     INTERCEPT_SIDE m to the English side of the middle of its route, at its height, heading for a point INTERCEPT_LEAD
-//     m short of that middle, to cut it off.
+//   Interception (RAF, D227): the raid (src/core/raid.js) over mid-Channel at the chosen height (D228); the player
+//     INTERCEPT_SIDE m to the English side of the middle of its course to the target, at its height, heading for a
+//     point INTERCEPT_LEAD m short of that middle, to cut it off.
 //   Escort (Luftwaffe, D227): the player in the escort's place, a mile behind and above the bombers (S38); the RAF
-//     attackers appear once the raid is ATTACK_AT of the way to its target, ATTACK_AHEAD m ahead of it and 300 m above.
+//     attackers appear once the raid is ATTACK_AT of its course to its target, ATTACK_AHEAD m ahead of it and 300 m above.
 // The player's wingmen (src/core/wingmen.js) start in their places on him in every kind.
 
 import { Vector3 } from 'three';
@@ -95,7 +95,7 @@ export function spawnMission(sim, setup) {
 }
 
 /**
- * The escort mission's attackers, once the raid is ATTACK_AT of the way to its target: true when they have just
+ * The escort mission's attackers, once the raid is ATTACK_AT of its course to its target: true when they have just
  * appeared (they join `mission.enemies`).
  */
 export function stepAttackers(sim, mission) {

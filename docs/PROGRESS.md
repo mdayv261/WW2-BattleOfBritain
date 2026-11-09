@@ -2,7 +2,7 @@
 
 Read this at the start of every session.
 
-## Current status (8 Nov 2026)
+## Current status (9 Nov 2026)
 
 - **Phase 0** (foundations and research): signed off (24 Oct 2026, D14). The game is live at
   https://mdayv261.github.io/WW2-BattleOfBritain/ (repository https://github.com/mdayv261/WW2-BattleOfBritain).
@@ -15,9 +15,23 @@ Read this at the start of every session.
   1-5 done (D77-D83, D216-D222). Known limitation carried forward: the AI Bf 109 can't yet attack a single RAF fighter
   (D220).
 - **Phase 7** (missions and the game loop): plan approved 8 Nov 2026 (D224). Checkpoint 1 (menus and the game loop)
-  done (D225); checkpoint 2 (interception, escort, friendly wingmen) done (D227); next, checkpoint 3 (ranks), after its
+  done (D225); checkpoint 2 (interception, escort, friendly wingmen) done (D227), the raid missions halved in length
+  (D228); next, checkpoint 3 (ranks), after its
   plan.
-- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383).
+- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677). D227-D228 are local, not pushed.
+
+## The raid missions halved in length (9 Nov 2026)
+
+**Done** (D228, the product owner's choice): a raid now starts over mid-Channel, halfway from Saint-Inglevert to its
+target, and its route ends back there.
+- An unstopped interception is over in 282 s (Hawkinge), 324 s (Lympne) or 353 s (Manston); Hawkinge took 572 s
+  before.
+- An escort to Lympne ends when the raid is back over mid-Channel: 712 s, against about 1375 s before. The RAF
+  attackers appear about 110 s in.
+- The results say "N of M bombers escorted back to mid-Channel from X".
+
+**Tests:** 1,884 pass, among them a new check that an unstopped interception ends in under six minutes. The validation
+output is unchanged.
 
 ## Phase 7 checkpoint 2: the bomber missions and friendly wingmen (9 Nov 2026)
 
@@ -28,8 +42,8 @@ Read this at the start of every session.
 - the setup keeps every mission within twelve aircraft;
 - the results report the bombers' and wingmen's fates.
 
-**Decision for the product owner:** a full escort mission takes about 23 minutes, an unstopped interception about 9½.
-Shorten them (the raid starting over the coast or mid-Channel, or the escort ending over the French coast)?
+**Decision for the product owner:** a full escort mission took about 23 minutes, an unstopped interception about 9½.
+Decided: halve them (D228, above).
 
 **Left in Phase 7:** checkpoints 3-8 (ranks, radar, sound, cockpit sides and settings, the Bf 110 swap, the acceptance
 test).

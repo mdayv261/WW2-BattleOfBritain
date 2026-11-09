@@ -133,7 +133,7 @@ export class Menus {
     // The raid (D227): the bombers' fate, and the raid's own escort in an interception.
     if (r.raid) {
       lines.push(['Bombers shot down', `${r.bombersDestroyed} of ${r.bombers}`], ['Bombers that reached the target', String(r.bombersReachedTarget)]);
-      if (r.bombersHome !== null) lines.push(['Bombers escorted home', String(r.bombersHome)]);
+      if (r.bombersHome !== null) lines.push(['Bombers escorted back to mid-Channel', String(r.bombersHome)]);
       if (r.escortsDestroyed) lines.push(['Escort fighters shot down', String(r.escortsDestroyed)]);
     }
     if (r.wingmen) lines.push(["Your wingmen's kills", String(r.wingmenKills)], ['Wingmen lost', `${r.wingmenLost} of ${r.wingmen}`]);

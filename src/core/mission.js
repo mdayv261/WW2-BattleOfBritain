@@ -3,8 +3,8 @@
 //   dogfight: ends when every enemy is lost (destroyed, abandoned or gone home);
 //   interception (RAF): an He 111 raid on a Kent airfield (src/core/raid.js); ends when every bomber is down,
 //     straggling home, or the raid has passed its target;
-//   escort (Luftwaffe): the player escorts the raid; ends when the raid is back over its home field, or every bomber is
-//     down or straggling.
+//   escort (Luftwaffe): the player escorts the raid; ends when the raid is back over mid-Channel on its way home (D228),
+//     or every bomber is down or straggling.
 // Any of them also ends when the player is lost (shot down, killed or bailed out) or has landed on a friendly field and
 // stopped. The results follow END_PAUSE later. The player may fly with wingmen (src/core/wingmen.js).
 //
@@ -19,7 +19,7 @@ import { AIRFIELD } from '../world/airfield.js';
 import { dropAll } from './scenarios.js';
 import { playerStart, spawnMission, stepAttackers, enemyGroups } from './missionStarts.js';
 import { spawnWingmen } from './wingmen.js';
-import { inRaid, pastTarget, backHome } from './raid.js';
+import { inRaid, pastTarget, backMidChannel } from './raid.js';
 
 export { enemyGroups };
 export const END_PAUSE = 5; // s from a mission's end to its results
@@ -101,8 +101,8 @@ function businessDone(sim, mission) {
   const intact = raid.bombers.filter((c) => inRaid(sim, c)).length;
   if (pastTarget(raid) && mission.reachedTarget === null) mission.reachedTarget = intact;
   if (setup.type === 'interception') return intact === 0 || pastTarget(raid);
-  if (backHome(raid) && mission.broughtHome === null) mission.broughtHome = intact;
-  return intact === 0 || backHome(raid);
+  if (backMidChannel(raid) && mission.broughtHome === null) mission.broughtHome = intact;
+  return intact === 0 || backMidChannel(raid);
 }
 
 /**
@@ -142,7 +142,7 @@ function doneText(sim, mission, r) {
   if (setup.type === 'interception') {
     return r.bombersReachedTarget ? `${r.bombersReachedTarget} of ${r.bombers} bombers reached ${setup.target}` : `The raid was turned back before ${setup.target}`;
   }
-  if (r.bombersHome !== null) return `${r.bombersHome} of ${r.bombers} bombers escorted home from ${setup.target}`;
+  if (r.bombersHome !== null) return `${r.bombersHome} of ${r.bombers} bombers escorted back to mid-Channel from ${setup.target}`;
   return 'Every bomber was lost or turned back';
 }
 

@@ -5860,3 +5860,38 @@ mid-Channel, or the escort could end once the raid is back over the French coast
 - tests/core/mission.test.js: interception and escort building, ending and results, the attackers' arrival, a
   wingman's kill;
 - tests/ui/missionSetup.test.js: the missions by side, the twelve-aircraft limit, wingmen and targets.
+
+## D228. The raid missions halved in length (9 Nov 2026)
+
+**Decision:** the product owner chose to halve the raid missions' length ("Yes, halve the mission time."), after D227
+flagged a full escort at about 23 minutes and an unstopped interception at about 9½.
+
+**How:** one constant, `RAID_START` = 0.5 in src/core/raid.js (game design, not a historical figure).
+- **Start:** a raid starts halfway from its field, Saint-Inglevert, to its target.
+  - That point is over the Strait of Dover for all three targets: about 51.0°N 1.45°E for Hawkinge, 50.97°N 1.39°E
+    for Lympne and 51.11°N 1.54°E for Manston.
+- **Return:** its route turns at the target and comes back to that point, not to the field. Past that point the
+  bombers hold their heading towards France.
+- **The escort mission** ends once the raid is back over mid-Channel (or every bomber is down or straggling). The
+  outcome line says "N of M bombers escorted back to mid-Channel from X".
+- **What scales with the shorter course,** with no change in logic:
+  - the interceptor's start, 8 km to the side of the middle of the course to the target;
+  - the escort's attackers, who appear a third of the way along that course.
+- **Rejected:** starting the raid over the French coast, or ending the escort at the French coast. Either saves only a
+  few kilometres of a 46-58 km route, not half.
+
+**Times (flown headless, the player held level):**
+
+| Mission | Before (D227) | After |
+|---|---|---|
+| Interception, nobody stopping the raid (Hawkinge) | 572 s | 282 s |
+| Interception (Lympne) | not timed | 324 s |
+| Interception (Manston) | not timed | 353 s |
+| Escort (Lympne) | about 1375 s | 712 s |
+
+In the escort, the attackers now appear about 110 s in.
+
+**Tests:**
+- tests/core/raid.test.js: the start is halfway along the route and over the Strait, and the route ends there;
+- tests/core/mission.test.js: a new check that an unstopped interception ends in 200-360 s, and the escort's outcome
+  text updated.

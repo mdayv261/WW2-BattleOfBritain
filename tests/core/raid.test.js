@@ -1,4 +1,5 @@
-// Raids (Phase 7 checkpoint 2, D227): the route from the Luftwaffe's field near Calais to a Kent target and back; three
+// Raids (Phase 7 checkpoint 2, D227, D228): the route from mid-Channel, on the way from the Luftwaffe's field near
+// Calais, to a Kent target and back to mid-Channel; three
 // or six bombers as one formation (the second Kette behind and below the first); the raid's escort a mile behind and
 // above (S38), keeping station.
 import { describe, it, expect } from 'vitest';
@@ -6,19 +7,33 @@ import { aircraftById } from '../../src/aircraft/index.js';
 import { common } from '../../src/aircraft/common.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { airfieldNamed } from '../../src/world/airfields.js';
-import { raidRoute, raidCourse, spawnRaid, TARGETS, RAID_FIELD, inRaid } from '../../src/core/raid.js';
+import { raidRoute, raidCourse, spawnRaid, TARGETS, RAID_FIELD, RAID_START, inRaid } from '../../src/core/raid.js';
+import { toLatLon } from '../../src/world/geo.js';
 
 const DT = 1 / 120;
 
 describe('raids', () => {
-  it('fly from the Luftwaffe field near Calais to the target, then back over that field', () => {
+  it('start halfway from the Luftwaffe field near Calais to the target, over the Strait of Dover, and end back there', () => {
+    expect(RAID_START).toBe(0.5);
     for (const target of TARGETS) {
-      const [to, home] = raidRoute(target);
-      expect(to).toEqual({ x: airfieldNamed(target).x, z: airfieldNamed(target).z });
-      expect(home).toEqual({ x: airfieldNamed(RAID_FIELD).x, z: airfieldNamed(RAID_FIELD).z });
+      const [to, back] = raidRoute(target);
+      const field = airfieldNamed(RAID_FIELD);
       const c = raidCourse(target, 4000);
-      expect(c.length).toBeGreaterThan(30000);
-      expect(c.length).toBeLessThan(70000);
+      expect(to).toEqual({ x: airfieldNamed(target).x, z: airfieldNamed(target).z });
+      expect(back.x).toBeCloseTo(c.origin.x, 6);
+      expect(back.z).toBeCloseTo(c.origin.z, 6);
+      expect(c.field.x).toBe(field.x);
+      // Halfway: as far from the field as from the target, the full way 30-70 km.
+      const fromField = Math.hypot(c.origin.x - field.x, c.origin.z - field.z);
+      expect(fromField).toBeCloseTo(c.length, 0);
+      expect(c.length).toBeGreaterThan(15000);
+      expect(c.length).toBeLessThan(35000);
+      // Over the Strait, between Kent's coast and Cap Gris-Nez.
+      const { lat, lon } = toLatLon(c.origin.x, c.origin.z);
+      expect(lat).toBeGreaterThan(50.9);
+      expect(lat).toBeLessThan(51.2);
+      expect(lon).toBeGreaterThan(1.3);
+      expect(lon).toBeLessThan(1.6);
     }
   });
 

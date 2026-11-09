@@ -6,6 +6,8 @@ import { Vector3 } from 'three';
 import { aircraftById } from '../../src/aircraft/index.js';
 import { Simulation } from '../../src/core/simulation.js';
 import { noteShooter } from '../../src/core/combat.js';
+import { createHands, fly } from '../../src/ai/pilot.js';
+import { SKILLS } from '../../src/ai/skill.js';
 import {
   createMission, startMission, stepMission, endMission, missionResults, enemyGroups, playerState, END_PAUSE, CREDIT_TIME,
 } from '../../src/core/mission.js';
@@ -201,11 +203,30 @@ describe('the raid missions (D227)', () => {
     stepMission(sim, mission);
     expect(mission.enemies).toHaveLength(3);
     expect(mission.enemies.every((c) => c.ac.id === 'hurricane' && c.side === 'RAF' && c.pilot.skillKey === 'ace')).toBe(true);
-    mission.raid.group.leg = 2; // the raid back over its field
+    mission.raid.group.leg = 2; // the raid back over mid-Channel
     stepMission(sim, mission);
     const r = missionResults(sim, mission);
     expect(r.bombersHome).toBe(3);
-    expect(r.outcomeText).toBe('3 of 3 bombers escorted home from Lympne');
+    expect(r.outcomeText).toBe('3 of 3 bombers escorted back to mid-Channel from Lympne');
+  });
+
+  it('an interception nobody stops is over in under six minutes: the raid starts mid-Channel (D228)', () => {
+    const { sim, mission } = flying({ ...interception, bombers: 6, escorts: 0, wingmen: 0 });
+    // The player held in level flight on his starting course by AI hands, out of the raid's way.
+    const hands = createHands(SKILLS.regular);
+    const dir = sim.plane.body.velocity.clone().setY(0).normalize();
+    const y0 = sim.plane.body.position.y;
+    let t = 0;
+    for (; t < 600 && mission.endedAt === null; t += DT) {
+      const climb = Math.max(-0.1, Math.min(0.1, (y0 - sim.plane.body.position.y) * 0.004));
+      fly(sim.player, hands, { direction: dir.clone().setY(climb).normalize(), gMax: 3, speed: 110 }, DT);
+      sim.step(DT);
+      stepMission(sim, mission);
+    }
+    expect(mission.outcome).toBe('done');
+    expect(missionResults(sim, mission).outcomeText).toBe('6 of 6 bombers reached Hawkinge');
+    expect(t).toBeGreaterThan(200);
+    expect(t).toBeLessThan(360);
   });
 
   it('a wingman\'s kill is his, not the player\'s', () => {
