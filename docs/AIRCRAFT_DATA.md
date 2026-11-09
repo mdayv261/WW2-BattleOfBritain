@@ -87,6 +87,8 @@ All values are stored in SI units. The original figure and unit from the source 
 | S41 | E-Stelle Rechlin E 6 (Fl.-Bordwaffen-Munition), firing tables (Schußtafeln): "7,9 mm Panzergeschoss" (from measurements of 31 Mar 1943), "2 cm Sprgr.Patr. L'spur FFM m.Zerl." and related 117 g rounds (from the DWM table of 9 Sep 1940, recalculated May 1943) and "2 cm M-Gesch.Patr. FFM m.Zerl." (from the DWM table of 12 Dec 1941). Reproduced in "Handbuch der Flugzeug-Bordwaffenmunition 1936-1945", Teil 1 (Schußtafeln), pp. 7, 12, 13 of the scan | https://archive.org/details/HandbuchDerFlugzeugBordwaffenmunitionHandbookOfAirborneWeaponsAmmunition19361945German | Period test tables (Rechlin), in a retyped compilation whose compiler and date are not stated: see Notes on each row |
 | S42 | F/Lt H. J. Martin, "Jump! But Look to Your Parachute", Aylmer Airman (No. 14 Service Flying Training School, RCAF Aylmer, Ontario), vol. 1 no. 7, 13 Feb 1942, on the Irvin parachute | https://publications.rcaf.info/ON/Aylmer/1942/Aylmer-Airman-1942-02-13.pdf | Period RCAF station publication: outside the usual source list, accepted by the product owner (D80) |
 | S43 | A.F.C. 99, "Comparative Trials between a captured Messerschmitt 109 and British Fighters" (SECRET), first page: "Comparative Trial between Me.109 and 'Rotol' Spitfire", paras. 1-5. No date or issuing unit on the page; the archive site names the aircraft as Spitfire IA K9791 (Rotol constant-speed airscrew) and Me 109 E-3 Werk-Nr 1304. The A.F.C. series is S25's (A.F.C. 123) | http://www.wwiiaircraftperformance.org/spitfire-1-me109e-rae-comptrials.jpg (read from the Internet Archive copy of 3 Apr 2016) | Period comparative trial (scan on archive site) |
+| S44 | Air Ministry, "The Air Force List", August 1940, "Published by Authority", HMSO, London 1940: the gradation headings Pilot Officers, Flying Officers, Flight Lieutenants, Squadron Leaders and Wing Commanders (rank names only, D229) | https://archive.org/details/airforcelistaug1940grea | Period official publication (National Library of Scotland scan on archive site) |
+| S45 | US War Department, TM-E 30-451, "Handbook on German Military Forces", 1 Sep 1943: par. 32d ("The shoulder straps worn by the Air Force bear the same insignia of rank as those in the Army") and Plate VII, "Army Insignia of Rank" (Leutnant, Oberleutnant, Hauptmann, Major, Oberstleutnant; rank names only, D229) | https://archive.org/details/TM-E30-451 | Government technical manual (scan on archive site, public-domain mark); 1943, not 1940: flagged in D229 |
 
 **Archive sites used (D8):**
 - wwiiaircraftperformance.org;
@@ -1760,6 +1762,18 @@ kind of round (each aircraft's `guns`).
 | Bf 110 maximum permissible speed | 180.6 | m/s | 650 Km./hr. (406 m.p.h.) (A.S.I.) | S24 | medium | |
 
 ---
+
+## Ranks (Phase 7, D229)
+
+Not aircraft data, but historical names the game uses (src/core/ranks.js), recorded here with their sources like any
+other figure.
+
+| Parameter | Value | Unit | Original figure | Source | Confidence | Notes |
+|---|---|---|---|---|---|---|
+| RAF officers' ranks, lowest five | Pilot Officer, Flying Officer, Flight Lieutenant, Squadron Leader, Wing Commander | rank names | Pilot Officers; Flying Officers; Flight Lieutenants; Squadron Leaders; Wing Commanders (gradation headings) | S44 | medium | August 1940 issue. |
+| Luftwaffe officers' ranks, lowest five | Leutnant, Oberleutnant, Hauptmann, Major, Oberstleutnant | rank names | Leutnant (2d Lieutenant), Oberleutnant (1st Lieutenant), Hauptmann (Captain), Major (Major), Oberstleutnant (Lieutenant Colonel); "The shoulder straps worn by the Air Force bear the same insignia of rank as those in the Army" | S45 | medium | Plate VII (Army) with par. 32d (the Air Force has the same ranks). A 1943 handbook; these grades were the same in 1940. |
+| Weighted kills for each rank | 0, 2, 5, 10, 20 | kills | — | ASSUMPTION | estimate | Game design: neither air force promoted its pilots by their scores (D229). |
+| Weight of a shared kill | 0.5 | kills | — | ASSUMPTION | estimate | Game design: a shared kill counts half towards rank; damaged enemies count nothing (D229). |
 
 ## Open research gaps (no value recorded; nothing invented)
 

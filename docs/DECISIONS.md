@@ -5895,3 +5895,68 @@ In the escort, the attackers now appear about 110 s in.
 - tests/core/raid.test.js: the start is halfway along the route and over the Strait, and the route ends there;
 - tests/core/mission.test.js: a new check that an unstopped interception ends in 200-360 s, and the escort's outcome
   text updated.
+
+## D229. Phase 7 checkpoint 3: ranks (9 Nov 2026)
+
+**The product owner's choices (9 Nov 2026):**
+- **Ranks:** officers only.
+- **Being lost:** the career goes on. A mission's kills count however it ends.
+
+**Ranks** (new src/core/ranks.js): five for each side, set side by side as the game's steps, not as a claim that the
+two sides' ranks were equal.
+
+| Step | RAF (S44) | Luftwaffe (S45) | Weighted kills |
+|---|---|---|---|
+| 1 | Pilot Officer | Leutnant | 0 |
+| 2 | Flying Officer | Oberleutnant | 2 |
+| 3 | Flight Lieutenant | Hauptmann | 5 |
+| 4 | Squadron Leader | Major | 10 |
+| 5 | Wing Commander | Oberstleutnant | 20 |
+
+**Sources:**
+- **RAF:** S44, the Air Force List of August 1940, uses these gradation headings.
+- **Luftwaffe:** S45, the US War Department's TM-E 30-451, says the Air Force bears the Army's insignia of rank
+  (par. 32d), and Plate VII names the grades.
+
+**Flagged:**
+- S45 is dated September 1943, not 1940. These five grades were unchanged in between, but the handbook itself is
+  later than the game's period.
+- **The weighted-kill steps (0/2/5/10/20) are game design.** Neither air force promoted its pilots by their scores.
+- **A shared kill counting ½ is also game design.** Damaged enemies count nothing.
+- **Where they're recorded:** the names and steps are rows in docs/AIRCRAFT_DATA.md under "Ranks (Phase 7, D229)",
+  with S44 and S45 on its source list. The steps and the weight of a shared kill are marked as estimates.
+
+**The career** (new src/core/career.js):
+- **What it holds:** one record per side: kills, shared kills and missions.
+- **Where it's kept:** in the browser's localStorage (key `bob1940.career`).
+  - Missing, blocked or unreadable storage gives fresh careers, and the game carries on without saving.
+  - The careers belong to that browser only: another browser or a private window starts afresh.
+- **What counts:**
+  - a mission is added to its side's career once, as its results show: at its natural end, or by "End mission";
+  - a mission left for "Main menu" from the pause menu is abandoned and not counted;
+  - the test flight never counts, since its reset and scenario keys would make kills free;
+  - being shot down, killed or bailing out costs nothing (the product owner's choice).
+
+**Screens:**
+- **Main menu:** a line for each side, for example "Flying Officer: 4 kills, 1 shared, 6 missions (½ kill to Flight
+  Lieutenant)".
+  - "Reset careers" needs a second click ("Click again to reset both careers"); no browser dialog.
+- **Results:** a "Career (side)" line, and "Promoted" with the new rank at the top when the mission earned one.
+
+**Checked in Chrome:**
+- a career put in storage shows on the main menu after a reload;
+- a dogfight ended from the pause menu adds a mission and shows the career line;
+- the reset needs both clicks;
+- no console errors.
+- The "Promoted" line wasn't seen in the browser, as no kill could be made there without flying a fight. It is covered
+  by the tests.
+
+**Tests:**
+- new tests/core/ranks.test.js: the names, the steps, half for shared kills, the boundaries;
+- new tests/core/career.test.js: one side only, promotion, the save and load round trip, broken storage;
+- tests/core/gameState.test.js:
+  - recorded once;
+  - "End mission" and the natural end count;
+  - "Main menu" from the pause menu and the test flight don't;
+  - a lost mission's kills count;
+  - the career line's wording.

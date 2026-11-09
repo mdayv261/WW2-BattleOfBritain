@@ -21,6 +21,7 @@ import { mgFlashes } from './ui/bf109Frame.js';
 import { JoystickPanel } from './ui/joystickPanel.js';
 import { Menus } from './ui/menus.js';
 import { GameState } from './core/gameState.js';
+import { Career } from './core/career.js';
 import { aircraftList } from './aircraft/index.js';
 import { loadTerrain } from './world/terrain.js';
 import { realWorld } from './world/world.js';
@@ -55,7 +56,7 @@ function select(ac) {
 
 // The game's states (D225): it opens on the main menu; each flight starts afresh in the same simulation.
 const game = new GameState({
-  sim, menus: new Menus(), testAircraft: aircraftList[1],
+  sim, menus: new Menus(), testAircraft: aircraftList[1], career: new Career(),
   onFlight: ({ ac, time }) => {
     view.setAircraft(ac);
     effects.clear();

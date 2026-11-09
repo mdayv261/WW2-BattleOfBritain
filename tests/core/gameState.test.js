@@ -3,8 +3,10 @@
 import { describe, it, expect } from 'vitest';
 import { aircraftById } from '../../src/aircraft/index.js';
 import { Simulation } from '../../src/core/simulation.js';
-import { GameState } from '../../src/core/gameState.js';
+import { GameState, careerText } from '../../src/core/gameState.js';
 import { END_PAUSE } from '../../src/core/mission.js';
+import { Career } from '../../src/core/career.js';
+import { noteShooter } from '../../src/core/combat.js';
 
 /** Stand-in screens: they remember what was shown, and the actions offered. */
 function fakeMenus() {
@@ -23,7 +25,7 @@ function game() {
   const sim = new Simulation(aircraftById.spitfire, 'ground');
   const menus = fakeMenus();
   const flights = [];
-  const g = new GameState({ sim, menus, testAircraft: aircraftById.spitfire, onFlight: (f) => flights.push(f) });
+  const g = new GameState({ sim, menus, testAircraft: aircraftById.spitfire, onFlight: (f) => flights.push(f), career: new Career(null) });
   g.menu();
   return { g, sim, menus, flights };
 }
@@ -93,5 +95,70 @@ describe('the game\'s states', () => {
     expect(g.state).toBe('settings');
     menus.actions.onBack();
     expect(g.state).toBe('menu');
+  });
+});
+
+describe('the career in the game (D229)', () => {
+  /** The player's kill on an enemy: his hit just now, then it crashes. */
+  const kill = (sim, c) => {
+    noteShooter(sim, c, sim);
+    c.gone = true;
+    sim.others = sim.others.filter((o) => o !== c);
+  };
+
+  it('a career\'s line gives the rank, the record and the kills to the next rank, in halves where shared', () => {
+    expect(careerText('RAF', { kills: 4, shared: 1, missions: 6 })).toBe('Flying Officer: 4 kills, 1 shared, 6 missions (½ kill to Flight Lieutenant)');
+    expect(careerText('Luftwaffe', { kills: 3, shared: 1, missions: 1 })).toBe('Oberleutnant: 3 kills, 1 shared, 1 mission (1½ kills to Hauptmann)');
+    expect(careerText('Luftwaffe', { kills: 20, shared: 0, missions: 9 })).toBe('Oberstleutnant: 20 kills, 0 shared, 9 missions');
+  });
+
+  it('a mission is added to its side\'s career once, as its results show', () => {
+    const { g, sim, menus } = game();
+    g.fly({ ...g.setup, count: 2 });
+    kill(sim, g.mission.enemies[0]);
+    g.end();
+    expect(g.career.of('RAF')).toEqual({ kills: 1, shared: 0, missions: 1 });
+    expect(menus.results.career).toMatchObject({ side: 'RAF', rank: 'Pilot Officer', promoted: false });
+    g.results(); // shown again: not counted again
+    expect(g.career.of('RAF').missions).toBe(1);
+    expect(g.career.of('Luftwaffe').missions).toBe(0);
+  });
+
+  it('shows a promotion on the results and the rank on the main menu', () => {
+    const { g, sim, menus } = game();
+    g.fly({ ...g.setup, count: 2 });
+    for (const c of [...g.mission.enemies]) kill(sim, c);
+    g.frame();
+    sim.clock += END_PAUSE;
+    g.frame();
+    expect(menus.results.career).toMatchObject({ rank: 'Flying Officer', promoted: true });
+    menus.actions.onMenu();
+    expect(menus.actions.career[0]).toEqual(['RAF', 'Flying Officer: 2 kills, 0 shared, 1 mission (3 kills to Flight Lieutenant)']);
+    menus.actions.onResetCareer();
+    expect(g.career.of('RAF').kills).toBe(0);
+  });
+
+  it('a mission left for the main menu from the pause menu, and the test flight, add nothing', () => {
+    const { g, sim, menus } = game();
+    g.fly({ ...g.setup, count: 2 });
+    kill(sim, g.mission.enemies[0]);
+    g.pause();
+    menus.actions.onMenu();
+    menus.actions.onTest();
+    g.pause();
+    menus.actions.onMenu();
+    expect(g.career.of('RAF')).toEqual({ kills: 0, shared: 0, missions: 0 });
+  });
+
+  it('a mission in which the player is lost still counts his kills', () => {
+    const { g, sim } = game();
+    g.fly({ ...g.setup, aircraft: 'bf109e4', side: 'Luftwaffe', enemy: 'hurricane', count: 2 });
+    kill(sim, g.mission.enemies[0]);
+    sim.crashed = true;
+    g.frame();
+    sim.clock += END_PAUSE;
+    g.frame();
+    expect([g.state, g.mission.outcome]).toEqual(['results', 'lost']);
+    expect(g.career.of('Luftwaffe')).toEqual({ kills: 1, shared: 0, missions: 1 });
   });
 });

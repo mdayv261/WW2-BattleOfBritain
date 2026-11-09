@@ -85,13 +85,27 @@ export class Menus {
     if (this.statusLine && this.statusLine.textContent !== text) this.statusLine.textContent = text;
   }
 
-  /** The main menu. */
-  showMain({ onMission, onTest, onSettings }) {
+  /**
+   * The main menu, with each side's career (`career`: [[side, text]], D229). "Reset careers" asks for a second click
+   * before `onResetCareer` clears them.
+   */
+  showMain({ onMission, onTest, onSettings, career = [], onResetCareer }) {
+    const buttons = [{ label: 'Fly a mission', action: onMission }, { label: 'Test flight', action: onTest }, { label: 'Settings', action: onSettings }];
+    if (onResetCareer) {
+      buttons.push({
+        label: 'Reset careers',
+        action: (e) => {
+          if (e.currentTarget.dataset.armed) onResetCareer();
+          else Object.assign(e.currentTarget, { textContent: 'Click again to reset both careers' }).dataset.armed = '1';
+        },
+      });
+    }
     this.show('main', {
       title: 'Battle of Britain 1940',
       subtitle: 'South-east England and the Channel, summer 1940',
-      buttons: [{ label: 'Fly a mission', action: onMission }, { label: 'Test flight', action: onTest }, { label: 'Settings', action: onSettings }],
-      note: 'In flight: Esc pauses. H lists the keys.',
+      lines: career,
+      buttons,
+      note: 'In flight: Esc pauses. H lists the keys. Ranks come from mission kills only.',
     });
   }
 
@@ -143,6 +157,11 @@ export class Menus {
       ['Rounds fired', String(r.roundsFired)],
       ['Flight time', `${minutes}:${seconds}`],
     );
+    // The career (D229): the rank now, and a promotion this mission earned.
+    if (r.career) {
+      if (r.career.promoted) lines.unshift(['Promoted', r.career.rank]);
+      lines.push([`Career (${r.career.side})`, r.career.text]);
+    }
     this.show('results', {
       title: 'Results',
       subtitle: r.outcomeText,
