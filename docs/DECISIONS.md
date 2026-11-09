@@ -6007,3 +6007,60 @@ measured 120 ms there. The 100 ms budget is unchanged.
 **Tests:**
 - new tests/core/radarPlot.test.js: bearings and the heading-up ring; grouping (a Schwarm, two groups 10 km apart, a
   raid with its escort); sides (wingmen and a Luftwaffe pilot); the 20 s update; a fresh plot on a new flight.
+
+## D231. Phase 7 checkpoint 5: sound (9 Nov 2026)
+
+**The product owner's choice (9 Nov 2026):** other aircraft are heard too, their engines and guns, fading with
+distance and dropping in pitch as they pass.
+
+**What was built:** sound with the Web Audio API, all of it generated in code; no recordings (GAME_SPEC §2).
+- **What each sound follows** (new src/audio/soundModel.js, pure functions, tested):
+  - **Engines:** one voice per engine, pitched at the four-stroke firing frequency, crankshaft rev/s × cylinders / 2.
+    A Merlin at 3,000 rpm fires 300 times a second.
+    - Loudness and brightness rise with the manifold pressure (boost or ata) and the rpm.
+    - A failed or stopped engine is silent, and the Merlin's negative-g cut-out quietens it.
+    - A twin's engines are separate voices, so a dead or slower engine is heard.
+  - **Wind:** loudness with the square of the indicated airspeed, brighter as it rises, a little more with the
+    undercarriage and flaps down.
+  - **Guns:** the rounds each gun fired since the last frame, machine guns and cannon apart, fixed guns and air
+    gunners' alike. A drum change is not a shot.
+  - **Hits on the player:** each new hit is one sound.
+  - **Other aircraft:** up to 6, the nearest within 1,500 m.
+    - Loudness falls with distance.
+    - Stereo pan comes from the bearing off the nose.
+    - Doppler pitch at the ISA speed of sound at the height: about ×1.2 at 60 m/s closing.
+- **Playing it** (new src/audio/audioEngine.js):
+  - **Engines:** a sawtooth at the firing frequency and a square at half of it, through a lowpass, with band-passed
+    noise for the exhaust.
+  - **Wind:** band-passed noise.
+  - **Gun and hit sounds:** short buffers made once at start: a machine gun's 25 ms crack, a cannon's 110 ms thump
+    with a 70 Hz tone, a hit's 90 ms clang with a 140 Hz tone.
+  - **Other aircraft:** 6 pooled engine voices behind stereo panners.
+  - **Mixing:** a master gain and a compressor.
+  - **Starting and stopping:** sound starts on the first click or key press (the browser's rule). It is suspended on
+    the menus and the pause menu. The engine falls silent after bailing out or crashing.
+- **Sound on/off:** a button on the main menu and the pause menu, remembered in the browser (`bob1940.sound`). The
+  volume control comes with the settings, checkpoint 6.
+- **Data:** `cylinders: 12` added to the Merlin III (S7), DB 601A (S19) and Jumo 211 (S35), with rows in
+  AIRCRAFT_DATA.md.
+
+**Found while checking in Chrome:** the game's guns of a group fire together, a volley at a time; eight Brownings put
+eight rounds into one frame every three or four frames. The first cap of 4 sounds per frame lost half of them.
+- Now up to 8 play per group per frame, each volley's cracks scattered over 50 ms (one Browning's interval at 1,100
+  rounds/min), as real guns weren't locked together.
+- Measured afterwards: 149 sounds a second for the Spitfire's 147 rounds a second.
+
+**Game design, flagged:** the 1,500 m hearing range, the 6-aircraft cap, the 50 ms scatter, and every loudness and tone
+curve. They are tuned by ear, not measured data.
+
+**Checked in Chrome** (no console errors):
+- the sound starts on the first click; it is "suspended" on the menu and the pause menu, and "running" in flight;
+- 75 fps, longest frame 14 ms, with a dogfight of six enemies and two wingmen while firing;
+- the Sound button switches and is remembered over a reload.
+- I can't listen in the browser, so how it sounds is for the product owner to judge.
+
+**Tests:**
+- new tests/audio/soundModel.test.js: the firing frequency and the cylinders; the engine voices (boost, stopped,
+  twins); the wind; the rounds counted (a Spitfire burst, a Bf 109's cannon apart, a gunner, a drum change); hearing
+  (range, the nearest 6, loudness, Doppler, pan);
+- tests/core/gameState.test.js: the Sound button.

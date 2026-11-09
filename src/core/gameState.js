@@ -6,7 +6,8 @@
 //   `onFlight({ ac, time })`: called as each flight starts, for the view (its aircraft, effects, the sun's time);
 //   `career`: the player's careers (src/core/career.js, D229). A mission is added to its side's career once, as its
 //     results show (at its end, or by "End mission"); one left for the main menu from the pause menu is not, nor is
-//     the test flight.
+//     the test flight;
+//   `sound`: { enabled, setEnabled(on) } (src/audio/audioEngine.js, D231), switched by the menus' Sound button.
 
 import { createMission, startMission, stepMission, endMission, missionResults, DEFAULT_SETUP } from './mission.js';
 import { dropAll } from './scenarios.js';
@@ -30,12 +31,13 @@ export function careerText(side, record) {
 }
 
 export class GameState {
-  constructor({ sim, menus, testAircraft, onFlight = () => {}, career = new Career(null) }) {
+  constructor({ sim, menus, testAircraft, onFlight = () => {}, career = new Career(null), sound = null }) {
     this.sim = sim;
     this.menus = menus;
     this.testAircraft = testAircraft;
     this.onFlight = onFlight;
     this.career = career;
+    this.sound = sound;
     this.state = 'menu';
     this.kind = null; // 'mission' or 'test' while flying or paused
     this.setup = { ...DEFAULT_SETUP };
@@ -55,6 +57,7 @@ export class GameState {
       onMission: () => this.setupScreen(), onTest: () => this.testFlight(), onSettings: () => this.settings(),
       career: ['RAF', 'Luftwaffe'].map((side) => [side, careerText(side, this.career.of(side))]),
       onResetCareer: () => { this.career.reset(); this.menu(); },
+      sound: this.soundButton(),
     });
   }
 
@@ -102,7 +105,14 @@ export class GameState {
       onRestart: () => this.fly(this.setup),
       onEnd: () => this.end(),
       onMenu: () => this.menu(),
+      sound: this.soundButton(),
     });
+  }
+
+  /** The menus' Sound button (D231): { on, toggle() → on }, or null with no sound. */
+  soundButton() {
+    const { sound } = this;
+    return sound ? { on: sound.enabled, toggle: () => { sound.setEnabled(!sound.enabled); return sound.enabled; } } : null;
   }
 
   resume() {

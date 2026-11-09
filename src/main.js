@@ -26,6 +26,7 @@ import { Career } from './core/career.js';
 import { RadarPlot } from './core/radarPlot.js';
 import { RadarDisplay } from './ui/radar.js';
 import { headingOf } from './ui/units.js';
+import { AudioEngine } from './audio/audioEngine.js';
 import { aircraftList } from './aircraft/index.js';
 import { loadTerrain } from './world/terrain.js';
 import { realWorld } from './world/world.js';
@@ -53,6 +54,8 @@ const flightHud = new FlightHud(); // the outside views' HUD on the right of the
 const radarPlot = new RadarPlot(); // the RAF radar's plots and display, top left (D230)
 const radar = new RadarDisplay();
 const nose = new Vector3();
+const audio = new AudioEngine(); // the sound (D231): starts on the first click or key press, as browsers require
+for (const type of ['pointerdown', 'keydown']) window.addEventListener(type, () => audio.start(), { once: true, capture: true });
 const joyPanel = new JoystickPanel(joystick);
 
 function select(ac) {
@@ -63,7 +66,7 @@ function select(ac) {
 
 // The game's states (D225): it opens on the main menu; each flight starts afresh in the same simulation.
 const game = new GameState({
-  sim, menus: new Menus(), testAircraft: aircraftList[1], career: new Career(),
+  sim, menus: new Menus(), testAircraft: aircraftList[1], career: new Career(), sound: audio,
   onFlight: ({ ac, time }) => {
     view.setAircraft(ac);
     effects.clear();
@@ -164,6 +167,7 @@ renderer.setAnimationLoop((now) => {
   }
   flightHud.update(sim, outside && !sim.playerJumper);
   const heading = headingOf(nose.set(1, 0, 0).applyQuaternion(sim.plane.body.quaternion));
+  audio.update(sim, game.advancing);
   radar.draw(radarPlot, heading, { show: game.kind !== null && sim.ac.side === 'RAF' && !sim.playerJumper, fresh: plotted, dt });
   joyPanel.update();
   renderer.render(scene, camera);

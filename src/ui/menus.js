@@ -23,6 +23,14 @@ const STYLE = `
 .menu-note { font-size: 13px; color: #555046; }
 `;
 
+const soundLabel = (on) => `Sound: ${on ? 'on' : 'off'}`;
+
+/** The Sound button (D231): its label says the state, and a click switches it. */
+const soundButton = ({ on, toggle }) => ({
+  label: soundLabel(on),
+  action: (e) => { e.currentTarget.textContent = soundLabel(toggle()); },
+});
+
 export class Menus {
   constructor(parent = document.body) {
     if (!document.getElementById('menu-style')) {
@@ -89,8 +97,9 @@ export class Menus {
    * The main menu, with each side's career (`career`: [[side, text]], D229). "Reset careers" asks for a second click
    * before `onResetCareer` clears them.
    */
-  showMain({ onMission, onTest, onSettings, career = [], onResetCareer }) {
+  showMain({ onMission, onTest, onSettings, career = [], onResetCareer, sound }) {
     const buttons = [{ label: 'Fly a mission', action: onMission }, { label: 'Test flight', action: onTest }, { label: 'Settings', action: onSettings }];
+    if (sound) buttons.push(soundButton(sound));
     if (onResetCareer) {
       buttons.push({
         label: 'Reset careers',
@@ -126,9 +135,10 @@ export class Menus {
   }
 
   /** The pause menu; a test flight has no mission to restart or end. */
-  showPause({ mission, onResume, onRestart, onEnd, onMenu }) {
+  showPause({ mission, onResume, onRestart, onEnd, onMenu, sound }) {
     const buttons = [{ label: 'Resume', action: onResume }];
     if (mission) buttons.push({ label: 'Restart mission', action: onRestart }, { label: 'End mission', action: onEnd });
+    if (sound) buttons.push(soundButton(sound));
     buttons.push({ label: 'Main menu', action: onMenu });
     this.show('pause', { title: 'Paused', buttons, note: 'Esc resumes.' });
   }

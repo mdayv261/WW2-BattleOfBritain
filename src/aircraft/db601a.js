@@ -5,6 +5,7 @@ import { UNIT } from '../core/constants.js';
 export const db601a = {
   id: 'db601a',
   name: 'Daimler-Benz DB 601A',
+  cylinders: 12, // four-stroke V-12: sets the engine sound's firing frequency (D231)
   fuelSystem: 'injection', // direct fuel injection: no negative-g cut-out
   refSpeed: 2400 * UNIT.RPM,
   // 5-minute rating (1.30 ata) power against altitude at 2400 rpm, from the October 1940 engine

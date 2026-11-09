@@ -9,6 +9,7 @@ import { UNIT } from '../core/constants.js';
 export const jumo211f = {
   id: 'jumo211f',
   name: 'Junkers Jumo 211F-1',
+  cylinders: 12, // four-stroke V-12: sets the engine sound's firing frequency (D231)
   fuelSystem: 'injection', // direct fuel injection: no negative-g cut-out
   refSpeed: 2400 * UNIT.RPM,
   ratings: {

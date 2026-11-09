@@ -162,3 +162,22 @@ describe('the career in the game (D229)', () => {
     expect(g.career.of('Luftwaffe')).toEqual({ kills: 1, shared: 0, missions: 1 });
   });
 });
+
+describe('the Sound button (D231)', () => {
+  it('is offered on the main menu and the pause menu, and switches the sound', () => {
+    const sim = new Simulation(aircraftById.spitfire, 'ground');
+    const menus = fakeMenus();
+    const sound = { enabled: true, setEnabled(on) { this.enabled = on; } };
+    const g = new GameState({ sim, menus, testAircraft: aircraftById.spitfire, career: new Career(null), sound });
+    g.menu();
+    expect(menus.actions.sound.on).toBe(true);
+    expect(menus.actions.sound.toggle()).toBe(false);
+    expect(sound.enabled).toBe(false);
+    g.fly({ ...g.setup, count: 1 });
+    g.pause();
+    expect(menus.actions.sound.on).toBe(false);
+    menus.actions.sound.toggle();
+    expect(sound.enabled).toBe(true);
+    expect(game().menus.actions.sound).toBeNull(); // no sound given: no button
+  });
+});

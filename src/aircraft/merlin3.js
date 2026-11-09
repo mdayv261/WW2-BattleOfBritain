@@ -5,6 +5,7 @@ import { UNIT } from '../core/constants.js';
 export const merlin3 = {
   id: 'merlin3',
   name: 'Rolls-Royce Merlin III',
+  cylinders: 12, // four-stroke V-12: sets the engine sound's firing frequency (D231)
   fuelSystem: 'carburettor', // cuts out under negative g (negativeG below)
   refSpeed: 3000 * UNIT.RPM, // crankshaft speed of the power curves
   // Constant-boost (cb) and full-throttle (ft) power against altitude, at refSpeed, read from the

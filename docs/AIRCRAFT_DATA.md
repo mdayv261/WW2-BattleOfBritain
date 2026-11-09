@@ -641,6 +641,7 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Delay after positive g returns (flooding) (`negativeG.recoverDelay`) | 1 | s | — | ASSUMPTION | estimate | No source; the engine floods briefly before it picks up. |
 | Time for the power to return (`negativeG.recoverTime`) | 1 | s | — | ASSUMPTION | estimate | No source; power returns over about a second. |
 | Combat engine-speed limit (`maxSpeed`) | 3000 | rpm | 3000 rpm | S6 | medium | Not yet used (warnings come in Phase 8). |
+| Cylinders (`cylinders`) | 12 | — | 12-cylinder V-type | S7 | medium | A.P. 1590B p. 16. Four-stroke: sets the engine sound's firing frequency (D231). |
 
 ### Heat limits (Phase 5, D62)
 
@@ -932,6 +933,7 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Change of power with engine speed at constant pressure (exponent) (`rpmPowerExponent`) | 0.5 | — | — | S18, ASSUMPTION | estimate | Fitted with the zero-power pressure above. |
 | Change of supercharger delivery with engine speed (exponent) (`mapSpeedExponent`) | 1 | — | — | S18, ASSUMPTION | estimate | Reproduces the gap between the 2200 and 2400 rpm full-throttle lines at 7 km within 1%. |
 | 5-minute engine-speed limit (`maxSpeed`) | 2400 | rpm | 2400 U/min | S15, S18 | high | Not yet used (warnings come in Phase 8). |
+| Cylinders (`cylinders`) | 12 | — | 12-cylinder inverted Vee-engine | S19 | medium | Four-stroke ("four-stroke Otto engine", S19): sets the engine sound's firing frequency (D231). |
 
 ### Cockpit gauge pressures (fuel and oil)
 
@@ -1462,6 +1464,7 @@ cruising powers at 5,500 m. The full-throttle curve of the two-speed supercharge
 | Power against rpm exponent (`rpmPowerExponent`) | 0.5 | — | — | ASSUMPTION | estimate | As the DB 601A. |
 | Supercharger pressure against rpm exponent (`mapSpeedExponent`) | 1 | — | — | ASSUMPTION | estimate | As the DB 601A. |
 | Highest engine speed (`maxSpeed`) | 2600 | rpm | 1,350 hp at 2,600 rpm | S35 | medium | Take-off rating. |
+| Cylinders (`cylinders`) | 12 | — | Inverted V-12 Engine | S35 | medium | Museum object title. Sets the engine sound's firing frequency (D231). |
 
 ### Heat limits (Phase 5, D62)
 
