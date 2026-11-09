@@ -16,8 +16,25 @@ Read this at the start of every session.
   (D220).
 - **Phase 7** (missions and the game loop): plan approved 8 Nov 2026 (D224). Checkpoint 1 (menus and the game loop)
   done (D225); checkpoint 2 (interception, escort, friendly wingmen) done (D227), the raid missions halved in length
-  (D228); checkpoint 3 (ranks) done (D229); next, checkpoint 4 (the RAF radar display), after its plan.
-- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026.
+  (D228); checkpoint 3 (ranks) done (D229); checkpoint 4 (the RAF radar display) done (D230); next, checkpoint 5 (sound),
+  after its plan.
+- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
+runner, 120 ms against 100 ms; re-run). D230 is local, not pushed.
+
+## Phase 7 checkpoint 4: the RAF radar display (9 Nov 2026)
+
+**Done** (D230): a transparent radar screen at the top left in RAF aircraft.
+- It has a heading-up 360° compass ring, with one amber blip on the ring for the bearing of each enemy group.
+- The blips update every 20 s. There is no height, range or numbers.
+- F4 hides and shows it.
+
+**Tests:** 1,901 pass; the validation output is unchanged. 75 fps in Chrome.
+
+**Known issues:**
+- Every enemy on the map is plotted: radar cover and plotting errors are not modelled.
+- The twelve-aircraft timing test can fail on GitHub's shared runner (D215, again on 9 Nov). It passed on a re-run.
+
+**Left in Phase 7:** checkpoints 5-8 (sound, cockpit sides and settings, the Bf 110 swap, the acceptance test).
 
 ## Phase 7 checkpoint 3: ranks (9 Nov 2026)
 

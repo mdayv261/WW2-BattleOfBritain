@@ -1,5 +1,6 @@
 // Entry point: the map of south-east England (D51), aircraft, keyboard, joystick and mouse, cameras, instruments and
 // readouts, and the game's screens and states (Phase 7, D225: the main menu, missions and the test flight).
+import { Vector3 } from 'three';
 import { createScene } from './render/scene.js';
 import { TestView } from './render/testView.js';
 import { ProjectileView } from './render/projectiles.js';
@@ -22,6 +23,9 @@ import { JoystickPanel } from './ui/joystickPanel.js';
 import { Menus } from './ui/menus.js';
 import { GameState } from './core/gameState.js';
 import { Career } from './core/career.js';
+import { RadarPlot } from './core/radarPlot.js';
+import { RadarDisplay } from './ui/radar.js';
+import { headingOf } from './ui/units.js';
 import { aircraftList } from './aircraft/index.js';
 import { loadTerrain } from './world/terrain.js';
 import { realWorld } from './world/world.js';
@@ -46,6 +50,9 @@ const frameRate = new FrameRate();
 const instruments = new InstrumentPanel();
 const sight = new ReflectorSight(); // the RAF's GM 2 drawn square-on in front of the panel (D87)
 const flightHud = new FlightHud(); // the outside views' HUD on the right of the screen (D97)
+const radarPlot = new RadarPlot(); // the RAF radar's plots and display, top left (D230)
+const radar = new RadarDisplay();
+const nose = new Vector3();
 const joyPanel = new JoystickPanel(joystick);
 
 function select(ac) {
@@ -61,6 +68,7 @@ const game = new GameState({
     view.setAircraft(ac);
     effects.clear();
     setSkyTime(time);
+    radarPlot.reset();
   },
 });
 game.menu();
@@ -72,6 +80,7 @@ function gameKeys() {
   if (game.kind === 'test') testKeys();
   if (keyboard.took('F2')) hud.toggleStrip();
   if (keyboard.took('F3')) hud.toggleDebug();
+  if (keyboard.took('F4')) radar.toggle();
   if (keyboard.took('KeyH')) hud.toggleHelp();
   if (keyboard.took('KeyJ')) joyPanel.toggle();
   if (keyboard.took('KeyK')) sim.engineKey('select');
@@ -107,7 +116,7 @@ function testKeys() {
   if (keyboard.took('Digit0')) say(clearAI(sim));
 }
 window.addEventListener('keydown', (e) => {
-  if (e.code === 'F2' || e.code === 'F3') e.preventDefault();
+  if (e.code === 'F2' || e.code === 'F3' || e.code === 'F4') e.preventDefault();
   if (hud.helpVisible && !['KeyH', 'KeyJ'].includes(e.code)) hud.toggleHelp(false);
 });
 
@@ -118,6 +127,7 @@ renderer.setAnimationLoop((now) => {
   last = now;
   gameKeys();
   let stick = null;
+  let plotted = false;
   if (game.advancing) {
     // Flying: the controls, the physics, and the mission's watch for its end (D225).
     keyboard.update(sim.input, sim.ac, dt);
@@ -125,6 +135,7 @@ renderer.setAnimationLoop((now) => {
     sim.applyLevers();
     if (stick?.view) view.rig.toggleCockpit();
     sim.advance(dt);
+    plotted = radarPlot.update(sim);
     game.frame();
   } else {
     keyboard.pressed.clear(); // keys pressed on a menu don't act once the flight starts
@@ -152,6 +163,8 @@ renderer.setAnimationLoop((now) => {
     sight.update(sight2D, aim, sim.ac, mgFlashes(sim)); // the Bf 109's MG 17 flashes on its coaming (D94)
   }
   flightHud.update(sim, outside && !sim.playerJumper);
+  const heading = headingOf(nose.set(1, 0, 0).applyQuaternion(sim.plane.body.quaternion));
+  radar.draw(radarPlot, heading, { show: game.kind !== null && sim.ac.side === 'RAF' && !sim.playerJumper, fresh: plotted, dt });
   joyPanel.update();
   renderer.render(scene, camera);
   frameRate.work(performance.now() - now);

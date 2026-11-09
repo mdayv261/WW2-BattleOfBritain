@@ -176,6 +176,7 @@ Every deviation from a historical or published figure is flagged to the product 
 - **RAF radar display (RAF aircraft only, D17):**
   - a transparent radar screen with a 360° compass ring and enemy blips;
   - a blip shows the bearing only, on the compass ring (product owner, 8 Nov 2026, D224);
+  - the ring is heading-up, and the blips update every 20 s (product owner, 9 Nov 2026, D230);
   - height and numbers are not shown.
 - **Cockpit:**
   - period cockpits for the four flyable aircraft: the 2D panels as the forward view, with 3D cockpit sides, sills and

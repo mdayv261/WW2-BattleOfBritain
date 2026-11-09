@@ -5961,3 +5961,45 @@ two sides' ranks were equal.
   - "Main menu" from the pause menu and the test flight don't;
   - a lost mission's kills count;
   - the career line's wording.
+
+## D230. Phase 7 checkpoint 4: the RAF radar display (9 Nov 2026)
+
+**The product owner's choices (9 Nov 2026):**
+- **Heading-up ring:** it turns with the aircraft, so a blip at the top is dead ahead. Its N, E, S and W marks and
+  degree numbers keep their true places.
+- **Updates every 20 s,** like plots passed on from the ground. In between, each blip keeps its last bearing while the
+  ring turns live.
+
+**What was built:**
+- **The plots** (new src/core/radarPlot.js; logic only, tested):
+  - the enemy is every AI aircraft on the other side from the player's;
+  - aircraft within 3,000 m of another in a group join it, so one blip stands for a formation, or a raid with its
+    escort;
+  - each blip is the compass bearing of its group's middle from the player, and nothing else (D224: no height and no
+    numbers);
+  - RAF aircraft only.
+- **The display** (new src/ui/radar.js): a transparent round screen at the top left (180 px).
+  - The ring has a tick every 10°, numbers every 30°, and N, E, S and W.
+  - It has a nose mark at the top and an aircraft symbol in the middle.
+  - Blips are amber dots on the ring that fade in as each plot is taken.
+  - It shows while flying or paused in an RAF aircraft, in missions and the test flight. It is hidden on the menus,
+    in Luftwaffe aircraft and after bailing out.
+  - **F4** hides and shows it; it is on by default. The key help lists it.
+
+**Game design, flagged:**
+- the 20 s interval (the product owner's choice);
+- the 3,000 m grouping;
+- radar cover, the Observer Corps' tracking inland and plotting errors are not modelled: every enemy on the map is
+  plotted, at its true bearing.
+
+**Checked in Chrome** (75 fps, longest frame 14 ms, no console errors):
+- **Interception:** the raid's blip ahead and to the left at the start.
+- **Dogfight:** six enemies show as one blip dead ahead. Their two groups start 800 m apart, within 3,000 m of each
+  other.
+- **Turning:** the ring and blip turned together.
+- **Showing and hiding:** F4 hides and shows the radar. It stays on the pause menu, and is hidden on the main menu and
+  in a Luftwaffe escort.
+
+**Tests:**
+- new tests/core/radarPlot.test.js: bearings and the heading-up ring; grouping (a Schwarm, two groups 10 km apart, a
+  raid with its escort); sides (wingmen and a Luftwaffe pilot); the 20 s update; a fresh plot on a new flight.
