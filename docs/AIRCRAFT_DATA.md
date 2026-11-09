@@ -1772,7 +1772,7 @@ other figure.
 |---|---|---|---|---|---|---|
 | RAF officers' ranks, lowest five | Pilot Officer, Flying Officer, Flight Lieutenant, Squadron Leader, Wing Commander | rank names | Pilot Officers; Flying Officers; Flight Lieutenants; Squadron Leaders; Wing Commanders (gradation headings) | S44 | medium | August 1940 issue. |
 | Luftwaffe officers' ranks, lowest five | Leutnant, Oberleutnant, Hauptmann, Major, Oberstleutnant | rank names | Leutnant (2d Lieutenant), Oberleutnant (1st Lieutenant), Hauptmann (Captain), Major (Major), Oberstleutnant (Lieutenant Colonel); "The shoulder straps worn by the Air Force bear the same insignia of rank as those in the Army" | S45 | medium | Plate VII (Army) with par. 32d (the Air Force has the same ranks). A 1943 handbook; these grades were the same in 1940. |
-| Weighted kills for each rank | 0, 2, 5, 10, 20 | kills | — | ASSUMPTION | estimate | Game design: neither air force promoted its pilots by their scores (D229). |
+| Weighted kills for each rank | 0, 2, 5, 10, 20 | kills | — | ASSUMPTION | estimate | Game design: neither air force promoted its pilots by their scores (D229); confirmed by the product owner, 9 Nov 2026. |
 | Weight of a shared kill | 0.5 | kills | — | ASSUMPTION | estimate | Game design: a shared kill counts half towards rank; damaged enemies count nothing (D229). |
 
 ## Open research gaps (no value recorded; nothing invented)

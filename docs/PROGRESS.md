@@ -17,7 +17,7 @@ Read this at the start of every session.
 - **Phase 7** (missions and the game loop): plan approved 8 Nov 2026 (D224). Checkpoint 1 (menus and the game loop)
   done (D225); checkpoint 2 (interception, escort, friendly wingmen) done (D227), the raid missions halved in length
   (D228); checkpoint 3 (ranks) done (D229); next, checkpoint 4 (the RAF radar display), after its plan.
-- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 is local, not pushed.
+- **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026.
 
 ## Phase 7 checkpoint 3: ranks (9 Nov 2026)
 
@@ -25,7 +25,8 @@ Read this at the start of every session.
 - **Ranks:** five officers' ranks for each side.
   - RAF: Pilot Officer, Flying Officer, Flight Lieutenant, Squadron Leader, Wing Commander (S44).
   - Luftwaffe: Leutnant, Oberleutnant, Hauptmann, Major, Oberstleutnant (S45).
-  - They are earned at 0, 2, 5, 10 and 20 weighted kills. A shared kill counts ½. The steps are game design.
+  - They are earned at 0, 2, 5, 10 and 20 weighted kills. A shared kill counts ½. The steps are game design,
+    confirmed by the product owner.
 - **Careers:** one per side, kept in the browser's storage.
   - Only missions count. A mission counts once, as its results show; one abandoned to the main menu doesn't.
 - **Main menu:** each side's rank and record, and a two-click "Reset careers".

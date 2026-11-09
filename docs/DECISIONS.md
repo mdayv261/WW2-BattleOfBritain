@@ -5922,6 +5922,7 @@ two sides' ranks were equal.
 - S45 is dated September 1943, not 1940. These five grades were unchanged in between, but the handbook itself is
   later than the game's period.
 - **The weighted-kill steps (0/2/5/10/20) are game design.** Neither air force promoted its pilots by their scores.
+  The product owner confirmed them on 9 Nov 2026, the first promotion at 2 kills.
 - **A shared kill counting ½ is also game design.** Damaged enemies count nothing.
 - **Where they're recorded:** the names and steps are rows in docs/AIRCRAFT_DATA.md under "Ranks (Phase 7, D229)",
   with S44 and S45 on its source list. The steps and the weight of a shared kill are marked as estimates.
