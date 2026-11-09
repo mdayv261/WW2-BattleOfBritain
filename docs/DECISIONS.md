@@ -6000,6 +6000,10 @@ two sides' ranks were equal.
 - **Showing and hiding:** F4 hides and shows the radar. It stays on the pause menu, and is hidden on the main menu and
   in a Luftwaffe escort.
 
+**The twelve-aircraft timing test** (tests/core/scenarios.test.js, the product owner's choice): it now times three
+spans of 4 s and takes the best, so a pause on GitHub's shared runner doesn't fail it. On 9 Nov a single 10 s span
+measured 120 ms there. The 100 ms budget is unchanged.
+
 **Tests:**
 - new tests/core/radarPlot.test.js: bearings and the heading-up ring; grouping (a Schwarm, two groups 10 km apart, a
   raid with its escort); sides (wingmen and a Luftwaffe pilot); the 20 s update; a fresh plot on a new flight.
