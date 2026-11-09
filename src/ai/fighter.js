@@ -21,8 +21,9 @@
 //   Disengage: out of ammunition, damaged, or out-matched too long (his skill's staying power): home in a shallow dive.
 // In a fight (engage, attack, evade) he uses the emergency rating where the engine has one: the Merlin's +12 lb (D217,
 // product owner's decision; D14 sets no time limit, and the engine's heat model applies).
-// A wingman covers his leader in a fight and goes for anyone attacking him; an escort keeps station behind and above
-// its bombers (S38) and engages only fighters coming near them. Thresholds are game-design values (D81).
+// A wingman covers his leader in a fight and goes for anyone attacking him; the player's own wingmen keep their places
+// on him until an enemy comes near him, then fight (D227). An escort keeps station behind and above its bombers (S38)
+// and engages only fighters coming near them. Thresholds are game-design values (D81).
 
 import { Vector3 } from 'three';
 import { Pilot, keepClear } from './basic.js';
@@ -146,6 +147,7 @@ export class FighterPilot extends Pilot {
 
     // A wingman covers a fighting leader, and goes for anyone on his tail.
     const lead = this.leader?.alive ? this.leader : null;
+    if (lead?.role === 'player') return this.followPlayer(craft, sim, view, lead);
     const leadFighting = lead?.pilot instanceof FighterPilot && lead.pilot.state !== 'patrol';
     if (lead?.pilot instanceof FighterPilot) {
       const onLeader = view.find((e) => threatens(lead.plane.body, e));
@@ -167,6 +169,22 @@ export class FighterPilot extends Pilot {
     }
     if (target) return this.engage(craft, target, sim);
     return this.patrol(craft, sim, lead);
+  }
+
+  /**
+   * A wingman of the player (D227): he goes for anyone attacking the player; with an enemy within ENGAGE_RANGE of the
+   * player he fights on his own, as any fighter; otherwise he keeps his place. The player's own moves can't be read, so
+   * there is no covering of him in a fight (game design).
+   */
+  followPlayer(craft, sim, view, lead) {
+    const onLeader = view.find((e) => threatens(lead.plane.body, e));
+    if (onLeader) return this.engage(craft, onLeader, sim);
+    const near = view.filter((e) => e.position.distanceTo(lead.plane.body.position) < ENGAGE_RANGE);
+    const target = near.length ? this.pickTarget(craft, near, sim) : null;
+    if (target) return this.engage(craft, target, sim);
+    this.set('patrol', null);
+    this.target = null;
+    return this.keepSlot(craft, sim, false) ?? this.level(craft, 110);
   }
 
   patrol(craft, sim, lead) {

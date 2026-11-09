@@ -123,20 +123,30 @@ export class Menus {
   showResults(r, { onAgain, onMenu }) {
     const minutes = Math.floor(r.flightTime / 60);
     const seconds = String(Math.floor(r.flightTime % 60)).padStart(2, '0');
+    const lines = [
+      ['Your kills', String(r.kills)],
+      ['Shared', String(r.shared)],
+      ['Damaged', String(r.damaged)],
+      ['Enemy destroyed', `${r.enemiesDestroyed} of ${r.enemies}`],
+      ['Enemy gone home', String(r.enemiesHome)],
+    ];
+    // The raid (D227): the bombers' fate, and the raid's own escort in an interception.
+    if (r.raid) {
+      lines.push(['Bombers shot down', `${r.bombersDestroyed} of ${r.bombers}`], ['Bombers that reached the target', String(r.bombersReachedTarget)]);
+      if (r.bombersHome !== null) lines.push(['Bombers escorted home', String(r.bombersHome)]);
+      if (r.escortsDestroyed) lines.push(['Escort fighters shot down', String(r.escortsDestroyed)]);
+    }
+    if (r.wingmen) lines.push(["Your wingmen's kills", String(r.wingmenKills)], ['Wingmen lost', `${r.wingmenLost} of ${r.wingmen}`]);
+    lines.push(
+      ['Your hits on the enemy', String(r.hitsGiven)],
+      ['Hits taken', String(r.hitsTaken)],
+      ['Rounds fired', String(r.roundsFired)],
+      ['Flight time', `${minutes}:${seconds}`],
+    );
     this.show('results', {
       title: 'Results',
       subtitle: r.outcomeText,
-      lines: [
-        ['Your kills', String(r.kills)],
-        ['Shared', String(r.shared)],
-        ['Damaged', String(r.damaged)],
-        ['Enemy destroyed', `${r.enemiesDestroyed} of ${r.enemies}`],
-        ['Enemy gone home', String(r.enemiesHome)],
-        ['Your hits on the enemy', String(r.hitsGiven)],
-        ['Hits taken', String(r.hitsTaken)],
-        ['Rounds fired', String(r.roundsFired)],
-        ['Flight time', `${minutes}:${seconds}`],
-      ],
+      lines,
       buttons: [{ label: 'Fly again', action: onAgain }, { label: 'Main menu', action: onMenu }],
     });
   }

@@ -1,16 +1,22 @@
-// The mission setup screen (Phase 7 checkpoint 1, D225): side, aircraft, mission type, enemy type and number, skill,
-// start height and time of day. The choices are worked out by plain functions (tested without a page); `renderSetup`
-// builds the form in a container element.
+// The mission setup screen (Phase 7, D225, D227): side, aircraft, mission type, the mission's own choices, wingmen,
+// enemy skill, start height and time of day. The choices are worked out by plain functions (tested without a page);
+// `renderSetup` builds the form in a container element.
+//   Missions: dogfight (enemy type and number); interception, RAF only (target, bombers, their Bf 109 escort); escort,
+//     Luftwaffe only (target, bombers, the RAF attackers' type and number). Every mission may have wingmen.
 //   Heights: 1,000-8,000 m in steps of 500 m, shown in each side's units (RAF feet, Luftwaffe metres; CLAUDE.md).
 //   Time of day: the chosen date (15 August 1940 unless given), in half-hour steps, in daylight only: the sun at least
 //     MIN_SUN degrees up over the map (src/world/sun.js). Times are shown in UTC; local times are a later choice.
-//   Enemy number: 1 to MAX_ENEMIES, inside the game's twelve-aircraft limit (src/core/scenarios.js MAX_AI).
+//   Numbers: every choice is kept so that all the AI aircraft fit the game's twelve-aircraft limit (MAX_AI, with the
+//     player: src/core/scenarios.js); when they don't, the attackers, then the escort, the wingmen and the bombers give
+//     way, in that order.
 
 import { aircraftById } from '../aircraft/index.js';
 import { SKILLS } from '../ai/skill.js';
 import { MAX_AI } from '../core/scenarios.js';
 import { sunPosition } from '../world/sun.js';
 import { UNIT } from '../core/constants.js';
+import { TARGETS } from '../core/raid.js';
+import { WINGMEN } from '../core/wingmen.js';
 
 export const MIN_SUN = 5; // degrees: the lowest sun a mission may start under
 export const MAX_ENEMIES = Math.min(6, MAX_AI);
@@ -20,7 +26,26 @@ const HEIGHTS = { from: 1000, to: 8000, step: 500 }; // m
 export const FLYABLE = { RAF: ['hurricane', 'spitfire'], Luftwaffe: ['bf109e4', 'bf110c4'] };
 /** The fighters each side meets in a dogfight. */
 export const ENEMIES = { RAF: ['bf109e4', 'bf110c4'], Luftwaffe: ['hurricane', 'spitfire'] };
-export const MISSION_TYPES = { dogfight: 'Dogfight' };
+export const MISSION_TYPES = { dogfight: 'Dogfight', interception: 'Interception (a raid on Kent)', escort: 'Escort (a raid on Kent)' };
+/** The missions each side flies. */
+export const SIDE_MISSIONS = { RAF: ['dogfight', 'interception'], Luftwaffe: ['dogfight', 'escort'] };
+export const BOMBERS = [3, 6]; // an He 111 Kette, or two
+export const RAID_ESCORTS = [0, 2, 4]; // the raid's own Bf 109s in an interception: none, a Rotte, a Schwarm
+
+/** The AI aircraft a setup puts in the air (the player besides). */
+export function aiTotal(s) {
+  const wingmen = s.wingmen ?? 0;
+  if (s.type === 'interception') return s.bombers + s.escorts + wingmen;
+  if (s.type === 'escort') return s.bombers + s.count + wingmen;
+  return s.count + wingmen;
+}
+
+/** The largest value of `key` (from `options`, ascending) that keeps the setup within MAX_AI, else the smallest. */
+function fit(s, key, options) {
+  const room = MAX_AI - (aiTotal(s) - s[key]);
+  const ok = options.filter((v) => v <= room);
+  return ok.length ? Math.max(...ok.filter((v) => v <= s[key]), Math.min(...ok)) : options[0];
+}
 
 /** The start heights (m) on offer, with their labels in `side`'s units. [{ value, label }] */
 export function heightChoices(side) {
@@ -50,9 +75,18 @@ export function normaliseSetup(setup) {
   if (!FLYABLE[s.side]) s.side = 'RAF';
   if (!FLYABLE[s.side].includes(s.aircraft)) [s.aircraft] = FLYABLE[s.side];
   if (!ENEMIES[s.side].includes(s.enemy)) [s.enemy] = ENEMIES[s.side];
-  if (!MISSION_TYPES[s.type]) s.type = 'dogfight';
+  if (!SIDE_MISSIONS[s.side].includes(s.type)) s.type = 'dogfight';
   if (!SKILLS[s.skill]) s.skill = 'regular';
   s.count = Math.max(1, Math.min(MAX_ENEMIES, Math.round(s.count) || 1));
+  if (!TARGETS.includes(s.target)) [s.target] = TARGETS;
+  s.bombers = nearest(BOMBERS, s.bombers ?? 3);
+  s.escorts = nearest(RAID_ESCORTS, s.escorts ?? 0);
+  s.wingmen = nearest(WINGMEN[s.side], s.wingmen ?? 0);
+  // Within the twelve-aircraft limit: the attackers, the escort, the wingmen and the bombers give way, in turn.
+  if (s.type !== 'interception') s.count = fit(s, 'count', Array.from({ length: MAX_ENEMIES }, (_, i) => i + 1));
+  if (s.type === 'interception') s.escorts = fit(s, 'escorts', RAID_ESCORTS);
+  s.wingmen = fit(s, 'wingmen', WINGMEN[s.side]);
+  if (s.type !== 'dogfight') s.bombers = fit(s, 'bombers', BOMBERS);
   s.altitude = nearest(heightChoices(s.side).map((c) => c.value), s.altitude);
   s.hoursUtc = nearest(daylightHours(s.date), s.hoursUtc);
   return s;
@@ -68,7 +102,7 @@ function select(choices, current, onPick) {
     if (value === current) o.selected = true;
     el.appendChild(o);
   }
-  el.addEventListener('change', () => onPick(choices[el.selectedIndex].value));
+  el.addEventListener('change', () => { if (el.selectedIndex >= 0) onPick(choices[el.selectedIndex].value); });
   return el;
 }
 
@@ -97,9 +131,19 @@ export function renderSetup(container, setup, { onFly, onBack }) {
     const named = (ids) => ids.map((id) => ({ value: id, label: aircraftById[id].name }));
     row('Side', select([{ value: 'RAF', label: 'RAF' }, { value: 'Luftwaffe', label: 'Luftwaffe' }], s.side, set('side')));
     row('Aircraft', select(named(FLYABLE[s.side]), s.aircraft, set('aircraft')));
-    row('Mission', select(Object.entries(MISSION_TYPES).map(([value, label]) => ({ value, label })), s.type, set('type')));
-    row('Enemy', select(named(ENEMIES[s.side]), s.enemy, set('enemy')));
-    row('Number', select(Array.from({ length: MAX_ENEMIES }, (_, i) => ({ value: i + 1, label: String(i + 1) })), s.count, set('count')));
+    // Only the numbers that keep every aircraft within the twelve-aircraft limit are offered.
+    const numbers = (key, options) => options.filter((v) => aiTotal({ ...s, [key]: v }) <= MAX_AI).map((v) => ({ value: v, label: String(v) }));
+    row('Mission', select(SIDE_MISSIONS[s.side].map((value) => ({ value, label: MISSION_TYPES[value] })), s.type, set('type')));
+    if (s.type !== 'dogfight') {
+      row('Target', select(TARGETS.map((t) => ({ value: t, label: t })), s.target, set('target')));
+      row('He 111 bombers', select(numbers('bombers', BOMBERS), s.bombers, set('bombers')));
+    }
+    if (s.type === 'interception') row('Bf 109 escort', select(numbers('escorts', RAID_ESCORTS), s.escorts, set('escorts')));
+    else {
+      row(s.type === 'escort' ? 'Attackers' : 'Enemy', select(named(ENEMIES[s.side]), s.enemy, set('enemy')));
+      row('Number', select(numbers('count', Array.from({ length: MAX_ENEMIES }, (_, i) => i + 1)), s.count, set('count')));
+    }
+    row('Your wingmen', select(numbers('wingmen', WINGMEN[s.side]), s.wingmen, set('wingmen')));
     row('Enemy skill', select(Object.entries(SKILLS).map(([value, k]) => ({ value, label: k.name })), s.skill, set('skill')));
     row('Start height', select(heightChoices(s.side), s.altitude, set('altitude')));
     row('Time (15 Aug 1940)', select(daylightHours(s.date).map((h) => ({ value: h, label: timeLabel(h) })), s.hoursUtc, set('hoursUtc')));

@@ -15,8 +15,24 @@ Read this at the start of every session.
   1-5 done (D77-D83, D216-D222). Known limitation carried forward: the AI Bf 109 can't yet attack a single RAF fighter
   (D220).
 - **Phase 7** (missions and the game loop): plan approved 8 Nov 2026 (D224). Checkpoint 1 (menus and the game loop)
-  done (D225); next, checkpoint 2 (missions: interception, escort, friendly wingmen), after its plan.
+  done (D225); checkpoint 2 (interception, escort, friendly wingmen) done (D227); next, checkpoint 3 (ranks), after its
+  plan.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383).
+
+## Phase 7 checkpoint 2: the bomber missions and friendly wingmen (9 Nov 2026)
+
+**Done** (D227):
+- interception (RAF) and escort (Luftwaffe) missions on raids from Calais to Hawkinge, Lympne or Manston (3 or 6 He
+  111s, the raid's own Bf 109 escort in an interception);
+- friendly wingmen in every mission (a vic, a Rotte or a Schwarm);
+- the setup keeps every mission within twelve aircraft;
+- the results report the bombers' and wingmen's fates.
+
+**Decision for the product owner:** a full escort mission takes about 23 minutes, an unstopped interception about 9½.
+Shorten them (the raid starting over the coast or mid-Channel, or the escort ending over the French coast)?
+
+**Left in Phase 7:** checkpoints 3-8 (ranks, radar, sound, cockpit sides and settings, the Bf 110 swap, the acceptance
+test).
 
 ## Phase 7 checkpoint 1: menus and the game loop (8 Nov 2026)
 

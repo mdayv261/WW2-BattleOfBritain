@@ -1608,6 +1608,8 @@ Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or es
 | Schwarm: second Rotte out to the side (`formations.schwarm.side`) | 300 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
 | He 111 Kette: wingman out to the side (`formations.kette.side`) | 40 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
 | He 111 Kette: wingman back (`formations.kette.back`) | 30 | m | — | ASSUMPTION | estimate | Formation spacing (D78): no 1940 figures found; an estimate the product owner accepted. |
+| Second Kette: distance behind the first (`formations.ketten.back`) | 400 | m | — | ASSUMPTION | estimate | Two Ketten in one raid (Phase 7, D227): no 1940 figure found; game design. |
+| Second Kette: height below the first (`formations.ketten.below`) | 100 | m | — | ASSUMPTION | estimate | Two Ketten in one raid (Phase 7, D227): no 1940 figure found; game design. |
 | Escort: distance behind the bombers (`formations.escort.behind`) | 1609 | m | a mile or so behind and above the Bombers | S38 | medium | Dowding's despatch, para. 126 (D77). |
 | Escort: height above the bombers (`formations.escort.above`) | 500 | m | — | ASSUMPTION | estimate | S38 gives no figure (D78). |
 | Parachute: canopy descent rate (`parachute.canopyRate`) | 4.9 | m/s | approximately 16 feet per second (24 ft canopy) | S42 | medium | Sea level; faster in thinner air. Used for both sides (D80). |

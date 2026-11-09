@@ -52,7 +52,7 @@ describe('a dogfight mission', () => {
     expect(stepMission(sim, mission)).toBe(false);
     for (const c of mission.enemies) c.pilot.home = true;
     expect(stepMission(sim, mission)).toBe(false);
-    expect(mission.outcome).toBe('enemyGone');
+    expect(mission.outcome).toBe('done');
     sim.clock += END_PAUSE;
     expect(stepMission(sim, mission)).toBe(true);
     const r = missionResults(sim, mission);
@@ -149,5 +149,72 @@ describe('missions one after another', () => {
       previous = mission.enemies;
     }
     expect(new Vector3().copy(sim.plane.body.position).y).toBeGreaterThan(500);
+  });
+});
+
+describe('the raid missions (D227)', () => {
+  const interception = { side: 'RAF', aircraft: 'spitfire', type: 'interception', target: 'Hawkinge', bombers: 6, escorts: 2, wingmen: 2, skill: 'ace' };
+  const escort = { side: 'Luftwaffe', aircraft: 'bf109e4', type: 'escort', target: 'Lympne', bombers: 3, enemy: 'hurricane', count: 3, wingmen: 3, skill: 'ace' };
+
+  it('an interception puts up the raid (the enemy) and the player\'s wingmen, within the twelve-aircraft limit', () => {
+    const { sim, mission } = flying(interception);
+    expect(sim.others).toHaveLength(10);
+    expect(mission.enemies).toHaveLength(8);
+    expect(mission.enemies.every((c) => c.side === 'Luftwaffe' && c.pilot.skillKey === 'ace')).toBe(true);
+    expect(mission.raid.bombers).toHaveLength(6);
+    expect(mission.wingmen.every((c) => c.side === 'RAF' && c.pilot.skillKey === 'regular')).toBe(true);
+    expect(sim.plane.body.position.y).toBeCloseTo(4000, 0);
+  });
+
+  it('an interception ends as the raid passes its target, counting the bombers that reached it', () => {
+    const { sim, mission } = flying(interception);
+    destroy(sim, mission.raid.bombers[5]);
+    stepMission(sim, mission);
+    expect(mission.endedAt).toBeNull();
+    mission.raid.group.leg = 1; // the leader is past Hawkinge
+    stepMission(sim, mission);
+    const r = missionResults(sim, mission);
+    expect(mission.outcome).toBe('done');
+    expect(r.bombersReachedTarget).toBe(5);
+    expect(r.bombersDestroyed).toBe(1);
+    expect(r.outcomeText).toBe('5 of 6 bombers reached Hawkinge');
+  });
+
+  it('an interception that downs or turns back every bomber says the raid was turned back', () => {
+    const { sim, mission } = flying({ ...interception, bombers: 3, escorts: 0 });
+    destroy(sim, mission.raid.bombers[0]);
+    mission.raid.bombers[1].pilot.straggler = true;
+    mission.raid.bombers[2].abandoned = true;
+    stepMission(sim, mission);
+    expect(missionResults(sim, mission).outcomeText).toBe('The raid was turned back before Hawkinge');
+  });
+
+  it('an escort: friendly bombers, the attackers arriving a third of the way, the bombers brought home', () => {
+    const { sim, mission } = flying(escort);
+    expect(mission.raid.bombers.every((c) => c.side === 'Luftwaffe' && c.pilot.skillKey === 'regular')).toBe(true);
+    expect(mission.enemies).toHaveLength(0);
+    stepMission(sim, mission);
+    expect(mission.enemies).toHaveLength(0);
+    // The leader a third of the way to Lympne: the Hurricanes appear, ahead of the raid.
+    const { course } = mission.raid;
+    mission.raid.bombers[0].plane.body.position.copy(course.origin).addScaledVector(course.dir, course.length / 3 + 100);
+    stepMission(sim, mission);
+    expect(mission.enemies).toHaveLength(3);
+    expect(mission.enemies.every((c) => c.ac.id === 'hurricane' && c.side === 'RAF' && c.pilot.skillKey === 'ace')).toBe(true);
+    mission.raid.group.leg = 2; // the raid back over its field
+    stepMission(sim, mission);
+    const r = missionResults(sim, mission);
+    expect(r.bombersHome).toBe(3);
+    expect(r.outcomeText).toBe('3 of 3 bombers escorted home from Lympne');
+  });
+
+  it('a wingman\'s kill is his, not the player\'s', () => {
+    const { sim, mission } = flying({ count: 1, wingmen: 1 });
+    const [enemy] = mission.enemies;
+    noteShooter(sim, enemy, mission.wingmen[0]);
+    destroy(sim, enemy);
+    stepMission(sim, mission);
+    const r = missionResults(sim, mission);
+    expect([r.kills, r.wingmenKills, r.wingmen]).toEqual([0, 1, 1]);
   });
 });

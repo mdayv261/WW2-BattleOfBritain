@@ -15,6 +15,8 @@ export const FORMATIONS = {
   lineAstern: [{}, { back: F.lineAstern.back }, { back: 2 * F.lineAstern.back }, { back: 3 * F.lineAstern.back }],
   kette: [{}, { side: -F.kette.side, back: F.kette.back }, { side: F.kette.side, back: F.kette.back }],
 };
+// Two Ketten flying as one formation (D227): the second as the first, behind and below it.
+FORMATIONS.ketten = [...FORMATIONS.kette, ...FORMATIONS.kette.map((p) => ({ side: p.side ?? 0, back: (p.back ?? 0) + F.ketten.back, up: -F.ketten.below }))];
 
 /** Where a wingman covers his leader in a fight (game design, D81): behind him on his quarter, a little higher. */
 export const COVER = { back: 200, side: 150, up: 50 };

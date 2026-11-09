@@ -124,6 +124,7 @@ export const common = {
     rotte: { side: 200, back: 30 }, // Luftwaffe Rotte: the wingman abreast of the leader
     schwarm: { side: 300 }, // Luftwaffe Schwarm: the second Rotte out to the side of the first
     kette: { side: 40, back: 30 }, // He 111 Kette: a vic of three bombers
+    ketten: { back: 400, below: 100 }, // a second Kette behind and below the first (Phase 7, D227; estimates)
     escort: { behind: 1609, above: 500 }, // escort fighters behind and above the bombers
   },
   // Parachutes (Phase 6, D80), the RAF's 24 ft Irvin (S42); no Luftwaffe figures found, so both sides use these.

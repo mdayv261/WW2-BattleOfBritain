@@ -5798,3 +5798,65 @@ any page; a bare test page with no game code saw nothing either, while macOS sti
 stay: the joystick is now read on every screen, and the main menu's status line shows whether it's connected. If the
 status line says "none seen yet" after a stick button is pressed, quitting and reopening Chrome is the first thing to
 try.
+
+## D227. Phase 7 checkpoint 2: the bomber missions and friendly wingmen (9 Nov 2026)
+
+**What was built** (the approved checkpoint plan):
+- **Raids** (new src/core/raid.js):
+  - an He 111 formation flies from the Luftwaffe's home field (Saint-Inglevert) to a Kent target (Hawkinge, Lympne or
+    Manston, 46-58 km) and back over its field, with the Phase 6 bomber pilots;
+  - 3 bombers are a Kette; 6 are two Ketten as one formation (`FORMATIONS.ketten`), the second 400 m behind and 100 m
+    below (`common.formations.ketten`, estimates, keyed rows in AIRCRAFT_DATA);
+  - the raid's own Bf 109 escort is placed a mile behind and above the bombers (S38);
+  - **no bombs are modelled:** a raid "reaches its target" when its leader passes the target waypoint.
+- **Interception** (RAF):
+  - the player starts at the raid's height 8 km to the English side of the middle of its route, heading for a point
+    3 km short of that middle (game design);
+  - the raid's bombers and escort are the enemy, at the setup's skill;
+  - it ends when every bomber is down or straggling home, or the raid has passed its target ("5 of 6 bombers reached
+    Hawkinge", or "The raid was turned back before Hawkinge").
+- **Escort** (Luftwaffe):
+  - the player starts in the escort's place, a mile behind and 500 m above the bombers (S38);
+  - the bombers are friendly, at Regular;
+  - the RAF attackers (the setup's type and number, at its skill) appear 6 km ahead of the raid and 300 m above once
+    it is a third of the way to its target (game design);
+  - it ends when the raid is back over its field ("3 of 3 bombers escorted home from Lympne") or every bomber is down
+    or straggling.
+- **Friendly wingmen,** in every mission (new src/core/wingmen.js; src/ai/fighter.js `followPlayer`):
+  - RAF 0-2 in a vic with the player at its head; Luftwaffe 1 (a Rotte) or 3 (a Schwarm);
+  - all friendly aircraft (wingmen, escorted bombers) fly at Regular; the setup's skill is the enemy's (game design);
+  - a wingman keeps his place on the player (within 19 m in a minute's level flight), goes for anyone attacking him,
+    fights on his own once an enemy is within 2.5 km of him, and rejoins when none is near;
+  - with no AI leader there is no "covering" phase: the player's moves can't be followed reliably (game design);
+  - a wingman's kills are his own, listed apart in the results.
+- **Setup:**
+  - the mission choice offers the interception to the RAF and the escort to the Luftwaffe;
+  - the raids add target, bombers (3 or 6), and the raid's escort (0/2/4, interception) or the attackers (escort);
+  - wingmen in every mission;
+  - only numbers that keep everything within the twelve-aircraft limit are offered. A setup that doesn't fit gives way
+    in turn: attackers, the raid's escort, wingmen, then bombers.
+- **Results** add the bombers shot down, those that reached the target and those escorted home, the raid's escort
+  shot down, and the wingmen's kills and losses.
+- **Structure:** each mission's start moved to new src/core/missionStarts.js; `spawnGroup` gained `from` (a
+  formation's later places) and `skill`.
+
+**Flagged, the escort mission's length:** the raid flies out, past its target and back to its field. Flown headless
+with the player held level, a full escort took about 23 minutes (1 of 3 bombers home). An interception ends as the
+raid passes its target, about 9½ minutes if it isn't stopped. To shorten them, the raid could start over the coast or
+mid-Channel, or the escort could end once the raid is back over the French coast. That is for the product owner.
+
+**Checked in Chrome** (no reloads, 75 fps, longest frame 14 ms with ten aircraft):
+- an interception of 6 bombers with 2 Bf 109s and a vic of wingmen, the wingman seen in place;
+- an escort of 6 bombers with a Schwarm, the bombers seen ahead over the French coast;
+- the setup offering only the numbers that fit;
+- the results with the raid's and wingmen's lines.
+- Headless: an interception flown until the raid passed Hawkinge, and an escort until the raid was home.
+- The one console error came from a test script choosing an option the screen doesn't offer; the drop-downs now ignore
+  such a change.
+
+**Tests:**
+- new tests/core/raid.test.js: the route, the two-Ketten formation, the escort keeping station;
+- new tests/ai/wingmen.test.js: formations and skill, keeping place, going for an attacker and rejoining;
+- tests/core/mission.test.js: interception and escort building, ending and results, the attackers' arrival, a
+  wingman's kill;
+- tests/ui/missionSetup.test.js: the missions by side, the twelve-aircraft limit, wingmen and targets.

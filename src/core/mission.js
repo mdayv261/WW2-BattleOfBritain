@@ -1,92 +1,69 @@
-// Missions (Phase 7 checkpoint 1, D225): a mission is built from the setup screen's choices, flown, watched for its end,
-// and summed up for the results screen. Checkpoint 1 has the dogfight: the player in the air at the chosen height over
-// his side's home airfield, facing the enemy's side of the Channel, and the chosen enemy fighters ahead of him coming the
-// other way, in their side's formations (src/ai/formation.js). Checkpoint 2 adds the bomber missions.
-//
-// A mission ends when every enemy is lost (destroyed, abandoned or gone home), when the player is lost (shot down,
-// killed or bailed out), or when he has landed on a friendly airfield and stopped; the results follow END_PAUSE later.
+// Missions (Phase 7, D225, D227): a mission is built from the setup screen's choices, flown, watched for its end, and
+// summed up for the results screen. Three kinds (their starts in src/core/missionStarts.js):
+//   dogfight: ends when every enemy is lost (destroyed, abandoned or gone home);
+//   interception (RAF): an He 111 raid on a Kent airfield (src/core/raid.js); ends when every bomber is down,
+//     straggling home, or the raid has passed its target;
+//   escort (Luftwaffe): the player escorts the raid; ends when the raid is back over its home field, or every bomber is
+//     down or straggling.
+// Any of them also ends when the player is lost (shot down, killed or bailed out) or has landed on a friendly field and
+// stopped. The results follow END_PAUSE later. The player may fly with wingmen (src/core/wingmen.js).
 //
 // Kill credit (D225, game design): an enemy destroyed within CREDIT_TIME of the player's last hit on it is his kill;
 // one he hit that someone else (or the ground) finished is shared; one that goes home with his hits in it is damaged.
-// The player's Bf 110 rear gunner's rounds count as the player's (src/core/simulation.js).
+// The player's Bf 110 rear gunner's rounds count as the player's (src/core/simulation.js); a wingman's kills are his own
+// and are listed apart (D227).
 
-import { Vector3 } from 'three';
 import { aircraftById } from '../aircraft/index.js';
 import { AIRFIELDS } from '../world/airfields.js';
 import { AIRFIELD } from '../world/airfield.js';
-import { homeDirection } from '../ai/tactics.js';
-import { spawnGroup, dropAll, otherSide } from './scenarios.js';
+import { dropAll } from './scenarios.js';
+import { playerStart, spawnMission, stepAttackers, enemyGroups } from './missionStarts.js';
+import { spawnWingmen } from './wingmen.js';
+import { inRaid, pastTarget, backHome } from './raid.js';
 
-const AHEAD = 4000; // m: the enemy starts this far ahead of the player...
-const ABOVE = 300; // m: ...this much higher...
-const GROUP_SPACING = 800; // m: ...and a second group this far to the side of the first
-const ENEMY_SPEED = 110; // m/s: the enemy's starting speed
+export { enemyGroups };
 export const END_PAUSE = 5; // s from a mission's end to its results
 export const CREDIT_TIME = 30; // s: an enemy lost this soon after the player's last hit is his kill
 const STOPPED = 3; // m/s: a landed aircraft this slow on the ground has stopped
 const MIN_FLIGHT = 10; // s: no "landed" in the first seconds of a flight
 
-/** The default setup: an RAF pilot in a Spitfire against a Rotte of Bf 109s at 4,000 m, at 2 pm BST. */
+/** The default setup: an RAF pilot in a Spitfire against a Rotte of Bf 109s at 4,000 m, at 13:00 UTC. */
 export const DEFAULT_SETUP = {
   side: 'RAF', aircraft: 'spitfire', type: 'dogfight', enemy: 'bf109e4', count: 2, skill: 'regular', altitude: 4000,
   date: { year: 1940, month: 8, day: 15 }, hoursUtc: 13,
+  wingmen: 0, target: 'Hawkinge', bombers: 3, escorts: 2,
 };
-
-/**
- * The groups the enemy flies in for `count` aircraft of `side`: the Luftwaffe in Schwarms of four, then a Rotte, then
- * a single; the RAF in vics of three, the last vic as large as the number left. [{ formation, count }]
- */
-export function enemyGroups(side, count) {
-  const out = [];
-  let left = count;
-  const size = side === 'Luftwaffe' ? 4 : 3;
-  while (left > 0) {
-    const n = Math.min(size, left);
-    const formation = side === 'Luftwaffe' ? { 4: 'schwarm', 3: 'schwarm', 2: 'rotte', 1: 'single' }[n] : n === 1 ? 'single' : 'vic';
-    out.push({ formation, count: n });
-    left -= n;
-  }
-  return out;
-}
 
 /** A new mission for a setup (see DEFAULT_SETUP); `startMission` puts it in the air. */
 export function createMission(setup = DEFAULT_SETUP) {
-  return { setup: { ...DEFAULT_SETUP, ...setup }, enemies: [], outcomes: new Map(), endedAt: null, outcome: null };
+  return { setup: { ...DEFAULT_SETUP, ...setup }, enemies: [], wingmen: [], raid: null, pending: false, outcomes: new Map(), endedAt: null, outcome: null };
 }
 
-/** Starts `mission` in `sim`: the player's aircraft in the air at the chosen height, and the enemy ahead. */
+/** Starts `mission` in `sim`: the player's aircraft in the air, his wingmen with him, and the rest of the mission. */
 export function startMission(sim, mission) {
   const { setup } = mission;
   const ac = aircraftById[setup.aircraft];
-  const enemySide = otherSide(ac.side);
-  const toEnemy = homeDirection(enemySide).setY(0).normalize(); // towards the enemy's side of the Channel
-  const heading = Math.atan2(toEnemy.x, -toEnemy.z);
   dropAll(sim);
   sim.mode = 'air';
-  sim.startOverride = { altitude: setup.altitude, heading };
+  sim.startOverride = playerStart(setup);
   sim.skill = setup.skill;
   sim.paused = false;
   sim.reset(ac);
-  const fwd = new Vector3(Math.sin(heading), 0, -Math.cos(heading));
-  const right = new Vector3(Math.cos(heading), 0, Math.sin(heading));
-  const groups = enemyGroups(enemySide, Math.max(1, setup.count));
-  groups.forEach((g, i) => {
-    const side = (i - (groups.length - 1) / 2) * GROUP_SPACING;
-    const origin = sim.plane.body.position.clone().addScaledVector(fwd, AHEAD).addScaledVector(right, side).add(new Vector3(0, ABOVE, 0));
-    spawnGroup(sim, { id: setup.enemy, formation: g.formation, count: g.count, origin, heading: heading + Math.PI, role: 'fighter', side: enemySide, speed: ENEMY_SPEED });
-  });
-  mission.enemies = sim.others.slice();
+  mission.wingmen = spawnWingmen(sim, setup.wingmen ?? 0);
+  Object.assign(mission, spawnMission(sim, setup));
   mission.outcomes = new Map();
   mission.endedAt = null;
   mission.outcome = null;
-  sim.scenario = `Mission: dogfight against ${mission.enemies.length} ${aircraftById[setup.enemy].name}`;
+  mission.reachedTarget = null;
+  mission.broughtHome = null;
+  sim.scenario = `Mission: ${setup.type}`;
   return mission;
 }
 
 /** An enemy's state for the mission: 'flying', 'destroyed' (crashed, broken up, abandoned, pilot killed) or 'home'. */
 export function enemyState(sim, c) {
   if (!sim.others.includes(c) || c.abandoned || c.plane.damage.pilot <= 0) return 'destroyed';
-  if (c.pilot?.home) return 'home';
+  if (c.pilot?.home || c.pilot?.straggler) return 'home';
   return 'flying';
 }
 
@@ -117,11 +94,23 @@ export function playerState(sim) {
   return landedHome(sim) ? 'landed' : 'flying';
 }
 
+/** Whether the mission's own business is over: the enemy all gone, or the raid done with. */
+function businessDone(sim, mission) {
+  const { setup, raid } = mission;
+  if (setup.type === 'dogfight') return mission.outcomes.size === mission.enemies.length;
+  const intact = raid.bombers.filter((c) => inRaid(sim, c)).length;
+  if (pastTarget(raid) && mission.reachedTarget === null) mission.reachedTarget = intact;
+  if (setup.type === 'interception') return intact === 0 || pastTarget(raid);
+  if (backHome(raid) && mission.broughtHome === null) mission.broughtHome = intact;
+  return intact === 0 || backHome(raid);
+}
+
 /**
- * Watches the mission for one frame: records each enemy's loss once (and the player's credit for it), and ends the
- * mission when the enemy is all gone, the player is lost, or he has landed. True once the results are due.
+ * Watches the mission for one frame: brings in the escort mission's attackers, records each enemy's loss once (and the
+ * player's credit for it), and ends the mission on its conditions. True once the results are due.
  */
 export function stepMission(sim, mission) {
+  stepAttackers(sim, mission);
   for (const c of mission.enemies) {
     if (mission.outcomes.has(c)) continue;
     const state = enemyState(sim, c);
@@ -129,10 +118,9 @@ export function stepMission(sim, mission) {
   }
   if (mission.endedAt === null) {
     const player = playerState(sim);
-    const allGone = mission.outcomes.size === mission.enemies.length;
-    if (player !== 'flying' || allGone) {
+    if (player !== 'flying' || businessDone(sim, mission)) {
       mission.endedAt = sim.clock;
-      mission.outcome = player === 'lost' ? 'lost' : player === 'landed' ? 'landed' : 'enemyGone';
+      mission.outcome = player === 'lost' ? 'lost' : player === 'landed' ? 'landed' : 'done';
     }
   }
   return mission.endedAt !== null && sim.clock - mission.endedAt >= END_PAUSE;
@@ -147,30 +135,48 @@ export function endMission(sim, mission) {
   }
 }
 
-const OUTCOME_TEXT = {
-  enemyGone: 'The enemy is destroyed or gone home',
-  landed: 'You landed safely',
-  ended: 'Mission ended',
-};
+/** The line saying how the mission's business went. */
+function doneText(sim, mission, r) {
+  const { setup } = mission;
+  if (setup.type === 'dogfight') return 'The enemy is destroyed or gone home';
+  if (setup.type === 'interception') {
+    return r.bombersReachedTarget ? `${r.bombersReachedTarget} of ${r.bombers} bombers reached ${setup.target}` : `The raid was turned back before ${setup.target}`;
+  }
+  if (r.bombersHome !== null) return `${r.bombersHome} of ${r.bombers} bombers escorted home from ${setup.target}`;
+  return 'Every bomber was lost or turned back';
+}
 
 /** The results screen's summary of a mission. */
 export function missionResults(sim, mission) {
   const outcomes = [...mission.outcomes.values()];
   const count = (key, value) => outcomes.filter((o) => o[key] === value).length;
-  const hitsGiven = mission.enemies.reduce((a, c) => a + (c.hitsBy?.get(sim) ?? 0), 0);
-  const roundsFired = sim.armament.reduce((a, g) => a + g.capacity - g.rounds, 0);
-  return {
+  const lost = (c) => !sim.others.includes(c) || c.abandoned || c.plane.damage.pilot <= 0;
+  const byWingman = (c) => mission.wingmen.includes(c.lastHitBy) && sim.clock - c.lastHitAt <= CREDIT_TIME;
+  const raid = mission.raid;
+  const r = {
     outcome: mission.outcome,
-    outcomeText: mission.outcome === 'lost' ? sim.crashCause ?? 'You were lost' : OUTCOME_TEXT[mission.outcome] ?? '',
     kills: count('credit', 'kill'),
     shared: count('credit', 'shared'),
     damaged: count('credit', 'damaged'),
     enemies: mission.enemies.length,
     enemiesDestroyed: count('state', 'destroyed'),
     enemiesHome: count('state', 'home'),
-    hitsGiven,
+    hitsGiven: mission.enemies.reduce((a, c) => a + (c.hitsBy?.get(sim) ?? 0), 0),
     hitsTaken: sim.plane.damage.hits ?? 0,
-    roundsFired,
+    roundsFired: sim.armament.reduce((a, g) => a + g.capacity - g.rounds, 0),
     flightTime: mission.endedAt ?? sim.clock,
+    wingmen: mission.wingmen.length,
+    wingmenKills: mission.enemies.filter((c) => mission.outcomes.get(c)?.state === 'destroyed' && byWingman(c)).length,
+    wingmenLost: mission.wingmen.filter(lost).length,
+    raid: !!raid,
+    bombers: raid?.bombers.length ?? 0,
+    bombersDestroyed: raid ? raid.bombers.filter(lost).length : 0,
+    bombersReachedTarget: mission.reachedTarget ?? 0,
+    bombersHome: mission.broughtHome,
+    escortsDestroyed: raid ? raid.escorts.filter(lost).length : 0,
   };
+  const OUTCOME_TEXT = { landed: 'You landed safely', ended: 'Mission ended' };
+  r.outcomeText = mission.outcome === 'lost' ? sim.crashCause ?? 'You were lost'
+    : mission.outcome === 'done' ? doneText(sim, mission, r) : OUTCOME_TEXT[mission.outcome] ?? '';
+  return r;
 }

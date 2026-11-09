@@ -2,7 +2,8 @@
 // 5° up), heights in each side's units, and a setup kept consistent (aircraft and enemy of the right sides, the number
 // within the twelve-aircraft limit).
 import { describe, it, expect } from 'vitest';
-import { daylightHours, heightChoices, normaliseSetup, timeLabel, MIN_SUN, MAX_ENEMIES, FLYABLE, ENEMIES } from '../../src/ui/missionSetup.js';
+import { daylightHours, heightChoices, normaliseSetup, timeLabel, aiTotal, MIN_SUN, MAX_ENEMIES, FLYABLE, ENEMIES } from '../../src/ui/missionSetup.js';
+import { TARGETS } from '../../src/core/raid.js';
 import { sunPosition } from '../../src/world/sun.js';
 import { MAX_AI } from '../../src/core/scenarios.js';
 import { DEFAULT_SETUP } from '../../src/core/mission.js';
@@ -37,5 +38,28 @@ describe('mission setup', () => {
 
   it('the default setup is already consistent', () => {
     expect(normaliseSetup(DEFAULT_SETUP)).toEqual(DEFAULT_SETUP);
+  });
+});
+
+describe('the raid missions in the setup (D227)', () => {
+  it('offers the interception to the RAF and the escort to the Luftwaffe only', () => {
+    expect(normaliseSetup({ ...DEFAULT_SETUP, side: 'RAF', type: 'escort' }).type).toBe('dogfight');
+    expect(normaliseSetup({ ...DEFAULT_SETUP, side: 'Luftwaffe', type: 'interception' }).type).toBe('dogfight');
+    expect(normaliseSetup({ ...DEFAULT_SETUP, side: 'RAF', type: 'interception' }).type).toBe('interception');
+    expect(normaliseSetup({ ...DEFAULT_SETUP, side: 'Luftwaffe', type: 'escort' }).type).toBe('escort');
+  });
+
+  it('keeps every mission within the twelve-aircraft limit: attackers, escort, wingmen, then bombers give way', () => {
+    const i = normaliseSetup({ ...DEFAULT_SETUP, type: 'interception', bombers: 6, escorts: 4, wingmen: 2 });
+    expect([i.bombers, i.escorts, i.wingmen]).toEqual([6, 2, 2]);
+    const e = normaliseSetup({ ...DEFAULT_SETUP, side: 'Luftwaffe', type: 'escort', bombers: 6, count: 6, wingmen: 3 });
+    expect([e.bombers, e.count, e.wingmen]).toEqual([6, 2, 3]);
+    for (const s of [i, e]) expect(aiTotal(s)).toBeLessThanOrEqual(MAX_AI);
+  });
+
+  it('offers each side its own wingman numbers and the Kent targets', () => {
+    expect(normaliseSetup({ ...DEFAULT_SETUP, wingmen: 3 }).wingmen).toBe(2);
+    expect(normaliseSetup({ ...DEFAULT_SETUP, side: 'Luftwaffe', wingmen: 2 }).wingmen).toBe(1);
+    expect(TARGETS).toContain(normaliseSetup({ ...DEFAULT_SETUP, target: 'Paris' }).target);
   });
 });

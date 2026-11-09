@@ -64,12 +64,14 @@ function place(origin, heading, { ahead = 0, side = 0, up = 0 }) {
 /**
  * Puts a group of aircraft of type `id` in the air in `formation` around `origin` (the leader's place), all on `heading`,
  * flown by AI pilots of `role`. `leader`: the craft its places are kept from (an escort's bombers), else its own first.
- * `count`: only the formation's first places (a mission's numbers, D225). Exported for the missions (src/core/mission.js).
+ * `count`: only the formation's first places (a mission's numbers, D225); `from`: start at that place (a player's
+ * wingmen take the places behind his, D227); `skill`: the pilots' skill (the setup's enemy skill unless given: a
+ * mission's friendly aircraft fly at Regular, D227). Exported for the missions (src/core/mission.js).
  */
-export function spawnGroup(sim, { id, formation, origin, heading, role, side, speed, leader = null, offset = {}, group = null, count = Infinity }) {
+export function spawnGroup(sim, { id, formation, origin, heading, role, side, speed, leader = null, offset = {}, group = null, count = Infinity, from = 0, skill = sim.skill }) {
   const ac = aircraftById[id];
   const out = [];
-  FORMATIONS[formation].slice(0, count).forEach((slot, i) => {
+  FORMATIONS[formation].slice(from, from + count).forEach((slot, i) => {
     if (sim.others.length >= MAX_AI) return;
     const s = { side: (slot.side ?? 0) + (offset.side ?? 0), back: (slot.back ?? 0) + (offset.back ?? 0), up: (slot.up ?? 0) + (offset.up ?? 0) };
     const at = place(origin, heading, { ahead: -s.back, side: s.side, up: s.up });
@@ -79,12 +81,12 @@ export function spawnGroup(sim, { id, formation, origin, heading, role, side, sp
     sim.aiSeed = (sim.aiSeed ?? 100) + 1;
     const keeper = leader ?? out[0] ?? null;
     const pilot = createPilot({
-      role, skill: sim.skill, leader: i === 0 && !leader ? null : keeper, slot: s, seed: sim.aiSeed, group,
+      role, skill, leader: i === 0 && !leader ? null : keeper, slot: s, seed: sim.aiSeed, group,
       cruise: role === 'bomber' ? speed : undefined, // the formation speed, already solved (D88)
     });
     const craft = new Craft(ac, {
       start: { altitude, speed, heading, throttle, rpm: 1, x: at.x, z: at.z, terrain: sim.world.terrain },
-      pilot, side, skill: sim.skill, seed: sim.aiSeed, label: `${ac.name} #${sim.others.length + 1}`,
+      pilot, side, skill, seed: sim.aiSeed, label: `${ac.name} #${sim.others.length + 1}`,
     });
     arriveCool(craft);
     sim.others.push(craft);
