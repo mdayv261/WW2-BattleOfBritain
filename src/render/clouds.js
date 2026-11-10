@@ -29,5 +29,6 @@ export function buildClouds() {
   });
   mesh.computeBoundingSphere();
   mesh.name = 'clouds';
+  mesh.userData.total = blobs.length; // the graphics level shows a share of them (mesh.count, D232)
   return mesh;
 }

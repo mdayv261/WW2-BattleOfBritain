@@ -3,6 +3,7 @@
 // game's state machine (src/core/gameState.js) decides which is shown.
 
 import { renderSetup } from './missionSetup.js';
+import { renderSettings } from './settingsScreen.js';
 
 const STYLE = `
 .menu-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
@@ -21,6 +22,9 @@ const STYLE = `
   border: none; cursor: pointer; text-align: left; }
 .menu-buttons button:hover { background: #77734f; }
 .menu-note { font-size: 13px; color: #555046; }
+.menu-panel { max-height: 92vh; overflow: auto; }
+.settings-keys { max-width: 620px; margin-top: 10px; }
+.settings-keys td { padding: 1px 8px 1px 0; vertical-align: top; }
 `;
 
 const soundLabel = (on) => `Sound: ${on ? 'on' : 'off'}`;
@@ -118,13 +122,11 @@ export class Menus {
     });
   }
 
-  /** The settings screen: a placeholder until Phase 7 checkpoint 6. */
-  showSettings({ onBack }) {
-    this.show('settings', {
-      title: 'Settings',
-      subtitle: 'Graphics, sound and HUD settings come later in Phase 7.',
-      buttons: [{ label: 'Back', action: onBack }],
-    });
+  /** The settings screen (D232, src/ui/settingsScreen.js). */
+  showSettings({ values, onChange, onBack, onJoystick, sound, helpHtml }) {
+    this.screen = 'settings';
+    renderSettings(this.panel, values, { onChange, onBack, onJoystick, sound, helpHtml });
+    this.overlay.style.display = 'flex';
   }
 
   /** The mission setup form. */
@@ -135,10 +137,11 @@ export class Menus {
   }
 
   /** The pause menu; a test flight has no mission to restart or end. */
-  showPause({ mission, onResume, onRestart, onEnd, onMenu, sound }) {
+  showPause({ mission, onResume, onRestart, onEnd, onMenu, sound, onSettings }) {
     const buttons = [{ label: 'Resume', action: onResume }];
     if (mission) buttons.push({ label: 'Restart mission', action: onRestart }, { label: 'End mission', action: onEnd });
     if (sound) buttons.push(soundButton(sound));
+    if (onSettings) buttons.push({ label: 'Settings', action: onSettings });
     buttons.push({ label: 'Main menu', action: onMenu });
     this.show('pause', { title: 'Paused', buttons, note: 'Esc resumes.' });
   }
@@ -167,6 +170,7 @@ export class Menus {
       ['Rounds fired', String(r.roundsFired)],
       ['Flight time', `${minutes}:${seconds}`],
     );
+    if (r.assists) lines.push(['Assists', r.assists]); // D232
     // The career (D229): the rank now, and a promotion this mission earned.
     if (r.career) {
       if (r.career.promoted) lines.unshift(['Promoted', r.career.rank]);

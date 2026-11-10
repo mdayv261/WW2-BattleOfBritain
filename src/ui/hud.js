@@ -11,6 +11,7 @@ import { targetBearing } from '../core/combat.js';
 import { SKILLS } from '../ai/skill.js';
 import { gunnersSummary } from '../ai/gunner.js';
 import { roundsLeft } from '../weapons/mounts.js';
+import { assistNames } from '../core/assists.js';
 
 /** The nearest AI aircraft's line for F3 (D68, D79): type, range, where it is, hits and damage, and the last hit. */
 function targetLine(sim) {
@@ -71,7 +72,7 @@ export function heatWarning(sim) {
   return null;
 }
 
-const HELP = `
+export const HELP = `
 <b>Battle of Britain 1940 — Phase 3 test flight</b>
 <table>
 <tr><td>Arrow up / down</td><td>stick forward (nose down) / back (nose up)</td></tr>
@@ -170,6 +171,8 @@ export class Hud {
     else if (ac.propeller.type === 'constantSpeed') lines.push(`rpm lever ${Math.round(input.rpm * 100)}%   automatic airscrews`);
     else lines.push(`Pitch ${degText(plane.beta)}${input.engineAssist ? '   ASSIST (auto pitch)' : '   manual pitch (E/D)'}`);
     lines.push(heatLine(sim));
+    const assists = assistNames(sim.assists);
+    if (assists) lines.push(`Assists: ${assists}`);
     const rounds = roundsLine(sim);
     if (rounds) lines.push(rounds);
     if (d.cutout < 0.5) lines.push('ENGINE CUT (negative g)');
@@ -190,6 +193,9 @@ export class Hud {
     if (sim.crashed) return `${sim.crashCause ?? g.crash.cause} — press R to restart`;
     if (sim.paused) return 'Paused — press P';
     if (sim.notice && plane.time < sim.notice.until) return sim.notice.text;
+    // The assists' warnings (D232), in red.
+    if (sim.warnings?.g) return 'G LIMIT — ease off the stick';
+    if (sim.warnings?.stall) return 'STALL WARNING — stick forward';
     const hot = heatWarning(sim);
     if (hot) return hot;
     if (g.onGround && g.touchdown) {
@@ -210,6 +216,7 @@ export class Hud {
   showMessage(text) {
     this.message.style.display = text ? 'block' : 'none';
     if (text) this.message.textContent = text;
+    this.message.style.color = /^(G LIMIT|STALL WARNING)/.test(text ?? '') ? '#ff6b5e' : '';
   }
 
   debugText(sim, heading, frame) {

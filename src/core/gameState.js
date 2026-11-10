@@ -7,13 +7,18 @@
 //   `career`: the player's careers (src/core/career.js, D229). A mission is added to its side's career once, as its
 //     results show (at its end, or by "End mission"); one left for the main menu from the pause menu is not, nor is
 //     the test flight;
-//   `sound`: { enabled, setEnabled(on) } (src/audio/audioEngine.js, D231), switched by the menus' Sound button.
+//   `sound`: { enabled, setEnabled(on) } (src/audio/audioEngine.js, D231), switched by the menus' Sound button;
+//   `settings`: the player's settings (src/core/settings.js, D232), from the main menu or the pause menu. The assists
+//     go to each flight as it starts, and at once when changed from the pause menu; `onSettings(values)` applies the
+//     rest (volume, graphics, HUD) in the page; `onJoystick` opens the joystick panel; `helpHtml` is the key list.
 
 import { createMission, startMission, stepMission, endMission, missionResults, DEFAULT_SETUP } from './mission.js';
 import { dropAll } from './scenarios.js';
 import { DEFAULT_SKY_TIME } from '../world/sun.js';
 import { Career } from './career.js';
 import { rankOf, nextRank } from './ranks.js';
+import { Settings } from './settings.js';
+import { assistNames } from './assists.js';
 
 /** "1 kill", "3 kills", "½ kill", "1½ kills" (shared kills count half). */
 function killsText(n) {
@@ -31,13 +36,20 @@ export function careerText(side, record) {
 }
 
 export class GameState {
-  constructor({ sim, menus, testAircraft, onFlight = () => {}, career = new Career(null), sound = null }) {
+  constructor({
+    sim, menus, testAircraft, onFlight = () => {}, career = new Career(null), sound = null,
+    settings = new Settings(null), onSettings = () => {}, onJoystick = null, helpHtml = '',
+  }) {
     this.sim = sim;
     this.menus = menus;
     this.testAircraft = testAircraft;
     this.onFlight = onFlight;
     this.career = career;
     this.sound = sound;
+    this.prefs = settings;
+    this.onSettings = onSettings;
+    this.onJoystick = onJoystick;
+    this.helpHtml = helpHtml;
     this.state = 'menu';
     this.kind = null; // 'mission' or 'test' while flying or paused
     this.setup = { ...DEFAULT_SETUP };
@@ -66,14 +78,28 @@ export class GameState {
     this.menus.showSetup(this.setup, { onFly: (setup) => this.fly(setup), onBack: () => this.menu() });
   }
 
-  settings() {
+  /** The settings screen; Back returns to the main menu or, from a flight, to the pause menu. */
+  settings(from = 'menu') {
     this.state = 'settings';
-    this.menus.showSettings({ onBack: () => this.menu() });
+    this.menus.showSettings({
+      values: this.prefs.values,
+      onChange: (changes) => {
+        const values = this.prefs.set(changes);
+        if (this.kind) this.sim.assists = { ...values.assists }; // changed in flight: at once
+        this.onSettings(values);
+        return values;
+      },
+      onBack: () => (from === 'pause' ? this.pause(true) : this.menu()),
+      onJoystick: this.onJoystick,
+      sound: this.soundButton(),
+      helpHtml: this.helpHtml,
+    });
   }
 
   /** Starts (or restarts) a mission from a setup. */
   fly(setup = this.setup) {
     this.setup = { ...setup };
+    this.sim.assists = { ...this.prefs.values.assists }; // the player's assists (D232)
     this.mission = startMission(this.sim, createMission(this.setup));
     this.kind = 'mission';
     this.state = 'flying';
@@ -88,6 +114,7 @@ export class GameState {
     sim.mode = 'ground';
     sim.startOverride = null;
     sim.paused = false;
+    sim.assists = { ...this.prefs.values.assists };
     sim.reset(this.testAircraft);
     this.mission = null;
     this.kind = 'test';
@@ -96,8 +123,9 @@ export class GameState {
     this.onFlight({ ac: sim.ac, time: DEFAULT_SKY_TIME });
   }
 
-  pause() {
-    if (this.state !== 'flying') return;
+  /** The pause menu (`again`: coming back to it from the settings). */
+  pause(again = false) {
+    if (this.state !== 'flying' && !again) return;
     this.state = 'paused';
     this.menus.showPause({
       mission: this.kind === 'mission',
@@ -106,6 +134,7 @@ export class GameState {
       onEnd: () => this.end(),
       onMenu: () => this.menu(),
       sound: this.soundButton(),
+      onSettings: () => this.settings('pause'),
     });
   }
 
@@ -137,6 +166,7 @@ export class GameState {
   results() {
     this.state = 'results';
     const r = missionResults(this.sim, this.mission);
+    r.assists = assistNames(this.sim.assists); // shown on the results when any were on (D232)
     const side = this.sim.ac.side;
     if (!this.mission.recorded) {
       this.mission.recorded = true;

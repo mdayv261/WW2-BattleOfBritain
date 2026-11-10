@@ -28,6 +28,7 @@ import { stepGunners } from '../ai/gunner.js';
 import { clearLosses, losePlayer, stepPlayerLoss, stepFalling } from './losses.js';
 import { stepBailouts, playerBailout, playerJumped, playerLanding } from './bailout.js';
 import { stepCollisions } from './collisions.js';
+import { NO_ASSISTS, assistedYaw, manageEngine, warnings } from './assists.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 export const START_MODES = ['ground', 'approach', 'air'];
@@ -115,6 +116,7 @@ export class Simulation {
     this.paused = false;
     this.mode = mode;
     this.startOverride = null; // a mission's air start: { altitude, heading } (D225)
+    this.assists = { ...NO_ASSISTS }; // the player's assists (D232), set from the settings
     this.reset(ac);
   }
 
@@ -155,6 +157,7 @@ export class Simulation {
     this.jumpers = [];
     this.bailout = null;
     this.playerJumper = null;
+    this.warnings = { stall: false, g: false }; // the assists' warnings due (D232)
     this.landingReported = false;
     this.bailHold = 0;
     this.seen = { seized: this.plane.engines.map(() => false), airframe: 0, flutter: false }; // damage already reported
@@ -248,7 +251,13 @@ export class Simulation {
     // The Bf 110's rear gunner is always AI (D14, D83), at the AI's skill; his rounds are the player's.
     this.player.skill = this.skill;
     stepGunners(this.player, this, dt, this);
+    // The assists (D232): the auto-rudder flies this step's rudder; the pilot's own stays in the input.
+    manageEngine(this.ac, this.plane, this.input, this.assists);
+    const pilotYaw = this.input.yaw;
+    this.input.yaw = assistedYaw(this.plane, this.input, this.assists);
     stepAircraft(this.plane, this.input, dt);
+    this.input.yaw = pilotYaw;
+    this.warnings = warnings(this.ac, this.plane, this.assists);
     recordTrack(this.player, this.clock);
     this.stepWorld(dt);
     const { ground, damage } = this.plane;

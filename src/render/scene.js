@@ -125,7 +125,7 @@ function buildWorld(terrain) {
 export function createScene(container, terrain = null) {
   // A logarithmic depth buffer keeps the cockpit frame (centimetres away) and distant land both sharp.
   const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // the graphics level may lower it (D232)
   renderer.setSize(window.innerWidth, window.innerHeight);
   container.appendChild(renderer.domElement);
 
@@ -136,9 +136,11 @@ export function createScene(container, terrain = null) {
   const sea = makeSea();
   scene.add(sea);
   let update = () => {};
+  let clouds = null;
   if (terrain) {
     const world = buildWorld(terrain);
-    scene.add(world.group, buildClouds());
+    clouds = buildClouds();
+    scene.add(world.group, clouds);
     update = world.update;
   } else {
     scene.add(buildAirfield());
@@ -165,5 +167,5 @@ export function createScene(container, terrain = null) {
     sun.position.copy(sunDir);
   };
 
-  return { renderer, scene, camera, sea, update, setSkyTime };
+  return { renderer, scene, camera, sea, clouds, update, setSkyTime };
 }

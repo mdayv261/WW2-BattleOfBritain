@@ -6068,3 +6068,77 @@ curve. They are tuned by ear, not measured data.
   twins); the wind; the rounds counted (a Spitfire burst, a Bf 109's cannon apart, a gunner, a drum change); hearing
   (range, the nearest 6, loudness, Doppler, pan);
 - tests/core/gameState.test.js: the Sound button.
+
+## D232. Phase 7 checkpoint 6a: settings, assists and the HUD in the cockpit (10 Nov 2026)
+
+**The product owner's choices (10 Nov 2026):**
+- checkpoint 6 in two parts: 6a here, 6b the 3D cockpit sides;
+- the stall and g warnings give a tone and a text line;
+- graphics changes take effect on the next flight, except sharpness, which changes at once.
+
+**Settings** (new src/core/settings.js, stored under `bob1940.settings`; unreadable or blocked storage gives the
+defaults):
+- volume (default 80%);
+- graphics Low / Medium / High (default High, today's look);
+- the modern HUD in the cockpit (default off);
+- four assists, all off by default (D16).
+- Sound on/off keeps its own key (D231).
+
+**The settings screen** (new src/ui/settingsScreen.js): reached from the main menu and now the pause menu. Back returns
+to whichever it came from. It has:
+- the volume slider and Sound switch;
+- Graphics;
+- "Modern HUD in the cockpit too";
+- the four assists, each with a line saying what it does;
+- Keys (the key list) and Joystick setup (the J panel, now drawn above the menus).
+- Rebinding the keys stays in Phase 8 (GAME_SPEC §5).
+
+**Assists** (new src/core/assists.js, applied in the player's 120 Hz step, src/core/simulation.js). They use only the
+pilot's own controls.
+- **Auto-rudder:** while airborne, with the pilot's rudder within 5% of the middle, the rudder flies 3 × sideslip
+  (radians), at most half travel.
+  - The pilot's own rudder overrides it, and the input keeps the pilot's setting.
+  - In hands-off rolling turns it halved the worst sideslip or better: Hurricane 5.6° → 2.5°, Spitfire 3.9° → 1.9°,
+    Bf 109 3.6° → 2.0°, Bf 110 3.2° → 1.1°.
+- **Engine management:**
+  - the automatic airscrew pitch (`engineAssist`, D18) on the Bf 109 and Bf 110;
+  - the radiator opened when the hottest engine's coolant is within 15 °C of its limit, and shut again 25 °C below
+    it.
+- **Stall warning:** airborne above 20 m/s EAS, with the angle of attack within 2° of the stall angle for the flap
+  setting (`stallAlpha`).
+- **g warning:** at 90% of the damage g limit, with negative g at its negative share.
+- **Warning tones** (src/audio/audioEngine.js): the stall warning a 900 Hz beep, the g warning a 600 Hz double beep.
+  The text lines are "STALL WARNING — stick forward" and "G LIMIT — ease off the stick", in red on the message line.
+- **Showing what's on:** the assists switched on are listed on the F2 strip and on the results ("Assists").
+
+**The HUD in the cockpit:** with the setting on, the outside views' HUD column (D97) shows in the cockpit too.
+
+**Graphics levels** (new src/render/graphics.js):
+
+| Level | Sharpness (pixel ratio, at most the screen's) | Terrain detail ranges | Houses within | Clouds shown |
+|---|---|---|---|---|
+| High | 2 | × 1 | 9 km | all |
+| Medium | 1.5 | × 0.75 | 6 km | 70% |
+| Low | 1 | × 0.5 | 4 km | 40% |
+
+**Game design, flagged:** every assist threshold and gain, the warning tones, and the graphics levels' figures.
+Neither warning was period equipment; both are off by default.
+
+**Checked in Chrome** (no console errors):
+- the settings screen, from both menus;
+- the settings remembered in the browser;
+- the HUD in the cockpit;
+- the results' Assists line;
+- Low showing visibly fewer clouds on the next flight.
+- **Not checked in the browser:**
+  - Both levels ran at 75 fps on this Mac (the screen's refresh), so a speed gain couldn't be measured.
+  - This screen's pixel ratio is 1, so sharpness makes no difference here.
+  - The warnings couldn't be triggered there: the connected joystick sets the stick each frame, over the test keys.
+    The tests cover them.
+
+**Tests:**
+- new tests/core/settings.test.js;
+- new tests/core/assists.test.js: off by default, auto-rudder on all four flyable aircraft, the pilot's override,
+  engine management, both warnings and their thresholds, the stall warning in a hard pull;
+- tests/core/gameState.test.js: settings from the pause menu and back, assists at once and on each new flight, the
+  results line.

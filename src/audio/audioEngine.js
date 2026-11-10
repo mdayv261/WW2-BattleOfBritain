@@ -20,7 +20,7 @@ const SPREAD = 0.05; // s over which a volley's cracks are scattered (one Browni
 const SMOOTH = 0.05; // s: the time constant of every level and pitch change
 // The product owner's first listen (10 Nov 2026): the engine halved (0.32 and 0.12 before), the machine guns half as
 // loud again (0.22) and the cannon three-quarters louder (0.45).
-const LEVEL = { master: 0.8, engine: 0.16, exhaust: 0.06, wind: 0.5, mg: 0.33, cannon: 0.7875, hit: 0.6, other: 0.35, otherShot: 0.3 };
+const LEVEL = { master: 0.8, engine: 0.16, exhaust: 0.06, wind: 0.5, mg: 0.33, cannon: 0.7875, hit: 0.6, other: 0.35, otherShot: 0.3, warning: 0.25 };
 
 /** Sound on or off as last chosen in this browser (on unless switched off). */
 function savedEnabled() {
@@ -43,8 +43,21 @@ export class AudioEngine {
   constructor() {
     this.ctx = null;
     this.enabled = savedEnabled();
+    this.volume = 0.8; // 0-1, from the settings (D232)
     this.shots = new ShotCounter();
     this.hits = 0;
+    this.nextBeep = 0; // context time of the next warning beep (D232)
+  }
+
+  /** The master level: on or off, times the volume. */
+  get level() {
+    return this.enabled ? LEVEL.master * this.volume : 0;
+  }
+
+  /** The volume, 0-1 (the settings' slider, D232). */
+  setVolume(v) {
+    this.volume = v;
+    if (this.master) this.master.gain.setTargetAtTime(this.level, this.ctx.currentTime, SMOOTH);
   }
 
   /** Creates the sound on the first click or key press (the browser's rule); later calls just resume it. */
@@ -57,7 +70,7 @@ export class AudioEngine {
     const compressor = ctx.createDynamicsCompressor();
     compressor.connect(ctx.destination);
     this.master = ctx.createGain();
-    this.master.gain.value = this.enabled ? LEVEL.master : 0;
+    this.master.gain.value = this.level;
     this.master.connect(compressor);
     const noise = () => Math.random() * 2 - 1;
     this.buffers = {
@@ -79,7 +92,7 @@ export class AudioEngine {
     } catch {
       // Storage blocked: the choice lasts until the page is closed.
     }
-    if (this.master) this.master.gain.setTargetAtTime(on ? LEVEL.master : 0, this.ctx.currentTime, SMOOTH);
+    if (this.master) this.master.gain.setTargetAtTime(this.level, this.ctx.currentTime, SMOOTH);
   }
 
   /** Looping noise through a filter of `type`, into `out` (the master unless given): { filter, gain }. */
@@ -151,6 +164,28 @@ export class AudioEngine {
     }
   }
 
+  /**
+   * The assists' warning tones (D232), each repeating while its warning lasts: the g warning a 600 Hz double beep, the
+   * stall warning a 900 Hz beep. Game design; neither was period equipment.
+   */
+  warn(w) {
+    const now = this.ctx.currentTime;
+    if (!w || !(w.g || w.stall) || now < this.nextBeep) return;
+    const beeps = w.g ? [[600, 0], [600, 0.16]] : [[900, 0]];
+    for (const [freq, at] of beeps) {
+      const osc = this.ctx.createOscillator();
+      osc.frequency.value = freq;
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0, now + at);
+      gain.gain.linearRampToValueAtTime(LEVEL.warning, now + at + 0.01);
+      gain.gain.setTargetAtTime(0, now + at + 0.1, 0.01);
+      osc.connect(gain).connect(this.master);
+      osc.start(now + at);
+      osc.stop(now + at + 0.2);
+    }
+    this.nextBeep = now + (w.g ? 0.6 : 0.45);
+  }
+
   /** Follows the simulation for one frame; `active` is false on the menus and the pause menu. */
   update(sim, active) {
     if (!this.ctx) return;
@@ -177,6 +212,7 @@ export class AudioEngine {
     const hits = plane.damage.hits ?? 0;
     if (hits > this.hits) this.play('hit', hits - this.hits, LEVEL.hit);
     this.hits = hits;
+    this.warn(sim.warnings);
     // Other aircraft: the nearest few heard, their engines and guns. Every gun is counted each frame, heard or not.
     const heard = hearing(plane.body, sim.others);
     const firedBy = new Map(sim.others.map((c) => [c, this.shots.count(c)]));

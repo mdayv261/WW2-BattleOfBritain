@@ -27,6 +27,9 @@ import { RadarPlot } from './core/radarPlot.js';
 import { RadarDisplay } from './ui/radar.js';
 import { headingOf } from './ui/units.js';
 import { AudioEngine } from './audio/audioEngine.js';
+import { Settings } from './core/settings.js';
+import { applyDetail, pixelRatioFor } from './render/graphics.js';
+import { HELP } from './ui/hud.js';
 import { aircraftList } from './aircraft/index.js';
 import { loadTerrain } from './world/terrain.js';
 import { realWorld } from './world/world.js';
@@ -34,7 +37,7 @@ import { realWorld } from './world/world.js';
 // The real map's terrain (D51), loaded before anything else.
 const terrain = await loadTerrain(import.meta.env.BASE_URL);
 const world = realWorld(terrain);
-const { renderer, scene, camera, sea, update: updateScene, setSkyTime } = createScene(document.getElementById('app'), terrain);
+const { renderer, scene, camera, sea, clouds, update: updateScene, setSkyTime } = createScene(document.getElementById('app'), terrain);
 const view = new TestView(scene, camera, sea);
 const shots = new ProjectileView(scene); // tracers and smoke trails (D67)
 const effects = new EffectsView(scene); // glycol, smoke, fire, strikes and crashes (D69)
@@ -55,6 +58,16 @@ const radarPlot = new RadarPlot(); // the RAF radar's plots and display, top lef
 const radar = new RadarDisplay();
 const nose = new Vector3();
 const audio = new AudioEngine(); // the sound (D231): starts on the first click or key press, as browsers require
+const settings = new Settings(); // the player's settings (D232)
+
+/** Applies the settings that act in the page: the volume and the sharpness at once (the rest at each flight's start). */
+function applySettings(values) {
+  audio.setVolume(values.volume / 100);
+  renderer.setPixelRatio(pixelRatioFor(values.graphics, window.devicePixelRatio));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+applySettings(settings.values);
+applyDetail(settings.values.graphics, clouds);
 for (const type of ['pointerdown', 'keydown']) window.addEventListener(type, () => audio.start(), { once: true, capture: true });
 const joyPanel = new JoystickPanel(joystick);
 
@@ -67,11 +80,13 @@ function select(ac) {
 // The game's states (D225): it opens on the main menu; each flight starts afresh in the same simulation.
 const game = new GameState({
   sim, menus: new Menus(), testAircraft: aircraftList[1], career: new Career(), sound: audio,
+  settings, onSettings: applySettings, onJoystick: () => joyPanel.toggle(), helpHtml: HELP,
   onFlight: ({ ac, time }) => {
     view.setAircraft(ac);
     effects.clear();
     setSkyTime(time);
     radarPlot.reset();
+    applyDetail(settings.values.graphics, clouds); // the graphics level's land, towns and clouds (D232)
   },
 });
 game.menu();
@@ -165,7 +180,7 @@ renderer.setAnimationLoop((now) => {
   } else {
     sight.update(sight2D, aim, sim.ac, mgFlashes(sim)); // the Bf 109's MG 17 flashes on its coaming (D94)
   }
-  flightHud.update(sim, outside && !sim.playerJumper);
+  flightHud.update(sim, (outside || settings.values.hudInCockpit) && !sim.playerJumper); // in the cockpit too if chosen (D232)
   const heading = headingOf(nose.set(1, 0, 0).applyQuaternion(sim.plane.body.quaternion));
   audio.update(sim, game.advancing);
   radar.draw(radarPlot, heading, { show: game.kind !== null && sim.ac.side === 'RAF' && !sim.playerJumper, fresh: plotted, dt });

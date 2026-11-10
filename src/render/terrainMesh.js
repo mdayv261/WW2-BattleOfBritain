@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { TERRAIN_GRID } from '../world/terrainGrid.js';
 import { toWorld } from '../world/geo.js';
 import { urbanMask } from '../world/landCover.js';
+import { detail } from './graphics.js';
 
 const CHUNK = 64; // grid cells along a chunk's side
 const MARGIN = 2; // chunks beyond the map's edge on each side
@@ -210,7 +211,7 @@ export function buildTerrainMesh(terrain) {
     const cam = camera.position;
     for (const ch of chunks) {
       const d = Math.max(0, Math.hypot(cam.x - ch.centre.x, cam.z - ch.centre.z) - halfSize) + Math.max(0, cam.y - 500) * 0.5;
-      let lod = RANGES.findIndex((range) => d < range);
+      let lod = RANGES.findIndex((range) => d < range * detail.rangeScale); // the graphics level (D232)
       if (lod < 0) lod = STEPS.length - 1;
       if (lod !== ch.lod) {
         ch.geometries[lod] ??= build(ch.r0, ch.c0, STEPS[lod]);

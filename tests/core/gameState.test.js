@@ -7,6 +7,7 @@ import { GameState, careerText } from '../../src/core/gameState.js';
 import { END_PAUSE } from '../../src/core/mission.js';
 import { Career } from '../../src/core/career.js';
 import { noteShooter } from '../../src/core/combat.js';
+import { Settings } from '../../src/core/settings.js';
 
 /** Stand-in screens: they remember what was shown, and the actions offered. */
 function fakeMenus() {
@@ -179,5 +180,43 @@ describe('the Sound button (D231)', () => {
     menus.actions.sound.toggle();
     expect(sound.enabled).toBe(true);
     expect(game().menus.actions.sound).toBeNull(); // no sound given: no button
+  });
+});
+
+describe('the settings in the game (D232)', () => {
+  it('are reached from the pause menu and return to it; assists changed there apply at once', () => {
+    const { g, sim, menus } = game();
+    g.fly({ ...g.setup, count: 1 });
+    g.pause();
+    menus.actions.onSettings();
+    expect([g.state, menus.shown]).toEqual(['settings', 'settings']);
+    const values = menus.actions.onChange({ assists: { autoRudder: true } });
+    expect(values.assists.autoRudder).toBe(true);
+    expect(sim.assists.autoRudder).toBe(true);
+    menus.actions.onBack();
+    expect([g.state, menus.shown]).toEqual(['paused', 'pause']);
+    menus.actions.onResume();
+    expect(g.state).toBe('flying');
+  });
+
+  it('give each new flight the chosen assists, list them on the results, and Back from the main menu\'s settings goes there', () => {
+    const sim = new Simulation(aircraftById.spitfire, 'ground');
+    const menus = fakeMenus();
+    const settings = new Settings(null);
+    settings.set({ assists: { stallWarning: true } });
+    const applied = [];
+    const g = new GameState({ sim, menus, testAircraft: aircraftById.spitfire, career: new Career(null), settings, onSettings: (v) => applied.push(v) });
+    g.menu();
+    menus.actions.onSettings();
+    menus.actions.onChange({ volume: 20 });
+    expect(applied.at(-1).volume).toBe(20);
+    menus.actions.onBack();
+    expect(g.state).toBe('menu');
+    g.fly({ ...g.setup, count: 1 });
+    expect(sim.assists.stallWarning).toBe(true);
+    g.end();
+    expect(menus.results.assists).toBe('stall warning');
+    g.testFlight();
+    expect(sim.assists.stallWarning).toBe(true);
   });
 });

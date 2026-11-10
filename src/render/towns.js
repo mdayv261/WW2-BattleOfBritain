@@ -7,10 +7,11 @@ import { TERRAIN_GRID } from '../world/terrainGrid.js';
 import { toWorld } from '../world/geo.js';
 import { urbanMask } from '../world/landCover.js';
 import { RIVERS } from '../world/mapFeatures.js';
+import { detail } from './graphics.js';
 
 const BLOCK = 32; // grid cells along a block of houses' side
 const HOUSES_PER_CELL = 2;
-const SHOW_WITHIN = 9000; // m: houses are drawn within this distance of the camera
+// Houses are drawn within detail.housesWithin m of the camera (9,000 m at High; the graphics level, D232).
 const RIVER_WIDTH = 220; // m
 const ROOF_COLOURS = [0x8a4b38, 0x6f5d52, 0x9a5a43, 0x5d5c5a].map((c) => new THREE.Color(c));
 
@@ -112,7 +113,7 @@ export function buildTowns(terrain) {
   const update = (camera) => {
     const cam = camera.position;
     for (const b of blocks) {
-      const near = Math.hypot(cam.x - b.centre.x, cam.z - b.centre.z) < SHOW_WITHIN + Math.max(0, cam.y);
+      const near = Math.hypot(cam.x - b.centre.x, cam.z - b.centre.z) < detail.housesWithin + Math.max(0, cam.y); // D232
       if (near && !b.mesh) {
         b.mesh = makeHouses(b);
         group.add(b.mesh);

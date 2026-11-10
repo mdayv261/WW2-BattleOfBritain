@@ -31,7 +31,7 @@ export class JoystickPanel {
     this.el = document.createElement('div');
     this.el.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);display:none;'
       + 'background:rgba(20,28,36,0.92);color:#e8edf2;font:13px/1.5 ui-monospace,Menlo,monospace;padding:14px 18px;'
-      + 'border-radius:8px;min-width:440px;max-height:90vh;overflow:auto;z-index:10;';
+      + 'border-radius:8px;min-width:440px;max-height:90vh;overflow:auto;z-index:60;';
     document.body.appendChild(this.el);
     this.el.innerHTML = `<b>Joystick check (J to close)</b>
       <div id="joy-name" style="margin:6px 0 8px">No joystick found: plug it in and move the stick.</div>
