@@ -14,14 +14,14 @@ Read this at the start of every session.
 - **Phase 6** (AI pilots and gunners): signed off (8 Nov 2026, D223), against the acceptance test in D222. Checkpoints
   1-5 done (D77-D83, D216-D222). Known limitation carried forward: the AI Bf 109 can't yet attack a single RAF fighter
   (D220).
-- **Phase 7** (missions and the game loop): plan approved 8 Nov 2026 (D224). Checkpoint 1 (menus and the game loop)
+- **Phase 7** (missions and the game loop): signed off (10 Nov 2026, D237), against the acceptance test in D236. Plan approved 8 Nov 2026 (D224). Checkpoint 1 (menus and the game loop)
   done (D225); checkpoint 2 (interception, escort, friendly wingmen) done (D227), the raid missions halved in length
   (D228); checkpoint 3 (ranks) done (D229); checkpoint 4 (the RAF radar display) done (D230); checkpoint 5 (sound) done (D231); checkpoint 6
   done: 6a settings, assists, HUD (D232), 6b 3D cockpit sides (D233); checkpoint 7 (the Bf 110 rear-gun swap)
-  done (D234); enemy pointers (D235); checkpoint 8, the acceptance test, proposed (D236), awaiting the product owner's
-  sign-off.
+  done (D234); enemy pointers (D235); checkpoint 8, the acceptance test (D236), passed. Next, Phase 8,
+  after its plan.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
-runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D235 pushed on 10 Nov 2026.
+runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026.
 
 ## Phase 7 checkpoint 7: the Bf 110 rear-gun swap (10 Nov 2026)
 
@@ -44,7 +44,7 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 **Known issues:**
 - Handing back mid-fight leaves the throttle where the AI had it.
 
-**Left in Phase 7:** the product owner's run of the acceptance test (D236) and sign-off.
+**Phase 7 signed off** (D237): the product owner ran the twelve checks of D236 and they pass.
 
 ## Phase 7 checkpoint 8: the acceptance test (10 Nov 2026)
 
@@ -52,7 +52,7 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 settings and cockpit, the Bf 110 rear gun and the enemy pointers, to the frame rate at the twelve-aircraft limit.
 - Each check has my own result: all passed on this Mac.
 - The eleven-AI interception held 75 fps once settled, after a slower start.
-- The product owner runs the checks and signs Phase 7 off; Phase 8 waits for that.
+- The product owner ran the checks: all twelve pass, and Phase 7 is signed off (D237).
 
 ## Enemy pointers (10 Nov 2026)
 

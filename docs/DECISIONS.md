@@ -6444,3 +6444,14 @@ satisfied. My own results, run first (headless where possible, and in Chrome on 
 - a flight's first few seconds can run slower while the scene loads.
 
 Phase 8 doesn't start until the product owner signs Phase 7 off (CLAUDE.md).
+
+## D237. Phase 7 signed off (10 Nov 2026)
+
+**Decision (product owner):** "The 12 checks pass, so Phase 7 is signed off." The acceptance test is D236.
+
+**Carried forward:** the known limitations listed in D236. The AI Bf 109 against a single RAF fighter (D220) is still
+among them.
+
+**Pushed:** the product owner asked for the acceptance test commits to be pushed.
+
+**Next:** Phase 8, after its plan.
