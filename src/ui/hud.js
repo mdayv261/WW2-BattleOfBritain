@@ -66,7 +66,11 @@ export function heatWarning(sim) {
   for (const [i, e] of plane.engines.entries()) {
     if (e.heat.seized) return `${name(i)} seized`;
     const limit = coolantLimit(plane.engine, plane.body.position.y);
-    if (e.heat.coolant > limit) return `${name(i)} overheating: coolant ${Math.round(e.heat.coolant)} °C, limit ${Math.round(limit)} °C (O opens the radiator)`;
+    if (e.heat.coolant > limit) {
+      // With the radiator already open (by the pilot or the engine-management assist) only less heat will help (D232).
+      const help = sim.input.radiator ? 'radiator open: climb less steeply or reduce power' : 'O opens the radiator';
+      return `${name(i)} overheating: coolant ${Math.round(e.heat.coolant)} °C, limit ${Math.round(limit)} °C (${help})`;
+    }
     if (e.heat.oil > plane.engine.heat.oilLimit) return `${name(i)} oil ${Math.round(e.heat.oil)} °C, limit ${plane.engine.heat.oilLimit} °C`;
   }
   return null;
@@ -181,9 +185,17 @@ export class Hud {
     if (extra.joystick) lines.push('Joystick connected');
     this.strip.textContent = lines.join('\n');
 
-    this.showMessage(this.messageFor(sim));
+    const text = this.messageFor(sim);
+    this.showMessage(text, text !== null && text === this.warningFor(sim));
 
     if (this.showDebug) this.debug.textContent = this.debugText(sim, heading, extra.frame);
+  }
+
+  /** The warning due, if any: the assists' g and stall warnings (D232), then overheating, oil or a seized engine. */
+  warningFor(sim) {
+    if (sim.warnings?.g) return 'G LIMIT — ease off the stick';
+    if (sim.warnings?.stall) return 'STALL WARNING — stick forward';
+    return heatWarning(sim);
   }
 
   /** The message line: crash, pause, landing result, or what to do at the start. */
@@ -193,11 +205,8 @@ export class Hud {
     if (sim.crashed) return `${sim.crashCause ?? g.crash.cause} — press R to restart`;
     if (sim.paused) return 'Paused — press P';
     if (sim.notice && plane.time < sim.notice.until) return sim.notice.text;
-    // The assists' warnings (D232), in red.
-    if (sim.warnings?.g) return 'G LIMIT — ease off the stick';
-    if (sim.warnings?.stall) return 'STALL WARNING — stick forward';
-    const hot = heatWarning(sim);
-    if (hot) return hot;
+    const warning = this.warningFor(sim);
+    if (warning) return warning;
     if (g.onGround && g.touchdown) {
       const sink = climbText(ac, g.touchdown.sink).replace('-', '');
       const at = `touched down at ${speedText(ac, g.touchdown.speed)}, sinking ${sink}`;
@@ -213,10 +222,13 @@ export class Hud {
     return null;
   }
 
-  showMessage(text) {
+  /** Shows the message line; a warning in white on a see-through red ground, to stand out (product owner, D232). */
+  showMessage(text, warning = false) {
     this.message.style.display = text ? 'block' : 'none';
     if (text) this.message.textContent = text;
-    this.message.style.color = /^(G LIMIT|STALL WARNING)/.test(text ?? '') ? '#ff6b5e' : '';
+    this.message.style.background = warning ? 'rgba(185, 20, 20, 0.78)' : '';
+    this.message.style.color = warning ? '#ffffff' : '';
+    this.message.style.fontWeight = warning ? 'bold' : '';
   }
 
   debugText(sim, heading, frame) {

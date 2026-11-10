@@ -6113,6 +6113,20 @@ pilot's own controls.
 
 **The HUD in the cockpit:** with the setting on, the outside views' HUD column (D97) shows in the cockpit too.
 
+**Warnings after the product owner's flight (10 Nov 2026):**
+- **The report:** "my engine overheated with engine management on".
+- **What was happening:** the assist had opened the radiator. In a slow, steep full-power climb even a fully open
+  radiator can't carry the heat away. Flown headless to about 6,000 m with engine management on:
+  - at normal climb speeds (EAS 61-90 m/s, about 140-200 mph or 220-330 km/h) every type stayed 11-15 °C under the
+    limit;
+  - at about 50 m/s (110 mph, 180 km/h) the Bf 109 went 2 °C over;
+  - at about 42 m/s (90 mph, 150 km/h) the Bf 109 went 9 °C over and the Bf 110 8 °C over.
+  - The assist leaves power to the pilot (the product owner agreed).
+- **The overheating line** no longer says "(O opens the radiator)" when the radiator is already open. It now says
+  "(radiator open: climb less steeply or reduce power)".
+- **Every warning** (g, stall, overheating, oil, seized) is now shown in bold white on a see-through red ground, as
+  the red text alone was hard to see (the product owner).
+
 **Graphics levels** (new src/render/graphics.js):
 
 | Level | Sharpness (pixel ratio, at most the screen's) | Terrain detail ranges | Houses within | Clouds shown |

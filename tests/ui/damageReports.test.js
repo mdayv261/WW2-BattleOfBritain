@@ -10,7 +10,16 @@ describe('damage reports', () => {
     const sim = new Simulation(aircraftById.spitfire, 'air');
     expect(heatWarning(sim)).toBeNull();
     sim.plane.engines[0].heat.coolant = 125;
-    expect(heatWarning(sim)).toMatch(/overheating: coolant 125 °C, limit 120 °C/);
+    sim.input.radiator = 0;
+    expect(heatWarning(sim)).toMatch(/overheating: coolant 125 °C, limit 120 °C \(O opens the radiator\)/);
+  });
+
+  it('with the radiator already open, says to climb less steeply or reduce power instead (D232)', () => {
+    const sim = new Simulation(aircraftById.bf109e4, 'air');
+    sim.plane.engines[0].heat.coolant = 140;
+    sim.input.radiator = 1;
+    expect(heatWarning(sim)).toMatch(/\(radiator open: climb less steeply or reduce power\)$/);
+    expect(heatWarning(sim)).not.toMatch(/O opens/);
   });
 
   it('names the engine on a twin', () => {
