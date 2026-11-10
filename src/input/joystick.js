@@ -37,7 +37,7 @@ export const FLIGHT_AXES = ['roll', 'pitch', 'yaw'];
 // undercarriage 11, cockpit view 10; the trigger (1) fires the machine guns and the thumb button (2) the cannon (D67);
 // button 8, held, bails out (D80); buttons 7 and 9, held, turn the propeller to fine and coarse pitch (D96). A button
 // set to -1 is unassigned.
-export const MAPPING_VERSION = 5;
+export const MAPPING_VERSION = 6;
 export const DEFAULT_MAPPING = {
   version: MAPPING_VERSION,
   roll: { axis: 0, invert: false, curve: 1, deadzone: DEADZONE },
@@ -45,7 +45,7 @@ export const DEFAULT_MAPPING = {
   yaw: { axis: 5, invert: false, curve: 1, deadzone: DEADZONE },
   throttle: { axis: 6, invert: true },
   hat: { axis: 9 },
-  buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1, bailOut: 7, pitchFine: 6, pitchCoarse: 8 },
+  buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1, bailOut: 7, pitchFine: 6, pitchCoarse: 8, seat: -1 },
   centres: {}, // the reading of each calibrated axis at its neutral, by axis number (D70)
 };
 
@@ -74,8 +74,8 @@ function loadMapping() {
       const mapping = { ...structuredClone(DEFAULT_MAPPING), ...saved };
       // Mappings saved before the version 2 button layout keep their axes but take the new hat and buttons; later ones
       // keep their buttons and gain any added since (the firing buttons in version 3, bail out in version 4, propeller
-      // pitch fine and coarse in version 5). An added button whose default number the owner already uses for another
-      // starts unassigned (-1).
+      // pitch fine and coarse in version 5, the Bf 110's seat swap in version 6, unassigned by default: D234). An added
+      // button whose default number the owner already uses for another starts unassigned (-1).
       const version = saved.version ?? 1;
       if (version < 2) {
         mapping.hat = structuredClone(DEFAULT_MAPPING.hat);
@@ -186,7 +186,8 @@ export class Joystick {
   /**
    * Writes stick, rudder, (once moved) throttle, elevator trim (while its buttons are held, at the aircraft's
    * own trim speed), brakes, flaps and undercarriage into the control input, for a frame of dt seconds.
-   * Returns null with no joystick, else { hat: direction or null, view: true on a press of the view button }.
+   * Returns null with no joystick, else { hat: direction or null, view: true on a press of the view button, seat: true
+   * on a press of the seat-swap button (D234) }.
    */
   update(input, ac, dt = 0) {
     if (!this.poll()) return null;
@@ -221,6 +222,6 @@ export class Joystick {
     const pitch = (this.held('pitchCoarse') ? 1 : 0) - (this.held('pitchFine') ? 1 : 0);
     if (pitch && ac.propeller.type === 'constantSpeed') input.rpm = clamp(input.rpm - pitch * LEVER_RATE * dt, 0, 1);
     else if (pitch) input.pitchSwitch = pitch;
-    return { hat: hatDirection(this.pad.axes[this.mapping.hat.axis]), view: this.pressed('view') };
+    return { hat: hatDirection(this.pad.axes[this.mapping.hat.axis]), view: this.pressed('view'), seat: this.pressed('seat') };
   }
 }

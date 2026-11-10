@@ -6212,3 +6212,72 @@ eye position. The product owner may supply pictures to refine them, as for the p
 - the parts are there, inside the fuselage's width, between the bulkhead and the panel;
 - the sill is below the eye and the bulkhead behind the seat;
 - the rear deck runs from the bulkhead to the tail with its top below the eye.
+
+## D234. Phase 7 checkpoint 7: the Bf 110 rear-gun swap (10 Nov 2026)
+
+**The product owner's choices (10 Nov 2026):**
+- **Tab** swaps between the pilot's seat and the rear gun; a joystick button can be assigned to it in the J panel,
+  unassigned by default (mapping version 6).
+- The AI pilot flies **defensively** while the player mans the gun.
+
+**What was built:**
+- **Seats** (new src/core/crewSeat.js): the Bf 110 only.
+  - Every flight starts in the pilot's seat.
+  - **Refused, with a message:** a swap to a gunner who is out of action, or during a bail-out or after a crash.
+  - **On the gun:**
+    - an AI pilot flies the aircraft in every physics step, while the pilot lives;
+    - both engines take his throttle, and the automatic airscrew pitch is held on;
+    - the player's keys and stick work the gun, not the aircraft (src/main.js): Space or the trigger fires, the stick
+      or arrows swing the aim at up to the gun's 60°/s, the mouse drags it, and Backspace still bails out.
+  - **The gunner hit while the player is on the gun:** the player is sent back to the pilot's seat.
+  - **Back in the pilot's seat:** the AI lets go, and the controls stand as he left them (throttle and all).
+- **The defensive pilot** (new src/ai/defensive.js; game design, flagged). Never above 2 g, so the gun can still be
+  aimed (D78), and never with the nose guns.
+  - An enemy fighter within 2,000 m, in the rear half or closing, brings a turn (bank up to 57°) that swings it towards
+    dead astern. One below the horizontal brings a shallow descent (about 7°) that closes the height between them.
+  - Otherwise he keeps the escort's station on the raid's leader (escort missions, S38), or holds heading and height.
+  - He sees enemies one reaction time late (Regular).
+- **The gun manned** (src/ai/gunner.js `crew.manned`): the player's aim and trigger replace the AI gunner's target,
+  lead and bursts.
+  - Kept: the arc (±30° about dead astern, 0-60° up, S25), the traverse rate, drum changes (at Regular's pace, 14 s)
+    and no aiming above 2 g.
+  - His rounds are his own (D225 kill credit).
+- **The gunner's view** (a 'gunner' camera mode, src/render/cameras.js):
+  - The eye sits 0.45 m behind the gun's pivot along its line and 0.11 m above, in the gun's own frame, so the view
+    looks along the gun.
+  - The look the player asks for (mouse, stick, arrows) is the aim, kept to the arc and a little beyond. The gun
+    follows at its traverse rate and the view follows the gun.
+  - Hidden, as from the pilot's cockpit: the model's fuselage shell and glazing; the rear deck (D233) runs to the twin
+    fins.
+- **The MG 15 in 3D** (new src/render/mg15.js): a barrel, breech and a saddle drum, a half low on each side, kept
+  upright as the gun swings.
+- **The gunner's screen** (new src/ui/gunnerHud.js):
+  - the ring-and-bead sight (S25 para. 20) in the middle of the view: a ring of 2.5° radius (an estimate) with four
+    spokes and a bead;
+  - a line: rounds in the drum, drums left (or "changing drum"), height and speed in Luftwaffe units, and "Tab: back
+    to the pilot's seat".
+  - No pilot's panel, Revi, chase reticle or flight HUD on the gun.
+- **Multiplayer** keeps the gun AI-manned (D14). D83's "the rear gunner is always AI" now holds only there; GAME_SPEC
+  §3 updated.
+
+**Estimates, flagged:** the defensive pilot's ranges, turn, bank and descent; the eye's place behind the gun; the gun
+model's sizes; the ring's size.
+
+**Found in Chrome and fixed:**
+- The drum first sat on top of the gun, in front of the eye, hiding the sight. It is now a saddle drum, low either
+  side.
+- The eye was first placed "up" in the aircraft's frame and went into the breech with the gun raised.
+- The model rolled at combined angles. It is now turned by a basis that keeps it upright.
+
+**Checked in Chrome** (75 fps, no console errors), in a Bf 110 dogfight against Hurricanes:
+- Tab to the gun: the view astern along the MG 15, with the sight between the twin fins;
+- a mouse drag swung the aim up and to the left;
+- Space fired, 75 rounds down to 48;
+- Tab back to the pilot's panel.
+- Handing back mid-fight, the aircraft was in the AI's banked descent with the throttle where he left it (0%).
+
+**Tests:**
+- new tests/core/crewSeat.test.js;
+- new tests/ai/defensive.test.js;
+- tests/ai/gunner.test.js gains the manned gun: the aim from the look, traverse and arc, the trigger only, drum
+  changes, no target choice, and nothing above 2 g.

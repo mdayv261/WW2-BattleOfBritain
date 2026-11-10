@@ -29,6 +29,7 @@ import { clearLosses, losePlayer, stepPlayerLoss, stepFalling } from './losses.j
 import { stepBailouts, playerBailout, playerJumped, playerLanding } from './bailout.js';
 import { stepCollisions } from './collisions.js';
 import { NO_ASSISTS, assistedYaw, manageEngine, warnings } from './assists.js';
+import { resetSeat, stepCrewSeat } from './crewSeat.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 export const START_MODES = ['ground', 'approach', 'air'];
@@ -158,6 +159,7 @@ export class Simulation {
     this.bailout = null;
     this.playerJumper = null;
     this.warnings = { stall: false, g: false }; // the assists' warnings due (D232)
+    resetSeat(this); // the Bf 110's crew positions (D234): every flight starts in the pilot's seat
     this.landingReported = false;
     this.bailHold = 0;
     this.seen = { seized: this.plane.engines.map(() => false), airframe: 0, flutter: false }; // damage already reported
@@ -245,6 +247,7 @@ export class Simulation {
     }
     this.clock += dt;
     this.copyPose(this.previous);
+    stepCrewSeat(this, dt); // with the player on the Bf 110's rear gun, the AI pilot flies (D234)
     // Guns first: their rounds leave from where the aircraft is now, and their recoil acts in this step.
     const recoil = stepGuns(this.armament, this.plane, this.input, dt, this.plane.time, (round) => this.projectiles.spawn(round, this));
     this.plane.recoil = recoil.force.lengthSq() > 0 ? recoil : null;

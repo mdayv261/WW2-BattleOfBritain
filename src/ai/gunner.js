@@ -9,6 +9,9 @@
 //   - cannot shoot at all above common.gunners.gLimit (S25), and stops when killed or when the crew abandon the aircraft.
 // One man may serve more than one gun (the He 111's beam gunner, and the tail MG 17 fired by the B- or C-Stand gunner,
 // S28): he fires the one that bears. The tuning values are game design (D83).
+// The player may man the Bf 110's rear gun himself (D234): `crew.manned` = { seat, aim (body axes), trigger } then
+// replaces that man's choice of target, aim and bursts; the gun keeps its arc, traverse, drums and the g limit, and the
+// player changes the drums at Regular's pace.
 
 import { Vector3 } from 'three';
 import { SKILLS } from './skill.js';
@@ -130,6 +133,10 @@ export function stepGunners(craft, sim, dt, owner = craft) {
       gunner.firing = false;
       continue;
     }
+    if (crew.manned?.seat === gunner.seat) {
+      stepManned(crew.manned, gunner, mounts, plane, dt, silent, emit, fired);
+      continue;
+    }
     gunner.timer -= dt;
     if (gunner.timer <= 0) {
       gunner.timer = DECIDE;
@@ -173,6 +180,18 @@ export function stepGunners(craft, sim, dt, owner = craft) {
   }
   // Guns nobody is firing this step still finish a drum change under way.
   for (const m of crew.mounts) if (!fired.has(m)) stepMount(m, plane, dt, plane.time, false, drumTime, emit);
+}
+
+/** The player at a flexible gun (D234): it swings to his aim and fires on his trigger, unless the g is too high. */
+function stepManned(manned, gunner, mounts, plane, dt, silent, emit, fired) {
+  const mount = mounts.find((m) => !m.spec.fixed) ?? mounts[0];
+  gunner.target = null;
+  gunner.mount = mount;
+  aimMount(mount, manned.aim, dt);
+  const trigger = !!manned.trigger && !silent;
+  gunner.firing = trigger;
+  stepMount(mount, plane, dt, plane.time, trigger, common.gunners.drumChange * SKILLS.regular.drumFactor, emit);
+  fired.add(mount);
 }
 
 /** Bursts and pauses: whether the gunner holds the trigger this step. */

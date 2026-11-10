@@ -4,6 +4,8 @@
 //   chase   - behind along the flight path, horizon level
 //   fixed   - rigidly behind and above, rolling with the aircraft
 //   orbit   - round the aircraft at a distance, steered with the mouse
+//   gunner  - the Bf 110's rear gunner looking along his MG 15 (D234): the eye just behind and above the gun's pivot,
+//             looking where the gun points, so the ring-and-bead sight is in the middle of the view
 // `look` is the head's turn: yaw (rad, + to the left) and pitch (rad, + up).
 
 import * as THREE from 'three';
@@ -25,6 +27,10 @@ export const FOV = { cockpit: 70, outside: 60 };
 const _q = new THREE.Quaternion();
 const _y = new THREE.Vector3(0, 1, 0);
 const _x = new THREE.Vector3(1, 0, 0);
+const _eye = new THREE.Vector3();
+const _at = new THREE.Vector3();
+const _up = new THREE.Vector3();
+const _m = new THREE.Matrix4();
 const FACE_NOSE = new THREE.Quaternion().setFromAxisAngle(_y, -Math.PI / 2); // camera -Z along the nose (+X)
 
 /** Camera orientation for a head turn inside an aircraft whose attitude is `body`. */
@@ -33,6 +39,18 @@ export function cockpitQuaternion(body, look, out = new THREE.Quaternion()) {
   out.multiply(_q.setFromAxisAngle(_y, look.yaw));
   return out.multiply(_q.setFromAxisAngle(_x, look.pitch));
 }
+
+const GUNNER_EYE = { back: 0.45, up: 0.11 }; // m: the gunner's eye behind the gun's pivot along its line (clear of the
+// breech), and above its line, both in the gun's own frame so they hold at any angle of the gun
+
+/**
+ * The direction (body axes) the player wants the rear gun pointed, from the gunner's look: `yaw` turns from dead astern
+ * (+ to the gunner's left, the aircraft's right), `pitch` up. Azimuth from the nose is π - yaw.
+ */
+export const gunnerAim = (look, out = new THREE.Vector3()) => {
+  const az = Math.PI - look.yaw;
+  return out.set(Math.cos(look.pitch) * Math.cos(az), Math.sin(look.pitch), Math.cos(look.pitch) * Math.sin(az));
+};
 
 /** World position of the pilot's eye. */
 export function eyePosition(ac, position, body, out = new THREE.Vector3()) {
@@ -57,6 +75,16 @@ export class CameraRig {
 
   get inCockpit() {
     return this.mode === 'cockpit';
+  }
+
+  /** On the Bf 110's rear gun (D234). */
+  get atGun() {
+    return this.mode === 'gunner';
+  }
+
+  /** Inside the aircraft: in the pilot's cockpit or at the rear gun. */
+  get inside() {
+    return this.inCockpit || this.atGun;
   }
 
   /** In the cockpit with the head turned to the side, up or behind (hat or mouse): the panel is out of view. */
@@ -114,12 +142,26 @@ export class CameraRig {
   /** Places the camera for the blended aircraft pose { position, quaternion } and its velocity. */
   update(ac, pose, velocity, dt) {
     const cam = this.camera;
-    const fov = (this.inCockpit ? FOV.cockpit : FOV.outside) / this.zoom;
+    const fov = (this.inside ? FOV.cockpit : FOV.outside) / this.zoom;
     if (cam.fov !== fov) {
       cam.fov = fov;
       cam.updateProjectionMatrix();
     }
     this.shiftPicture(this.inCockpit ? this.aim : 0.5);
+    if (this.atGun && this.gun) {
+      // Along the gun: `gun` is its mount ({ position, bore }, body axes).
+      const { position, bore } = this.gun;
+      // The gun's own up: the aircraft's up, square to the bore.
+      _up.set(0, 1, 0).addScaledVector(bore, -bore.y).normalize();
+      _eye.copy(position).addScaledVector(bore, -GUNNER_EYE.back).addScaledVector(_up, GUNNER_EYE.up);
+      _at.copy(_eye).add(bore);
+      _m.lookAt(_eye, _at, _up);
+      cam.quaternion.setFromRotationMatrix(_m).premultiply(pose.quaternion);
+      cam.position.copy(_eye).applyQuaternion(pose.quaternion).add(pose.position);
+      this.camPos.copy(cam.position);
+      this.first = true;
+      return;
+    }
     if (this.inCockpit) {
       eyePosition(ac, pose.position, pose.quaternion, cam.position);
       cockpitQuaternion(pose.quaternion, this.look, cam.quaternion);

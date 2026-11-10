@@ -97,6 +97,7 @@ export const HELP = `
 <tr><td>Mouse</td><td>drag to look around; wheel to zoom; double-click to look ahead</td></tr>
 <tr><td>I &nbsp; F2 &nbsp; F3</td><td>instruments, text readout, debug overlay</td></tr>
 <tr><td>F4</td><td>radar (RAF aircraft): the bearing of each enemy group on a heading-up compass ring, updated every 20 s</td></tr>
+<tr><td>Tab</td><td>Bf 110: the pilot's seat or the rear gun (the AI pilot flies; mouse, stick or arrows aim, Space fires)</td></tr>
 <tr><td>Space &nbsp; Enter</td><td>fire the machine guns (RAF: all eight) / the cannon</td></tr>
 <tr><td>Y &nbsp; 9</td><td>target aircraft ahead (each press: the next type, then none) / a test 20 mm hit on your own aircraft</td></tr>
 <tr><td>Backspace</td><td>hold 1 s to bail out (you also bail out when the aircraft is lost)</td></tr>

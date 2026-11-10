@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { CameraRig } from './cameras.js';
 import { buildCockpitFrame } from './cockpitFrame.js';
 import { buildCockpitInterior } from './cockpitInterior.js';
+import { buildMg15, placeMg15 } from './mg15.js';
 import { buildReticle, buildSightBody } from './gunsight.js';
 import { buildAircraftModel } from './models/aircraftModel.js';
 import { DESIGNS } from './models/designs.js';
@@ -146,7 +147,7 @@ export class TestView {
     this.lossFor = sim.plane;
     hideLost(this.model, sim.plane.damage.failed?.parts);
     this.lost = new Set(sim.plane.damage.failed?.parts ?? []);
-    if (this.rig.inCockpit) this.rig.mode = this.rig.outside;
+    if (this.rig.inside) this.rig.mode = this.rig.outside;
   }
 
   /** Places the model (blended between the last two physics steps) and moves the camera. */
@@ -156,7 +157,15 @@ export class TestView {
     this._quat.slerpQuaternions(sim.previous.quaternion, body.quaternion, alpha);
     this.model.position.copy(this._pos);
     this.model.quaternion.copy(this._quat);
-    const inside = this.rig.inCockpit;
+    const inside = this.rig.inside; // the pilot's cockpit, or the Bf 110's rear gun (D234)
+    // The rear MG 15 in 3D on its mount, and the gunner's view along it.
+    const gun = sim.player.gunnery?.mounts.find((m) => !m.spec.fixed) ?? null;
+    if (gun) {
+      this.mg15 ??= buildMg15();
+      if (this.mg15.parent !== this.model) this.model.add(this.mg15);
+      placeMg15(this.mg15, gun);
+    } else if (this.mg15) this.mg15.removeFromParent();
+    this.rig.gun = gun;
     this.showParts(inside);
     this.aircraft.update(sim.plane, dt, { inside });
     this.followLoss(sim);

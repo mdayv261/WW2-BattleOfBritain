@@ -30,6 +30,10 @@ import { AudioEngine } from './audio/audioEngine.js';
 import { Settings } from './core/settings.js';
 import { applyDetail, pixelRatioFor } from './render/graphics.js';
 import { HELP } from './ui/hud.js';
+import { GunnerHud } from './ui/gunnerHud.js';
+import { swapSeat } from './core/crewSeat.js';
+import { gunnerAim } from './render/cameras.js';
+import { common } from './aircraft/common.js';
 import { aircraftList } from './aircraft/index.js';
 import { loadTerrain } from './world/terrain.js';
 import { realWorld } from './world/world.js';
@@ -57,6 +61,28 @@ const flightHud = new FlightHud(); // the outside views' HUD on the right of the
 const radarPlot = new RadarPlot(); // the RAF radar's plots and display, top left (D230)
 const radar = new RadarDisplay();
 const nose = new Vector3();
+const gunnerHud = new GunnerHud(); // the Bf 110's rear gun: its sight and readout (D234)
+let gunInput = null; // the player's keys and stick while he mans the rear gun: they work the gun, not the aircraft
+const GUN_LOOK = { yaw: 35 * (Math.PI / 180), pitchDown: -5 * (Math.PI / 180), pitchUp: 65 * (Math.PI / 180) }; // rad
+
+/** Tab (or the joystick's seat button): the Bf 110's pilot's seat or its rear gun (D234). */
+function changeSeat() {
+  const text = swapSeat(sim);
+  view.rig.resetLook();
+  if (text) sim.notice = { text, until: sim.plane.time + 3 };
+}
+
+/** With the player on the rear gun: his stick or arrows swing the aim (at the gun's traverse rate), his trigger fires. */
+function workGun(dt) {
+  const rate = common.gunners.traverseRate;
+  const look = view.rig.mouseLook;
+  view.rig.turn(-gunInput.roll * rate * dt, gunInput.pitch * rate * dt);
+  look.yaw = Math.max(-GUN_LOOK.yaw, Math.min(GUN_LOOK.yaw, look.yaw)); // the arc, and a little beyond
+  look.pitch = Math.max(GUN_LOOK.pitchDown, Math.min(GUN_LOOK.pitchUp, look.pitch));
+  sim.gunControl.aim = gunnerAim(view.rig.look, sim.gunControl.aim ?? new Vector3());
+  sim.gunControl.trigger = !!(gunInput.fireMg || gunInput.fireCannon);
+  if (gunInput.bailOut) sim.input.bailOut = gunInput.bailOut; // bailing out works from either seat
+}
 const audio = new AudioEngine(); // the sound (D231): starts on the first click or key press, as browsers require
 const settings = new Settings(); // the player's settings (D232)
 
@@ -99,6 +125,7 @@ function gameKeys() {
   if (keyboard.took('F2')) hud.toggleStrip();
   if (keyboard.took('F3')) hud.toggleDebug();
   if (keyboard.took('F4')) radar.toggle();
+  if (keyboard.took('Tab')) changeSeat();
   if (keyboard.took('KeyH')) hud.toggleHelp();
   if (keyboard.took('KeyJ')) joyPanel.toggle();
   if (keyboard.took('KeyK')) sim.engineKey('select');
@@ -134,7 +161,7 @@ function testKeys() {
   if (keyboard.took('Digit0')) say(clearAI(sim));
 }
 window.addEventListener('keydown', (e) => {
-  if (e.code === 'F2' || e.code === 'F3' || e.code === 'F4') e.preventDefault();
+  if (['F2', 'F3', 'F4', 'Tab'].includes(e.code)) e.preventDefault();
   if (hud.helpVisible && !['KeyH', 'KeyJ'].includes(e.code)) hud.toggleHelp(false);
 });
 
@@ -148,10 +175,20 @@ renderer.setAnimationLoop((now) => {
   let plotted = false;
   if (game.advancing) {
     // Flying: the controls, the physics, and the mission's watch for its end (D225).
-    keyboard.update(sim.input, sim.ac, dt);
-    stick = joystick.update(sim.input, sim.ac, dt);
-    sim.applyLevers();
-    if (stick?.view) view.rig.toggleCockpit();
+    if (sim.seat === 'gunner') {
+      gunInput ??= { ...sim.input, engines: sim.input.engines?.map((e) => ({ ...e })), pitch: 0, roll: 0, yaw: 0 };
+      keyboard.update(gunInput, sim.ac, dt);
+      stick = joystick.update(gunInput, sim.ac, dt);
+      workGun(dt);
+      if (stick?.seat) changeSeat();
+    } else {
+      gunInput = null;
+      keyboard.update(sim.input, sim.ac, dt);
+      stick = joystick.update(sim.input, sim.ac, dt);
+      sim.applyLevers();
+      if (stick?.view) view.rig.toggleCockpit();
+      if (stick?.seat) changeSeat();
+    }
     sim.advance(dt);
     plotted = radarPlot.update(sim);
     game.frame();
@@ -161,6 +198,9 @@ renderer.setAnimationLoop((now) => {
     game.menus.setStatus?.(joystick.status());
   }
   view.rig.hatLook = stick && stick.hat !== null ? HAT_LOOKS[stick.hat] : null;
+  // The view follows the seat: along the rear gun while the player mans it, else the pilot's.
+  if (sim.seat === 'gunner') view.rig.mode = 'gunner';
+  else if (view.rig.atGun) view.rig.mode = 'cockpit';
   view.update(sim, sim.loop.alpha, dt);
   shots.update(sim.projectiles);
   wrecks.update(sim, sim.loop.alpha);
@@ -168,7 +208,7 @@ renderer.setAnimationLoop((now) => {
   effects.update(sim, dt, camera, renderer.domElement.height);
   updateScene(camera);
   hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
-  const outside = !view.rig.inCockpit;
+  const outside = !view.rig.inside;
   instruments.update(sim, { hidden: panelHidden(view.rig, sim) }); // no panel looking away, bailed out or outside (D97)
   const sight2D = showSight(sim, view.rig);
   view.showSight2D(sight2D);
@@ -180,7 +220,8 @@ renderer.setAnimationLoop((now) => {
   } else {
     sight.update(sight2D, aim, sim.ac, mgFlashes(sim)); // the Bf 109's MG 17 flashes on its coaming (D94)
   }
-  flightHud.update(sim, (outside || settings.values.hudInCockpit) && !sim.playerJumper); // in the cockpit too if chosen (D232)
+  flightHud.update(sim, (outside || (settings.values.hudInCockpit && !view.rig.atGun)) && !sim.playerJumper); // in the cockpit too if chosen (D232)
+  gunnerHud.update(sim, view.rig.atGun && game.kind !== null && !sim.playerJumper, camera.fov);
   const heading = headingOf(nose.set(1, 0, 0).applyQuaternion(sim.plane.body.quaternion));
   audio.update(sim, game.advancing);
   radar.draw(radarPlot, heading, { show: game.kind !== null && sim.ac.side === 'RAF' && !sim.playerJumper, fresh: plotted, dt });

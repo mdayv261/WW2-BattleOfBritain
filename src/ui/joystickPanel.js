@@ -12,6 +12,7 @@ const BUTTONS = [
   ['trimUp', 'Elevator trim nose up (hold)'], ['trimDown', 'Elevator trim nose down (hold)'], ['brake', 'Brakes (hold)'],
   ['flapsUp', 'Flaps up a stop'], ['flapsDown', 'Flaps down a stop'], ['gear', 'Undercarriage'], ['view', 'Cockpit / outside'],
   ['bailOut', 'Bail out (hold 1 s)'], ['pitchFine', 'Propeller pitch fine (hold)'], ['pitchCoarse', 'Propeller pitch coarse (hold)'],
+  ['seat', 'Bf 110: pilot / rear gun (as Tab)'],
 ];
 // Sensitivity choices, each with what half stick gives.
 const sensitivityOptions = SENSITIVITIES.map(([name, k]) => `<option value="${k}">${name} (half stick ${Math.round(100 * 0.5 ** k)}%)</option>`).join('');

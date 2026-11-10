@@ -115,6 +115,7 @@ export class GameState {
     sim.startOverride = null;
     sim.paused = false;
     sim.assists = { ...this.prefs.values.assists };
+    sim.escortRaid = null;
     sim.reset(this.testAircraft);
     this.mission = null;
     this.kind = 'test';

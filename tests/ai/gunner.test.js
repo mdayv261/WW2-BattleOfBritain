@@ -14,6 +14,9 @@ import { applyHit, componentsOf, crewHealth } from '../../src/weapons/damage.js'
 import { startBailout } from '../../src/core/bailout.js';
 import { seededRandom } from '../../src/weapons/random.js';
 import { Vector3 } from 'three';
+import { swapSeat, rearGun } from '../../src/core/crewSeat.js';
+import { gunnerAim } from '../../src/render/cameras.js';
+import { common } from '../../src/aircraft/common.js';
 
 const DT = 1 / 120;
 
@@ -161,5 +164,59 @@ describe('crew wounds', () => {
     bomber.plane.damage.crew = { 2: 0, 4: -0.2 };
     const b = startBailout(sim, { ac: he111, side: 'Luftwaffe', label: 'x', body: () => bomber.plane.body, plane: bomber.plane });
     expect(b.men.map((m) => m.seat.role)).toEqual(['pilot', 'observer', 'flight engineer']);
+  });
+});
+
+describe('the player on the Bf 110\'s rear gun (D234)', () => {
+  /** A Bf 110 with the player on the gun, aiming `look` (yaw from dead astern, + to the gunner's left; pitch up). */
+  const manned = (look) => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    swapSeat(sim);
+    sim.gunControl.aim = gunnerAim(look);
+    return { sim, gun: rearGun(sim) };
+  };
+
+  it('the view\'s look gives the aim: dead astern at no turn, the aircraft\'s right for the gunner\'s left', () => {
+    expect(gunnerAim({ yaw: 0, pitch: 0 }).distanceTo(new Vector3(-1, 0, 0))).toBeLessThan(1e-9);
+    expect(gunnerAim({ yaw: 0.3, pitch: 0 }).z).toBeGreaterThan(0);
+    expect(gunnerAim({ yaw: 0, pitch: 0.4 }).y).toBeCloseTo(Math.sin(0.4), 9);
+  });
+
+  it('the gun swings to his aim at no more than its traverse rate, and stops at the edge of its arc', () => {
+    const { sim, gun } = manned({ yaw: -0.4, pitch: 0.4 }); // 23° to the gunner's right (inside ±30°), 23° up
+    const start = gun.bore.clone();
+    sim.step(DT);
+    // Each of azimuth and elevation at the traverse rate at most (so up to √2 of it on a diagonal).
+    expect(gun.bore.angleTo(start)).toBeLessThanOrEqual(Math.SQRT2 * common.gunners.traverseRate * DT + 1e-6);
+    for (let i = 0; i < 120 * 2; i += 1) sim.step(DT);
+    expect(gun.bore.angleTo(sim.gunControl.aim)).toBeLessThan(0.01);
+    sim.gunControl.aim = gunnerAim({ yaw: 1.2, pitch: -0.3 }); // outside the arc
+    for (let i = 0; i < 120 * 3; i += 1) sim.step(DT);
+    expect(inArc(gun.spec, gun.az, gun.el)).toBe(true);
+  });
+
+  it('fires only on his trigger, his rounds his own; it changes drums; and no target of the AI\'s is chosen', () => {
+    const { sim, gun } = manned({ yaw: 0, pitch: 0.2 });
+    // An enemy behind, in the arc: the AI gunner would fire at it; the player doesn't press the trigger.
+    const p = sim.plane.body.position;
+    straight(sim, 'hurricane', 'RAF', p.clone().add(new Vector3(0, 40, 300)), 0, sim.plane.body.velocity.length() + 5);
+    const shots = countShots(sim);
+    for (let i = 0; i < 120 * 3; i += 1) sim.step(DT);
+    expect(shots.get(sim) ?? 0).toBe(0);
+    expect(sim.player.gunnery.gunners.every((g) => g.target === null)).toBe(true);
+    sim.gunControl.trigger = true;
+    for (let i = 0; i < 120 * 22; i += 1) sim.step(DT); // a drum lasts about 4½ s; the change takes Regular's 14 s
+    expect(shots.get(sim)).toBeGreaterThan(gun.capacity); // a drum emptied, changed, and more fired
+    expect(gun.drums).toBe(gun.spec.drums - 2);
+  });
+
+  it('can\'t be fired above 2 g', () => {
+    const { sim, gun } = manned({ yaw: 0, pitch: 0.2 });
+    sim.gunControl.trigger = true;
+    sim.step(DT);
+    sim.plane.last.loadFactor = common.gunners.gLimit + 0.5;
+    const before = gun.rounds;
+    stepGunners(sim.player, sim, 0.5, sim);
+    expect(gun.rounds).toBe(before);
   });
 });

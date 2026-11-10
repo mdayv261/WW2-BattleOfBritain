@@ -51,6 +51,7 @@ export function startMission(sim, mission) {
   sim.reset(ac);
   mission.wingmen = spawnWingmen(sim, setup.wingmen ?? 0);
   Object.assign(mission, spawnMission(sim, setup));
+  sim.escortRaid = setup.type === 'escort' ? mission.raid : null; // the Bf 110's AI pilot keeps station on it (D234)
   mission.outcomes = new Map();
   mission.endedAt = null;
   mission.outcome = null;

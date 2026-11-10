@@ -29,7 +29,7 @@ low-polygon, not photorealistic.
 | Hawker Hurricane Mk I | RAF | 1 × Rolls-Royce Merlin III | Player or AI |
 | Supermarine Spitfire Mk I | RAF | 1 × Rolls-Royce Merlin III | Player or AI |
 | Messerschmitt Bf 109 E-4 | Luftwaffe | 1 × Daimler-Benz DB 601A | Player or AI |
-| Messerschmitt Bf 110 C-4 | Luftwaffe | 2 × Daimler-Benz DB 601A | Player or AI; the rear gun is always AI-manned |
+| Messerschmitt Bf 110 C-4 | Luftwaffe | 2 × Daimler-Benz DB 601A | Player or AI; in single player the player may man the rear gun while an AI pilot flies (D234), otherwise it is AI-manned |
 | Heinkel He 111 H-3 | Luftwaffe | 2 × Junkers Jumo 211 (A-3 or D-1, to be confirmed) | AI only |
 
 The variants modelled are recorded in docs/DECISIONS.md (D9). The RAF fighters are modelled as
