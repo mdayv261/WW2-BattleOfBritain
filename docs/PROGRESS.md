@@ -65,6 +65,9 @@ errors.
 **Not yet seen in Chrome:** a live hit, kill and respawn between two people. The scripted players don't aim; the tests
 cover these.
 
+**Fixed after the product owner's check:** typing in the Multiplayer screen's name and code boxes. The game's own keys
+were swallowing the letters (D245).
+
 **Known issues:**
 - A bail-out shows the aircraft flying on out of control, with no parachute.
 - A reload brings you back in a fresh aircraft (not counted as going down).

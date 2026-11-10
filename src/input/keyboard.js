@@ -33,6 +33,19 @@ export function stepFlaps(ac, selected, direction) {
   return clamp(at + direction, 0, stops) / stops;
 }
 
+/**
+ * Is a key event aimed at a text box (a name or room code being typed, D245)? Then it is the box's: the aircraft's
+ * keys don't act on it and the browser's typing is not stopped.
+ */
+export function typing(e) {
+  const t = e?.target;
+  if (!t || typeof t !== 'object') return false;
+  if (t.isContentEditable) return true;
+  const tag = String(t.tagName ?? '').toLowerCase();
+  if (tag === 'textarea') return true;
+  return tag === 'input' && !['button', 'checkbox', 'radio', 'range', 'submit'].includes(String(t.type ?? 'text').toLowerCase());
+}
+
 export class Keyboard {
   /** `bindings`: the player's keys (src/input/bindings.js); `target`: where key events come from (null in the tests). */
   constructor(target = window, bindings = new Bindings()) {
@@ -50,7 +63,7 @@ export class Keyboard {
    * Bf 110's pitch switch, D188), so it does not also act as the plain key.
    */
   keyDown(e) {
-    if (e.repeat || e.metaKey || e.ctrlKey) return;
+    if (e.repeat || e.metaKey || e.ctrlKey || typing(e)) return;
     this.down.add(e.code);
     const shift = e.shiftKey || this.down.has('ShiftLeft') || this.down.has('ShiftRight');
     this.pressed.add(comboOf({ code: e.code, shiftKey: shift }));

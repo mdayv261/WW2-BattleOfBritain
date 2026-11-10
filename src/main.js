@@ -10,7 +10,7 @@ import { ParachuteView } from './render/parachutes.js';
 import { HAT_LOOKS } from './render/cameras.js';
 import { Simulation } from './core/simulation.js';
 import { nextFighterScenario, bomberScenario, crowdScenario, cycleSkill, clearAI } from './core/scenarios.js';
-import { Keyboard } from './input/keyboard.js';
+import { Keyboard, typing } from './input/keyboard.js';
 import { comboOf } from './input/bindings.js';
 import { Joystick } from './input/joystick.js';
 import { MouseLook } from './input/mouse.js';
@@ -185,6 +185,7 @@ function testKeys() {
   if (keyboard.took('Digit0')) say(clearAI(sim));
 }
 window.addEventListener('keydown', (e) => {
+  if (typing(e)) return; // typing a name or room code (D245): the key is the text box's
   // A bound key does only its action, not the browser's (F-keys, Tab).
   if (keyboard.bindings.user(comboOf(e)) || ['F2', 'F3', 'F4', 'Tab'].includes(e.code)) e.preventDefault();
   const keepsHelp = [...keyboard.bindings.of('help'), ...keyboard.bindings.of('joystickPanel')].includes(comboOf(e));

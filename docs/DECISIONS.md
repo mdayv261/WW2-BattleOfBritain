@@ -6847,3 +6847,12 @@ cover them; the family test at checkpoint 4 shows them.
 **Tests:** 22 new (64 in tests/mp; 2,048 in all). The validation output is unchanged.
 
 **No deviation from historical figures.**
+
+**Fix after the product owner's check (10 Nov 2026):**
+- **The report:** "In the Multiplayer menu screen, the keyboard doesn't work. I can't type a name in the Your Name field."
+- **The cause:** the game stops the browser's own handling of every key bound to an aircraft action (D238), and nearly
+  every letter is bound, so typed letters never reached the text box.
+- **The fix:** a key typed in a text box (`typing`, src/input/keyboard.js) is now the box's. The aircraft doesn't see
+  it, and the browser's typing isn't stopped. Everywhere else the keys act as before.
+- **Checked:** a test, and in Chrome, where letters, Space and Backspace in the name box go through while M on the
+  game view is still taken by the game.
