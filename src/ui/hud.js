@@ -60,6 +60,17 @@ function heatLine(sim) {
 }
 
 /** A warning when an engine runs past its coolant or oil limit, or has seized; null when all is well. */
+/**
+ * The rear gun's warning (D234), with the player on the Bf 110's MG 15: its drum empty, while it is changed, or with no
+ * drums left. null otherwise.
+ */
+export function gunWarning(sim) {
+  if (sim.seat !== 'gunner') return null;
+  const gun = sim.player.gunnery?.mounts.find((m) => !m.spec.fixed);
+  if (!gun || gun.rounds > 0) return null;
+  return gun.changingUntil !== null ? 'MG15 OUT OF AMMO! CHANGING DRUMS' : 'MG15 OUT OF AMMO! NO DRUMS LEFT';
+}
+
 export function heatWarning(sim) {
   const { plane } = sim;
   const name = (i) => (plane.engines.length > 1 ? ['Left engine', 'Right engine'][i] : 'Engine');
@@ -192,11 +203,14 @@ export class Hud {
     if (this.showDebug) this.debug.textContent = this.debugText(sim, heading, extra.frame);
   }
 
-  /** The warning due, if any: the assists' g and stall warnings (D232), then overheating, oil or a seized engine. */
+  /**
+   * The warning due, if any: the assists' g and stall warnings (D232), the rear gun out of ammunition (D234), then
+   * overheating, oil or a seized engine.
+   */
   warningFor(sim) {
     if (sim.warnings?.g) return 'G LIMIT — ease off the stick';
     if (sim.warnings?.stall) return 'STALL WARNING — stick forward';
-    return heatWarning(sim);
+    return gunWarning(sim) ?? heatWarning(sim);
   }
 
   /** The message line: crash, pause, landing result, or what to do at the start. */

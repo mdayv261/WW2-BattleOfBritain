@@ -31,13 +31,14 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 - **What you see:** the view along the gun with its ring-and-bead sight, and a readout of the drum, drums left,
   height and speed.
 
-**Tests:** 1,954 pass; the validation output is unchanged. 75 fps in Chrome.
+**Tests:** 1,955 pass; the validation output is unchanged. 75 fps in Chrome.
 
 **After the product owner's flights:**
 - an "Engine volume" setting (25% by default), and the guns 50% louder again;
 - the MG 15's tracer now starts at its muzzle, and the gun can no longer be aimed into its own fins;
 - the Bf 110's nose MG 17s fire a tracer in four. This is the product owner's wish and not a documented belt, so it is
-  flagged.
+  flagged;
+- an "MG15 OUT OF AMMO! CHANGING DRUMS" warning while the drum is changed.
 
 **Known issues:**
 - Handing back mid-fight leaves the throttle where the AI had it.

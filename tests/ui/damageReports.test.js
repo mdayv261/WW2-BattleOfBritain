@@ -3,7 +3,8 @@
 import { describe, it, expect } from 'vitest';
 import { Simulation } from '../../src/core/simulation.js';
 import { aircraftById } from '../../src/aircraft/index.js';
-import { heatWarning } from '../../src/ui/hud.js';
+import { heatWarning, gunWarning } from '../../src/ui/hud.js';
+import { swapSeat, rearGun } from '../../src/core/crewSeat.js';
 
 describe('damage reports', () => {
   it('warns of an overheating engine, naming the limit', () => {
@@ -50,5 +51,22 @@ describe('damage reports', () => {
     sim.step(1 / 120);
     expect(sim.crashed).toBe(true);
     expect(sim.crashCause).toBe('The wings failed at 13.2 g');
+  });
+});
+
+describe('the rear gun\'s warning (D234)', () => {
+  it('on the Bf 110\'s MG 15: out of ammunition while the drum is changed, or with none left; nothing in the pilot\'s seat', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    const gun = rearGun(sim);
+    gun.rounds = 0;
+    gun.changingUntil = sim.plane.time + 10;
+    expect(gunWarning(sim)).toBeNull(); // the pilot's seat: the gunner is the AI's
+    swapSeat(sim);
+    expect(gunWarning(sim)).toBe('MG15 OUT OF AMMO! CHANGING DRUMS');
+    gun.changingUntil = null;
+    gun.drums = 0;
+    expect(gunWarning(sim)).toBe('MG15 OUT OF AMMO! NO DRUMS LEFT');
+    gun.rounds = 40;
+    expect(gunWarning(sim)).toBeNull();
   });
 });
