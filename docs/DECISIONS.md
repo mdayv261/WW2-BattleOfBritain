@@ -6276,7 +6276,18 @@ model's sizes; the ring's size.
 - Tab back to the pilot's panel.
 - Handing back mid-fight, the aircraft was in the AI's banked descent with the throttle where he left it (0%).
 
+**After the product owner's flight (10 Nov 2026, "it works well"):**
+- **Engine volume:** a new setting, "Engine volume", 25% by default. It scales every engine voice, the player's and
+  others', against today's level as 100%.
+- **The guns:** the player's machine guns and cannon are another 50% louder (0.33 → 0.495 and 0.7875 → 1.18).
+- **The MG 15's tracer** started over the aircraft. Two causes, both fixed:
+  - its rounds left from the gun's pivot, not its muzzle. They now leave 0.75 m along the bore (`mounts.rear.muzzle`,
+    an estimate, with a row in AIRCRAFT_DATA.md), and the muzzle flash shows there.
+  - every tracer streak was drawn a fixed 0.025 s of flight behind its round, so just after firing it reached back
+    past the gun. A streak now stops where its round left the muzzle (all guns).
+
 **Tests:**
+- new tests/render/tracers.test.js;
 - new tests/core/crewSeat.test.js;
 - new tests/ai/defensive.test.js;
 - tests/ai/gunner.test.js gains the manned gun: the aim from the look, traverse and arc, the trigger only, drum

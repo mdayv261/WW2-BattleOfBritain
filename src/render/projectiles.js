@@ -37,7 +37,10 @@ export class ProjectileView {
       if (!type?.shows || r.age > type.burn) continue;
       const { p, v } = r;
       if (type.shows === 'tracer' && nt < MAX) {
-        tp.set([p.x, p.y, p.z, p.x - v.x * STREAK, p.y - v.y * STREAK, p.z - v.z * STREAK], nt * 6);
+        // The streak trails back along the path, but never past where the round left the muzzle (D234).
+        const flown = Math.hypot(p.x - r.start.x, p.y - r.start.y, p.z - r.start.z);
+        const k = STREAK * Math.min(1, flown / Math.max(1e-6, Math.hypot(v.x, v.y, v.z) * STREAK));
+        tp.set([p.x, p.y, p.z, p.x - v.x * k, p.y - v.y * k, p.z - v.z * k], nt * 6);
         nt += 1;
       } else if (type.shows === 'smoke' && ns < MAX) {
         // The smoke stays where it was laid: from the round back along its path, towards where it was fired.
@@ -67,7 +70,7 @@ export function buildMuzzleFlashes(armament) {
   const flashes = armament.map((gun) => {
     const size = FLASH_SIZE[gun.group];
     const mesh = new THREE.Mesh(new THREE.SphereGeometry(size, 8, 6), material);
-    mesh.position.copy(gun.position).addScaledVector(gun.bore, FLASH_AHEAD);
+    mesh.position.copy(gun.position).addScaledVector(gun.bore, FLASH_AHEAD + (gun.spec?.muzzle ?? 0));
     mesh.visible = false;
     group.add(mesh);
     return { gun, mesh };
@@ -76,7 +79,8 @@ export function buildMuzzleFlashes(armament) {
   const update = (now) => {
     for (const f of flashes) {
       f.mesh.visible = now - f.gun.lastShot < 0.03;
-      if (f.mesh.visible) f.mesh.position.copy(f.gun.position).addScaledVector(f.gun.bore, FLASH_AHEAD);
+      // A flexible gun's pivot is behind its muzzle (`spec.muzzle`, D234); a fixed gun's position is its muzzle.
+      if (f.mesh.visible) f.mesh.position.copy(f.gun.position).addScaledVector(f.gun.bore, FLASH_AHEAD + (f.gun.spec?.muzzle ?? 0));
     }
   };
   return { group, update, material, flashes };

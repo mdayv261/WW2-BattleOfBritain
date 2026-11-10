@@ -141,9 +141,10 @@ export const bf110c4 = {
   // The rear gunner's MG 15 (Phase 6, D77-D78): pivot (m, body axes), arc (rad, written in degrees: azimuth from the
   // nose, + right, aft = 180; elevation + up), drums (the one on the gun and the spares). S25: about 30° either side of
   // the centre line, up to 60°, nothing below the horizontal; 10 spare 75-round magazines. Position an estimate; the
-  // canopy is taken as open in combat.
+  // canopy is taken as open in combat. `muzzle`: the muzzle's distance from the pivot along the bore, where the rounds
+  // leave (D234; an estimate).
   mounts: {
-    rear: { type: 'mg15', gunner: 1, x: -1.2, y: 0.9, z: 0, azimuth: [150 * DEG, 210 * DEG], elevation: [0 * DEG, 60 * DEG], drums: 11 },
+    rear: { type: 'mg15', gunner: 1, x: -1.2, y: 0.9, z: 0, azimuth: [150 * DEG, 210 * DEG], elevation: [0 * DEG, 60 * DEG], drums: 11, muzzle: 0.75 },
   },
   // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
   sight: { type: 'Revi C/12C', ringMils: 100 },

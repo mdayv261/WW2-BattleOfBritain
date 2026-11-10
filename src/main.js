@@ -89,6 +89,7 @@ const settings = new Settings(); // the player's settings (D232)
 /** Applies the settings that act in the page: the volume and the sharpness at once (the rest at each flight's start). */
 function applySettings(values) {
   audio.setVolume(values.volume / 100);
+  audio.setEngineVolume(values.engineVolume / 100);
   renderer.setPixelRatio(pixelRatioFor(values.graphics, window.devicePixelRatio));
   renderer.setSize(window.innerWidth, window.innerHeight);
 }

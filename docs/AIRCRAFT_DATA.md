@@ -1214,6 +1214,7 @@ Bf 109's (same designer, engine and airscrew).
 | Rear MG 15: pivot z (`mounts.rear.z`) | 0 | m | — | ASSUMPTION | estimate | Gun pivot on the aircraft model (D78); no drawing used. |
 | Rear MG 15: azimuth arc (`mounts.rear.azimuth`) | 150 to 210 | deg | — | S25 | medium | "about 30° on either side of the centre line ... maximum elevation is 60° ... not possible to fire below the horizontal" (S25 para. 17). Canopy taken as open (D78). |
 | Rear MG 15: elevation arc (`mounts.rear.elevation`) | 0 to 60 | deg | — | S25 | medium | "about 30° on either side of the centre line ... maximum elevation is 60° ... not possible to fire below the horizontal" (S25 para. 17). Canopy taken as open (D78). |
+| Rear MG 15: muzzle ahead of the pivot (`mounts.rear.muzzle`) | 0.75 | m | — | ASSUMPTION | estimate | Where the rounds leave and the muzzle flash shows, along the bore from the pivot (D234); the 3D gun's barrel is drawn this long. No drawing used. |
 | Rear MG 15: drums carried (`mounts.rear.drums`) | 11 | drums | stowage for 10 spare magazines | S25 | medium | One on the gun and 10 spares (D77). |
 | Rear MG 15: manned by (`mounts.rear.gunner`) | 1 | crew index | — | S25 | medium | The radio operator, who also serves as gunner (crew 1, D83). |
 | Crew (`crew`) | 2 | men | When used as a fighter the crew is usually two | S25 | medium | pilot, radio operator and gunner. Seat positions are estimates on the model (D80). |

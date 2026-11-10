@@ -210,6 +210,19 @@ describe('the player on the Bf 110\'s rear gun (D234)', () => {
     expect(gun.drums).toBe(gun.spec.drums - 2);
   });
 
+  it('releases its rounds at the muzzle, the pivot plus mounts.rear.muzzle along the bore', () => {
+    const { sim, gun } = manned({ yaw: 0, pitch: 0.2 });
+    for (let i = 0; i < 120; i += 1) sim.step(DT); // the gun on its aim
+    const released = [];
+    sim.projectiles.spawn = (round) => released.push(round.position.clone());
+    sim.player.gunnery.manned.trigger = true; // as the seat's step passes the player's trigger on
+    const { body } = sim.plane;
+    const muzzle = gun.position.clone().addScaledVector(gun.bore, gun.spec.muzzle).applyQuaternion(body.quaternion).add(body.position);
+    stepGunners(sim.player, sim, DT, sim);
+    expect(gun.spec.muzzle).toBe(0.75);
+    expect(released[0].distanceTo(muzzle)).toBeLessThan(1e-6);
+  });
+
   it('can\'t be fired above 2 g', () => {
     const { sim, gun } = manned({ yaw: 0, pitch: 0.2 });
     sim.gunControl.trigger = true;

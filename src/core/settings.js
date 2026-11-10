@@ -1,7 +1,7 @@
-// The player's settings (Phase 7 checkpoint 6, D232), kept in the browser's storage: the sound volume, the graphics
-// level, the modern HUD in the cockpit, and the assists (each off unless switched on, D16). Storage that is missing,
-// blocked or holds something unreadable gives the defaults, and the game carries on without saving (as the career,
-// src/core/career.js). Sound on or off keeps its own key (D231).
+// The player's settings (Phase 7 checkpoint 6, D232), kept in the browser's storage: the sound volume and the engines'
+// volume within it (D234), the graphics level, the modern HUD in the cockpit, and the assists (each off unless switched
+// on, D16). Storage that is missing, blocked or holds something unreadable gives the defaults, and the game carries on
+// without saving (as the career, src/core/career.js). Sound on or off keeps its own key (D231).
 
 import { browserStorage } from './career.js';
 import { NO_ASSISTS } from './assists.js';
@@ -9,14 +9,15 @@ import { NO_ASSISTS } from './assists.js';
 export const SETTINGS_KEY = 'bob1940.settings';
 export const GRAPHICS_LEVELS = ['low', 'medium', 'high'];
 
-export const DEFAULT_SETTINGS = Object.freeze({ volume: 80, graphics: 'high', hudInCockpit: false, assists: NO_ASSISTS });
+export const DEFAULT_SETTINGS = Object.freeze({ volume: 80, engineVolume: 25, graphics: 'high', hudInCockpit: false, assists: NO_ASSISTS });
 
 /** A settings object made sound: every field present and of the right kind, else its default. */
 export function cleanSettings(raw) {
   const s = raw && typeof raw === 'object' ? raw : {};
-  const volume = Number(s.volume);
+  const percent = (v, d) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Math.min(100, Math.max(0, Math.round(Number(v)))) : d);
   return {
-    volume: Number.isFinite(volume) ? Math.min(100, Math.max(0, Math.round(volume))) : DEFAULT_SETTINGS.volume,
+    volume: percent(s.volume, DEFAULT_SETTINGS.volume),
+    engineVolume: percent(s.engineVolume, DEFAULT_SETTINGS.engineVolume), // the engines' share (D234: 25% by default)
     graphics: GRAPHICS_LEVELS.includes(s.graphics) ? s.graphics : DEFAULT_SETTINGS.graphics,
     hudInCockpit: s.hudInCockpit === true,
     assists: Object.fromEntries(Object.keys(NO_ASSISTS).map((k) => [k, s.assists?.[k] === true])),

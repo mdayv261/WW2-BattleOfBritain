@@ -31,7 +31,10 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 - **What you see:** the view along the gun with its ring-and-bead sight, and a readout of the drum, drums left,
   height and speed.
 
-**Tests:** 1,948 pass; the validation output is unchanged. 75 fps in Chrome.
+**Tests:** 1,952 pass; the validation output is unchanged. 75 fps in Chrome.
+
+**After the product owner's flight:** an "Engine volume" setting (25% by default); the guns 50% louder again; the MG
+15's tracer now starts at its muzzle.
 
 **Known issues:**
 - Handing back mid-fight leaves the throttle where the AI had it.

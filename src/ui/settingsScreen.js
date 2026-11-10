@@ -33,6 +33,10 @@ export function renderSettings(container, values, { onChange, onBack, onJoystick
     const volumeText = el('span', { textContent: ` ${v.volume}%` });
     volume.addEventListener('input', () => { v = onChange({ volume: Number(volume.value) }); volumeText.textContent = ` ${v.volume}%`; });
     row('Volume', volume, volumeText);
+    const engine = el('input', { type: 'range', min: 0, max: 100, step: 5, value: v.engineVolume });
+    const engineText = el('span', { textContent: ` ${v.engineVolume}%` });
+    engine.addEventListener('input', () => { v = onChange({ engineVolume: Number(engine.value) }); engineText.textContent = ` ${v.engineVolume}%`; });
+    row('Engine volume', engine, engineText);
     if (sound) {
       const box = el('input', { type: 'checkbox', checked: sound.on });
       box.addEventListener('change', () => { box.checked = sound.toggle(); });

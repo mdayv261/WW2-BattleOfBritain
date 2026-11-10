@@ -128,7 +128,7 @@ export function stepMount(m, plane, dt, now, trigger, drumTime, emit) {
       m.owed -= 1;
       m.rounds -= 1;
       m.lastShot = now;
-      _r.copy(m.position).applyQuaternion(body.quaternion);
+      _r.copy(m.position).addScaledVector(m.bore, m.spec.muzzle ?? 0).applyQuaternion(body.quaternion); // at the muzzle (D234)
       _v.copy(body.angularVelocity).applyQuaternion(body.quaternion).cross(_r).add(body.velocity);
       const velocity = m.bore.clone().applyQuaternion(body.quaternion).multiplyScalar(b.muzzleVelocity).add(_v);
       emit({ position: _r.clone().add(body.position), velocity, ballistics: m.ballistics, kind: nextRound(m) });

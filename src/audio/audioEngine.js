@@ -19,8 +19,9 @@ const MAX_SHOTS = 8; // rounds played per gun group per frame (a volley of eight
 const SPREAD = 0.05; // s over which a volley's cracks are scattered (one Browning's interval at 1,100 rounds/min)
 const SMOOTH = 0.05; // s: the time constant of every level and pitch change
 // The product owner's first listen (10 Nov 2026): the engine halved (0.32 and 0.12 before), the machine guns half as
-// loud again (0.22) and the cannon three-quarters louder (0.45).
-const LEVEL = { master: 0.8, engine: 0.16, exhaust: 0.06, wind: 0.5, mg: 0.33, cannon: 0.7875, hit: 0.6, other: 0.35, otherShot: 0.3, warning: 0.25 };
+// loud again (0.22) and the cannon three-quarters louder (0.45). After the second (D234): the guns half as loud again
+// (0.33 and 0.7875), and every engine (the player's and others') scaled by the settings' engine volume, 25% by default.
+const LEVEL = { master: 0.8, engine: 0.16, exhaust: 0.06, wind: 0.5, mg: 0.495, cannon: 1.18125, hit: 0.6, other: 0.35, otherShot: 0.3, warning: 0.25 };
 
 /** Sound on or off as last chosen in this browser (on unless switched off). */
 function savedEnabled() {
@@ -44,6 +45,7 @@ export class AudioEngine {
     this.ctx = null;
     this.enabled = savedEnabled();
     this.volume = 0.8; // 0-1, from the settings (D232)
+    this.engineVolume = 0.25; // 0-1: the engines' share, from the settings (D234)
     this.shots = new ShotCounter();
     this.hits = 0;
     this.nextBeep = 0; // context time of the next warning beep (D232)
@@ -52,6 +54,11 @@ export class AudioEngine {
   /** The master level: on or off, times the volume. */
   get level() {
     return this.enabled ? LEVEL.master * this.volume : 0;
+  }
+
+  /** The engines' volume, 0-1 (the settings' slider, D234): it scales every engine voice, the player's and others'. */
+  setEngineVolume(v) {
+    this.engineVolume = v;
   }
 
   /** The volume, 0-1 (the settings' slider, D232). */
@@ -145,9 +152,9 @@ export class AudioEngine {
     v.saw.frequency.setTargetAtTime(f, t, SMOOTH);
     v.beat.frequency.setTargetAtTime(f / 2, t, SMOOTH);
     v.filter.frequency.setTargetAtTime(cutoff, t, SMOOTH);
-    v.gain.gain.setTargetAtTime(gain * level, t, SMOOTH);
+    v.gain.gain.setTargetAtTime(gain * level * this.engineVolume, t, SMOOTH);
     v.exhaust.filter.frequency.setTargetAtTime(Math.min(4000, f * 4), t, SMOOTH);
-    v.exhaust.gain.gain.setTargetAtTime(gain * LEVEL.exhaust * (level / LEVEL.engine), t, SMOOTH);
+    v.exhaust.gain.gain.setTargetAtTime(gain * LEVEL.exhaust * (level / LEVEL.engine) * this.engineVolume, t, SMOOTH);
   }
 
   /** Plays `n` rounds (up to MAX_SHOTS) of buffer `kind` scattered over SPREAD s, at `level`, into `out`. */

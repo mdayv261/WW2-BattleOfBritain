@@ -11,7 +11,7 @@ function fakeStorage(initial = {}) {
 describe('the settings', () => {
   it('start with every assist off, High graphics, no HUD in the cockpit and the volume at 80%', () => {
     const s = new Settings(fakeStorage());
-    expect(s.values).toEqual({ volume: 80, graphics: 'high', hudInCockpit: false, assists: { autoRudder: false, stallWarning: false, gWarning: false, engineManagement: false } });
+    expect(s.values).toEqual({ volume: 80, engineVolume: 25, graphics: 'high', hudInCockpit: false, assists: { autoRudder: false, stallWarning: false, gWarning: false, engineManagement: false } });
     expect(cleanSettings(null)).toEqual(s.values);
     expect(DEFAULT_SETTINGS.assists.autoRudder).toBe(false);
   });
@@ -19,11 +19,12 @@ describe('the settings', () => {
   it('are saved and read back, one assist changed without touching the others', () => {
     const storage = fakeStorage();
     const s = new Settings(storage);
-    s.set({ volume: 35, graphics: 'low' });
+    s.set({ volume: 35, graphics: 'low', engineVolume: 60 });
     s.set({ assists: { autoRudder: true } });
     s.set({ assists: { gWarning: true } });
     const again = new Settings(storage);
     expect(again.values.volume).toBe(35);
+    expect(again.values.engineVolume).toBe(60);
     expect(again.values.graphics).toBe('low');
     expect(again.values.assists).toEqual({ autoRudder: true, stallWarning: false, gWarning: true, engineManagement: false });
   });

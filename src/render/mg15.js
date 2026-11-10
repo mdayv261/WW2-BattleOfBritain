@@ -5,7 +5,7 @@
 
 import * as THREE from 'three';
 
-const BARREL = { length: 0.75, radius: 0.012 }; // m, ahead of the pivot along the bore
+const BARREL = { length: 0.75, radius: 0.012 }; // m, ahead of the pivot along the bore (to the muzzle, mounts.rear.muzzle)
 const BREECH = { length: 0.35, size: 0.07 }; // m, behind the pivot
 const DRUM = { radius: 0.055, width: 0.045, out: 0.08 }; // m: the 75-round saddle drum, a half each side of the breech
 
