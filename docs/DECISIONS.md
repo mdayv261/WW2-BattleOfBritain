@@ -6378,7 +6378,7 @@ satisfied. My own results, run first (headless where possible, and in Chrome on 
 
 1. **Tests and build.** Pass: `npm test` passes, `npm run validate` is unchanged, and the deploy passes.
    - Mine: 1,960 tests pass; the validation output is unchanged (md5 c1732d9…).
-   - The deploy of D234-D235 is run 42768817480.
+   - The deploy of D234-D235 passed (run 42768817480).
 2. **The game loop.** Pass:
    - main menu → mission setup → fly → pause → results → main menu → fly again, with no reload;
    - Settings is reached from both the main menu and the pause menu.
