@@ -238,6 +238,7 @@ export class Simulation {
   }
 
   step(dt) {
+    if (this.net) return this.net.step(dt); // in a multiplayer match, the step is the match's (src/net/netFlight.js, D245)
     if (this.paused) return;
     if (this.crashed) {
       // The flight has ended, but the wreck still falls and the other aircraft and rounds fly on.
@@ -298,6 +299,6 @@ export class Simulation {
 
   /** Runs the physics for `elapsed` seconds of real time. */
   advance(elapsed) {
-    this.loop.advance(elapsed);
+    this.loop.advance(elapsed * (this.net?.timeScale ?? 1)); // a match's clock runs up to 2% fast or slow (D245)
   }
 }

@@ -6751,3 +6751,99 @@ damage off, the g and diving limits are not applied, as the host's setting says.
   when Ann leaves.
 
 **No deviation from historical figures.** Nothing deployed and no account used.
+
+## D245. Phase 9 checkpoint 3: multiplayer in the browser (10 Nov 2026)
+
+**The plan** (approved by the product owner, 10 Nov 2026): the Multiplayer screens, the browser's side of the netcode,
+and a match flown in the existing game view, against the local server.
+
+**The product owner's decision:**
+- **Name tags over everyone within 2 km:** team-mates in white, enemies in red, with the distance. (Options offered:
+  team-mates only, which was recommended; everyone; none.)
+
+**Built:**
+- **Screens** (src/ui/mpScreens.js, lobbyScreen.js), in the game's own menu panel:
+  - Main menu → Multiplayer: your name (remembered), Create a room, or Join with the code. A "Test network" section
+    simulates a slow line in this window.
+  - The lobby:
+    - the code, with "Copy";
+    - the players with side, fighter, ready, host and connection;
+    - your side, fighter and "I am ready";
+    - the host's settings (start, respawn, time on 15 August 1940, score and time limits, friendly fire, structural
+      damage), which the others see but can't change;
+    - Start (the host) and Leave.
+  - The match: the score line top centre ("RAF 2 – 1 LUFTWAFFE · 7:42 left · first to 5"); the room's notices on the
+    message line.
+  - Esc in a match: Resume, Settings, End the match (the host), Leave the room. The match never pauses.
+  - The results: the winner, the team scores, and each pilot's kills, times down and hits from rounds. Back to the
+    room after 20 s, or sooner if the host chooses.
+- **The netcode** (src/net):
+  - **Copied from Dawn Patrol:** `connection.js`, `netSim.js`, `clock.js`, `serverUrl.js` and `mpClient.js` (this
+    game's storage keys; no loadouts).
+  - **Adapted:** `prediction.js` (this game's exact state) and `interpolation.js`.
+  - **New:**
+    - `netFlight.js` (your aircraft, the others, going down and respawning);
+    - `netCombat.js` (tracers, strikes, wrecks, for the eye only);
+    - `remoteCraft.js` (the others as single-player Crafts);
+    - `multiplayer.js` (joins the client, the screens and the flight).
+- **One tick shared by the server and the browser** (src/mp/flyTick.js): guns, then the flight model. The browser's
+  prediction and the server can't drift apart.
+
+**Choices, with reasons:**
+- **The page's own Simulation flies your aircraft in a match.** Every view, panel, sight, HUD, warning, sound, radar and
+  enemy pointer then works unchanged.
+  - The only single-player changes are three hooks: `Simulation.step` hands the step to the match; `advance` runs at
+    the match clock's ±2%; the view adds the fading correction.
+  - With no match, nothing differs: every earlier test passes and the validation output is unchanged.
+- **Your assists are applied in the browser before the controls are sent**, so the server needs none and the
+  prediction matches it:
+  - engine management on the input as in single player;
+  - the auto-rudder's yaw sent in place of yours.
+- **The others are single-player Crafts with no pilot**, so they are drawn, heard, pointed at and plotted as AI
+  aircraft are. Their guns fire, for the eye and ear, the rounds the server reports, at their own rates and belts. The
+  Bf 110's rear gun fires along the aim the server reports.
+- **The Bf 110's rear gun:**
+  - **On the gun:** the server's AI pilot's controls come back in each snapshot and fly the prediction here. Your own
+    MG 15 fires here at once, for your eyes.
+  - **At the controls:** the AI gunner's rounds are drawn as the server reports them.
+- **Hits are only the server's.** Rounds drawn here pass through aircraft; the server's strikes show as hit flashes
+  where they struck.
+- **Server and format changes found while building:**
+  - The server's hit sparks were sent in the aircraft's own axes. They are now world positions, and carry the round's
+    kind.
+  - A single-engined fighter's controls carried an engine block the reader didn't expect. Only twins now send their
+    two engines.
+  - The snapshot now carries the rear gun's aim and rounds, and whether you are down, for each player.
+- **Dawn Patrol modules reused** (approval, D243): listed in docs/MULTIPLAYER_SPEC.md §9.
+
+**Measured** (tests/mp/netFlight.test.js: the real server simulation and browsers over the test network):
+- **No delay:** your aircraft matches the server exactly, with no corrections.
+- **150 ms ping, 20 ms jitter, 2% loss:**
+  - within 2 cm of the server;
+  - the others are drawn within about 0.5 m of where the server had them at the moment being drawn (100-200 ms in the
+    past, by design).
+- **On the Bf 110's rear gun at 150 ms:** within 2 m while the AI pilot flies.
+- **A respawn** puts the aircraft exactly where the server has it.
+
+**Chrome check against the local server** (Max in Chrome, with scripted players from Node; nothing deployed):
+- create and join with a code;
+- the lobby, choosing side and fighter, ready, the host's settings, Start;
+- the air start at 8,000 ft with the score line, the RAF radar and the enemy pointer;
+- the red tag on the enemy and the white tag on a team-mate ("Bob 690 m");
+- Tab to the Bf 110's rear gun with the AI pilot holding height;
+- Esc menu, Settings and Back, End match, the results, back to the room;
+- a reload in mid-match rejoins and flies again;
+- Leave;
+- no console errors.
+
+**Not yet seen in Chrome:** a live hit, kill and respawn between two people (the scripted players don't aim). The tests
+cover them; the family test at checkpoint 4 shows them.
+
+**Known limits, for later:**
+- A bail-out shows the aircraft flying on out of control, with no parachute.
+- A reload or dropped connection brings you back in a fresh aircraft. It doesn't count as going down.
+- The AI gunner's rounds in your own Bf 110 show about one round trip late.
+
+**Tests:** 22 new (64 in tests/mp; 2,048 in all). The validation output is unchanged.
+
+**No deviation from historical figures.**

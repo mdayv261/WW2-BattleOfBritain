@@ -6,7 +6,7 @@
 //     (src/ai/gunner.js `crew.manned`), his rounds counting as his own;
 //   - his own keys and stick no longer reach the aircraft's controls (src/main.js gives them the gun instead).
 // Back in the pilot's seat the AI pilot lets go and the controls stand as he left them. Every flight starts in the
-// pilot's seat. In multiplayer the gun stays AI-manned (D14).
+// pilot's seat. In multiplayer the same swap works, with the server's AI pilot flying (D243, D245).
 
 import { DefensivePilot } from '../ai/defensive.js';
 import { FRIENDLY_SKILL } from './wingmen.js';

@@ -41,6 +41,7 @@ import { common } from './aircraft/common.js';
 import { aircraftList } from './aircraft/index.js';
 import { loadTerrain } from './world/terrain.js';
 import { realWorld } from './world/world.js';
+import { attachMultiplayer } from './net/multiplayer.js';
 
 // The real map's terrain (D51), loaded before anything else.
 const terrain = await loadTerrain(import.meta.env.BASE_URL);
@@ -112,17 +113,28 @@ function select(ac) {
   effects.clear();
 }
 
+/** A flight starts (a mission, the test flight or a match): its aircraft drawn, the sky's time, the graphics' detail. */
+function flightStarts({ ac, time }) {
+  view.setAircraft(ac);
+  effects.clear();
+  setSkyTime(time);
+  radarPlot.reset();
+  applyDetail(settings.values.graphics, clouds); // the graphics level's land, towns and clouds (D232)
+}
+
 // The game's states (D225): it opens on the main menu; each flight starts afresh in the same simulation.
 const game = new GameState({
   sim, menus: new Menus(), testAircraft: aircraftList[1], career: new Career(), sound: audio,
   settings, onSettings: applySettings, onJoystick: () => joyPanel.toggle(), helpHtml: () => keyListHtml(keyboard.bindings),
   controls: { bindings: keyboard.bindings, joystick, onChange: () => hud.setHelp(keyListHtml(keyboard.bindings)) },
-  onFlight: ({ ac, time }) => {
-    view.setAircraft(ac);
+  onFlight: flightStarts,
+});
+// Multiplayer (Phase 9, D245): its screens, and a match flown in the same simulation.
+game.mp = attachMultiplayer({
+  game, sim, menus: game.menus, onFlight: flightStarts,
+  onRespawn: () => {
+    view.setAircraft(sim.ac);
     effects.clear();
-    setSkyTime(time);
-    radarPlot.reset();
-    applyDetail(settings.values.graphics, clouds); // the graphics level's land, towns and clouds (D232)
   },
 });
 game.menu();
@@ -213,6 +225,7 @@ renderer.setAnimationLoop((now) => {
     joystick.poll(); // keep reading the joystick on the menus, so Chrome connects it from a press there (D226)
     game.menus.setStatus?.(joystick.status());
   }
+  game.mp.frame(dt); // a match's other aircraft, where they are drawn now (D245)
   view.rig.hatLook = stick && stick.hat !== null ? HAT_LOOKS[stick.hat] : null;
   // The look keys (D239), not on the rear gun (where the view is the gun's aim).
   view.rig.keyLook = sim.seat === 'gunner' ? null : keyLook({
@@ -227,6 +240,7 @@ renderer.setAnimationLoop((now) => {
   parachutes.update(sim);
   effects.update(sim, dt, camera, renderer.domElement.height);
   updateScene(camera);
+  game.mp.tags(camera); // the other players' names (D245)
   hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
   const outside = !view.rig.inside;
   instruments.update(sim, { hidden: panelHidden(view.rig, sim) }); // no panel looking away, bailed out or outside (D97)

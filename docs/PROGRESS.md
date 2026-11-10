@@ -23,9 +23,53 @@ Read this at the start of every session.
   (rebinding and the Controls screen) done (D238); checkpoint 2 (mouse flying, look keys) done (D239); checkpoint 3
   (overspeed) done (D240); checkpoint 4, the acceptance test (D242), passed.
 - **Phase 9** (multiplayer): plan approved 10 Nov 2026 (D243). Checkpoint 1 (the shared core, src/mp) done (D243);
-  checkpoint 2 (the room server on this Mac) done (D244). Next, checkpoint 3: the browser side.
+  checkpoint 2 (the room server on this Mac) done (D244); checkpoint 3 (the browser side) done (D245). Next,
+  checkpoint 4: a Cloudflare test deployment and the family test (each deployment with permission).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
-runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026. D243 pushed on 10 Nov 2026 (run 42786653850).
+runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026. D243 pushed on 10 Nov 2026 (run 42786653850). D244 pushed on 10 Nov 2026 (run 42788061601).
+
+## Phase 9 checkpoint 3: multiplayer in the browser (10 Nov 2026)
+
+**Done** (D245):
+- **Main menu → Multiplayer:** your name, Create a room or Join with the code, and a test network for trying a slow
+  line.
+- **The lobby:** the code to send, the players, your side and fighter, "I am ready", and the host's settings (start,
+  respawn, time of day, limits, friendly fire, structural damage), then Start.
+- **The match, in the normal game view:**
+  - the score line at the top;
+  - the room's messages;
+  - names over the other players within 2 km (white team-mates, red enemies);
+  - Esc for the match menu (it never pauses);
+  - the results, then back to the room.
+- **The Bf 110:** Tab to the rear gun; the server's AI pilot flies.
+- **A reload in mid-match** rejoins the room.
+
+**Tests:** 22 new (64 in tests/mp); 2,048 pass in all. The validation output is unchanged; the build works.
+- Your own aircraft is exact with no delay, and within 2 cm at 150 ms ping and 2% loss.
+- The others are drawn within 0.5 m of where they were.
+
+**Checked in Chrome** against the local server, with scripted players: everything in the list above. No console
+errors.
+
+**To try in the browser:**
+1. Start the server: `npm run mp:server` (the first time, `npm run mp:setup`). Start the game: `npm run dev`.
+2. Open http://localhost:5173/WW2-BattleOfBritain/ in two Chrome windows side by side.
+3. Window 1: Multiplayer → your name → Create a room. Window 2: Multiplayer → another name → type the code → Join.
+4. Pick sides and fighters, both press "I am ready"; the host presses Start.
+5. Fly at each other; fire; look for tracers, hit flashes, "You are hit!", the kill message and the score.
+6. After going down: back in 10 s (try the apron setting for respawn too).
+7. In a Bf 110: Tab to the rear gun and fire at the other.
+8. Esc: the match menu; End the match; the results; back to the room.
+9. Optionally the test network (150 ms ping, 20 ms jitter, 2% loss) in one window before joining.
+
+**Not yet seen in Chrome:** a live hit, kill and respawn between two people. The scripted players don't aim; the tests
+cover these.
+
+**Known issues:**
+- A bail-out shows the aircraft flying on out of control, with no parachute.
+- A reload brings you back in a fresh aircraft (not counted as going down).
+- The AI gunner's rounds in your own Bf 110 show about one round trip late.
+- The live site has no server yet: its Multiplayer screen says so (checkpoint 4).
 
 ## Phase 9 checkpoint 2: the room server on this Mac (10 Nov 2026)
 

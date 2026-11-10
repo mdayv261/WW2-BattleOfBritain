@@ -19,6 +19,7 @@ const MAX_AGE = 5; // s, as single player's rounds (src/weapons/projectiles.js)
 const _from = new Vector3();
 const _to = new Vector3();
 const _start = new Vector3();
+const _at = new Vector3();
 
 export class MatchCombat {
   /** settings: the match's (friendly fire); terrain: the ground rounds stop in; rng: damage dice; maxRewind: ticks allowed. */
@@ -28,7 +29,7 @@ export class MatchCombat {
     this.rng = rng;
     this.maxRewind = maxRewind;
     this.rounds = [];
-    this.fx = []; // [kind, x, y, z, victimSlot] since the last send
+    this.fx = []; // [kind, x, y, z, victimSlot, what] since the last send (addFx)
     this.notices = []; // { to: player id | 'all', except?, text }
     this.teams = { raf: 0, luftwaffe: 0 };
     this.scoreChanged = true;
@@ -110,7 +111,9 @@ export class MatchCombat {
     const body = victim.plane.body;
     const velocity = new Vector3(r.v.x, r.v.y, r.v.z).sub(target.body.velocity);
     applyHit(victim.plane, { zone: hit.zone, point: hit.point, kind: r.kind, velocity, owner: shooter }, this.rng);
-    this.addFx('hit', hit.point?.x ?? body.position.x, hit.point?.y ?? body.position.y, hit.point?.z ?? body.position.z, victim.slot);
+    // The strike where it is on the victim now (the hit point is in the aircraft's own axes), with the round's kind.
+    const at = hit.point ? _at.copy(hit.point).applyQuaternion(body.quaternion).add(body.position) : body.position;
+    this.addFx('hit', at.x, at.y, at.z, victim.slot, r.kind);
     shooter.tally.hits += 1;
     this.talliesChanged = true;
     if (victim.team !== shooter.team) victim.lastHit = { by: shooter, tick };
@@ -123,7 +126,7 @@ export class MatchCombat {
     p.respawnAt = tick + RESPAWN_S * TICK_HZ;
     p.tally.deaths += 1;
     const s = p.plane.body.position;
-    this.addFx('down', s.x, s.y, s.z, p.slot);
+    this.addFx('down', s.x, s.y, s.z, p.slot, reason);
     const last = p.lastHit;
     const by = last && tick - last.tick <= KILL_CREDIT_S * TICK_HZ ? last.by : null;
     if (by) {
@@ -140,8 +143,9 @@ export class MatchCombat {
     this.scoreChanged = true;
   }
 
-  addFx(kind, x, y, z, slot) {
-    if (this.fx.length < FX_MAX) this.fx.push([kind, Math.round(x * 10) / 10, Math.round(y * 10) / 10, Math.round(z * 10) / 10, slot]);
+  /** An event for the browsers: [kind ('hit' or 'down'), x, y, z (world, m), victim's slot, the round's kind or a reason]. */
+  addFx(kind, x, y, z, slot, what = null) {
+    if (this.fx.length < FX_MAX) this.fx.push([kind, Math.round(x * 10) / 10, Math.round(y * 10) / 10, Math.round(z * 10) / 10, slot, what]);
   }
 
   /** The score, for everyone: { teams, players: [{ id, kills, deaths, shots, hits }] }. */

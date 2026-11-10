@@ -29,6 +29,12 @@ const STYLE = `
 .menu-key { font: inherit; font-size: 13px; padding: 1px 8px; min-width: 64px; background: #f3eedd; color: #2a2a22;
   border: 1px solid #5d5a3c; cursor: pointer; }
 .menu-key:hover { background: #fff8e2; }
+.menu-field { font: inherit; padding: 3px 6px; min-width: 180px; background: #f8f4e6; border: 1px solid #5d5a3c; }
+.menu-code { font: bold 34px/1.1 'Courier New', monospace; letter-spacing: 6px; margin: 4px 0 8px; }
+.menu-score { font: bold 22px/1.2 'Courier New', monospace; margin: 6px 0 10px; }
+.menu-message { color: #7a2a1a; min-height: 1.2em; }
+.menu-panel h3 { margin: 14px 0 6px; font-size: 17px; }
+.menu-buttons button:disabled { background: #a9a68c; cursor: default; }
 `;
 
 const soundLabel = (on) => `Sound: ${on ? 'on' : 'off'}`;
@@ -105,8 +111,10 @@ export class Menus {
    * The main menu, with each side's career (`career`: [[side, text]], D229). "Reset careers" asks for a second click
    * before `onResetCareer` clears them.
    */
-  showMain({ onMission, onTest, onSettings, career = [], onResetCareer, sound }) {
-    const buttons = [{ label: 'Fly a mission', action: onMission }, { label: 'Test flight', action: onTest }, { label: 'Settings', action: onSettings }];
+  showMain({ onMission, onTest, onSettings, onMultiplayer, career = [], onResetCareer, sound }) {
+    const buttons = [{ label: 'Fly a mission', action: onMission }];
+    if (onMultiplayer) buttons.push({ label: 'Multiplayer', action: onMultiplayer }); // D245
+    buttons.push({ label: 'Test flight', action: onTest }, { label: 'Settings', action: onSettings });
     if (sound) buttons.push(soundButton(sound));
     if (onResetCareer) {
       buttons.push({
@@ -124,6 +132,14 @@ export class Menus {
       buttons,
       note: 'In flight: Esc pauses. H lists the keys. Ranks come from mission kills only.',
     });
+  }
+
+  /** A screen drawn by `render(panel)` (the multiplayer screens, D245); returns what render returns. */
+  showPanel(screen, render) {
+    this.screen = screen;
+    const out = render(this.panel);
+    this.overlay.style.display = 'flex';
+    return out;
   }
 
   /** The settings screen (D232, src/ui/settingsScreen.js). */

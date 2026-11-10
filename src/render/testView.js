@@ -157,6 +157,7 @@ export class TestView {
     this._quat.slerpQuaternions(sim.previous.quaternion, body.quaternion, alpha);
     this.model.position.copy(this._pos);
     this.model.quaternion.copy(this._quat);
+    sim.net?.smoothOwn(this.model.position, this.model.quaternion); // in a match, a correction fades out (D245)
     const inside = this.rig.inside; // the pilot's cockpit, or the Bf 110's rear gun (D234)
     // The rear MG 15 in 3D on its mount, and the gunner's view along it.
     const gun = sim.player.gunnery?.mounts.find((m) => !m.spec.fixed) ?? null;

@@ -21,6 +21,9 @@ const GROUND = 4;
 /** How many numbers an aircraft with `engines` engines and `guns` fixed guns takes. */
 export const numbersLength = (engines, guns) => BODY + SURFACES.length + 2 + engines * PER_ENGINE + GROUND + guns * GUN.length;
 
+/** Is the aircraft of a captured state (with `engines` engines) on the ground? */
+export const onGroundIn = (numbers, engines) => numbers[BODY + SURFACES.length + 2 + engines * PER_ENGINE + 3] === 1;
+
 const num = (v) => (v === undefined || v === null ? NaN : typeof v === 'boolean' ? (v ? 1 : 0) : v);
 const bool = (v) => v === 1;
 const back = (v) => (Number.isNaN(v) ? undefined : v);

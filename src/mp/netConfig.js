@@ -30,6 +30,7 @@ export const LEAD_TARGET_TICKS = 2; // how early a browser's controls should rea
 export const CLOCK_RATE = 0.02; // the browser runs up to 2% fast or slow to keep that lead
 export const CLOCK_RESET_TICKS = 30; // further off than this, the browser's clock jumps instead
 export const HISTORY_TICKS = 2 * TICK_HZ; // own controls and states kept for replaying corrections
+export const CORRECT = { position: 0.02, velocity: 0.02, angle: (0.1 * Math.PI) / 180, rate: 0.01, other: 1e-6 }; // differences (m, m/s, rad, rad/s, any) that make a correction
 export const SMOOTH_S = 0.05; // time constant of fading out a correction (95% gone in 0.15 s)
 export const SNAP_DISTANCE = 50; // m: a correction this big (a respawn) is not faded
 export const INTERP_DELAY_MS = 100; // other aircraft are drawn this far in the past...
@@ -45,6 +46,8 @@ export const MAX_REWIND_TICKS = Math.round(0.4 * TICK_HZ);
 export const POSE_HISTORY_TICKS = TICK_HZ + 4; // the server keeps a second of every aircraft's poses
 export const KILL_CREDIT_S = 15; // going down this soon after an enemy's hit is their kill
 export const FX_MAX = 60; // impacts sent in one message at most
+export const HIT_NOTICE_S = 2; // "You are hit!" at most this often
+export const NAME_TAG_RANGE = 2000; // m: other players' names are shown out to this distance (the product owner, D245)
 
 // ---- match flow -------------------------------------------------------------------------------------
 export const RESULTS_S = 20; // the results stay up this long, then everyone is back in the lobby

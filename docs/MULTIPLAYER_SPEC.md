@@ -1,9 +1,10 @@
 # Multiplayer Specification: RAF against Luftwaffe
 
-Status: **design, Phase 9 (10 Nov 2026, D243, D244).** Built and tested so far:
+Status: **design, Phase 9 (10 Nov 2026, D243-D245).** Built and tested so far:
 - checkpoint 1: the shared core in `src/mp/`;
-- checkpoint 2: the room server in `server/`, run on this Mac.
-The browser side (checkpoint 3) and the Cloudflare deployment (checkpoint 4) follow.
+- checkpoint 2: the room server in `server/`, run on this Mac;
+- checkpoint 3: the browser side, `src/net/` and the screens.
+The Cloudflare deployment (checkpoint 4) follows.
 The design is Dawn Patrol's working multiplayer, adapted for 1940 with the product owner's approval (§9).
 
 ## 1. Goal and rules
@@ -61,7 +62,15 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
 - **Hits:** decided by the server only. A round fired by a player whose screen showed the others at tick V is tested
   against them where they were then ("favour the shooter"), up to 0.4 s back. The AI gunner sees the present. Hits
   use the single-player hit zones and damage model.
-- **Effects:** tracers, gun sounds and hit sparks are drawn by each browser from the snapshots.
+- **Effects:** tracers, gun sounds and hit sparks are drawn by each browser from the snapshots:
+  - your own guns fire at once, as you fly;
+  - the others' guns fire, at their own rates and belts, the rounds the server reports;
+  - the server's strikes show where they hit.
+  No hit is decided in a browser.
+- **Name tags** (product owner, 10 Nov 2026): every other player within 2 km shows a name and distance over their
+  aircraft, team-mates in white and enemies in red.
+- **In the page** (D245): the page's own Simulation flies your aircraft in a match, so the views, panels, sights,
+  sounds, warnings, radar and pointers work as in single player. The others are single-player Crafts with no pilot.
 
 ## 4. Rooms, lobby and match
 - **Room code:** 6 characters, without I, O, 0 or 1.
@@ -138,7 +147,15 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
   - `wrangler.toml`: Worker `bob1940-mp`, no logs.
   The npm scripts are `mp:setup` (installs wrangler 4.143.1 into server/), `mp:server` (runs it at
   http://localhost:8787) and `mp:smoke` (four scripted players).
-- **To come:** `src/net/`: connection, clock, prediction and smoothing in the browser (checkpoint 3).
+- **`src/net/` (checkpoint 3):**
+  - `connection.js`, `netSim.js`, `clock.js`, `serverUrl.js`, `mpClient.js`: the room connection, the test network,
+    the clock and the client;
+  - `prediction.js`, `interpolation.js`: your aircraft kept true to the server; the others drawn smoothly;
+  - `netFlight.js`: a match in the page's Simulation;
+  - `netCombat.js`, `remoteCraft.js`: the others' guns, strikes and wrecks;
+  - `multiplayer.js`: the screens and the room.
+  The shared tick is `src/mp/flyTick.js`. The screens are `src/ui/mpScreens.js`, `lobbyScreen.js`, `scoreLine.js` and
+  `nameTags.js`.
 - **Rule:** multiplayer code doesn't change `src/physics/` or `src/aircraft/`. The only single-player change is that
   `startPlane` (`src/core/simulation.js`) is exported and takes a start position. The validation output is unchanged.
 - **CPU, measured on this Mac (Node), 10 Nov 2026:**
@@ -166,10 +183,16 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
   - `server/room.js`: this game's map, the start and respawn settings, air starts prepared in the lobby;
   - `scripts/mpSmoke.mjs`: four players, with the Bf 110's rear gun;
   - `tests/mp/server.test.js` and `tests/mp/fakes.js`.
-- **To be adapted at checkpoint 3:** `src/net/`.
+- **Copied at checkpoint 3:** `connection.js`, `netSim.js`, `clock.js`, `serverUrl.js`, `mpClient.js`, and their
+  tests (`mpClient.test.js`, `netSim.test.js`).
+- **Adapted at checkpoint 3:**
+  - `prediction.js`, `interpolation.js`;
+  - `netFlight.js`, `netCombat.js`, `multiplayer.js` (after Dawn Patrol's `attachMultiplayer.js`);
+  - the screens (after Dawn Patrol's `src/ui/screens`);
+  - `tests/mp/netHarness.js`.
 
 ## 10. Testing
-- **Automated** (`tests/mp/`, 42 tests):
+- **Automated** (`tests/mp/`, 64 tests):
   - message encoding and clamping;
   - the lobby rules and host settings;
   - exact state capture;
@@ -182,6 +205,9 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
   - a 20 s match over a network with 0-100 ms delay, 10% loss and reordering;
   - the room server: joining, rejoining, drops, the host passing on, bad messages, a match with its snapshots and
     controls, the apron start and a mid-match rejoin, the end of a match, and the front door's checks.
+  - the browser against the server simulation over the test network: prediction exact with no delay and within 2 cm
+    at 150 ms ping and 2% loss; the others drawn within 0.5 m of where they were; the Bf 110's rear gun; respawning;
+  - the client, the test network, the score line and the name tags.
 - **The smoke test** (`npm run mp:smoke` against `npm run mp:server`): four players in a real local server.
 - **By hand:**
   - several Chrome windows on this Mac against the local server (checkpoint 3);

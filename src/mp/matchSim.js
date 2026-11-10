@@ -14,26 +14,29 @@
 // Down: an aircraft shot down (broken up, pilot killed), crashed or bailed out of leaves the sky at once (the browsers
 // draw the smoke where it went down) and its pilot is back 10 s later where the host's respawn setting says.
 
+import { Quaternion, Vector3 } from 'three';
 import { aircraftById } from '../aircraft/index.js';
-import { stepAircraft } from '../physics/flightModel.js';
-import { createArmament, stepGuns } from '../weapons/guns.js';
+import { createArmament } from '../weapons/guns.js';
 import { Craft } from '../core/craft.js';
 import { FRIENDLY_SKILL } from '../core/wingmen.js';
 import { stepGunners } from '../ai/gunner.js';
 import { recordTrack } from '../ai/perception.js';
 import { DefensivePilot } from '../ai/defensive.js';
-import { direction } from '../weapons/mounts.js';
+import { direction, anglesOf } from '../weapons/mounts.js';
 import { crewHealth } from '../weapons/damage.js';
 import { quantiseInput, compactOf, encodeSnapshot } from './binary.js';
 import { captureState } from './planeState.js';
 import { spawnPoint, spawnAircraft } from './spawn.js';
 import { MatchCombat } from './matchCombat.js';
+import { flyTick, gunSeatControls } from './flyTick.js';
 import {
   TICK_HZ, TICK_MS, SNAPSHOT_EVERY, MAX_TICKS_PER_CALLBACK, INPUT_AHEAD_MAX, HANDS_OFF_TICKS, EMPTY_TEAM_S, END_CHECK_TICKS,
   TEAM_IDS,
 } from './netConfig.js';
 
 const DT = 1 / TICK_HZ;
+const _dir = new Vector3();
+const _inv = new Quaternion();
 const BAIL_TICKS = TICK_HZ; // bail-out held this long, as single player (D80)
 const TEAM_SIDE = { raf: 'RAF', luftwaffe: 'Luftwaffe' };
 
@@ -62,7 +65,7 @@ export class MatchSim {
     this.view = {
       world, clock: 0, others: [],
       crafts: () => [...this.players.values()].filter((p) => !p.down).map((p) => p.craft),
-      projectiles: { spawn: (round, owner) => this.combat.fire(owner, round, 0) },
+      projectiles: { spawn: (round, owner) => this.rearRound(owner, round) },
     };
   }
 
@@ -109,6 +112,8 @@ export class MatchSim {
     p.lastHit = null;
     p.bailHeld = 0;
     p.shotsSince = { mg: 0, cannon: 0 };
+    p.rearSince = { shots: 0, az: 0, el: 0 }; // the rear gun's rounds since the last snapshot, and its last aim
+    p.aiInput = null;
     p.history.clear();
   }
 
@@ -185,14 +190,12 @@ export class MatchSim {
     input = this.seat(p, input);
     const rewind = t - (p.viewTick || t);
     const fired = { mg: 0, cannon: 0 };
-    const recoil = stepGuns(p.armament, plane, input, DT, plane.time, (round) => {
+    flyTick(plane, p.armament, input, DT, (round) => {
       this.combat.fire(p, round, rewind);
       fired[round.ballistics === 'mgffm' || /20/.test(round.kind) ? 'cannon' : 'mg'] += 1;
     });
     p.shotsSince.mg += fired.mg;
     p.shotsSince.cannon += fired.cannon;
-    plane.recoil = recoil.force.lengthSq() > 0 ? recoil : null;
-    stepAircraft(plane, input, DT);
     p.history.record(t, plane.body);
     recordTrack(p.craft, t / TICK_HZ);
     p.bailHeld = input.bailOut ? p.bailHeld + 1 : 0;
@@ -209,6 +212,7 @@ export class MatchSim {
     const onGun = input.seat === 'gunner' && gun && crewHealth(p.plane, gun.spec.gunner) > 0;
     if (!onGun) {
       p.relief = null;
+      p.aiInput = null;
       if (crew) crew.manned = null;
       p.craft.input = input;
       return input;
@@ -221,10 +225,18 @@ export class MatchSim {
     const ai = p.aiInput;
     p.craft.input = ai;
     if (p.plane.damage.pilot > 0) p.relief.fly(p.craft, this.view, DT);
-    Object.assign(ai, { fireMg: false, fireCannon: false, engineAssist: true, bailOut: input.bailOut, seat: 'gunner' });
-    if (ai.engines) for (const e of ai.engines) Object.assign(e, { throttle: ai.throttle, rpm: ai.rpm });
+    gunSeatControls(ai, input);
     crew.manned = { seat: gun.spec.gunner, aim: direction(input.gunAz, input.gunEl), trigger: input.gunTrigger };
     return ai;
+  }
+
+  /** A round from pilot p's rear gun (the AI gunner's, or the player's own on it): no rewind; its aim noted for the others' tracers. */
+  rearRound(p, round) {
+    this.combat.fire(p, round, 0);
+    const v = p.plane.body.velocity;
+    _dir.set(round.velocity.x - v.x, round.velocity.y - v.y, round.velocity.z - v.z).applyQuaternion(_inv.copy(p.plane.body.quaternion).invert());
+    const { az, el } = anglesOf(_dir);
+    Object.assign(p.rearSince, { shots: p.rearSince.shots + 1, az, el });
   }
 
   /** Is p's aircraft lost? Broken up, its pilot killed, crashed, or bailed out of. */
@@ -265,16 +277,22 @@ export class MatchSim {
     return this.result;
   }
 
-  /** A snapshot for each player: their own aircraft exactly, the others compactly. */
+  /**
+   * A snapshot for each player: their own aircraft exactly (with, besides its state: whether it is down, the AI
+   * pilot's controls while they are on the rear gun, and the rear gun's rounds), the others compactly.
+   */
   snapshots() {
     const all = [...this.players.values()];
     const compact = all.map((p) => {
-      const c = compactOf(p.slot, p.spawn, p.plane, { down: p.down, shots: p.shotsSince });
+      const rearGun = p.rearSince.shots ? { ...p.rearSince } : null;
+      const c = compactOf(p.slot, p.spawn, p.plane, { down: p.down, shots: p.shotsSince, rearGun });
       p.shotsSince = { mg: 0, cannon: 0 };
+      p.rearSince.shots = 0;
       return c;
     });
     return all.map((p, i) => {
       const { numbers, rest } = captureState(p.plane, p.armament);
+      Object.assign(rest, { down: p.down, ai: p.aiInput, rearGun: compact[i].rearGun });
       return {
         id: p.id,
         buffer: encodeSnapshot({ tick: this.tick, lead: p.lead, you: { slot: p.slot, spawn: p.spawn, numbers, rest }, others: compact.filter((_, k) => k !== i) }),

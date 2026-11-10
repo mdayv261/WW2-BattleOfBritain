@@ -33,7 +33,8 @@ export function quantiseInput(i) {
     emergency: !!i.emergency, engineAssist: !!i.engineAssist, fireMg: !!i.fireMg, fireCannon: !!i.fireCannon, bailOut: !!i.bailOut,
     seat: i.seat === 'gunner' ? 'gunner' : 'pilot', gunAz: angle(i.gunAz ?? Math.PI), gunEl: angle(i.gunEl ?? 0), gunTrigger: !!i.gunTrigger,
   };
-  if (i.engines?.length) {
+  // A twin's two engines (its own levers); a single engine runs on the main throttle and rpm.
+  if (i.engines?.length === 2) {
     out.engines = i.engines.slice(0, 2).map((e) => ({
       throttle: u16(e.throttle ?? out.throttle), rpm: u16(e.rpm ?? out.rpm), pitchSwitch: step(e.pitchSwitch ?? 0), failed: !!e.failed, feather: !!e.feather,
     }));

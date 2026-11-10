@@ -52,14 +52,16 @@ export class GameState {
     this.helpHtml = helpHtml;
     this.controls = controls; // { bindings, joystick, onChange } for the Controls screen (D238), or null
     this.state = 'menu';
-    this.kind = null; // 'mission' or 'test' while flying or paused
+    this.kind = null; // 'mission', 'test' or 'multiplayer' while flying or paused
+    this.mp = null; // multiplayer (src/net/multiplayer.js, D245), set by the page
+    this.mpFlying = false; // a match's flight is on: the physics runs whatever screen is up (a match never pauses)
     this.setup = { ...DEFAULT_SETUP };
     this.mission = null;
   }
 
   /** Whether the simulation should advance this frame. */
   get advancing() {
-    return this.state === 'flying';
+    return this.state === 'flying' || this.mpFlying;
   }
 
   menu() {
@@ -68,6 +70,7 @@ export class GameState {
     this.mission = null;
     this.menus.showMain({
       onMission: () => this.setupScreen(), onTest: () => this.testFlight(), onSettings: () => this.settings(),
+      onMultiplayer: this.mp ? () => this.mp.open() : null,
       career: ['RAF', 'Luftwaffe'].map((side) => [side, careerText(side, this.career.of(side))]),
       onResetCareer: () => { this.career.reset(); this.menu(); },
       sound: this.soundButton(),
@@ -79,7 +82,10 @@ export class GameState {
     this.menus.showSetup(this.setup, { onFly: (setup) => this.fly(setup), onBack: () => this.menu() });
   }
 
-  /** The settings screen; Back returns to the main menu or, from a flight, to the pause menu. */
+  /**
+   * The settings screen; Back returns to the main menu or, from a flight, to the pause menu; `from` may also be a
+   * function to call on Back (a match's own menu, D245).
+   */
   settings(from = 'menu') {
     this.state = 'settings';
     this.menus.showSettings({
@@ -90,7 +96,7 @@ export class GameState {
         this.onSettings(values);
         return values;
       },
-      onBack: () => (from === 'pause' ? this.pause(true) : this.menu()),
+      onBack: () => (typeof from === 'function' ? from() : from === 'pause' ? this.pause(true) : this.menu()),
       onJoystick: this.onJoystick,
       onControls: this.controls ? () => this.controlsScreen(from) : null,
       sound: this.soundButton(),
@@ -159,8 +165,30 @@ export class GameState {
     this.menus.hide();
   }
 
-  /** Esc: pauses a flight, or resumes it. */
+  /** The multiplayer screens are up (src/net/multiplayer.js): no single-player flight. */
+  enterMultiplayer() {
+    this.state = 'multiplayer';
+    if (!this.mpFlying) this.kind = null;
+  }
+
+  /** A match's flight starts: your assists, and the physics running until it stops (D245). */
+  startNetFlight() {
+    this.sim.assists = { ...this.prefs.values.assists };
+    this.mission = null;
+    this.kind = 'multiplayer';
+    this.state = 'flying';
+    this.mpFlying = true;
+  }
+
+  stopNetFlight() {
+    this.mpFlying = false;
+    this.kind = null;
+    if (this.state === 'flying') this.state = 'multiplayer';
+  }
+
+  /** Esc: pauses a flight, or resumes it; in a match, its own menu (it never pauses). */
   escape() {
+    if (this.mp?.escape()) return;
     if (this.state === 'flying') this.pause();
     else if (this.state === 'paused') this.resume();
   }
