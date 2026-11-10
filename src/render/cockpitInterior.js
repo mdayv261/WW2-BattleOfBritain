@@ -3,19 +3,23 @@
 //   side walls from the panel back to the seat, up to the sill (the canopy glazing's lower edge), with a few ribs and a
 //   console each side (the throttle box on the left);
 //   the seat back and a headrest;
-//   a bulkhead closing the fuselage just behind the seat. The player's own fuselage behind it is drawn (clipped at
-//   `clipX`, src/render/testView.js), so looking back shows its spine, the rear glazing and the fin.
+//   a bulkhead closing the fuselage just behind the seat, up to the sill;
+//   the rear fuselage behind it, its top kept just below the eye (`rearDeck`), so looking back shows the spine running
+//   to the model's own tailplane and fin (src/render/testView.js hides the model's fuselage shell and canopy glazing).
 // Every size here is an estimate (no cockpit drawings among the sources); the colours are the 2D panels' interiors.
 // Display shapes only: nothing here affects the physics.
 
 import * as THREE from 'three';
 import { sectionAt } from './models/designs.js';
+import { loft } from './models/geometry.js';
 
 const PANEL_AHEAD = 0.62; // m: the instrument panel's distance ahead of the eye (the walls start here)
 const SEAT_BACK = 0.32; // m: the seat back behind the eye
-const BULKHEAD = 0.42; // m: the bulkhead (and the clipping plane) behind the eye
+const BULKHEAD = 0.42; // m: the bulkhead behind the eye, where the rear deck begins
 const FLOOR_BELOW = 1.0; // m: the cockpit floor below the eye
 const WALL_IN = 0.04; // m: the walls this far inside the fuselage skin
+const DECK_BELOW = 0.06; // m: the rear fuselage's top, as seen from the cockpit, kept this far below the eye
+const DECK_COLOUR = { RAF: 0x4f5a32, Luftwaffe: 0x5d6658 }; // the outside paint, as the cockpit frame's (D28)
 const COLOURS = {
   RAF: { wall: 0x4a5246, dark: 0x2d2f2c, seat: 0x3a3428 },
   Luftwaffe: { wall: 0x52575a, dark: 0x2b2e31, seat: 0x3b3b38 },
@@ -37,9 +41,54 @@ function sillHeight(ac, design) {
   return sectionAtX(ac, design, ac.eye.x).top;
 }
 
+/** The bulkhead at body x `at`: the fuselage section there (an ellipse), below height `top` only, facing forward. */
+function bulkheadBelow(ac, design, at, top, material) {
+  const s = sectionAtX(ac, design, at);
+  const cy = (s.top + s.bottom) / 2;
+  const ry = (s.top - s.bottom) / 2;
+  const cut = Math.min(top, s.top) - cy; // the cut's height above the ellipse's centre
+  const shape = new THREE.Shape();
+  const from = Math.asin(Math.max(-1, Math.min(1, cut / ry))); // the angle at which the ellipse meets the cut
+  const steps = 20;
+  for (let i = 0; i <= steps; i += 1) {
+    // Round the bottom, from the cut's left end (angle π - from) to its right end (2π + from).
+    const a = Math.PI - from + ((Math.PI + 2 * from) * i) / steps;
+    const p = [s.w * Math.cos(a), ry * Math.sin(a)];
+    if (i === 0) shape.moveTo(...p);
+    else shape.lineTo(...p);
+  }
+  shape.closePath();
+  const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), material);
+  mesh.rotation.y = Math.PI / 2; // facing forward, towards the pilot
+  mesh.position.set(at - 0.005, cy, 0);
+  return mesh;
+}
+
+/**
+ * The rear fuselage as seen from the cockpit, from the bulkhead at body x `from` to the tail: the model's fuselage
+ * sections with their tops kept DECK_BELOW under the eye. The model's fuselage runs up into the canopy to about the
+ * eye's height, so seen from the seat its own shell would hide the view astern (from inside) or vanish (one-sided).
+ */
+function rearDeck(ac, design, from, material) {
+  const L = ac.geometry.length;
+  const fFrom = (design.nose - from) / L;
+  const top = ac.eye.y - DECK_BELOW;
+  const at = (f) => sectionAt(design, f);
+  const fs = [fFrom, ...design.fuselage.map((p) => p[0]).filter((f) => f > fFrom)];
+  const rings = fs.map((f) => {
+    const s = at(f);
+    const t = Math.min(s.top, top);
+    const b = Math.min(s.bottom, t - 0.02);
+    return { x: design.nose - f * L, w: Math.max(s.w, 0.01), h: (t - b) / 2, y: (t + b) / 2 };
+  });
+  const mesh = new THREE.Mesh(loft(rings), material);
+  mesh.name = 'rearDeck';
+  return mesh;
+}
+
 /**
  * The cockpit interior of `ac` with its model `design`: { group, clipX, sill, halfWidth }. `clipX` is the body x of the
- * bulkhead: the player's own fuselage is drawn only behind it.
+ * bulkhead, where the rear deck begins.
  */
 export function buildCockpitInterior(ac, design) {
   const group = new THREE.Group();
@@ -74,13 +123,10 @@ export function buildCockpitInterior(ac, design) {
   group.add(box(0.06, 0.13, 0.2, seat, seatX - 0.02, eye.y - 0.2, 0));
   // The floor.
   group.add(box(length, 0.012, 2 * half, dark, midX, floor, 0));
-  // The bulkhead closing the fuselage behind the seat, its shape the fuselage section there.
-  const s = sectionAtX(ac, design, back);
-  const ry = (s.top - s.bottom) / 2;
-  const shape = new THREE.Shape().absellipse(0, 0, s.w, ry, 0, Math.PI * 2);
-  const bulkhead = new THREE.Mesh(new THREE.ShapeGeometry(shape, 16), wall);
-  bulkhead.rotation.y = Math.PI / 2; // facing forward, towards the pilot
-  bulkhead.position.set(back - 0.005, (s.top + s.bottom) / 2, 0);
-  group.add(bulkhead);
+  // The bulkhead closing the fuselage behind the seat: the fuselage section there, up to the sill only. Above the sill
+  // the view astern stays open over the real rear fuselage (drawn behind the clipping plane) to the tailplane and fin.
+  group.add(bulkheadBelow(ac, design, back, sill, wall));
+  const paint = new THREE.MeshLambertMaterial({ color: DECK_COLOUR[ac.side], flatShading: true, side: THREE.DoubleSide });
+  group.add(rearDeck(ac, design, back, paint));
   return { group, clipX: back, sill, halfWidth: half };
 }

@@ -1,6 +1,6 @@
 // The 3D cockpit round the pilot (Phase 7 checkpoint 6b, D233): side walls up to the sill, a seat with a headrest, a
-// floor and a bulkhead behind the seat, for each flyable aircraft, inside its fuselage; the player's own fuselage drawn
-// only behind the bulkhead from the cockpit.
+// floor and a bulkhead behind the seat, for each flyable aircraft, inside its fuselage; and the rear deck from the
+// bulkhead to the tail, below the eye, standing in for the model's own fuselage as seen from the cockpit.
 import { describe, it, expect } from 'vitest';
 import * as THREE from 'three';
 import { aircraftById } from '../../src/aircraft/index.js';
@@ -22,7 +22,9 @@ describe('the 3D cockpit interior', () => {
       const skin = sectionAt(design, (design.nose - ac.eye.x) / ac.geometry.length).w;
       expect(halfWidth).toBeLessThan(skin);
       expect(halfWidth).toBeGreaterThan(0.2);
-      // Everything lies within the fuselage's width, and between the bulkhead and the panel.
+      // Everything but the rear deck lies within the fuselage's width, and between the bulkhead and the panel.
+      const deck = group.getObjectByName('rearDeck');
+      group.remove(deck);
       const bounds = new THREE.Box3().setFromObject(group);
       expect(bounds.max.z).toBeLessThanOrEqual(skin + 0.01);
       expect(bounds.min.z).toBeGreaterThanOrEqual(-skin - 0.01);
@@ -31,6 +33,11 @@ describe('the 3D cockpit interior', () => {
       // The bulkhead, and the clipping plane with it, sits just behind the seat and the pilot's head.
       expect(clipX).toBeLessThan(ac.eye.x - 0.3);
       expect(clipX).toBeGreaterThan(ac.eye.x - 0.6);
+      // The rear deck runs from the bulkhead to the tail, its top below the eye so the view astern passes over it.
+      const d = new THREE.Box3().setFromObject(deck);
+      expect(d.max.y).toBeLessThan(ac.eye.y - 0.03);
+      expect(d.max.x).toBeCloseTo(clipX, 1);
+      expect(d.min.x).toBeLessThan(design.nose - 0.95 * ac.geometry.length);
     });
   }
 

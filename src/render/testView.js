@@ -16,9 +16,6 @@ import { panelRadius } from '../ui/instruments.js';
 import { RAF_AIM } from '../ui/rafFrame.js';
 import { BF110_AIM } from '../ui/bf110Panel.js';
 
-const _ALONG = new THREE.Vector3(1, 0, 0);
-const _BACKWARD = new THREE.Vector3(-1, 0, 0);
-
 export class TestView {
   constructor(scene, camera, sea) {
     this.scene = scene;
@@ -46,9 +43,12 @@ export class TestView {
    */
   showParts(inside, { width = globalThis.innerWidth ?? 1600, height = globalThis.innerHeight ?? 900 } = {}) {
     const front = inside && this.frontView;
-    // The player's own fuselage: from the cockpit, only the part behind the bulkhead is drawn (D233), so looking back
-    // shows the spine, the rear glazing and the tail. Without a 3D interior (none) it is hidden as before (D28).
+    // The player's own fuselage from the cockpit (D233): its shell, markings and canopy glazing are not drawn (the eye is
+    // inside the model's loft, and the glazing is a faceted shell that only looks right from outside); the interior's
+    // rear deck stands in for the spine, and the tail (tailplane and fins) is drawn. Without a 3D interior (none) the
+    // whole fuselage is hidden as before (D28).
     this.model.getObjectByName('fuselage').visible = !inside || !!this.interior;
+    for (const m of this.shell) m.visible = !inside;
     this.cockpit.visible = inside && !front;
     for (const part of this.frontHidden) part.visible = !front && !this.lost.has(part.name);
     const shift = front ? this.screwShift(width, height) : 0;
@@ -76,13 +76,11 @@ export class TestView {
     this.aircraft = buildAircraftModel(ac, DESIGNS[ac.id]);
     this.model = this.aircraft.group;
     this.cockpit = buildCockpitFrame(ac);
-    // The 3D cockpit sides, seat and bulkhead (D233), and the plane that clips the player's own fuselage at the bulkhead.
+    // The 3D cockpit sides, seat, bulkhead and rear deck (D233).
     this.interior = ac.cockpit !== false && DESIGNS[ac.id] ? buildCockpitInterior(ac, DESIGNS[ac.id]) : null;
     if (this.interior) this.cockpit.add(this.interior.group);
-    this.clip ??= new THREE.Plane();
-    this.model.getObjectByName('fuselage').traverse((o) => {
-      if (o.material) o.material.clippingPlanes = [this.clip];
-    });
+    // The fuselage's own meshes (shell, glazing, markings), not the tail group.
+    this.shell = this.model.getObjectByName('fuselage').children.filter((o) => o.isMesh);
     // The Bf 109's, Bf 110's, Hurricane's and Spitfire's front frames are drawn with their panels (D90, D99, D117).
     this.frameDrawn = ['bf109e4', 'bf110c4', 'hurricane', 'spitfire'].includes(ac.id);
     this.fuselageOffset = ac.id === 'bf109e4' ? FUSELAGE_CENTRE_OFFSET : 0; // the RAF's GM 2 is on the centre line
@@ -151,20 +149,6 @@ export class TestView {
     if (this.rig.inCockpit) this.rig.mode = this.rig.outside;
   }
 
-  /**
-   * Sets the plane that clips the player's own fuselage (D233): from the cockpit, everything ahead of the bulkhead
-   * (body x > clipX) is cut away; from outside, nothing is.
-   */
-  clipFuselage(inside) {
-    if (!inside || !this.interior) {
-      this.clip.set(_ALONG, 1e9); // nothing clipped
-      return;
-    }
-    this.model.updateMatrixWorld();
-    // Kept where the distance (clipX - x along the body) is positive: behind the bulkhead.
-    this.clip.set(_BACKWARD, this.interior.clipX).applyMatrix4(this.model.matrixWorld);
-  }
-
   /** Places the model (blended between the last two physics steps) and moves the camera. */
   update(sim, alpha, dt) {
     const body = sim.plane.body;
@@ -173,7 +157,6 @@ export class TestView {
     this.model.position.copy(this._pos);
     this.model.quaternion.copy(this._quat);
     const inside = this.rig.inCockpit;
-    this.clipFuselage(inside);
     this.showParts(inside);
     this.aircraft.update(sim.plane, dt, { inside });
     this.followLoss(sim);

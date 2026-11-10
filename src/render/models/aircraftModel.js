@@ -169,7 +169,7 @@ export function buildAircraftModel(ac, design) {
   const edges = [...(design.band ?? []), ...(design.yellow?.noseFrom !== undefined ? [design.yellow.noseFrom] : [])];
   const fuselage = withSections(design.fuselage, edges.map((ex) => (design.nose - ex) / L));
   body.add(painted(loft(fuselage.map(ring(x))), bodyColour));
-  for (const c of design.glazing) body.add(new THREE.Mesh(loft(c.map(ring(x)), { round: 2 }), glass()));
+  for (const c of design.glazing) body.add(Object.assign(new THREE.Mesh(loft(c.map(ring(x)), { round: 2 }), glass()), { name: 'glazing' }));
   for (const g of design.extras ?? []) body.add(painted(loft(g.map(ring(x))), bodyColour));
   for (const n of design.nacelles ?? []) {
     for (const mount of engineMounts(ac)) {

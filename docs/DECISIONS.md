@@ -6170,17 +6170,33 @@ from the panel.
   but the camera can't, so a headrest at head height hid the whole view astern. It was lowered after the first look in
   Chrome.
 - **The floor,** and a **bulkhead** 0.42 m behind the eye, shaped as the fuselage section there.
-- **The player's own fuselage behind the bulkhead** is now drawn from the cockpit, clipped at the bulkhead
-  (src/render/testView.js; `renderer.localClippingEnabled`).
-  - Looking back shows the spine, the rear glazing and the tail: the fin, or the Bf 110's twin fins.
-  - Until now the whole fuselage, tail included, was hidden in the cockpit view (D28).
-  - Each model has its own materials, so other aircraft are unaffected.
+- **The tail seen astern:** looking back shows a rear deck from the bulkhead to the tail, then the model's own
+  tailplane and fin (the Bf 110's twin fins). Until now the whole fuselage, tail included, was hidden in the cockpit
+  view (D28).
 - **Colours:** the walls are dark grey-green for the RAF and dark grey for the Luftwaffe, in the tones of the 2D
   panels' interiors.
 - **Unchanged:** the front view with the 2D panel.
 
+**After the product owner's first look (10 Nov 2026: "the rear and side views are awful", with a transparent cone
+astern in every aircraft and the Hurricane's and Spitfire's tailplanes wrong):**
+- **The cone** was the canopy glazing seen from inside: a faceted shell that only looks right from outside. The player's
+  own glazing is no longer drawn from the cockpit.
+- **The tailplanes** were hidden for two reasons:
+  - **The bulkhead:** it was a full fuselage section 0.42 m behind the eye, and so close it covered most of the view
+    astern. It now stops at the sill.
+  - **The eye inside the model:** the model's fuselage runs up into the canopy to about the eye's height (the
+    Spitfire's top 0.49 m against the eye's 0.48 m). Drawn from inside, the shell's inner faces hid the tail; drawn
+    one-sided, the spine vanished.
+- **The fix:** from the cockpit the model's fuselage shell, glazing and fuselage markings are not drawn. A rear deck
+  stands in for them (`rearDeck`): the model's own fuselage sections from the bulkhead to the tail, their tops kept
+  6 cm below the eye, in the outside paint colour. The tail group (tailplane, fins and their markings) is drawn as
+  modelled.
+- **The first approach,** clipping the real fuselage at the bulkhead with a clipping plane, was dropped.
+- **Checked in Chrome** looking back in all four aircraft: the spine runs to a visible tailplane and fin, the Bf 110's
+  twin fins and tailplane, and no cone.
+
 **Estimates, flagged:** every size (panel distance, seat, headrest, bulkhead and floor positions, wall inset, ribs and
-consoles). There are no cockpit drawings among the sources. The shapes come from each model's fuselage sections and
+consoles, the deck's 6 cm below the eye). There are no cockpit drawings among the sources. The shapes come from each model's fuselage sections and
 eye position. The product owner may supply pictures to refine them, as for the panels.
 
 **Checked in Chrome:**
@@ -6192,5 +6208,7 @@ eye position. The product owner may supply pictures to refine them, as for the p
 
 **Closes** the PROGRESS known issue "looking sideways shows the canopy frame but no cockpit sides".
 
-**Tests:** new tests/render/cockpitInterior.test.js. For each flyable aircraft: the parts are there, inside the
-fuselage's width, between the bulkhead and the panel, with the sill below the eye and the bulkhead behind the seat.
+**Tests:** new tests/render/cockpitInterior.test.js. For each flyable aircraft:
+- the parts are there, inside the fuselage's width, between the bulkhead and the panel;
+- the sill is below the eye and the bulkhead behind the seat;
+- the rear deck runs from the bulkhead to the tail with its top below the eye.

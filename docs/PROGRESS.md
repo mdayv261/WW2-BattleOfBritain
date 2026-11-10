@@ -25,8 +25,9 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 ## Phase 7 checkpoint 6b: 3D cockpit sides (10 Nov 2026)
 
 **Done** (D233): in the four flyable aircraft, looking away from the panel shows simple 3D cockpit walls, sills, ribs
-and consoles, the seat and headrest, a bulkhead, and behind it the aircraft's own rear fuselage and tail. All sizes
-are estimates.
+and consoles, the seat and headrest, and a bulkhead up to the sill. Behind it a rear deck runs to the aircraft's own
+tailplane and fin. All sizes are estimates. After the product owner's first look: no canopy-glazing "cone" astern,
+and the tailplanes visible.
 
 **Tests:** 1,936 pass; the validation output is unchanged. 75 fps in Chrome.
 
