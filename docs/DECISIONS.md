@@ -6512,3 +6512,48 @@ The phase list's acceptance: "rebindings work in flight and survive a reload; ea
 - Shift combinations;
 - reload, reset and bad storage;
 - joystick button swaps.
+
+## D239. Phase 8 checkpoint 2: mouse flying and the look keys (10 Nov 2026)
+
+**Mouse flying** (new src/input/mouseFlight.js): an option in the settings, "Mouse flying", off by default (the product
+owner's choice), with a sensitivity of Low, Medium or High: 600, 400 or 250 px of mouse travel for full stick (feel
+choices).
+- **Taking the mouse:** a click on the view takes it, with the pointer locked where the browser allows it. Esc frees it.
+  - **Changed during the check:** if the browser refuses the lock, as Chrome did in the test window ("The root
+    document of this element is not valid for pointer lock"), the mouse is taken anyway and follows the cursor over
+    the view.
+  - The refusal no longer surfaces as an error.
+- **Flying:**
+  - moving the mouse moves the stick, which stays where it was moved (right rolls right, towards you pulls back),
+    clamped to full travel;
+  - the wheel moves the throttle, 5% a notch;
+  - the middle button or "Centre the mouse stick" (Num 5, rebindable) centres it;
+  - the rudder stays on its keys or the twist grip;
+  - a joystick's stick is overridden while the mouse flies.
+- **The mouse's other jobs change while it flies:** no drag-looking, the wheel no longer zooms, and a double-click
+  doesn't re-centre the view.
+- **On the Bf 110's rear gun** the mouse aims the gun (D234).
+- **On the menus** the mouse is freed.
+- **The stick indicator:** a small square bottom right shows where the stick is, or "click the view to fly" before the
+  mouse is taken.
+
+**The look keys:** Num 4 left, Num 6 right, Num 2 behind, Num 8 up (rebindable, D238), for any time, not only with
+mouse flying.
+- Held, they turn the head: 90° to the side, 160° behind (to the side held, left if neither), up 60°, or combined.
+- The hat overrides them, and they override the mouse.
+- They don't act on the Bf 110's rear gun, where the view is the gun's aim.
+
+**Checked in Chrome** (no console errors), a Spitfire with mouse flying on:
+- the click took the mouse;
+- moving it right moved the stick indicator and rolled the aircraft into a right bank;
+- Num 5 centred the stick;
+- three wheel notches down took the throttle from 100% to 85%;
+- holding Num 4 looked left (the panel hid) and letting go looked ahead.
+- Mouse flying was switched back off in the product owner's settings afterwards.
+
+**Tests:** new tests/input/mouseFlight.test.js:
+- off by default;
+- the stick from the mouse, held and clamped, at each sensitivity;
+- centring, the wheel, and nothing until the mouse is taken;
+- the centring key;
+- the look keys' turns.

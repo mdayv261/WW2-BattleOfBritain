@@ -51,6 +51,15 @@ export function renderSettings(container, values, { onChange, onBack, onJoystick
     const hud = el('input', { type: 'checkbox', checked: v.hudInCockpit });
     hud.addEventListener('change', () => { v = onChange({ hudInCockpit: hud.checked }); });
     row('Modern HUD', el('label', {}, hud, ' in the cockpit too'));
+    const mouse = el('input', { type: 'checkbox', checked: v.mouseFlight });
+    mouse.addEventListener('change', () => { v = onChange({ mouseFlight: mouse.checked }); });
+    const feel = el('select');
+    for (const [value, label] of [['low', 'Low'], ['medium', 'Medium'], ['high', 'High']]) feel.append(el('option', { value, textContent: `${label} sensitivity`, selected: value === v.mouseSensitivity }));
+    feel.addEventListener('change', () => { v = onChange({ mouseSensitivity: feel.value }); });
+    row('Mouse flying', el('label', {}, mouse, ' the mouse flies '), feel, el('div', {
+      className: 'menu-note',
+      textContent: 'Click the view to take the mouse (Esc frees it). Mouse moves the stick, the wheel the throttle, the middle button or Num 5 centres. Look round with the hat or Num 4 / 6 / 2 / 8.',
+    }));
     const pointers = el('input', { type: 'checkbox', checked: v.enemyPointers });
     pointers.addEventListener('change', () => { v = onChange({ enemyPointers: pointers.checked }); });
     row('Enemy pointers', el('label', {}, pointers, ' on'), el('div', { className: 'menu-note', textContent: 'Red arrowheads along the top for enemies within 5 km: ahead in the middle, behind at the ends; pointing up above you, down below.' }));

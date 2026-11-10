@@ -26,6 +26,7 @@ const LIST = [
   ['flapsUp', 'Flaps up a stop', 'Flight', 'press', ['Shift+KeyF']],
   ['gear', 'Undercarriage', 'Flight', 'press', ['KeyU']],
   ['brakes', 'Brakes (hold)', 'Flight', 'hold', ['KeyB']],
+  ['mouseCentre', 'Centre the mouse stick (mouse flying)', 'Flight', 'press', ['Numpad5']],
   ['throttleUp', 'Throttle open', 'Engine', 'hold', ['KeyW']],
   ['throttleDown', 'Throttle close', 'Engine', 'hold', ['KeyS']],
   ['rpmUp', 'rpm lever up / pitch finer', 'Engine', 'hold', ['KeyE']],

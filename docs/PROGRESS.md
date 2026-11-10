@@ -20,9 +20,10 @@ Read this at the start of every session.
   done: 6a settings, assists, HUD (D232), 6b 3D cockpit sides (D233); checkpoint 7 (the Bf 110 rear-gun swap)
   done (D234); enemy pointers (D235); checkpoint 8, the acceptance test (D236), passed.
 - **Phase 8** (controls screen, rebinding, mouse flying, warnings): plan approved 10 Nov 2026 (D238). Checkpoint 1
-  (rebinding and the Controls screen) done (D238); next, checkpoint 2 (mouse flying).
+  (rebinding and the Controls screen) done (D238); checkpoint 2 (mouse flying, look keys) done (D239); next, checkpoint
+  3 (overspeed).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
-runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026.
+runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 is local, not pushed.
 
 ## Phase 7 checkpoint 7: the Bf 110 rear-gun swap (10 Nov 2026)
 
@@ -47,6 +48,18 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 
 **Phase 7 signed off** (D237): the product owner ran the twelve checks of D236 and they pass.
 
+## Phase 8 checkpoint 2: mouse flying and the look keys (10 Nov 2026)
+
+**Done** (D239):
+- **Mouse flying,** off by default: click the view to take the mouse. It moves the stick and holds it there; the wheel
+  is the throttle; the middle button or Num 5 centres. Low, Medium or High sensitivity, with a stick indicator bottom
+  right.
+- **Look keys:** Num 4 / 6 / 2 / 8 look left, right, behind and up while held.
+
+**Tests:** 1,971 pass; the validation output is unchanged.
+
+**Left in Phase 8:** checkpoints 3 (overspeed) and 4 (acceptance test).
+
 ## Phase 8 checkpoint 1: rebinding and the Controls screen (10 Nov 2026)
 
 **Done** (D238):
@@ -58,7 +71,7 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 
 **Tests:** 1,966 pass; the validation output is unchanged.
 
-**Left in Phase 8:** checkpoints 2 (mouse flying), 3 (overspeed), 4 (acceptance test).
+**Left in Phase 8:** checkpoints 2 (mouse flying; done, above), 3 (overspeed), 4 (acceptance test).
 
 ## Phase 7 checkpoint 8: the acceptance test (10 Nov 2026)
 

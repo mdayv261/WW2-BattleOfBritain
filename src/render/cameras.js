@@ -19,6 +19,17 @@ export const HAT_LOOKS = [
   { yaw: Math.PI / 2, pitch: 0.1 }, { yaw: Math.PI / 4, pitch: 0.3 },
 ];
 const LOOK_LIMITS = { yaw: Math.PI * 0.9, pitchUp: 1.4, pitchDown: -0.7 };
+
+/**
+ * The look keys' head turn (D239) for which are held ({ left, right, back, up }): left or right 90°, behind 160° to the
+ * side held (left if neither), up 60°, combined; null with none held.
+ */
+export function keyLook({ left, right, back, up }) {
+  if (!left && !right && !back && !up) return null;
+  const side = left && !right ? 1 : right && !left ? -1 : 0;
+  const yaw = back ? (side || 1) * Math.PI * 0.9 : side * (Math.PI / 2);
+  return { yaw, pitch: up ? (side || back ? 0.6 : 1.05) : back || side ? 0.15 : 0 };
+}
 // rad: a head turned further than this to the side, or raised further, is looking away from the instrument panel, which
 // is then hidden (D58). Every hat view is beyond it; looking down at the panel never hides it.
 export const PANEL_LOOK_LIMIT = 20 * (Math.PI / 180);
@@ -64,6 +75,7 @@ export class CameraRig {
     this.outside = 'chase';
     this.mouseLook = { yaw: 0, pitch: 0 };
     this.hatLook = null;
+    this.keyLook = null; // the look keys' turn while held (D239)
     this.zoom = 1;
     this.camPos = new THREE.Vector3();
     this.first = true;
@@ -118,9 +130,9 @@ export class CameraRig {
     this.zoom = 1;
   }
 
-  /** The hat overrides the mouse while it is held. */
+  /** The hat overrides the look keys, and they the mouse, while held. */
   get look() {
-    return this.hatLook ?? this.mouseLook;
+    return this.hatLook ?? this.keyLook ?? this.mouseLook;
   }
 
   /**

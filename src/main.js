@@ -14,6 +14,7 @@ import { Keyboard } from './input/keyboard.js';
 import { comboOf } from './input/bindings.js';
 import { Joystick } from './input/joystick.js';
 import { MouseLook } from './input/mouse.js';
+import { MouseFlight } from './input/mouseFlight.js';
 import { Hud } from './ui/hud.js';
 import { FrameRate } from './ui/frameRate.js';
 import { InstrumentPanel, panelHidden } from './ui/instruments.js';
@@ -35,7 +36,7 @@ import { GunnerHud } from './ui/gunnerHud.js';
 import { EnemyPointers } from './ui/enemyPointers.js';
 import { enemyPointers } from './core/enemyPointers.js';
 import { swapSeat } from './core/crewSeat.js';
-import { gunnerAim } from './render/cameras.js';
+import { gunnerAim, keyLook } from './render/cameras.js';
 import { common } from './aircraft/common.js';
 import { aircraftList } from './aircraft/index.js';
 import { loadTerrain } from './world/terrain.js';
@@ -55,7 +56,9 @@ view.setAircraft(sim.ac);
 
 const keyboard = new Keyboard();
 const joystick = new Joystick();
-new MouseLook(renderer.domElement, view.rig);
+const mouseFlight = new MouseFlight(); // mouse flying, an option (D239)
+new MouseLook(renderer.domElement, view.rig, mouseFlight);
+mouseFlight.listen(renderer.domElement, view.rig, () => sim.seat === 'gunner'); // on the rear gun the mouse aims
 const hud = new Hud();
 const frameRate = new FrameRate();
 const instruments = new InstrumentPanel();
@@ -94,6 +97,7 @@ const settings = new Settings(); // the player's settings (D232)
 function applySettings(values) {
   audio.setVolume(values.volume / 100);
   audio.setEngineVolume(values.engineVolume / 100);
+  mouseFlight.configure(values.mouseFlight, values.mouseSensitivity);
   renderer.setPixelRatio(pixelRatioFor(values.graphics, window.devicePixelRatio));
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
@@ -133,6 +137,7 @@ function gameKeys() {
   if (keyboard.tookAction('debug')) hud.toggleDebug();
   if (keyboard.tookAction('radar')) radar.toggle();
   if (keyboard.tookAction('seat')) changeSeat();
+  if (keyboard.tookAction('mouseCentre')) mouseFlight.centre();
   if (keyboard.tookAction('help')) hud.toggleHelp();
   if (keyboard.tookAction('joystickPanel')) joyPanel.toggle();
   if (keyboard.tookAction('engineSelect')) sim.engineKey('select');
@@ -194,6 +199,7 @@ renderer.setAnimationLoop((now) => {
       gunInput = null;
       keyboard.update(sim.input, sim.ac, dt);
       stick = joystick.update(sim.input, sim.ac, dt);
+      mouseFlight.apply(sim.input); // with mouse flying on, the mouse holds the stick and works the throttle (D239)
       sim.applyLevers();
       if (stick?.view) view.rig.toggleCockpit();
       if (stick?.seat) changeSeat();
@@ -202,11 +208,16 @@ renderer.setAnimationLoop((now) => {
     plotted = radarPlot.update(sim);
     game.frame();
   } else {
+    mouseFlight.release(); // the mouse is the player's own on the menus
     keyboard.pressed.clear(); // keys pressed on a menu don't act once the flight starts
     joystick.poll(); // keep reading the joystick on the menus, so Chrome connects it from a press there (D226)
     game.menus.setStatus?.(joystick.status());
   }
   view.rig.hatLook = stick && stick.hat !== null ? HAT_LOOKS[stick.hat] : null;
+  // The look keys (D239), not on the rear gun (where the view is the gun's aim).
+  view.rig.keyLook = sim.seat === 'gunner' ? null : keyLook({
+    left: keyboard.held('lookLeft'), right: keyboard.held('lookRight'), back: keyboard.held('lookBack'), up: keyboard.held('lookUp'),
+  });
   // The view follows the seat: along the rear gun while the player mans it, else the pilot's.
   if (sim.seat === 'gunner') view.rig.mode = 'gunner';
   else if (view.rig.atGun) view.rig.mode = 'cockpit';
@@ -231,6 +242,7 @@ renderer.setAnimationLoop((now) => {
   }
   flightHud.update(sim, (outside || (settings.values.hudInCockpit && !view.rig.atGun)) && !sim.playerJumper); // in the cockpit too if chosen (D232)
   gunnerHud.update(sim, view.rig.atGun && game.kind !== null && !sim.playerJumper, camera.fov);
+  mouseFlight.draw(game.advancing && !sim.playerJumper);
   const pointing = settings.values.enemyPointers && game.kind !== null && !sim.playerJumper && !sim.crashed;
   pointers.update(pointing ? enemyPointers(sim) : [], pointing);
   const heading = headingOf(nose.set(1, 0, 0).applyQuaternion(sim.plane.body.quaternion));
