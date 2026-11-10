@@ -190,7 +190,7 @@ export class Hud {
   messageFor(sim) {
     const { ac, plane } = sim;
     const g = plane.ground;
-    if (sim.crashed) return `${sim.crashCause ?? g.crash.cause} — press R to restart`;
+    if (sim.crashed) return `${sim.crashCause ?? g.crash.cause} — ${sim.net ? sim.net.respawnText() : 'press R to restart'}`; // in a match, the respawn (D245)
     if (sim.paused) return 'Paused — press P';
     if (sim.notice && plane.time < sim.notice.until) return sim.notice.text;
     const warning = this.warningFor(sim);

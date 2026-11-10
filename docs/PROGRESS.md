@@ -65,11 +65,15 @@ errors.
 **Not yet seen in Chrome:** a live hit, kill and respawn between two people. The scripted players don't aim; the tests
 cover these.
 
-**Fixed after the product owner's check:** typing in the Multiplayer screen's name and code boxes. The game's own keys
-were swallowing the letters (D245).
+**Fixed after the product owner's checks** (D245):
+- Typing in the Multiplayer screen's name and code boxes: the game's own keys were swallowing the letters.
+- Bailing out in a match:
+  - it now goes as in single player: the crew leave and the parachute opens, the view following it down;
+  - the others see the parachutes too;
+  - the message counts down to the respawn;
+  - the view returns to the cockpit after it.
 
 **Known issues:**
-- A bail-out shows the aircraft flying on out of control, with no parachute.
 - A reload brings you back in a fresh aircraft (not counted as going down).
 - The AI gunner's rounds in your own Bf 110 show about one round trip late.
 - The live site has no server yet: its Multiplayer screen says so (checkpoint 4).

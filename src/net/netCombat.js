@@ -14,6 +14,7 @@ import { stepGuns } from '../weapons/guns.js';
 import { aimMount, stepMount, direction } from '../weapons/mounts.js';
 import { common } from '../aircraft/common.js';
 import { fall } from '../core/losses.js';
+import { createJumper, seatPosition } from '../core/parachute.js';
 import { HIT_NOTICE_S } from '../mp/netConfig.js';
 import { Vector3 } from 'three';
 
@@ -109,10 +110,18 @@ export class NetCombat {
     }
   }
 
-  /** Another aircraft is down: it falls as a wreck from where it is drawn, and leaves the sky until it respawns. */
+  /**
+   * Another aircraft is down: it falls as a wreck from where it is drawn, and leaves the sky until it respawns. Bailed
+   * out of, its crew are seen leaving under their parachutes (as single player's, src/core/parachute.js).
+   */
   goDown(remote, reason) {
     remote.fallen = true;
-    const plane = remote.craft.plane;
+    const { plane, ac, side, label } = remote.craft;
+    if (reason === 'bailed out') {
+      for (const seat of ac.crew) {
+        this.sim.jumpers.push(createJumper({ position: seatPosition(plane.body, seat), velocity: plane.body.velocity, quaternion: plane.body.quaternion, side, label }));
+      }
+    }
     plane.damage.failed = { cause: reason ?? 'down', parts: [] };
     if (reason !== 'crashed') fall(this.sim, plane);
   }

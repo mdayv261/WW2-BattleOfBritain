@@ -105,3 +105,24 @@ describe('going down and coming back', () => {
     expect(h.clients[1].sim.others).toHaveLength(1);
   });
 });
+
+describe('bailing out', () => {
+  it('holding the key: the crew go at their exit times, the pilot under his parachute; then the aircraft is down', () => {
+    const h = createHarness({ players: [{ ...ann, pilot: (t, sim) => { sim.input.bailOut = t > 2; } }, max], net: BAD });
+    h.run(2);
+    const c = h.clients[0];
+    const p = h.server.players.get('p1');
+    h.run(1.6);
+    expect(c.sim.bailout).toBeTruthy(); // begun after 1 s held
+    expect(p.down).toBe(false); // the pilot has not jumped yet (his exit time is 4 s)
+    h.run(4);
+    expect(c.sim.playerJumper).toBeTruthy();
+    expect(c.sim.jumpers.some((j) => j.player)).toBe(true);
+    expect(p.down).toBe(true);
+    h.run(1);
+    expect(c.net.down).toBe(true);
+    expect(c.net.respawnText()).toMatch(/^back in the air in (8|9) s$/); // not single player's "press R to restart"
+    expect(h.clients[1].sim.jumpers.length).toBeGreaterThan(0); // the other player sees the parachute too
+  });
+});
+

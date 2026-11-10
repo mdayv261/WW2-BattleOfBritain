@@ -24,6 +24,7 @@ import { recordTrack } from '../ai/perception.js';
 import { DefensivePilot } from '../ai/defensive.js';
 import { direction, anglesOf } from '../weapons/mounts.js';
 import { crewHealth } from '../weapons/damage.js';
+import { doomed, HOLD_TO_BAIL } from '../core/bailout.js';
 import { quantiseInput, compactOf, encodeSnapshot } from './binary.js';
 import { captureState } from './planeState.js';
 import { spawnPoint, spawnAircraft } from './spawn.js';
@@ -37,7 +38,7 @@ import {
 const DT = 1 / TICK_HZ;
 const _dir = new Vector3();
 const _inv = new Quaternion();
-const BAIL_TICKS = TICK_HZ; // bail-out held this long, as single player (D80)
+const BAIL_TICKS = Math.round(HOLD_TO_BAIL * TICK_HZ); // bail-out held this long, as single player (D80)
 const TEAM_SIDE = { raf: 'RAF', luftwaffe: 'Luftwaffe' };
 
 /** The aircraft data a match flies: with structural damage off, without the g and diving limits that break it. */
@@ -111,6 +112,7 @@ export class MatchSim {
     p.down = false;
     p.lastHit = null;
     p.bailHeld = 0;
+    p.bailAt = null; // the tick the pilot jumps, once a bail-out has begun
     p.shotsSince = { mg: 0, cannon: 0 };
     p.rearSince = { shots: 0, az: 0, el: 0 }; // the rear gun's rounds since the last snapshot, and its last aim
     p.aiInput = null;
@@ -239,11 +241,21 @@ export class MatchSim {
     Object.assign(p.rearSince, { shots: p.rearSince.shots + 1, az, el });
   }
 
-  /** Is p's aircraft lost? Broken up, its pilot killed, crashed, or bailed out of. */
+  /**
+   * Is p's aircraft lost? Crashed, broken up, its pilot killed, or bailed out of. A bail-out goes as in single player
+   * (src/core/bailout.js, D80): it starts once the bail-out key has been held HOLD_TO_BAIL s, or by itself once the
+   * aircraft is doomed (on fire, its elevator gone), and the aircraft is lost when the pilot has jumped, at his exit
+   * time (the browser shows the crew going and the parachute; D245).
+   */
   checkDown(p, t) {
     const { plane } = p;
     const d = plane.damage;
-    const reason = plane.ground.crash ? 'crashed' : d.failed ? d.failed.cause : d.pilot <= 0 ? 'pilot killed' : p.bailHeld >= BAIL_TICKS ? 'bailed out' : null;
+    if (p.bailAt === null && d.pilot > 0 && (p.bailHeld >= BAIL_TICKS || doomed(plane))) {
+      const pilot = p.ac.crew.find((m) => m.role === 'pilot') ?? p.ac.crew[0];
+      p.bailAt = t + Math.round(pilot.exit * TICK_HZ);
+    }
+    const bailed = p.bailAt !== null && t >= p.bailAt;
+    const reason = plane.ground.crash ? 'crashed' : d.failed ? d.failed.cause : d.pilot <= 0 ? 'pilot killed' : bailed ? 'bailed out' : null;
     if (reason) this.combat.goDown(p, t, reason);
   }
 

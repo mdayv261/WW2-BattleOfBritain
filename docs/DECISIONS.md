@@ -6840,7 +6840,6 @@ and a match flown in the existing game view, against the local server.
 cover them; the family test at checkpoint 4 shows them.
 
 **Known limits, for later:**
-- A bail-out shows the aircraft flying on out of control, with no parachute.
 - A reload or dropped connection brings you back in a fresh aircraft. It doesn't count as going down.
 - The AI gunner's rounds in your own Bf 110 show about one round trip late.
 
@@ -6856,3 +6855,22 @@ cover them; the family test at checkpoint 4 shows them.
   it, and the browser's typing isn't stopped. Everywhere else the keys act as before.
 - **Checked:** a test, and in Chrome, where letters, Space and Backspace in the name box go through while M on the
   game view is still taken by the game.
+
+**Fix after the product owner's check (10 Nov 2026): bailing out in a match.**
+- **The report:** "Backspace does not bailout the pilot and deploy parachute. It just shows a chase view."
+- **The cause:** the server counted the aircraft lost as soon as the key had been held 1 s, and the browser only showed
+  the aircraft flying on. Single player's bail-out (D80) wasn't run in a match.
+- **The fix:** a bail-out in a match goes as in single player:
+  - it starts after the key is held 1 s, or by itself once the aircraft is doomed (on fire, or its elevator gone);
+  - the crew leave at their exit times (the pilot after 4 s);
+  - the view follows the pilot down under his parachute;
+  - the server counts the aircraft lost when the pilot jumps ("bailed out"), not when the key has been held 1 s;
+  - the other players see the crew's parachutes;
+  - after a break-up, the crew leave the falling wreck as in single player.
+- **The message line** reads "You bailed out — back in the air in 8 s" in a match, in place of single player's "press R
+  to restart".
+- **On respawn** the view returns to the cockpit.
+- **Checked:** a test, and in Chrome:
+  - holding Backspace: "Bailing out!", then the parachute with the view following it down;
+  - the countdown;
+  - after 10 s, a fresh aircraft at 8,000 ft, seen from the cockpit.

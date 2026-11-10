@@ -22,13 +22,14 @@ import { RemoteAircraft } from './remoteCraft.js';
 import { flyTick, gunSeatControls } from '../mp/flyTick.js';
 import { restoreState, onGroundIn } from '../mp/planeState.js';
 import { quantiseInput, encodeInputs, decodeSnapshot } from '../mp/binary.js';
-import { AIR_SPAWN, INPUTS_PER_MESSAGE, INTERP_DELAY_MS, INTERP_DELAY_MAX_MS, TICK_HZ, LEAD_TARGET_TICKS } from '../mp/netConfig.js';
+import { AIR_SPAWN, RESPAWN_S, INPUTS_PER_MESSAGE, INTERP_DELAY_MS, INTERP_DELAY_MAX_MS, TICK_HZ, LEAD_TARGET_TICKS } from '../mp/netConfig.js';
 import { anglesOf } from '../weapons/mounts.js';
 import { crewHealth } from '../weapons/damage.js';
 import { stepGunners } from '../ai/gunner.js';
 import { recordTrack } from '../ai/perception.js';
 import { manageEngine, assistedYaw, warnings } from '../core/assists.js';
 import { losePlayer, stepPlayerLoss, stepFalling } from '../core/losses.js';
+import { playerBailout, stepBailouts, playerLanding } from '../core/bailout.js';
 import { swapSeat, rearGun } from '../core/crewSeat.js';
 
 const DT = 1 / TICK_HZ;
@@ -49,6 +50,7 @@ export class NetFlight {
     this.ready = false;
     this.spawn = null;
     this.down = false;
+    this.downAt = null; // ms, when your aircraft was lost (for "back in the air in 7 s")
     this.ai = null; // the server's AI pilot's controls while you are on the rear gun
     this.mySlot = 0;
     this.pending = []; // controls not yet sent
@@ -147,6 +149,7 @@ export class NetFlight {
       if (!this.down) this.goDown(state);
       return;
     }
+    if (this.sim.crashed) return; // the pilot has jumped here: the server will say so next
     this.prediction.onServerState(tick, state, this.clock.tick, Boolean(jump));
     if (you.rest.rearGun && this.sim.seat !== 'gunner') this.combat.owedOwnRear(you.rest.rearGun);
   }
@@ -166,12 +169,14 @@ export class NetFlight {
     sim.others = [];
     sim.ownRear = null;
     sim.net = net;
+    this.downAt = null;
   }
 
   /** The server says you are down: the loss as single player shows it (the wreck falls, or the aircraft flies on). */
   goDown(state) {
     const sim = this.sim;
     this.down = true;
+    if (sim.crashed) return; // already lost here (the pilot has jumped): the server agrees
     restoreState(sim.plane, state, sim.armament);
     if (sim.plane.ground.crash || sim.plane.damage.failed) losePlayer(sim);
     else {
@@ -235,7 +240,11 @@ export class NetFlight {
     const input = this.controls();
     const t = this.clock.tick + 1;
     this.clock.tick = t;
-    if (this.down) stepPlayerLoss(sim, DT);
+    // Bailing out, as single player (src/core/bailout.js): the crew go at their exit times and the view follows the
+    // pilot down under his parachute; the server counts the aircraft lost as he jumps.
+    playerBailout(sim, DT);
+    if (sim.crashed && this.downAt === null) this.downAt = this.now();
+    if (this.down || sim.crashed) stepPlayerLoss(sim, DT);
     else {
       this.flyOwn(input, true);
       this.prediction.record(t, input);
@@ -247,6 +256,8 @@ export class NetFlight {
     // The rounds drawn here fly on (no hits: the server's strikes show those); falling wrecks fall.
     sim.projectiles.step(DT, sim.world.terrain);
     stepFalling(sim, DT);
+    stepBailouts(sim, DT);
+    playerLanding(sim);
     if (!this.pending.length) this.pendingFrom = t;
     this.pending.push(input);
     if (this.pending.length >= INPUTS_PER_MESSAGE) this.flush();
@@ -304,6 +315,12 @@ export class NetFlight {
   /** The other players' aircraft as drawn: [{ craft, name, team }] (for the name tags). */
   drawn() {
     return this.sim.others.map((craft) => ({ craft, name: craft.remote.who.name, team: craft.remote.who.team }));
+  }
+
+  /** While your aircraft is lost: when you are back (the message line's ending, in place of single player's restart). */
+  respawnText() {
+    const left = this.downAt === null ? RESPAWN_S : RESPAWN_S - (this.now() - this.downAt) / 1000;
+    return left > 0.5 ? `back in the air in ${Math.ceil(left)} s` : 'back in the air shortly';
   }
 
   /** Numbers for the F3 panel. */

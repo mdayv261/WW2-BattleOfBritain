@@ -135,6 +135,8 @@ game.mp = attachMultiplayer({
   onRespawn: () => {
     view.setAircraft(sim.ac);
     effects.clear();
+    if (view.rig.cockpitAllowed) view.rig.mode = 'cockpit'; // back in the cockpit, as the loss had moved the view outside
+    view.rig.resetLook();
   },
 });
 game.menu();
