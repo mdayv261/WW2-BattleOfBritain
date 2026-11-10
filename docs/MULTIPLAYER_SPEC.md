@@ -1,87 +1,165 @@
-# Multiplayer Specification: RAF against Luftwaffe (outline)
+# Multiplayer Specification: RAF against Luftwaffe
 
-Status: **outline only (Phase 0, 24 Oct 2026).** The full design is written and agreed with the
-product owner at the start of Phase 9. Nothing here is built yet. Open points are marked
-**(to decide)**.
+Status: **design, Phase 9 (10 Nov 2026, D243).** Checkpoint 1, the shared core in `src/mp/`, is built and tested.
+The server (checkpoint 2), the browser side (checkpoint 3) and the Cloudflare deployment (checkpoint 4) follow.
+The design is Dawn Patrol's working multiplayer, adapted for 1940 with the product owner's approval (§9).
 
 ## 1. Goal and rules
-- **Players:** 2 to 4 human players in a private room. No AI aircraft in multiplayer.
-- **Teams:** RAF (Hurricane Mk I, Spitfire Mk I) against Luftwaffe (Bf 109 E-4, Bf 110 C-4). The Bf 110's rear
-  gun is manned by the AI on the server, the one AI element allowed (product owner, 24 Oct 2026, D14). Each player picks a side, then a fighter of
-  that side. Uneven teams (1 v 2, 1 v 3) are allowed.
-- **No bombers:** the He 111 is not in multiplayer.
-- **Rooms:** private, for family and friends. The host creates a room and shares a short code; the
-  others join with the code. There is no public lobby, no accounts and no stored personal data.
-- **Fair physics:** the same validated flight model runs for every aircraft. No player gains an
-  advantage by editing their own copy of the game.
-- **Single player:** unchanged by multiplayer.
+- **Players:** 2 to 4 human players in a private room, joined by a code.
+- **Teams:**
+  - RAF: Hurricane Mk I, Spitfire Mk I;
+  - Luftwaffe: Bf 109 E-4, Bf 110 C-4.
+  Each player picks a side, then a fighter of that side. Uneven teams (1 v 2, 1 v 3) are allowed. No He 111.
+- **AI only in the Bf 110, for the seat its player is not in** (product owner, 10 Nov 2026):
+  - with the player at the controls, the server's AI gunner mans the rear MG 15 (`src/ai/gunner.js`, Regular);
+  - with the player on the rear gun (Tab, as in single player, D234), the server's defensive AI pilot flies
+    (`src/ai/defensive.js`), and the player's aim and trigger work the gun.
+  The AI's rounds and kills count as the player's. There are no other AI aircraft or crew.
+- **No accounts, no stored personal data.** Single player is unchanged.
+- **Fair physics:** the server runs the same validated flight model for every aircraft and decides every hit.
+- **Aids:** each player uses their own settings (assists, enemy pointers, mouse flying, and the RAF radar for RAF
+  players). The host doesn't control them.
 
 ## 2. Approach
-- **An authoritative room server on Cloudflare Workers + Durable Objects:** one Durable Object per
-  room.
-  - It runs the flight model, the guns and the hits for every aircraft.
-  - Browsers send only their controls.
-- **Cloudflare:** a separate Worker for this game (proposed name `bob1940-mp`) on Dawn Patrol's existing
-  Cloudflare account (D16). A fault or an update in one game cannot affect the other, and there is no extra cost.
-- **Why this approach** (to be re-checked against Cloudflare's limits in Phase 9):
-  - it is the only approach where no player, the host included, can cheat by editing their copy;
-  - nobody gets a host's zero-delay advantage;
-  - the host can leave without ending the match;
-  - no relay service is needed;
-  - the free plan needs no card.
+- **An authoritative room server:** a separate Worker, `bob1940-mp`, on Dawn Patrol's existing Cloudflare account
+  (D16), with one Durable Object per room. Browsers send only their controls.
 - **The game itself** stays on GitHub Pages.
+- **Cost:** the room's step for four aircraft was measured at checkpoint 1 (§8). Cloudflare's free-plan limits are
+  re-checked on Cloudflare's own pages before checkpoint 4.
 
-## 3. Network design (headings; detail in Phase 9)
-- **Ticks:** the server steps every aircraft at 120 Hz with the same simulation code as the
-  browser.
-- **Browser to server:** controls stamped with their tick number, clamped to legal ranges.
-- **Server to browser:** state snapshots, about 30 a second; compact binary.
-- **Your own aircraft:** predicted in the browser, then corrected smoothly from the server's state.
-- **Other aircraft:** drawn slightly in the past, smoothed between snapshots.
-- **Hits:** decided by the server, with lag compensation up to a capped delay (value **to decide**).
-- **Twin-engine aircraft (if the Bf 110 is allowed):** per-engine state, plus the server-run rear
-  gunner.
+## 3. Network design
+- **Ticks:** the server steps every aircraft at 120 Hz with the single-player simulation code (`stepAircraft`,
+  `stepGuns`). The physics uses no random numbers; only hit damage does, on the server.
+- **Browser to server (binary, 30 a second):**
+  - four ticks of controls a message, each stamped with its tick, plus the player's "view tick" for lag compensation;
+  - the controls are taken after the player's own assists, so the server needs none;
+  - for the Bf 110: the seat, and on the gun, its aim and trigger;
+  - each value is quantised and clamped to its legal range;
+  - the server takes the controls for tick T at tick T. Late controls, and controls more than 1 s ahead, are dropped;
+  - a tick with none repeats the last. After 1 s with none, the stick and rudder are centred and the throttle is kept.
+- **Server to browser (binary, 30 a second):**
+  - **your own aircraft:** its exact state (`src/mp/planeState.js`), so that the browser can predict on from it. This
+    covers the body, control surfaces, trim, each engine's speed, pitch, slipstream, cut-out, heat and wear, ground
+    contact, the fixed guns, and the damage record;
+  - **the others:** 58 bytes each (position, orientation, velocity, engine rpm, flaps and gear, shots fired since the
+    last snapshot, down or not);
+  - "lead": how early your controls arrive, so the browser can keep its clock just ahead.
+  A two-player snapshot is about 1 KB.
+- **Prediction:** your own aircraft is flown in the browser, replayed from the server's state when the two differ,
+  with corrections faded in over 0.15 s. A test (`tests/mp/matchSim.test.js`) shows a snapshot flown on locally with
+  the same controls matches the server bit for bit.
+- **Smoothing:** other aircraft are drawn 100 ms in the past (up to 200 ms on a jittery connection) and carried on for
+  at most 0.5 s through a gap.
+- **Hits:** decided by the server only. A round fired by a player whose screen showed the others at tick V is tested
+  against them where they were then ("favour the shooter"), up to 0.4 s back. The AI gunner sees the present. Hits
+  use the single-player hit zones and damage model.
+- **Effects:** tracers, gun sounds and hit sparks are drawn by each browser from the snapshots.
 
 ## 4. Rooms, lobby and match
-- **Room code:** short, with look-alike characters left out.
-- **Lobby:** names, sides, aircraft, a ready flag.
-- **Host settings (to decide):** start height, score limit, time limit, friendly fire, structural
-  damage, and possibly the time of day within daylight.
-- **Match:** a countdown, then team scores and a clock, a results screen, and back to the lobby.
-- **Respawn:** a delay, then an air start behind your own side of the Channel (**to decide**:
-  delay, height, and whether airfield starts are offered).
+- **Room code:** 6 characters, without I, O, 0 or 1.
+- **Lobby:**
+  - names, teams, aircraft and ready flags;
+  - joiners go to the smaller team (RAF on a tie) with its first fighter;
+  - the first player is the host.
+  The host's Start needs 2-4 players, all ready, and at least one on each side.
+- **Host settings:**
+  | Setting | Choices | Default |
+  |---|---|---|
+  | Start | Airfield apron, or air start at 8,000 ft 5 km from the enemy | Air |
+  | Respawn | Airfield apron, or air spawn at 8,000 ft 5 km from the nearest enemy player | Air |
+  | Time of day (UTC, 15 Aug 1940) | the daylight half-hours | 13:00 |
+  | Score limit | 3, 5, 10, 20 | 5 |
+  | Time limit | 5, 10, 15, 20 min | 10 |
+  | Friendly fire | on, off | off |
+  | Structural damage | on, off | on |
+- **Where aircraft appear** (`src/mp/spawn.js`; the start and respawn settings are the product owner's, 10 Nov 2026):
+  - **Apron:**
+    - on the side's home airfield, at rest, side by side 30 m apart, as in single player's ground start;
+    - RAF at Hawkinge and the Luftwaffe at Saint-Inglevert.
+  - **Air start:**
+    - the two teams face each other 5 km apart at 8,000 ft over mid-Channel;
+    - team-mates are 300 m apart in line abreast, each opposite an enemy.
+  - **Air respawn:**
+    - at 8,000 ft, 5 km from the enemy player nearest the side's own coast;
+    - on the own-coast side of that enemy, heading towards them;
+    - with no enemy in the air, over the side's own coast, heading out.
+- **Going down:**
+  - an aircraft broken up, its pilot killed, crashed, or bailed out of (bail-out held 1 s) leaves the sky at once;
+  - its pilot is back 10 s later, where the respawn setting says;
+  - the last enemy to hit it in the last 15 s gets the kill. Going down with no recent enemy hit scores nothing.
+- **The match ends:**
+  - when a team reaches the score limit;
+  - at the time limit (the higher score wins; equal is a draw);
+  - when a team has had nobody in it for 30 s.
+  The results show team scores and each player's kills, deaths, shots and hits. Everyone returns to the lobby after
+  20 s.
+- **No pause:** Esc opens Options / Leave match while the aircraft flies on.
 
 ## 5. Disconnects
-- **A player drops out:** their place is kept briefly, so a reload rejoins.
-- **The host leaves:** the host role passes on; the match continues.
+- **A player drops out:**
+  - their place is kept for 60 s, so a reload rejoins;
+  - silence for 20 s counts as a drop.
+- **The host leaves:** the host role passes on.
 - **The server is lost:** the page says so and returns to the menu.
-- **Version check:** an old cached page is asked to reload.
+- **Version check:** a page with an old protocol version is asked to reload.
 
 ## 6. Privacy
 - No accounts.
-- A display name is held only in the room's memory.
+- A display name (16 characters at most, checked) is held only in the room's memory.
 - Logging is off on the server.
 
 ## 7. Accounts, costs and permissions
-- **Testing on the Mac:** `wrangler dev`; no account needed.
+- **Testing on the Mac:** `wrangler dev`, with no account needed.
 - **Cloudflare account:** Dawn Patrol's existing free account (product owner, 24 Oct 2026).
-- **Permission each time:** every deployment to Cloudflare and every push to GitHub. No spending
-  without permission.
+- **Permission each time:** every deployment to Cloudflare and every push to GitHub. No spending.
 
-## 8. Code layout (planned)
-- `src/mp/`: shared by the server and the tests (protocol, room logic, match simulation, scoring).
-- `src/net/`: in the browser (connection, prediction, smoothing).
-- `server/`: the Worker and the Durable Object, with its own `package.json` and `wrangler.toml`.
-- Rule: multiplayer code must not change `src/physics/` or `src/aircraft/`.
+## 8. Code layout and measurements
+- **`src/mp/` (checkpoint 1; shared by the server and the tests):**
+  - `netConfig.js`: every timing, limit and setting;
+  - `roomCode.js`, `protocol.js`, `roomCore.js`: codes, lobby messages, the lobby;
+  - `binary.js`: the binary messages;
+  - `planeState.js`: an aircraft's exact state;
+  - `spawn.js`: where aircraft appear;
+  - `history.js`: a second of poses per aircraft;
+  - `matchCombat.js`: rounds, hits, kill credit, score;
+  - `matchSim.js`: the match.
+- **To come:**
+  - `server/`: the Worker and the Room Durable Object (checkpoint 2);
+  - `src/net/`: connection, clock, prediction and smoothing in the browser (checkpoint 3).
+- **Rule:** multiplayer code doesn't change `src/physics/` or `src/aircraft/`. The only single-player change is that
+  `startPlane` (`src/core/simulation.js`) is exported and takes a start position. The validation output is unchanged.
+- **CPU, measured on this Mac (Node), 10 Nov 2026:**
+  - four aircraft (Spitfire and Hurricane against two Bf 110s with AI gunners) on the real map: 6 ms of CPU per
+    simulated second;
+  - the room's 16 ms call takes a median 0.08 ms and at most 2 ms, against the free plan's reported 10 ms per event.
+  - Cloudflare's machines may be slower than this Mac; the margin is about five times.
 
-## 9. Testing (planned)
-- **Automated:**
-  - message encoding;
-  - prediction against the server;
-  - smoothing;
-  - hit decisions at a given delay;
-  - scoring and lobby rules;
-  - clamping of out-of-range controls;
-  - a whole simulated match over a simulated bad network.
-- **By hand:** several browser windows on one Mac against a local server, then family on different
-  home networks against a Cloudflare test deployment.
+## 9. Reused from Dawn Patrol (product owner's approval, 10 Nov 2026)
+- **Copied unchanged:** `roomCode.js`.
+- **Adapted:**
+  - `protocol.js`: no loadouts;
+  - `roomCore.js`: RAF and Luftwaffe teams and their fighters;
+  - `history.js`: velocity recorded as well;
+  - `binary.js`: this game's controls, engines and Bf 110 seat;
+  - `matchSim.js`: this game's flight model, guns, and the Bf 110's AI seat;
+  - `matchCombat.js`: this game's hit zones and damage;
+  - `spawn.js`: apron and 8,000 ft air starts;
+  - `netConfig.js`.
+- **New:** `planeState.js`.
+- **To be adapted at checkpoints 2 and 3:** the Worker and Room, and `src/net/`.
+
+## 10. Testing
+- **Automated** (`tests/mp/`, 27 tests):
+  - message encoding and clamping;
+  - the lobby rules and host settings;
+  - exact state capture;
+  - starts and respawns;
+  - the Bf 110 seat swap and the AI gunner;
+  - hits at a given delay and the 0.4 s cap;
+  - kill credit;
+  - the three ways a match ends;
+  - prediction matching the server;
+  - a 20 s match over a network with 0-100 ms delay, 10% loss and reordering.
+- **By hand:**
+  - several Chrome windows on this Mac against the local server (checkpoint 3);
+  - then the family on different home networks against a Cloudflare test deployment (checkpoint 4).

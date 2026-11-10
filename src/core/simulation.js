@@ -87,13 +87,14 @@ export function createInput(plane, throttle, rpm = START.rpm) {
 
 /**
  * Builds the aircraft and its inputs for a start mode, at the aircraft's side's start in the world. `override` changes
- * the air start's { altitude, heading, x, z } (a mission's start, D225).
+ * the air start's { altitude, heading, x, z } (a mission's start, D225), or the ground start's { x, z, heading }
+ * (multiplayer, D243).
  */
-function startPlane(ac, mode, world, override = null) {
+export function startPlane(ac, mode, world, override = null) {
   const { terrain } = world;
   const starts = world.starts(ac.side);
   if (mode === 'ground') {
-    const plane = createOnGround(ac, { ...starts.ground, terrain });
+    const plane = createOnGround(ac, { ...starts.ground, ...override, terrain });
     return { plane, input: { ...createInput(plane, 0), rpm: 1, gear: 1 } };
   }
   if (mode === 'approach') {

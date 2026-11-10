@@ -2,7 +2,7 @@
 
 Read this at the start of every session.
 
-## Current status (9 Nov 2026)
+## Current status (10 Nov 2026)
 
 - **Phase 0** (foundations and research): signed off (24 Oct 2026, D14). The game is live at
   https://mdayv261.github.io/WW2-BattleOfBritain/ (repository https://github.com/mdayv261/WW2-BattleOfBritain).
@@ -21,10 +21,45 @@ Read this at the start of every session.
   done (D234); enemy pointers (D235); checkpoint 8, the acceptance test (D236), passed.
 - **Phase 8** (controls screen, rebinding, mouse flying, warnings): signed off (10 Nov 2026, D242). Plan approved 10 Nov 2026 (D238). Checkpoint 1
   (rebinding and the Controls screen) done (D238); checkpoint 2 (mouse flying, look keys) done (D239); checkpoint 3
-  (overspeed) done (D240); checkpoint 4, the acceptance test (D242), passed. Next, Phase 9 (multiplayer), after its
-  plan.
+  (overspeed) done (D240); checkpoint 4, the acceptance test (D242), passed.
+- **Phase 9** (multiplayer): plan approved 10 Nov 2026 (D243). Checkpoint 1 (the shared core, src/mp) done (D243).
+  Next, checkpoint 2: the room server on this Mac (`wrangler dev`).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
 runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026.
+
+## Phase 9 checkpoint 1: the multiplayer core (10 Nov 2026)
+
+**Done** (D243; the design is now docs/MULTIPLAYER_SPEC.md):
+- **The match runs on the server side, tested in Node:**
+  - 2-4 players, RAF against Luftwaffe, each flown with the single-player flight model and guns at 120 steps a second;
+  - the controls come in as binary messages, 30 a second, clamped;
+  - each player gets a snapshot 30 times a second, with their own aircraft exact so the browser can predict;
+  - hits with lag compensation up to 0.4 s, kill credit within 15 s, respawn after 10 s;
+  - the match ends at the score limit, the time limit, or when a team has gone.
+- **Start and respawn:** the host chooses each: the airfield apron, or 8,000 ft 5 km from the nearest enemy.
+- **The Bf 110:** the AI gunner mans the rear gun while the player flies; on the gun (Tab) the AI pilot flies. There
+  is no other AI.
+- **The lobby:** room codes, teams, aircraft, ready flags, and the host's settings.
+
+**Tests:** 27 new (tests/mp); 2,008 pass in all. The validation output is unchanged. They cover:
+- a 20 s match over a network with random 0-100 ms delays, 10% loss and reordering, which ends within 2 m and 14 m of
+  the perfect network's flight;
+- a snapshot flown on locally with the same controls, which matches the server bit for bit.
+
+**CPU:** four aircraft (two Bf 110s with AI gunners) take 6 ms per simulated second. The worst 16 ms server call took
+2 ms, against the free plan's reported 10 ms.
+
+**Nothing to test in the browser yet.** The screens come at checkpoint 3.
+
+**Left:**
+- checkpoint 2: the Worker and the Room Durable Object, run locally with `wrangler dev`, and a smoke test with four
+  simulated players;
+- checkpoint 3: the browser side (lobby, match, prediction, smoothing);
+- checkpoint 4: a Cloudflare test deployment (with permission) and the family test.
+
+**Known issues:**
+- Cloudflare's free-plan limits are third-party figures until re-checked on Cloudflare's pages (before checkpoint 4).
+- The CPU was measured on this Mac. Cloudflare's machines may be slower; the margin is about five times.
 
 ## Phase 7 checkpoint 7: the Bf 110 rear-gun swap (10 Nov 2026)
 

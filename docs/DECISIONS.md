@@ -6643,3 +6643,63 @@ flight". The checks, with my own results:
 **Carried forward:** the known limitations in D236 (the AI Bf 109 against a single RAF fighter, D220, among them).
 
 **Next:** Phase 9 (multiplayer), after its plan.
+
+## D243. Phase 9 plan, and checkpoint 1: the multiplayer core (10 Nov 2026)
+
+**The plan** (approved by the product owner, 10 Nov 2026):
+- 2-4 players, RAF against Luftwaffe, fighters only, in private rooms with a code;
+- an authoritative room server, `bob1940-mp`, on Dawn Patrol's Cloudflare account;
+- four checkpoints: the shared core, the local server, the browser, then a Cloudflare test deployment and the
+  family test. Each deployment and push needs permission.
+
+**The product owner's decisions:**
+- **Reuse Dawn Patrol's multiplayer modules,** adapted (CLAUDE.md requires this approval). Reused so far:
+  - `roomCode.js`, copied unchanged;
+  - adapted: `protocol.js`, `roomCore.js`, `history.js`, `binary.js`, `matchSim.js`, `matchCombat.js`, `spawn.js`,
+    `netConfig.js`.
+  The list is kept in docs/MULTIPLAYER_SPEC.md §9.
+- **Match rules:** Dawn Patrol's, for 1940:
+  - a kill is credited to the last enemy to hit within 15 s;
+  - respawn after 10 s;
+  - score limits of 3, 5, 10 and 20; time limits of 5, 10, 15 and 20 min;
+  - friendly fire off by default and structural damage on by default.
+- **Start and respawn,** chosen separately by the host. This replaces the plan's start heights:
+  - "Airfield Apron": on the side's home airfield;
+  - "Air Start/Spawn": 8,000 ft, 5 km from the nearest enemy player.
+- **Aids:** every player uses their own settings. The host doesn't control them.
+- **AI only for the Bf 110's other seat:**
+  - "I want the AI ONLY for the rear gunner of the BF110 when player is the pilot, and AI pilot when the player is the
+    rear gunner."
+  - So the single-player seat swap (D234) works in multiplayer too, on the server. The plan had kept it to single
+    player.
+  - GAME_SPEC §1, §9 and §12 are updated.
+
+**Built (src/mp, tested in Node):**
+- **`planeState.js`, new:** an aircraft's exact state, captured and restored bit for bit. Browser prediction depends
+  on it. The tests cover all four fighters, in the air and on the ground, with guns firing.
+- **`binary.js`:** this game's controls, quantised and clamped:
+  - per-engine throttle, rpm, pitch switch, failure and feathering;
+  - flaps, gear, radiator, trims, brakes, emergency boost and engine management;
+  - the Bf 110's seat and its gun aim.
+  A two-player snapshot is about 1 KB.
+- **`spawn.js`:** the apron and air places:
+  - at the start, the two teams are 5 km apart over mid-Channel, facing each other, team-mates 300 m apart in line
+    abreast;
+  - on respawn, 5 km from the enemy nearest the side's own coast, on that side of them.
+  Placing team-mates opposite each other (not in four fixed slots) keeps a 1 v 1 exactly 5 km apart.
+- **`matchSim.js`:** the single-player flight model, guns, the AI gunner (Regular) and the defensive AI pilot. The AI's
+  rounds count as its player's.
+- **`matchCombat.js`:** this game's hit zones and damage, and lag compensation capped at 0.4 s.
+- **The one change to single-player code:**
+  - `startPlane` in src/core/simulation.js is exported and accepts a start position;
+  - its behaviour is unchanged: all earlier tests pass, and the validation output is unchanged (md5 c1732d9…).
+
+**Measured:** four aircraft (two of them Bf 110s with AI gunners) on the real map:
+- 6 ms of CPU per simulated second;
+- the room's 16 ms call at most 2 ms, against the free plan's reported 10 ms per event.
+This is on this Mac. Cloudflare's own limits are re-checked before checkpoint 4.
+
+**Tests:** 27 new in tests/mp; 2,008 pass in all.
+
+**No deviation from historical figures:** multiplayer uses the single-player aircraft data unchanged. With structural
+damage off, the g and diving limits are not applied, as the host's setting says.

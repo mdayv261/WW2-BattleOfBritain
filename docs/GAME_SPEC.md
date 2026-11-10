@@ -29,7 +29,7 @@ low-polygon, not photorealistic.
 | Hawker Hurricane Mk I | RAF | 1 × Rolls-Royce Merlin III | Player or AI |
 | Supermarine Spitfire Mk I | RAF | 1 × Rolls-Royce Merlin III | Player or AI |
 | Messerschmitt Bf 109 E-4 | Luftwaffe | 1 × Daimler-Benz DB 601A | Player or AI |
-| Messerschmitt Bf 110 C-4 | Luftwaffe | 2 × Daimler-Benz DB 601A | Player or AI; in single player the player may man the rear gun while an AI pilot flies (D234), otherwise it is AI-manned |
+| Messerschmitt Bf 110 C-4 | Luftwaffe | 2 × Daimler-Benz DB 601A | Player or AI; the player may man the rear gun while an AI pilot flies (D234, D243), otherwise it is AI-manned |
 | Heinkel He 111 H-3 | Luftwaffe | 2 × Junkers Jumo 211 (A-3 or D-1, to be confirmed) | AI only |
 
 The variants modelled are recorded in docs/DECISIONS.md (D9). The RAF fighters are modelled as
@@ -186,8 +186,8 @@ Every deviation from a historical or published figure is flagged to the product 
   - each aircraft's period reflector gunsight (types to be researched).
 - **Settings:** controls, graphics quality, sound volume, assists. There is one realistic mode; assists are
   optional (D16).
-- **Bf 110 crew positions:** in single player the player can swap between pilot and rear gunner. An AI pilot flies
-  while the player mans the gun (D16).
+- **Bf 110 crew positions:** the player can swap between pilot and rear gunner, in single player and multiplayer. An
+  AI pilot flies while the player mans the gun (D16, D243).
 - **Ranks:** earned by single-player kills only (D16).
 
 ## 10. Audio
@@ -202,8 +202,8 @@ Every deviation from a historical or published figure is flagged to the product 
 
 ## 12. Multiplayer
 - 2-4 human players in private rooms joined by a code. RAF against Luftwaffe. Fighters only: Hurricane,
-  Spitfire, Bf 109 and Bf 110. No AI aircraft. The Bf 110's rear gun is AI-manned, the one AI element allowed in
-  multiplayer (product owner, 24 Oct 2026, D14).
+  Spitfire, Bf 109 and Bf 110. No AI aircraft. The only AI in multiplayer is the Bf 110's other seat: an AI rear gunner while
+  the player flies, and an AI pilot while the player mans the rear gun (product owner, 10 Nov 2026, D243).
 - An authoritative room server on Cloudflare Workers + Durable Objects runs the same flight model
   for every aircraft and decides every hit. It is a separate Worker for this game on Dawn Patrol's existing
   Cloudflare account (D16).
