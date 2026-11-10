@@ -6302,6 +6302,20 @@ model's sizes; the ring's size.
     three-round belt.
   - Seen in Chrome: the tracers converge in the Revi from the nose.
 
+**Verified that the AI pilot takes control on the gun** (the product owner asked, 10 Nov 2026):
+- **Headless:** the player put the Bf 110 in a 67° bank and 17° dive, then took the gun with the stick still over.
+  - The AI rolled level within 3 s and pulled out by 6 s.
+  - It was level at 10 s, and back near the height it took over at by 20 s.
+  - Attacked by a Hurricane, it turned at no more than 1.6 g.
+- **In Chrome** (Bf 110 against two Hurricanes, the joystick connected): from the moment of the swap the throttle,
+  heading and height were the AI's.
+  - The throttle went from the player's 100% to the AI's speed-holding setting.
+  - It turned from 315° to 262° as the Hurricanes came in, then held its 7° "attacker below" descent.
+- **Found and fixed:** the defensive pilot lacked the ground avoidance every other AI pilot has (`keepClear`, which
+  also keeps the diving limit). With an attacker held below, it would have gone on descending.
+  - It now has `keepClear`.
+  - Its "attacker below" descent stops 1,000 m above the ground (`DEFENCE.floor`, game design).
+
 **The MG 15 out of ammunition** (the product owner, 10 Nov 2026): with the player on the gun and its drum empty, the
 message line shows "MG15 OUT OF AMMO! CHANGING DRUMS" as a warning (white on a see-through red ground, D232) while the
 drum is changed. With no drums left it shows "MG15 OUT OF AMMO! NO DRUMS LEFT" (added, as "changing drums" would then
@@ -6310,6 +6324,7 @@ be untrue). In the pilot's seat the AI gunner changes his drums without a messag
 **Tests:**
 - new tests/render/tracers.test.js;
 - tests/ui/damageReports.test.js: the out-of-ammunition warning;
+- tests/ai/defensive.test.js: no descent below the floor, and clear of the ground;
 - tests/ai/gunner.test.js: the fins can't be hit while dead astern still reaches 0°; the 110's nose belt one tracer
   in four, the 109's without;
 - new tests/core/crewSeat.test.js;

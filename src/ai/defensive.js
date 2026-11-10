@@ -2,13 +2,14 @@
 // product owner's choice). Never above 2 g, so the gunner can still aim (D78), and never with the nose guns:
 //   - an enemy fighter within THREAT_RANGE, in the rear half or closing: a gentle turn that brings it round towards dead
 //     astern, where the gun bears (±30° about the tail, S25), and a shallow descent when it is below the horizontal
-//     (the gun cannot fire below it), so that it rises into the arc;
+//     (the gun cannot fire below it), so that it rises into the arc, down to DEFENCE.floor above the ground;
 //   - otherwise, on an escort mission, the escort's station on the raid's leader (a mile behind and above, S38);
 //   - else straight and level on the heading and height he took over at, or had when the last threat passed.
-// He sees enemies one reaction time late, as every AI pilot does (src/ai/perception.js). The figures are game design.
+// He sees enemies one reaction time late, as every AI pilot does (src/ai/perception.js), and keeps clear of the ground
+// and within the diving limit as every AI pilot does (src/ai/basic.js keepClear). The figures are game design.
 
 import { Vector3 } from 'three';
-import { Pilot } from './basic.js';
+import { Pilot, keepClear } from './basic.js';
 import { seen } from './perception.js';
 import { anglesOf } from '../weapons/mounts.js';
 import { common } from '../aircraft/common.js';
@@ -19,7 +20,8 @@ export const DEFENCE = {
   turnAway: 0.5, // rad: the heading change asked for, each decision, to bring the attacker astern
   astern: 15 * (Math.PI / 180), // rad: an attacker this close to dead astern needs no more turning
   belowGun: 5 * (Math.PI / 180), // rad: an attacker lower than this above the horizontal brings a descent...
-  descent: -0.12, // ...of this slope (about 7°)
+  descent: -0.12, // ...of this slope (about 7°)...
+  floor: 1000, // m above the ground: ...but never below this height
   gMax: 2, // the gunner cannot aim above 2 g (D78)
   maxBank: 1.0, // rad (about 57°: a level turn at 2 g needs 60°)
   speed: 120, // m/s
@@ -33,11 +35,17 @@ export class DefensivePilot extends Pilot {
     this.raid = options.raid ?? null; // an escort mission's raid: its leader's station is kept
   }
 
+  /** His goal, kept clear of the ground and within the diving limit, as every AI pilot's (src/ai/basic.js). */
   decide(craft, sim) {
+    return keepClear(craft, sim, this.choose(craft, sim));
+  }
+
+  choose(craft, sim) {
     const threat = this.threat(craft, sim);
     if (threat) {
       this.hold = null; // once it has passed, hold the heading and height he is at then
-      return this.defend(craft, threat);
+      const ground = sim.world.terrain.surfaceAt(craft.plane.body.position.x, craft.plane.body.position.z).height;
+      return this.defend(craft, threat, craft.plane.body.position.y - ground > DEFENCE.floor);
     }
     const leader = this.raid?.bombers.find((c) => sim.others.includes(c) && !c.abandoned);
     if (leader) return this.station(craft, leader);
@@ -63,13 +71,13 @@ export class DefensivePilot extends Pilot {
     return best;
   }
 
-  /** Turn to bring the attacker astern; descend if he is below the gun's arc. */
-  defend(craft, threat) {
+  /** Turn to bring the attacker astern; descend if he is below the gun's arc and there is height to spare (`high`). */
+  defend(craft, threat, high) {
     const { heading } = attitude(craft.plane);
     const offAstern = Math.PI - Math.abs(threat.az);
     // An attacker on the right (az > 0) comes round towards the tail as we turn left, and the other way about.
     const h = offAstern < DEFENCE.astern ? heading : heading + (threat.az > 0 ? -1 : 1) * DEFENCE.turnAway;
-    const climb = threat.el < DEFENCE.belowGun ? DEFENCE.descent : 0;
+    const climb = threat.el < DEFENCE.belowGun && high ? DEFENCE.descent : 0;
     const direction = new Vector3(Math.sin(h), climb, -Math.cos(h)).normalize();
     return { direction, gMax: DEFENCE.gMax, maxBank: DEFENCE.maxBank, speed: DEFENCE.speed };
   }

@@ -54,6 +54,20 @@ describe('the defensive pilot', () => {
     expect(below()).toBeLessThan(before - 30);
   });
 
+  it('never descends below 1,000 m above the ground for an attacker below, and keeps clear of the ground', () => {
+    const { sim } = attacked(new Vector3(-600, -150, 0));
+    sim.plane.body.position.y = DEFENCE.floor + 50;
+    sim.others[0].plane.body.position.y = DEFENCE.floor - 100; // still below and behind
+    const y0 = sim.plane.body.position.y;
+    let lowest = y0;
+    for (let i = 0; i < 120 * 20; i += 1) {
+      sim.step(DT);
+      lowest = Math.min(lowest, sim.plane.body.position.y);
+    }
+    expect(lowest).toBeGreaterThan(DEFENCE.floor - 100);
+    expect(sim.crashed).toBe(false);
+  });
+
   it('with no enemy, holds heading and height', () => {
     const sim = new Simulation(aircraftById.bf110c4, 'air');
     swapSeat(sim);
