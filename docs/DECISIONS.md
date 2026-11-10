@@ -6156,3 +6156,41 @@ Neither warning was period equipment; both are off by default.
   engine management, both warnings and their thresholds, the stall warning in a hard pull;
 - tests/core/gameState.test.js: settings from the pause menu and back, assists at once and on each new flight, the
   results line.
+
+## D233. Phase 7 checkpoint 6b: the 3D cockpit sides, seat and rear (10 Nov 2026)
+
+**What was built** (new src/render/cockpitInterior.js; D224: the 2D panels stay as the forward view): for the
+Hurricane, Spitfire, Bf 109 and Bf 110, simple low-polygon 3D parts round the pilot. They are seen when he looks away
+from the panel.
+- **Side walls** from the panel (0.62 m ahead of the eye) back to the bulkhead, up to the sill: the canopy glazing's
+  lower edge in each model.
+  - A dark rail runs along the sill, with ribs every 0.26 m.
+  - A console runs along each wall, with the throttle lever on the left.
+- **Seat back and headrest,** both kept below the eye. The view turns about the eye, and a pilot could lean his head
+  but the camera can't, so a headrest at head height hid the whole view astern. It was lowered after the first look in
+  Chrome.
+- **The floor,** and a **bulkhead** 0.42 m behind the eye, shaped as the fuselage section there.
+- **The player's own fuselage behind the bulkhead** is now drawn from the cockpit, clipped at the bulkhead
+  (src/render/testView.js; `renderer.localClippingEnabled`).
+  - Looking back shows the spine, the rear glazing and the tail: the fin, or the Bf 110's twin fins.
+  - Until now the whole fuselage, tail included, was hidden in the cockpit view (D28).
+  - Each model has its own materials, so other aircraft are unaffected.
+- **Colours:** the walls are dark grey-green for the RAF and dark grey for the Luftwaffe, in the tones of the 2D
+  panels' interiors.
+- **Unchanged:** the front view with the 2D panel.
+
+**Estimates, flagged:** every size (panel distance, seat, headrest, bulkhead and floor positions, wall inset, ribs and
+consoles). There are no cockpit drawings among the sources. The shapes come from each model's fuselage sections and
+eye position. The product owner may supply pictures to refine them, as for the panels.
+
+**Checked in Chrome:**
+- the Spitfire looking back (the fin above the bulkhead) and looking left (the throttle lever, ribs, and the rear
+  fuselage with its roundel beyond the sill);
+- the Bf 109 looking back (the spine to the fin and tailplane);
+- the Bf 110 looking back (the twin fins, the right wing and engine beside).
+- 75 fps; no console errors.
+
+**Closes** the PROGRESS known issue "looking sideways shows the canopy frame but no cockpit sides".
+
+**Tests:** new tests/render/cockpitInterior.test.js. For each flyable aircraft: the parts are there, inside the
+fuselage's width, between the bulkhead and the panel, with the sill below the eye and the bulkhead behind the seat.

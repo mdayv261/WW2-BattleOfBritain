@@ -126,6 +126,7 @@ export function createScene(container, terrain = null) {
   // A logarithmic depth buffer keeps the cockpit frame (centimetres away) and distant land both sharp.
   const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // the graphics level may lower it (D232)
+  renderer.localClippingEnabled = true; // the player's own fuselage is clipped at the cockpit's bulkhead (D233)
   renderer.setSize(window.innerWidth, window.innerHeight);
   container.appendChild(renderer.domElement);
 

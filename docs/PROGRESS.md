@@ -16,10 +16,21 @@ Read this at the start of every session.
   (D220).
 - **Phase 7** (missions and the game loop): plan approved 8 Nov 2026 (D224). Checkpoint 1 (menus and the game loop)
   done (D225); checkpoint 2 (interception, escort, friendly wingmen) done (D227), the raid missions halved in length
-  (D228); checkpoint 3 (ranks) done (D229); checkpoint 4 (the RAF radar display) done (D230); checkpoint 5 (sound) done (D231); checkpoint 6a
-  (settings, assists, HUD) done (D232); next, 6b (3D cockpit sides).
+  (D228); checkpoint 3 (ranks) done (D229); checkpoint 4 (the RAF radar display) done (D230); checkpoint 5 (sound) done (D231); checkpoint 6
+  done: 6a settings, assists, HUD (D232), 6b 3D cockpit sides (D233); next, checkpoint 7 (the Bf 110 rear-gun swap),
+  after its plan.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
-runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026.
+runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 is local, not pushed.
+
+## Phase 7 checkpoint 6b: 3D cockpit sides (10 Nov 2026)
+
+**Done** (D233): in the four flyable aircraft, looking away from the panel shows simple 3D cockpit walls, sills, ribs
+and consoles, the seat and headrest, a bulkhead, and behind it the aircraft's own rear fuselage and tail. All sizes
+are estimates.
+
+**Tests:** 1,936 pass; the validation output is unchanged. 75 fps in Chrome.
+
+**Left in Phase 7:** checkpoint 7 (the Bf 110 swap) and 8 (the acceptance test).
 
 ## Phase 7 checkpoint 6a: settings, assists, HUD (10 Nov 2026)
 
@@ -35,7 +46,7 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 - Not checked in the browser: the warnings (the joystick held the stick), and the frame-rate gain of Low (75 fps
   either way on this Mac).
 
-**Left in Phase 7:** 6b (3D cockpit sides), 7 (the Bf 110 swap), 8 (the acceptance test).
+**Left in Phase 7:** 6b (3D cockpit sides; done, above), 7 (the Bf 110 swap), 8 (the acceptance test).
 
 ## Phase 7 checkpoint 5: sound (9 Nov 2026)
 
