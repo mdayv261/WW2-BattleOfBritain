@@ -6050,6 +6050,10 @@ eight rounds into one frame every three or four frames. The first cap of 4 sound
   rounds/min), as real guns weren't locked together.
 - Measured afterwards: 149 sounds a second for the Spitfire's 147 rounds a second.
 
+**The product owner's first listen (10 Nov 2026):** the player's engine was a bit too loud and is halved (engine
+and exhaust voices). The player's machine guns are 50% louder, the cannon 75% louder. Other aircraft keep their
+levels, since their engines fade with distance anyway.
+
 **Game design, flagged:** the 1,500 m hearing range, the 6-aircraft cap, the 50 ms scatter, and every loudness and tone
 curve. They are tuned by ear, not measured data.
 

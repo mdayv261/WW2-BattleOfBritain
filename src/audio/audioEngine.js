@@ -18,7 +18,9 @@ const SOUND_KEY = 'bob1940.sound';
 const MAX_SHOTS = 8; // rounds played per gun group per frame (a volley of eight Brownings; about 150 a second)
 const SPREAD = 0.05; // s over which a volley's cracks are scattered (one Browning's interval at 1,100 rounds/min)
 const SMOOTH = 0.05; // s: the time constant of every level and pitch change
-const LEVEL = { master: 0.8, engine: 0.32, exhaust: 0.12, wind: 0.5, mg: 0.22, cannon: 0.45, hit: 0.6, other: 0.35, otherShot: 0.3 };
+// The product owner's first listen (10 Nov 2026): the engine halved (0.32 and 0.12 before), the machine guns half as
+// loud again (0.22) and the cannon three-quarters louder (0.45).
+const LEVEL = { master: 0.8, engine: 0.16, exhaust: 0.06, wind: 0.5, mg: 0.33, cannon: 0.7875, hit: 0.6, other: 0.35, otherShot: 0.3 };
 
 /** Sound on or off as last chosen in this browser (on unless switched off). */
 function savedEnabled() {
