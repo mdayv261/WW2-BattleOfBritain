@@ -15,7 +15,10 @@
     "handling": "node scripts/handling.mjs",
     "duels": "node scripts/duels.mjs",
     "build:terrain": "node scripts/buildTerrain.mjs",
-    "build:features": "node scripts/buildFeatures.mjs"
+    "build:features": "node scripts/buildFeatures.mjs",
+    "mp:setup": "npm --prefix server install --no-audit --no-fund",
+    "mp:server": "npm --prefix server run dev",
+    "mp:smoke": "node scripts/mpSmoke.mjs"
   },
   "dependencies": {
     "three": "0.186.1"

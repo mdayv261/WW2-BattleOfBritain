@@ -68,13 +68,22 @@ export class MatchSim {
 
   /** A player takes part (at the start, or joining or rejoining mid-match): spawns at once. p: { id, slot, name, team, aircraft }. */
   addPlayer(p, { start = false } = {}) {
-    if (this.players.has(p.id)) return;
-    const pilot = { ...p, ac: aircraftFor(p.aircraft, this.settings), inputs: new Map(), last: null, viewTick: 0, heard: 0, spawn: 0, respawnAt: null, lead: 0 };
-    this.players.set(p.id, pilot);
-    this.roster.set(p.id, { id: p.id, name: p.name, team: p.team, aircraft: p.aircraft });
-    this.combat.addPilot(pilot, this.tallies.get(p.id));
-    this.tallies.set(p.id, pilot.tally);
-    this.spawn(pilot, start ? this.settings.start : this.settings.respawn, start);
+    this.addPlayers([p], { start });
+  }
+
+  /** Several players at once: all join before any spawns, so an air start lines up each whole team. */
+  addPlayers(list, { start = false } = {}) {
+    const fresh = [];
+    for (const p of list) {
+      if (this.players.has(p.id)) continue;
+      const pilot = { ...p, ac: aircraftFor(p.aircraft, this.settings), inputs: new Map(), last: null, viewTick: 0, heard: 0, spawn: 0, respawnAt: null, lead: 0 };
+      this.players.set(p.id, pilot);
+      this.roster.set(p.id, { id: p.id, name: p.name, team: p.team, aircraft: p.aircraft });
+      this.combat.addPilot(pilot, this.tallies.get(p.id));
+      this.tallies.set(p.id, pilot.tally);
+      fresh.push(pilot);
+    }
+    for (const pilot of fresh) this.spawn(pilot, start ? this.settings.start : this.settings.respawn, start);
   }
 
   removePlayer(id) {

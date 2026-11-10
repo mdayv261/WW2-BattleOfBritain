@@ -50,6 +50,15 @@ describe('starts and respawns', () => {
     expect(nose('p2').dot(a.clone().sub(b))).toBeGreaterThan(0);
   });
 
+  it('with two a side, team-mates start 300 m apart in line abreast, each 5 km opposite an enemy', () => {
+    const m = new MatchSim({ settings: { ...DEFAULT_SETTINGS }, world });
+    m.addPlayers([ann, max, { ...ann, id: 'p3', slot: 3, name: 'Bob' }, { ...max, id: 'p4', slot: 4, name: 'Udo' }], { start: true });
+    expect(flat(pos(m, 'p1'), pos(m, 'p3'))).toBeCloseTo(300, 0);
+    expect(flat(pos(m, 'p2'), pos(m, 'p4'))).toBeCloseTo(300, 0);
+    expect(flat(pos(m, 'p1'), pos(m, 'p2'))).toBeCloseTo(5000, 0);
+    expect(flat(pos(m, 'p3'), pos(m, 'p4'))).toBeCloseTo(5000, 0);
+  });
+
   it('an apron start puts each side on its own home airfield, at rest', () => {
     const m = match({ start: 'apron' });
     run(m, 2);

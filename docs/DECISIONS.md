@@ -6703,3 +6703,51 @@ This is on this Mac. Cloudflare's own limits are re-checked before checkpoint 4.
 
 **No deviation from historical figures:** multiplayer uses the single-player aircraft data unchanged. With structural
 damage off, the g and diving limits are not applied, as the host's setting says.
+
+## D244. Phase 9 checkpoint 2: the room server on this Mac (10 Nov 2026)
+
+**Built** (`server/`; Dawn Patrol's server, adapted with the product owner's approval):
+- **The Worker, `bob1940-mp`:**
+  - `GET /health`, `POST /rooms` (a fresh room code) and `GET /rooms/CODE` (a WebSocket into the room);
+  - only the game's own pages may connect: GitHub Pages, and localhost for testing;
+  - no request logs.
+- **The Room Durable Object:**
+  - holds the lobby and the sockets, keeps a dropped player's place for 60 s, and passes the host role on;
+  - runs the match timer: 120 ticks a second, and 30 snapshots a second to each player;
+  - sends the results and returns everyone to the lobby after 20 s.
+- **The map:** single player's terrain file, bundled into the Worker, so the server has the same ground, sea, coast and
+  airfields.
+- **The front door's request handling is in `frontDoor.js`, apart from the Worker's entry,** so the tests can load it
+  without the bundler. Dawn Patrol keeps them in one file.
+
+**Choices, with reasons:**
+- **Air starts are worked out in the lobby.**
+  - Single player's air start finds each fighter's full-power level speed once, then keeps it. This took 100-200 ms of
+    CPU per type, measured.
+  - On a freshly started server, a four-type match took 563 ms to start, and the room froze for that time.
+  - The room now works this out as fighters are chosen, so the start takes about 20-40 ms (measured with the smoke
+    test on a cold server).
+- **Players at the start are spawned together** (`MatchSim.addPlayers`), so an air start lines up each whole team:
+  - team-mates 300 m apart in line abreast;
+  - each one 5 km opposite an enemy.
+  A player who joins or rejoins mid-match takes the respawn setting.
+- **wrangler 4.143.1:** the same version Dawn Patrol uses. It is installed into `server/` only (`npm run mp:setup`),
+  so the game's own build doesn't change.
+
+**Cloudflare's own limit pages** (read 10 Nov 2026; this replaces the third-party figures in D243):
+- free-plan Workers: 10 ms of CPU per request, 100,000 requests a day, a 64 MiB uncompressed size, and 1 s to start;
+- SQLite Durable Objects (the free plan's kind): 30 s of CPU per request or WebSocket message, reset by each message.
+  The page also says Durable Objects follow the Workers plan's limits, so which limit applies is confirmed at the test
+  deployment (checkpoint 4).
+- **This Worker:** 2.1 MB (496 KB compressed, wrangler's dry run, which deploys nothing); its modules load in about
+  40 ms. A room's 16 ms call takes at most 2 ms with four aircraft (D243), within either limit.
+
+**Checked:**
+- 14 new tests (42 in tests/mp; 2,023 in all). The validation output is unchanged.
+- `npm run mp:smoke` against `npm run mp:server` passes all its checks: four players (Spitfire, Hurricane, Bf 109,
+  Bf 110) create, join, choose and start. Each gets 29 snapshots a second with the three others. Ann's controls make
+  her climb and fire, and Max is told of her 416 rounds. With Udo on the Bf 110's rear gun, the AI pilot holds its
+  height within 3 m. The host ends the match, everyone gets the results and the lobby, and the host role passes on
+  when Ann leaves.
+
+**No deviation from historical figures.** Nothing deployed and no account used.

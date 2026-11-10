@@ -10,7 +10,7 @@
 // The starts themselves are single player's (src/core/simulation.js startPlane), so they are the validated ones.
 
 import { toWorld } from '../world/geo.js';
-import { startPlane } from '../core/simulation.js';
+import { startPlane, fullPowerStart } from '../core/simulation.js';
 import { AIR_SPAWN } from './netConfig.js';
 
 const DEG = Math.PI / 180;
@@ -60,4 +60,13 @@ export function spawnPoint(world, team, index, { where, enemies = [], start = fa
 export function spawnAircraft(ac, world, point) {
   const override = point.mode === 'air' ? { altitude: point.altitude, heading: point.heading, x: point.x, z: point.z } : { x: point.x, z: point.z, heading: point.heading };
   return startPlane(ac, point.mode, world, override);
+}
+
+/**
+ * Works out, ahead of time, the full-power level speed an air start at 8,000 ft gives aircraft `ac`. Single player's
+ * start solves it once per type and keeps it (100-200 ms each, measured); the room server asks while players are still
+ * choosing in the lobby, so the match's first moment does not stall.
+ */
+export function prepareAirStart(ac) {
+  fullPowerStart(ac, AIR_SPAWN.altitude);
 }

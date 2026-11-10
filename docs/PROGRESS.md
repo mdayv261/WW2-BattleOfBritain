@@ -22,10 +22,35 @@ Read this at the start of every session.
 - **Phase 8** (controls screen, rebinding, mouse flying, warnings): signed off (10 Nov 2026, D242). Plan approved 10 Nov 2026 (D238). Checkpoint 1
   (rebinding and the Controls screen) done (D238); checkpoint 2 (mouse flying, look keys) done (D239); checkpoint 3
   (overspeed) done (D240); checkpoint 4, the acceptance test (D242), passed.
-- **Phase 9** (multiplayer): plan approved 10 Nov 2026 (D243). Checkpoint 1 (the shared core, src/mp) done (D243).
-  Next, checkpoint 2: the room server on this Mac (`wrangler dev`).
+- **Phase 9** (multiplayer): plan approved 10 Nov 2026 (D243). Checkpoint 1 (the shared core, src/mp) done (D243);
+  checkpoint 2 (the room server on this Mac) done (D244). Next, checkpoint 3: the browser side.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
-runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026.
+runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026. D243 pushed on 10 Nov 2026 (run 42786653850).
+
+## Phase 9 checkpoint 2: the room server on this Mac (10 Nov 2026)
+
+**Done** (D244):
+- **The room server** (`server/`, from Dawn Patrol's) runs on this Mac:
+  - `npm run mp:setup` once, to install Cloudflare's wrangler into server/;
+  - then `npm run mp:server` serves it at http://localhost:8787.
+- **The smoke test** (`npm run mp:smoke`): four scripted players (Spitfire, Hurricane, Bf 109 and Bf 110) go through a
+  whole room: create, join, choose, start, fly and fire, the Bf 110's player on the rear gun with the AI pilot flying,
+  the results, the lobby, and the host passing on. All its checks pass.
+- **A quick match start:** each fighter's 8,000 ft air start is worked out in the lobby. A fresh server took 563 ms to
+  start a match before this, and now takes about 20-40 ms.
+
+**Tests:** 14 new (42 in tests/mp); 2,023 pass in all. The validation output is unchanged.
+
+**Nothing to test in the browser yet.** Optionally, run `npm run mp:server` in one terminal and `npm run mp:smoke` in
+another.
+
+**Left:**
+- checkpoint 3: the browser side (the Multiplayer menu, lobby, match, prediction and smoothing);
+- checkpoint 4: a Cloudflare test deployment (with permission) and the family test.
+
+**Known issues:**
+- Cloudflare's pages give two CPU limits that could apply to the room (10 ms for a free Worker, 30 s for a Durable
+  Object). The room's 16 ms call takes at most 2 ms, so either should do. Checkpoint 4's deployment confirms it.
 
 ## Phase 9 checkpoint 1: the multiplayer core (10 Nov 2026)
 

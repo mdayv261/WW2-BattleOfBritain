@@ -1,7 +1,9 @@
 # Multiplayer Specification: RAF against Luftwaffe
 
-Status: **design, Phase 9 (10 Nov 2026, D243).** Checkpoint 1, the shared core in `src/mp/`, is built and tested.
-The server (checkpoint 2), the browser side (checkpoint 3) and the Cloudflare deployment (checkpoint 4) follow.
+Status: **design, Phase 9 (10 Nov 2026, D243, D244).** Built and tested so far:
+- checkpoint 1: the shared core in `src/mp/`;
+- checkpoint 2: the room server in `server/`, run on this Mac.
+The browser side (checkpoint 3) and the Cloudflare deployment (checkpoint 4) follow.
 The design is Dawn Patrol's working multiplayer, adapted for 1940 with the product owner's approval (§9).
 
 ## 1. Goal and rules
@@ -24,8 +26,14 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
 - **An authoritative room server:** a separate Worker, `bob1940-mp`, on Dawn Patrol's existing Cloudflare account
   (D16), with one Durable Object per room. Browsers send only their controls.
 - **The game itself** stays on GitHub Pages.
-- **Cost:** the room's step for four aircraft was measured at checkpoint 1 (§8). Cloudflare's free-plan limits are
-  re-checked on Cloudflare's own pages before checkpoint 4.
+- **Cost:** the room's step for four aircraft was measured at checkpoint 1 (§8).
+- **Cloudflare's own limit pages** (read 10 Nov 2026):
+  - a free-plan Worker gets 10 ms of CPU per request and 100,000 requests a day;
+  - a Durable Object of the SQLite kind (the free plan's) gets 30 s of CPU per request or WebSocket message, and each
+    message resets it. The same page also says Durable Objects follow the Workers plan's limits, so the deployment at
+    checkpoint 4 is the real check;
+  - a Worker may be 64 MiB uncompressed and must start within 1 s. This one is 2.1 MB (0.5 MB compressed), and its
+    modules load in about 40 ms.
 
 ## 3. Network design
 - **Ticks:** the server steps every aircraft at 120 Hz with the single-player simulation code (`stepAircraft`,
@@ -123,9 +131,14 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
   - `history.js`: a second of poses per aircraft;
   - `matchCombat.js`: rounds, hits, kill credit, score;
   - `matchSim.js`: the match.
-- **To come:**
-  - `server/`: the Worker and the Room Durable Object (checkpoint 2);
-  - `src/net/`: connection, clock, prediction and smoothing in the browser (checkpoint 3).
+- **`server/` (checkpoint 2):**
+  - `worker.js`: the Worker, with the map's heights bundled in;
+  - `frontDoor.js`: `/health`, `POST /rooms` and the room WebSocket, for the game's own pages only;
+  - `room.js`: the Room Durable Object, holding the lobby, the sockets and the match timer;
+  - `wrangler.toml`: Worker `bob1940-mp`, no logs.
+  The npm scripts are `mp:setup` (installs wrangler 4.143.1 into server/), `mp:server` (runs it at
+  http://localhost:8787) and `mp:smoke` (four scripted players).
+- **To come:** `src/net/`: connection, clock, prediction and smoothing in the browser (checkpoint 3).
 - **Rule:** multiplayer code doesn't change `src/physics/` or `src/aircraft/`. The only single-player change is that
   `startPlane` (`src/core/simulation.js`) is exported and takes a start position. The validation output is unchanged.
 - **CPU, measured on this Mac (Node), 10 Nov 2026:**
@@ -133,6 +146,8 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
     simulated second;
   - the room's 16 ms call takes a median 0.08 ms and at most 2 ms, against the free plan's reported 10 ms per event.
   - Cloudflare's machines may be slower than this Mac; the margin is about five times.
+  - The first air start of each fighter type on a server takes 100-200 ms to work out its full-power speed. The room
+    works this out in the lobby, as fighters are chosen, so the match starts within about 40 ms.
 
 ## 9. Reused from Dawn Patrol (product owner's approval, 10 Nov 2026)
 - **Copied unchanged:** `roomCode.js`.
@@ -146,10 +161,15 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
   - `spawn.js`: apron and 8,000 ft air starts;
   - `netConfig.js`.
 - **New:** `planeState.js`.
-- **To be adapted at checkpoints 2 and 3:** the Worker and Room, and `src/net/`.
+- **Adapted at checkpoint 2:**
+  - `server/worker.js`, split into `worker.js` and `frontDoor.js`;
+  - `server/room.js`: this game's map, the start and respawn settings, air starts prepared in the lobby;
+  - `scripts/mpSmoke.mjs`: four players, with the Bf 110's rear gun;
+  - `tests/mp/server.test.js` and `tests/mp/fakes.js`.
+- **To be adapted at checkpoint 3:** `src/net/`.
 
 ## 10. Testing
-- **Automated** (`tests/mp/`, 27 tests):
+- **Automated** (`tests/mp/`, 42 tests):
   - message encoding and clamping;
   - the lobby rules and host settings;
   - exact state capture;
@@ -159,7 +179,10 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
   - kill credit;
   - the three ways a match ends;
   - prediction matching the server;
-  - a 20 s match over a network with 0-100 ms delay, 10% loss and reordering.
+  - a 20 s match over a network with 0-100 ms delay, 10% loss and reordering;
+  - the room server: joining, rejoining, drops, the host passing on, bad messages, a match with its snapshots and
+    controls, the apron start and a mid-match rejoin, the end of a match, and the front door's checks.
+- **The smoke test** (`npm run mp:smoke` against `npm run mp:server`): four players in a real local server.
 - **By hand:**
   - several Chrome windows on this Mac against the local server (checkpoint 3);
   - then the family on different home networks against a Cloudflare test deployment (checkpoint 4).
