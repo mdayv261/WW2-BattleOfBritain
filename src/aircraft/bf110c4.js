@@ -87,14 +87,15 @@ export const bf110c4 = {
     brake: 0.3,
   },
   // Guns (Phase 5, D67): type, muzzle position in body axes (m; estimates placed on the airframe: no drawing found) and
-  // rounds. Four MG 17 and two MG FF/M in the nose, clear of the airscrews; belts as D61. One 60-round drum per cannon
+  // rounds. Four MG 17 and two MG FF/M in the nose, clear of the airscrews; belts as D61, the MG 17s' with a tracer in
+  // four (the product owner's wish, D234: not a 1940 belt). One 60-round drum per cannon
   // (drum changes by the radio operator come with the crew in Phase 6).
   harmonisation: 200, // m: range at which the guns' rounds cross the sight line
   guns: {
-    mg17UpperLeft: { type: 'mg17', x: 4.3, y: 0.18, z: -0.1, rounds: 1000 },
-    mg17UpperRight: { type: 'mg17', x: 4.3, y: 0.18, z: 0.1, rounds: 1000 },
-    mg17LowerLeft: { type: 'mg17', x: 4.25, y: 0.05, z: -0.22, rounds: 1000 },
-    mg17LowerRight: { type: 'mg17', x: 4.25, y: 0.05, z: 0.22, rounds: 1000 },
+    mg17UpperLeft: { type: 'mg17', belt: 'mg17Tracer', x: 4.3, y: 0.18, z: -0.1, rounds: 1000 },
+    mg17UpperRight: { type: 'mg17', belt: 'mg17Tracer', x: 4.3, y: 0.18, z: 0.1, rounds: 1000 },
+    mg17LowerLeft: { type: 'mg17', belt: 'mg17Tracer', x: 4.25, y: 0.05, z: -0.22, rounds: 1000 },
+    mg17LowerRight: { type: 'mg17', belt: 'mg17Tracer', x: 4.25, y: 0.05, z: 0.22, rounds: 1000 },
     cannonLeft: { type: 'mgffm', x: 3.6, y: -0.45, z: -0.15, rounds: 60 },
     cannonRight: { type: 'mgffm', x: 3.6, y: -0.45, z: 0.15, rounds: 60 },
   },
@@ -142,9 +143,13 @@ export const bf110c4 = {
   // nose, + right, aft = 180; elevation + up), drums (the one on the gun and the spares). S25: about 30° either side of
   // the centre line, up to 60°, nothing below the horizontal; 10 spare 75-round magazines. Position an estimate; the
   // canopy is taken as open in combat. `muzzle`: the muzzle's distance from the pivot along the bore, where the rounds
-  // leave (D234; an estimate).
+  // leave (D234; an estimate). `tailClearance`: where the twin fins stand in the arc, the gun is kept high enough that
+  // its rounds pass over them (D234; worked out from the model's fins, an estimate).
   mounts: {
-    rear: { type: 'mg15', gunner: 1, x: -1.2, y: 0.9, z: 0, azimuth: [150 * DEG, 210 * DEG], elevation: [0 * DEG, 60 * DEG], drums: 11, muzzle: 0.75 },
+    rear: {
+      type: 'mg15', gunner: 1, x: -1.2, y: 0.9, z: 0, azimuth: [150 * DEG, 210 * DEG], elevation: [0 * DEG, 60 * DEG], drums: 11, muzzle: 0.75,
+      tailClearance: [{ azimuth: [151 * DEG, 162 * DEG], elevation: 6 * DEG }, { azimuth: [198 * DEG, 209 * DEG], elevation: 6 * DEG }],
+    },
   },
   // Reflector gunsight: type and the angular diameter of its ring (an estimate, see AIRCRAFT_DATA.md).
   sight: { type: 'Revi C/12C', ringMils: 100 },

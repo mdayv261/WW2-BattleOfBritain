@@ -61,9 +61,15 @@ export const roundTypes = {
   heTracer20: { shows: 'tracer', burn: 1.8, strength: 5, he: true }, // 20 mm tracer burns about 1.8 s (S40)
 };
 
-/** Belts that repeat a sequence of rounds (D61). RAF guns each carry one kind of round, set per gun (S38). */
+/**
+ * Belts that repeat a sequence of rounds (D61), by gun type unless a gun names its own (`belt`). RAF guns each carry one
+ * kind of round, set per gun (S38).
+ */
 export const belts = {
   mg17: ['ap792', 'incendiary792', 'observing792'],
   mg15: ['ap792', 'incendiary792', 'tracer792'], // the MG 17's mix with a tracer in place of the observing round (D83)
+  // The Bf 110's nose MG 17s: the MG 17's mix with a tracer in four, so their fire can be seen (the product owner's wish,
+  // D234; not a documented 1940 belt).
+  mg17Tracer: ['ap792', 'incendiary792', 'observing792', 'tracer792'],
   mgffm: ['heIncendiary20', 'heTracer20'],
 };

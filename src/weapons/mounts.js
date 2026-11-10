@@ -32,10 +32,16 @@ export function anglesOf(dir) {
   return { az: Math.atan2(dir.z, dir.x), el: Math.asin(Math.max(-1, Math.min(1, dir.y / len))) };
 }
 
-/** The lowest elevation (rad) the gun can take at azimuth `az`: the dorsal gun clears the cabin only high up forward. */
+/**
+ * The lowest elevation (rad) the gun can take at azimuth `az`: the dorsal gun clears the cabin only high up forward, and
+ * the Bf 110's MG 15 is kept above its own fins where they stand in its arc (`tailClearance`, D234).
+ */
 function lowest(spec, az) {
-  const forward = Math.cos(az) > 0;
-  return forward && spec.forwardMinElevation !== undefined ? Math.max(spec.elevation[0], spec.forwardMinElevation) : spec.elevation[0];
+  let low = spec.elevation[0];
+  if (Math.cos(az) > 0 && spec.forwardMinElevation !== undefined) low = Math.max(low, spec.forwardMinElevation);
+  const a = ((az % TWO_PI) + TWO_PI) % TWO_PI;
+  for (const c of spec.tailClearance ?? []) if (a >= c.azimuth[0] && a <= c.azimuth[1]) low = Math.max(low, c.elevation);
+  return low;
 }
 
 /** Whether a direction (azimuth and elevation, rad) lies inside a gun's arc. */

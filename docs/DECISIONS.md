@@ -6286,8 +6286,26 @@ model's sizes; the ring's size.
   - every tracer streak was drawn a fixed 0.025 s of flight behind its round, so just after firing it reached back
     past the gun. A streak now stops where its round left the muzzle (all guns).
 
+**After the product owner's next flight (10 Nov 2026):**
+- **The MG 15 could hit its own fins** at its lowest elevation. The real gun could not.
+  - The Bf 110's twin fins stand 2.4 m either side, 6.25-7.5 m aft, up to 1.25 m high (the model), about 21-25°
+    either side of dead astern, inside the gun's ±30°.
+  - From the muzzle, a round needs up to 5.4° of elevation to pass over them with 0.15 m to spare.
+  - Over 151-162° and 198-209° of azimuth (the fins plus a degree each side) the gun now goes no lower than 6°
+    (`mounts.rear.tailClearance`, an estimate). Elsewhere it still reaches the horizontal (S25). The AI gunner keeps to
+    it too.
+- **The nose MG 17s now fire a tracer in four** (armour-piercing, incendiary, observing, tracer), so their fire shows:
+  the product owner's wish.
+  - **Flagged:** not a documented 1940 belt; no 1940 belt mix was found.
+  - The tracer round replaces part of the incendiary effect.
+  - Only the Bf 110's nose guns have it (a gun may now name its own belt, `belt`). The Bf 109's MG 17s keep D61's
+    three-round belt.
+  - Seen in Chrome: the tracers converge in the Revi from the nose.
+
 **Tests:**
 - new tests/render/tracers.test.js;
+- tests/ai/gunner.test.js: the fins can't be hit while dead astern still reaches 0°; the 110's nose belt one tracer
+  in four, the 109's without;
 - new tests/core/crewSeat.test.js;
 - new tests/ai/defensive.test.js;
 - tests/ai/gunner.test.js gains the manned gun: the aim from the look, traverse and arc, the trigger only, drum

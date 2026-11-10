@@ -35,10 +35,10 @@ export function createArmament(ac) {
   });
 }
 
-/** The kind of the next round a gun fires: its own (RAF guns) or the next on its belt. */
+/** The kind of the next round a gun fires: its own (RAF guns) or the next on its belt (its own belt, or its type's). */
 function nextRound(gun) {
   if (gun.spec.round) return gun.spec.round;
-  const belt = belts[gun.spec.type];
+  const belt = belts[gun.spec.belt ?? gun.spec.type];
   const kind = belt[gun.belt % belt.length];
   gun.belt += 1;
   return kind;

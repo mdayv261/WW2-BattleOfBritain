@@ -223,6 +223,19 @@ describe('the player on the Bf 110\'s rear gun (D234)', () => {
     expect(released[0].distanceTo(muzzle)).toBeLessThan(1e-6);
   });
 
+  it('can\'t be aimed low enough to hit its own fins, while dead astern it still reaches the horizontal', () => {
+    const { sim, gun } = manned({ yaw: 0, pitch: 0 });
+    const DEG = Math.PI / 180;
+    for (const yaw of [-23 * DEG, 23 * DEG]) { // where the fins stand, 21-25° either side of dead astern
+      sim.gunControl.aim = gunnerAim({ yaw, pitch: -0.1 });
+      for (let i = 0; i < 120 * 2; i += 1) sim.step(DT);
+      expect(gun.el).toBeGreaterThanOrEqual(6 * DEG - 1e-6);
+    }
+    sim.gunControl.aim = gunnerAim({ yaw: 0, pitch: -0.1 });
+    for (let i = 0; i < 120 * 2; i += 1) sim.step(DT);
+    expect(gun.el).toBeCloseTo(0, 6);
+  });
+
   it('can\'t be fired above 2 g', () => {
     const { sim, gun } = manned({ yaw: 0, pitch: 0.2 });
     sim.gunControl.trigger = true;
@@ -231,5 +244,24 @@ describe('the player on the Bf 110\'s rear gun (D234)', () => {
     const before = gun.rounds;
     stepGunners(sim.player, sim, 0.5, sim);
     expect(gun.rounds).toBe(before);
+  });
+});
+
+describe('the Bf 110\'s nose MG 17 belt (D234)', () => {
+  it('carries a tracer in four, so its fire shows; the Bf 109\'s MG 17s keep their belt', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    const kinds = [];
+    sim.projectiles.spawn = (round) => kinds.push(round.kind);
+    sim.input.fireMg = true;
+    for (let i = 0; i < 120; i += 1) sim.step(DT);
+    const tracers = kinds.filter((k) => k === 'tracer792').length;
+    expect(tracers / kinds.length).toBeCloseTo(0.25, 1);
+    const bf109 = new Simulation(aircraftById.bf109e4, 'air');
+    const k109 = [];
+    bf109.projectiles.spawn = (round) => k109.push(round.kind);
+    bf109.input.fireMg = true;
+    for (let i = 0; i < 120; i += 1) bf109.step(DT);
+    expect(k109.length).toBeGreaterThan(10);
+    expect(k109).not.toContain('tracer792');
   });
 });
