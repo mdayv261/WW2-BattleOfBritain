@@ -1,5 +1,5 @@
-// Keyboard flying for the test version. Stick and pedal inputs ramp while a key is held and re-centre when
-// released; levers move while held. Phase 8 makes every key rebindable.
+// Keyboard flying. Stick and pedal inputs ramp while a key is held and re-centre when released; levers move while held.
+// Every key is the player's to choose (Phase 8, D238: src/input/bindings.js); these are the defaults:
 //
 //   Arrow up / down      stick forward (nose down) / back (nose up)
 //   Arrow left / right   roll
@@ -15,6 +15,7 @@
 //   Backspace (hold 1 s)  bail out (D80)
 
 import { clamp } from '../physics/interp.js';
+import { Bindings, comboOf } from './bindings.js';
 
 const STICK_RATE = 2.5; // full deflection in 0.4 s
 const CENTRE_RATE = 4;
@@ -33,19 +34,50 @@ export function stepFlaps(ac, selected, direction) {
 }
 
 export class Keyboard {
-  constructor(target = window) {
+  /** `bindings`: the player's keys (src/input/bindings.js); `target`: where key events come from (null in the tests). */
+  constructor(target = window, bindings = new Bindings()) {
+    this.bindings = bindings;
     this.down = new Set();
-    this.pressed = new Set(); // keys pressed since the last update (for toggles)
-    target.addEventListener('keydown', (e) => {
-      if (e.repeat || e.metaKey || e.ctrlKey) return;
-      this.down.add(e.code);
-      // Shift+P is its own key (the Bf 110's pitch control switch, D188), so it does not also pause (P); Shift+7 loads
-      // twelve aircraft, not the bomber scenario (D221).
-      this.pressed.add((e.code === 'KeyP' || e.code === 'Digit7') && e.shiftKey ? `Shift+${e.code}` : e.code);
-      if (e.code.startsWith('Arrow') || e.code === 'Space' || e.code === 'Enter' || e.code === 'Backspace') e.preventDefault();
-    });
+    this.pressed = new Set(); // key combinations pressed since the last update (for toggles)
+    if (!target) return;
+    target.addEventListener('keydown', (e) => this.keyDown(e));
     target.addEventListener('keyup', (e) => this.down.delete(e.code));
     target.addEventListener('blur', () => this.down.clear());
+  }
+
+  /**
+   * A key pressed. With Shift held a press is its own combination ("Shift+KeyF" for flaps up, "Shift+KeyP" for the
+   * Bf 110's pitch switch, D188), so it does not also act as the plain key.
+   */
+  keyDown(e) {
+    if (e.repeat || e.metaKey || e.ctrlKey) return;
+    this.down.add(e.code);
+    const shift = e.shiftKey || this.down.has('ShiftLeft') || this.down.has('ShiftRight');
+    this.pressed.add(comboOf({ code: e.code, shiftKey: shift }));
+    if (e.code.startsWith('Arrow') || ['Space', 'Enter', 'Backspace', 'Tab'].includes(e.code)) e.preventDefault?.();
+  }
+
+  /** Whether a key combination is held: its key, with Shift held if it names Shift. */
+  holds(key) {
+    if (!key.startsWith('Shift+')) return this.down.has(key);
+    return this.down.has(key.slice(6)) && (this.down.has('ShiftLeft') || this.down.has('ShiftRight'));
+  }
+
+  /** Whether an action's key is held. */
+  held(id) {
+    return this.bindings.of(id).some((k) => this.holds(k));
+  }
+
+  /** True once for each press of an action's key. */
+  tookAction(id) {
+    let had = false;
+    for (const k of this.bindings.of(id)) if (this.took(k)) had = true;
+    return had;
+  }
+
+  /** An axis from two actions' keys: -1, 0 or +1. */
+  axisOf(neg, pos) {
+    return (this.held(pos) ? 1 : 0) - (this.held(neg) ? 1 : 0);
   }
 
   /** True once for each press of a key. */
@@ -68,34 +100,32 @@ export class Keyboard {
 
   /** Applies held keys and toggles to the control input for one frame of dt seconds. */
   update(input, ac, dt) {
-    input.pitch = Keyboard.ramp(input.pitch, this.axis('ArrowUp', 'ArrowDown'), dt);
-    input.roll = Keyboard.ramp(input.roll, this.axis('ArrowLeft', 'ArrowRight'), dt);
-    input.yaw = Keyboard.ramp(input.yaw, this.axis('KeyZ', 'KeyX'), dt);
-    input.throttle = clamp(input.throttle + this.axis('KeyS', 'KeyW') * LEVER_RATE * dt, 0, 1);
-    input.trim = clamp(input.trim + this.axis('KeyG', 'KeyT') * (2 / ac.controls.trimTime) * dt, -1, 1);
-    input.rudderTrim = clamp((input.rudderTrim ?? 0) + this.axis('Comma', 'Period') * RUDDER_TRIM_RATE * dt, -1, 1);
-    input.brake = this.down.has('KeyB') ? 1 : 0;
-    // Guns (D67): Space fires the machine guns (all eight on the RAF fighters), Enter the cannon.
-    input.fireMg = this.down.has('Space');
-    input.bailOut = this.down.has('Backspace'); // held for 1 s to bail out (src/core/bailout.js, D80)
-    input.fireCannon = this.down.has('Enter') || this.down.has('NumpadEnter');
-    const rpmKeys = this.axis('KeyD', 'KeyE');
+    input.pitch = Keyboard.ramp(input.pitch, this.axisOf('pitchDown', 'pitchUp'), dt);
+    input.roll = Keyboard.ramp(input.roll, this.axisOf('rollLeft', 'rollRight'), dt);
+    input.yaw = Keyboard.ramp(input.yaw, this.axisOf('yawLeft', 'yawRight'), dt);
+    input.throttle = clamp(input.throttle + this.axisOf('throttleDown', 'throttleUp') * LEVER_RATE * dt, 0, 1);
+    input.trim = clamp(input.trim + this.axisOf('trimDown', 'trimUp') * (2 / ac.controls.trimTime) * dt, -1, 1);
+    input.rudderTrim = clamp((input.rudderTrim ?? 0) + this.axisOf('rudderTrimLeft', 'rudderTrimRight') * RUDDER_TRIM_RATE * dt, -1, 1);
+    input.brake = this.held('brakes') ? 1 : 0;
+    // Guns (D67): the machine guns (all eight on the RAF fighters) and the cannon.
+    input.fireMg = this.held('fireMg');
+    input.bailOut = this.held('bailOut'); // held for 1 s to bail out (src/core/bailout.js, D80)
+    input.fireCannon = this.held('fireCannon');
+    const rpmKeys = this.axisOf('rpmDown', 'rpmUp');
     if (ac.propeller.type === 'constantSpeed') {
       input.rpm = clamp(input.rpm + rpmKeys * LEVER_RATE * dt, 0, 1);
       input.pitchSwitch = 0;
     } else {
       input.pitchSwitch = -rpmKeys; // finer pitch = higher rpm
     }
-    if (this.took('KeyF')) {
-      const shift = this.down.has('ShiftLeft') || this.down.has('ShiftRight');
-      input.flaps = stepFlaps(ac, input.flaps, shift ? -1 : 1);
-    }
-    if (this.took('KeyU')) input.gear = input.gear ? 0 : 1;
-    if (this.took('KeyO')) input.radiator = input.radiator ? 0 : 1;
-    if (this.took('KeyQ') && ac.side === 'RAF') input.emergency = !input.emergency;
-    if (this.took('KeyA') && ac.propeller.type === 'manualPitch') input.engineAssist = !input.engineAssist;
+    if (this.tookAction('flapsDown')) input.flaps = stepFlaps(ac, input.flaps, 1);
+    if (this.tookAction('flapsUp')) input.flaps = stepFlaps(ac, input.flaps, -1);
+    if (this.tookAction('gear')) input.gear = input.gear ? 0 : 1;
+    if (this.tookAction('radiator')) input.radiator = input.radiator ? 0 : 1;
+    if (this.tookAction('boost') && ac.side === 'RAF') input.emergency = !input.emergency;
+    if (this.tookAction('autoPitch') && ac.propeller.type === 'manualPitch') input.engineAssist = !input.engineAssist;
     // The Bf 110's pitch control switch (D188): Automatik is the automatic pitch (the engine assist, which holds the
     // rpm), Hand the pitch set with E / D.
-    if (this.took('Shift+KeyP') && ac.propeller.type === 'manualPitch' && ac.engines) input.engineAssist = !input.engineAssist;
+    if (this.tookAction('pitchSwitch') && ac.propeller.type === 'manualPitch' && ac.engines) input.engineAssist = !input.engineAssist;
   }
 }

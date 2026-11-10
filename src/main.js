@@ -11,6 +11,7 @@ import { HAT_LOOKS } from './render/cameras.js';
 import { Simulation } from './core/simulation.js';
 import { nextFighterScenario, bomberScenario, crowdScenario, cycleSkill, clearAI } from './core/scenarios.js';
 import { Keyboard } from './input/keyboard.js';
+import { comboOf } from './input/bindings.js';
 import { Joystick } from './input/joystick.js';
 import { MouseLook } from './input/mouse.js';
 import { Hud } from './ui/hud.js';
@@ -29,7 +30,7 @@ import { headingOf } from './ui/units.js';
 import { AudioEngine } from './audio/audioEngine.js';
 import { Settings } from './core/settings.js';
 import { applyDetail, pixelRatioFor } from './render/graphics.js';
-import { HELP } from './ui/hud.js';
+import { keyListHtml } from './ui/keyList.js';
 import { GunnerHud } from './ui/gunnerHud.js';
 import { EnemyPointers } from './ui/enemyPointers.js';
 import { enemyPointers } from './core/enemyPointers.js';
@@ -110,7 +111,8 @@ function select(ac) {
 // The game's states (D225): it opens on the main menu; each flight starts afresh in the same simulation.
 const game = new GameState({
   sim, menus: new Menus(), testAircraft: aircraftList[1], career: new Career(), sound: audio,
-  settings, onSettings: applySettings, onJoystick: () => joyPanel.toggle(), helpHtml: HELP,
+  settings, onSettings: applySettings, onJoystick: () => joyPanel.toggle(), helpHtml: () => keyListHtml(keyboard.bindings),
+  controls: { bindings: keyboard.bindings, joystick, onChange: () => hud.setHelp(keyListHtml(keyboard.bindings)) },
   onFlight: ({ ac, time }) => {
     view.setAircraft(ac);
     effects.clear();
@@ -120,26 +122,27 @@ const game = new GameState({
   },
 });
 game.menu();
+hud.setHelp(keyListHtml(keyboard.bindings));
 hud.toggleHelp(false); // the key list stays shut behind the main menu (its note says H lists the keys)
 
 /** Keys that act on the game rather than the aircraft. */
 function gameKeys() {
   if (keyboard.took('Escape')) game.escape();
   if (game.kind === 'test') testKeys();
-  if (keyboard.took('F2')) hud.toggleStrip();
-  if (keyboard.took('F3')) hud.toggleDebug();
-  if (keyboard.took('F4')) radar.toggle();
-  if (keyboard.took('Tab')) changeSeat();
-  if (keyboard.took('KeyH')) hud.toggleHelp();
-  if (keyboard.took('KeyJ')) joyPanel.toggle();
-  if (keyboard.took('KeyK')) sim.engineKey('select');
-  if (keyboard.took('KeyL')) sim.engineKey('startStop');
-  if (keyboard.took('KeyM')) sim.engineKey('feather');
-  if (keyboard.took('KeyP')) sim.paused = !sim.paused;
-  if (keyboard.took('KeyY')) sim.nextTarget(); // target aircraft (D68)
-  if (keyboard.took('KeyC')) view.rig.toggleCockpit();
-  if (keyboard.took('KeyV')) view.rig.nextOutside();
-  if (keyboard.took('KeyI')) instruments.toggle();
+  if (keyboard.tookAction('strip')) hud.toggleStrip();
+  if (keyboard.tookAction('debug')) hud.toggleDebug();
+  if (keyboard.tookAction('radar')) radar.toggle();
+  if (keyboard.tookAction('seat')) changeSeat();
+  if (keyboard.tookAction('help')) hud.toggleHelp();
+  if (keyboard.tookAction('joystickPanel')) joyPanel.toggle();
+  if (keyboard.tookAction('engineSelect')) sim.engineKey('select');
+  if (keyboard.tookAction('engineStart')) sim.engineKey('startStop');
+  if (keyboard.tookAction('feather')) sim.engineKey('feather');
+  if (keyboard.tookAction('physicsPause')) sim.paused = !sim.paused;
+  if (keyboard.tookAction('target')) sim.nextTarget(); // target aircraft (D68)
+  if (keyboard.tookAction('cockpit')) view.rig.toggleCockpit();
+  if (keyboard.tookAction('outside')) view.rig.nextOutside();
+  if (keyboard.tookAction('instruments')) instruments.toggle();
 }
 
 /** The test flight's own keys (aircraft, starts, test hits and the AI scenarios), off in a mission (D225). */
@@ -165,8 +168,10 @@ function testKeys() {
   if (keyboard.took('Digit0')) say(clearAI(sim));
 }
 window.addEventListener('keydown', (e) => {
-  if (['F2', 'F3', 'F4', 'Tab'].includes(e.code)) e.preventDefault();
-  if (hud.helpVisible && !['KeyH', 'KeyJ'].includes(e.code)) hud.toggleHelp(false);
+  // A bound key does only its action, not the browser's (F-keys, Tab).
+  if (keyboard.bindings.user(comboOf(e)) || ['F2', 'F3', 'F4', 'Tab'].includes(e.code)) e.preventDefault();
+  const keepsHelp = [...keyboard.bindings.of('help'), ...keyboard.bindings.of('joystickPanel')].includes(comboOf(e));
+  if (hud.helpVisible && !keepsHelp) hud.toggleHelp(false);
 });
 
 let last = performance.now();

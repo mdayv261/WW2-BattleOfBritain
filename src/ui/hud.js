@@ -87,39 +87,6 @@ export function heatWarning(sim) {
   return null;
 }
 
-export const HELP = `
-<b>Battle of Britain 1940 — Phase 3 test flight</b>
-<table>
-<tr><td>Arrow up / down</td><td>stick forward (nose down) / back (nose up)</td></tr>
-<tr><td>Arrow left / right</td><td>roll</td></tr>
-<tr><td>Z / X</td><td>rudder left / right (steer on the ground with rudder and brakes)</td></tr>
-<tr><td>B (hold)</td><td>brakes; with rudder, the brake on that side</td></tr>
-<tr><td>W / S</td><td>throttle up / down</td></tr>
-<tr><td>E / D</td><td>RAF: rpm lever up / down — Bf 109: pitch finer / coarser</td></tr>
-<tr><td>T / G &nbsp; , / .</td><td>elevator trim nose up / down; rudder trim (Spitfire, Bf 110, He 111)</td></tr>
-<tr><td>F / Shift+F</td><td>flaps down / up a stop (Spitfire: down or up)</td></tr>
-<tr><td>U &nbsp; O</td><td>undercarriage, radiator</td></tr>
-<tr><td>Q &nbsp; A</td><td>+12 lb boost cut-out (RAF); engine assist (Bf 109)</td></tr>
-<tr><td>1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td>Hurricane, Spitfire, Bf 109, Bf 110, He 111 (outside views only; F2 for its readings)</td></tr>
-<tr><td>L</td><td>start or stop the engine (twins: the engines K has selected); ground starts begin with engines off</td></tr>
-<tr><td>K &nbsp; M</td><td>twins: levers move both engines / left / right; feather the selected engine (Bf 110)</td></tr>
-<tr><td>R &nbsp; N &nbsp; P</td><td>restart; next start (ground, approach, air); pause</td></tr>
-<tr><td>C &nbsp; V</td><td>cockpit view; outside views (chase, fixed, orbit)</td></tr>
-<tr><td>Mouse</td><td>drag to look around; wheel to zoom; double-click to look ahead</td></tr>
-<tr><td>I &nbsp; F2 &nbsp; F3</td><td>instruments, text readout, debug overlay</td></tr>
-<tr><td>F4</td><td>radar (RAF aircraft): the bearing of each enemy group on a heading-up compass ring, updated every 20 s</td></tr>
-<tr><td>Tab</td><td>Bf 110: the pilot's seat or the rear gun (the AI pilot flies; mouse, stick or arrows aim, Space fires)</td></tr>
-<tr><td>Space &nbsp; Enter</td><td>fire the machine guns (RAF: all eight) / the cannon</td></tr>
-<tr><td>Y &nbsp; 9</td><td>target aircraft ahead (each press: the next type, then none) / a test 20 mm hit on your own aircraft</td></tr>
-<tr><td>Backspace</td><td>hold 1 s to bail out (you also bail out when the aircraft is lost)</td></tr>
-<tr><td>6 &nbsp; 7 &nbsp; 8 &nbsp; 0</td><td>AI: enemy fighters (each press: the next group) / a bomber formation / AI skill / clear the AI</td></tr>
-<tr><td>Shift+7</td><td>Twelve aircraft: the bomber formation and six fighters behind you (frame-rate check)</td></tr>
-<tr><td>Esc</td><td>Pause menu (resume, restart or end the mission, main menu). Keys 1-5, R, N, 9 and 6-0 work in the test flight only</td></tr>
-<tr><td>Joystick</td><td>trigger: machine guns; thumb button: cannon; hat: look around (the panel hides while you look away); 5 / 3 trim nose up / down; 4 / 6 flaps up / down; 12 brakes; 10 cockpit view; 11 undercarriage; 7 / 9 propeller pitch fine / coarse (or the rpm lever up / down)</td></tr>
-<tr><td>J &nbsp; H</td><td>joystick panel (change the buttons there), this help</td></tr>
-</table>
-Click the page once before using the keyboard.`;
-
 /** One line per engine of a twin: its throttle, rpm and state, and which engines the levers move. */
 function twinLines(sim) {
   const { ac, plane, input, twin } = sim;
@@ -149,8 +116,7 @@ export class Hud {
   constructor() {
     this.strip = panel('strip', `${BOX}left:12px;bottom:12px;`);
     this.debug = panel('debug', `${BOX}right:12px;top:12px;display:none;`);
-    this.help = panel('help', `${BOX}left:12px;top:50%;transform:translateY(-50%);white-space:normal;max-width:560px;`); // at the far left (product owner)
-    this.help.innerHTML = HELP;
+    this.help = panel('help', `${BOX}left:12px;top:50%;transform:translateY(-50%);white-space:normal;max-width:860px;font-size:12px;max-height:94vh;overflow:hidden;`); // at the far left (product owner)
     this.message = panel('message', `${BOX}left:50%;top:24px;transform:translateX(-50%);font-size:16px;display:none;`);
     this.showDebug = false;
     this.helpVisible = true;
@@ -164,6 +130,11 @@ export class Hud {
   toggleDebug() {
     this.showDebug = !this.showDebug;
     this.debug.style.display = this.showDebug ? 'block' : 'none';
+  }
+
+  /** The key list's content (src/ui/keyList.js), redrawn when the keys change. */
+  setHelp(html) {
+    this.help.innerHTML = html;
   }
 
   toggleHelp(force) {

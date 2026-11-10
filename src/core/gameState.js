@@ -38,7 +38,7 @@ export function careerText(side, record) {
 export class GameState {
   constructor({
     sim, menus, testAircraft, onFlight = () => {}, career = new Career(null), sound = null,
-    settings = new Settings(null), onSettings = () => {}, onJoystick = null, helpHtml = '',
+    settings = new Settings(null), onSettings = () => {}, onJoystick = null, helpHtml = '', controls = null,
   }) {
     this.sim = sim;
     this.menus = menus;
@@ -50,6 +50,7 @@ export class GameState {
     this.onSettings = onSettings;
     this.onJoystick = onJoystick;
     this.helpHtml = helpHtml;
+    this.controls = controls; // { bindings, joystick, onChange } for the Controls screen (D238), or null
     this.state = 'menu';
     this.kind = null; // 'mission' or 'test' while flying or paused
     this.setup = { ...DEFAULT_SETUP };
@@ -91,9 +92,16 @@ export class GameState {
       },
       onBack: () => (from === 'pause' ? this.pause(true) : this.menu()),
       onJoystick: this.onJoystick,
+      onControls: this.controls ? () => this.controlsScreen(from) : null,
       sound: this.soundButton(),
-      helpHtml: this.helpHtml,
+      helpHtml: typeof this.helpHtml === 'function' ? this.helpHtml() : this.helpHtml,
     });
+  }
+
+  /** The Controls screen (D238), from the settings; Back returns to them. */
+  controlsScreen(from) {
+    this.state = 'settings';
+    this.menus.showControls({ ...this.controls, onJoystick: this.onJoystick, onBack: () => this.settings(from) });
   }
 
   /** Starts (or restarts) a mission from a setup. */

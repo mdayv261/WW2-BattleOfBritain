@@ -4,6 +4,7 @@
 
 import { renderSetup } from './missionSetup.js';
 import { renderSettings } from './settingsScreen.js';
+import { renderControls } from './controlsScreen.js';
 
 const STYLE = `
 .menu-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
@@ -25,6 +26,9 @@ const STYLE = `
 .menu-panel { max-height: 92vh; overflow: auto; }
 .settings-keys { max-width: 620px; margin-top: 10px; }
 .settings-keys td { padding: 1px 8px 1px 0; vertical-align: top; }
+.menu-key { font: inherit; font-size: 13px; padding: 1px 8px; min-width: 64px; background: #f3eedd; color: #2a2a22;
+  border: 1px solid #5d5a3c; cursor: pointer; }
+.menu-key:hover { background: #fff8e2; }
 `;
 
 const soundLabel = (on) => `Sound: ${on ? 'on' : 'off'}`;
@@ -123,9 +127,16 @@ export class Menus {
   }
 
   /** The settings screen (D232, src/ui/settingsScreen.js). */
-  showSettings({ values, onChange, onBack, onJoystick, sound, helpHtml }) {
+  showSettings({ values, onChange, onBack, onJoystick, onControls, sound, helpHtml }) {
     this.screen = 'settings';
-    renderSettings(this.panel, values, { onChange, onBack, onJoystick, sound, helpHtml });
+    renderSettings(this.panel, values, { onChange, onBack, onJoystick, onControls, sound, helpHtml });
+    this.overlay.style.display = 'flex';
+  }
+
+  /** The Controls screen (D238, src/ui/controlsScreen.js). */
+  showControls(options) {
+    this.screen = 'controls';
+    renderControls(this.panel, options);
     this.overlay.style.display = 'flex';
   }
 

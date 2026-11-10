@@ -6455,3 +6455,60 @@ among them.
 **Pushed:** the product owner asked for the acceptance test commits to be pushed.
 
 **Next:** Phase 8, after its plan.
+
+## D238. Phase 8 plan, and checkpoint 1: rebinding the keys and the Controls screen (10 Nov 2026)
+
+**The Phase 8 plan** (approved 10 Nov 2026): controls screen, rebinding, mouse flying and warnings, in four checkpoints:
+1. rebinding the keys and the Controls screen;
+2. mouse flying (an option, off by default) and look keys;
+3. overspeed time limits and warnings;
+4. the acceptance test.
+
+The phase list's acceptance: "rebindings work in flight and survive a reload; each assist visibly changes the flight".
+
+**The product owner's choices:**
+- **Overspeed:** a warning, and damage.
+  - Over-revving past each engine's diving limit already wears it (D62).
+  - New in checkpoint 3: the sources' time limits between the red line and that diving limit.
+- **Mouse flying:** an option, off by default.
+
+**Checkpoint 1, what was built:**
+- **Bindings** (new src/input/bindings.js):
+  - **The actions:** 43 keyboard actions in five groups (Flight, Engine, Weapons, Views, Game), each held or pressed,
+    with its keys.
+  - **Keys:** a code with an optional Shift ("Shift+KeyF").
+  - **Defaults:** the game's own keys, plus look keys on the numeric keypad for checkpoint 2.
+  - **Storage:** kept in the browser (`bob1940.keys`, versioned). Unreadable storage, or two actions on one key, gives
+    the defaults.
+  - **No key is bound twice:** a key in use is swapped.
+  - **Not rebindable:** Esc (the pause menu, and the browser's release of a captured mouse), Shift and the other
+    modifiers alone, and the test flight's test keys (1-5, R, N, 6-0, 9).
+- **The keyboard** (src/input/keyboard.js) and src/main.js act through the bindings.
+  - A press with Shift held is its own combination for every key, not only P and 7 as before. A plain key no longer
+    acts while Shift is held, so Shift+U no longer works the undercarriage.
+  - A bound key's browser action is suppressed (F-keys, Tab).
+- **The Controls screen** (new src/ui/controlsScreen.js, Settings → Controls):
+  - **Rebinding a key:** click a key, "press a key…", Esc to cancel. A key in use asks on the screen whether to swap
+    (no browser dialog).
+  - **Joystick buttons:** a column for the actions a button can do (guns, cannon, flaps, undercarriage, brakes, trim,
+    pitch fine and coarse, view, bail out, seat). A button is assigned by pressing it, and swapped with any action that
+    had it.
+  - "Reset keys to defaults"; the joystick panel (axes and calibration) reached from here.
+- **The key list** (H, and Settings → Key list) is now drawn from the bindings (new src/ui/keyList.js), with the fixed
+  keys after them.
+
+**Checked in Chrome** (no console errors):
+- the radar rebound from F4 to R: R switched it in flight and F4 no longer did;
+- the choice survived a reload, and the key list showed R;
+- a clash (W, the throttle's) was offered as a swap;
+- Reset restored the defaults.
+- The product owner's keys are at the defaults after the check.
+
+**Tests:** new tests/input/bindings.test.js:
+- the defaults;
+- a rebound key drives its action in flight and the old key doesn't;
+- swaps;
+- Esc refused;
+- Shift combinations;
+- reload, reset and bad storage;
+- joystick button swaps.

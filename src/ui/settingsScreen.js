@@ -1,6 +1,6 @@
 // The settings screen (Phase 7 checkpoint 6, D232), reached from the main menu and the pause menu: sound (volume and
 // on/off), graphics (Low, Medium, High), the modern HUD in the cockpit, the four assists (each off unless switched on,
-// D16), and the controls (the key list and the joystick panel; rebinding the keys comes in Phase 8).
+// D16), and the controls (the Controls screen for keys and joystick buttons, D238; the key list; the joystick panel).
 
 const ASSISTS = [
   ['autoRudder', 'Auto-rudder', 'Rudder against the sideslip while your feet are off the pedals.'],
@@ -21,7 +21,7 @@ const el = (tag, props = {}, ...children) => {
  * returns the new values; `sound` is { on, toggle() } (D231); `onJoystick` opens the joystick panel; `helpHtml` is the
  * key list; `onBack` leaves.
  */
-export function renderSettings(container, values, { onChange, onBack, onJoystick, sound, helpHtml }) {
+export function renderSettings(container, values, { onChange, onBack, onJoystick, onControls, sound, helpHtml }) {
   let v = values;
   let showKeys = false;
   const draw = () => {
@@ -67,12 +67,13 @@ export function renderSettings(container, values, { onChange, onBack, onJoystick
       b.addEventListener('click', action);
       buttons.append(b);
     };
-    button(showKeys ? 'Hide the keys' : 'Keys', () => { showKeys = !showKeys; draw(); });
-    if (onJoystick) button('Joystick setup', onJoystick);
+    if (onControls) button('Controls (keys and joystick buttons)', onControls);
+    button(showKeys ? 'Hide the key list' : 'Key list', () => { showKeys = !showKeys; draw(); });
+    if (onJoystick) button('Joystick axes and calibration', onJoystick);
     button('Back', onBack);
     container.append(buttons);
     if (showKeys) container.append(el('div', { className: 'menu-note settings-keys', innerHTML: helpHtml }));
-    container.append(el('p', { className: 'menu-note', textContent: 'Assists are off unless switched on. Changing the keys comes in a later phase.' }));
+    container.append(el('p', { className: 'menu-note', textContent: 'Assists are off unless switched on.' }));
   };
   draw();
 }
