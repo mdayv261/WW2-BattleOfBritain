@@ -7,6 +7,7 @@ const ASSISTS = [
   ['stallWarning', 'Stall warning', 'A beep and a red line close to the stall.'],
   ['gWarning', 'g warning', 'A double beep and a red line near the airframe\'s g limit.'],
   ['engineManagement', 'Engine management', 'Automatic airscrew pitch (Bf 109, Bf 110) and radiator.'],
+  ['overspeedWarning', 'Overspeed warning', 'A triple beep and a red line when an engine is over its red line, or in a dive near the airframe\'s limit.'],
 ];
 const GRAPHICS = [['high', 'High'], ['medium', 'Medium'], ['low', 'Low']];
 

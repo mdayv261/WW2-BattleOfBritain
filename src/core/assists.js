@@ -5,12 +5,13 @@
 //   Engine management: the automatic airscrew pitch (`engineAssist`, D18) on the manual-pitch aircraft, and the
 //     radiator opened as the coolant nears its limit and shut once it has cooled.
 //   Stall warning and g warning: flags for the warning line and tone (src/ui/hud.js, src/audio/audioEngine.js).
+//   Overspeed warning (D240): an engine over its red line, or the airframe near its diving limit.
 // Every threshold here is game design (D232): none of this was period equipment.
 
 import { UNIT } from './constants.js';
 import { common } from '../aircraft/common.js';
 import { stallAlpha } from '../physics/aero.js';
-import { coolantLimit } from '../physics/cooling.js';
+import { coolantLimit, overRedLine } from '../physics/cooling.js';
 
 export const ASSIST = {
   rudderGain: 3, // rudder per radian of sideslip
@@ -20,15 +21,21 @@ export const ASSIST = {
   radiatorShut: 25, // ...and below which it is shut again
   stallMargin: 2 * UNIT.DEG, // the stall warning sounds this close to the stall angle
   gShare: 0.9, // the g warning sounds at this share of the damage limit
+  diveShare: 0.95, // the dive-limit warning sounds at this share of the airframe's diving limit (D240)
   minSpeed: 20, // m/s EAS: no stall warning below this (on the ground, taking off)
 };
 
 /** The assists, all off (D16). */
-export const NO_ASSISTS = Object.freeze({ autoRudder: false, stallWarning: false, gWarning: false, engineManagement: false });
+export const NO_ASSISTS = Object.freeze({
+  autoRudder: false, stallWarning: false, gWarning: false, engineManagement: false, overspeedWarning: false,
+});
 
 /** The assists switched on, by name: "auto-rudder, stall warning"; '' with none. */
 export function assistNames(assists = {}) {
-  const names = { autoRudder: 'auto-rudder', stallWarning: 'stall warning', gWarning: 'g warning', engineManagement: 'engine management' };
+  const names = {
+    autoRudder: 'auto-rudder', stallWarning: 'stall warning', gWarning: 'g warning', engineManagement: 'engine management',
+    overspeedWarning: 'overspeed warning',
+  };
   return Object.keys(names).filter((k) => assists[k]).map((k) => names[k]).join(', ');
 }
 
@@ -51,10 +58,15 @@ export function manageEngine(ac, plane, input, assists) {
   else if (hottest < limit - ASSIST.radiatorShut) input.radiator = 0;
 }
 
-/** The warnings due this step: { stall, g } (each false unless its assist is on). */
+/** The warnings due this step: { stall, g, overspeed, dive } (each false unless its assist is on). */
 export function warnings(ac, plane, assists) {
   const last = plane.last;
-  const out = { stall: false, g: false };
+  const out = { stall: false, g: false, overspeed: false, dive: false };
+  // Overspeed (D240): an engine over its red line (also on the ground); past the airframe's diving limit.
+  if (assists.overspeedWarning) {
+    out.overspeed = plane.engines.some((e) => overRedLine(plane.engine, e.omega));
+    out.dive = !!(last && ac.limits?.diveEas && last.eas > ASSIST.diveShare * ac.limits.diveEas);
+  }
   if (!last || !airborne(plane)) return out;
   if (assists.stallWarning && last.eas > ASSIST.minSpeed) {
     out.stall = last.alpha > stallAlpha(ac, plane.surfaces.flaps) - ASSIST.stallMargin;

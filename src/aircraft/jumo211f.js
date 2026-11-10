@@ -33,5 +33,6 @@ export const jumo211f = {
     coolantLapse: 0.003,
     oilLimit: 105,
     overRev: 2700 * UNIT.RPM, // estimate: 100 rpm over the take-off rating, as the DB 601A's diving limit over its own
+    overRevTime: 30, // s above maxSpeed allowed: estimate, as the DB 601A's (D240)
   },
 };

@@ -177,8 +177,9 @@ export class AudioEngine {
    */
   warn(w) {
     const now = this.ctx.currentTime;
-    if (!w || !(w.g || w.stall) || now < this.nextBeep) return;
-    const beeps = w.g ? [[600, 0], [600, 0.16]] : [[900, 0]];
+    if (!w || !(w.g || w.stall || w.overspeed || w.dive) || now < this.nextBeep) return;
+    // g a low double beep, overspeed and the dive limit a triple beep (D240), the stall a high beep.
+    const beeps = w.g ? [[600, 0], [600, 0.16]] : w.overspeed || w.dive ? [[750, 0], [750, 0.12], [750, 0.24]] : [[900, 0]];
     for (const [freq, at] of beeps) {
       const osc = this.ctx.createOscillator();
       osc.frequency.value = freq;
@@ -190,7 +191,7 @@ export class AudioEngine {
       osc.start(now + at);
       osc.stop(now + at + 0.2);
     }
-    this.nextBeep = now + (w.g ? 0.6 : 0.45);
+    this.nextBeep = now + (w.g ? 0.6 : w.overspeed || w.dive ? 0.8 : 0.45);
   }
 
   /** Follows the simulation for one frame; `active` is false on the menus and the pause menu. */

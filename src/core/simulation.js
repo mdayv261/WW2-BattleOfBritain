@@ -158,7 +158,7 @@ export class Simulation {
     this.jumpers = [];
     this.bailout = null;
     this.playerJumper = null;
-    this.warnings = { stall: false, g: false }; // the assists' warnings due (D232)
+    this.warnings = { stall: false, g: false, overspeed: false, dive: false }; // the assists' warnings due (D232, D240)
     resetSeat(this); // the Bf 110's crew positions (D234): every flight starts in the pilot's seat
     this.landingReported = false;
     this.bailHold = 0;

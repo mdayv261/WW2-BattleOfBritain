@@ -11,7 +11,7 @@ function fakeStorage(initial = {}) {
 describe('the settings', () => {
   it('start with every assist off, High graphics, no HUD in the cockpit and the volume at 80%', () => {
     const s = new Settings(fakeStorage());
-    expect(s.values).toEqual({ volume: 80, engineVolume: 25, graphics: 'high', hudInCockpit: false, enemyPointers: true, mouseFlight: false, mouseSensitivity: 'medium', assists: { autoRudder: false, stallWarning: false, gWarning: false, engineManagement: false } });
+    expect(s.values).toEqual({ volume: 80, engineVolume: 25, graphics: 'high', hudInCockpit: false, enemyPointers: true, mouseFlight: false, mouseSensitivity: 'medium', assists: { autoRudder: false, stallWarning: false, gWarning: false, engineManagement: false, overspeedWarning: false } });
     expect(cleanSettings(null)).toEqual(s.values);
     expect(DEFAULT_SETTINGS.assists.autoRudder).toBe(false);
   });
@@ -27,7 +27,7 @@ describe('the settings', () => {
     expect(again.values.engineVolume).toBe(60);
     expect(again.values.enemyPointers).toBe(false);
     expect(again.values.graphics).toBe('low');
-    expect(again.values.assists).toEqual({ autoRudder: true, stallWarning: false, gWarning: true, engineManagement: false });
+    expect(again.values.assists).toEqual({ autoRudder: true, stallWarning: false, gWarning: true, engineManagement: false, overspeedWarning: false });
   });
 
   it('fall back to the defaults for nonsense, unreadable or blocked storage', () => {

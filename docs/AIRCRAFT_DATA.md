@@ -640,7 +640,7 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Time for the power to fall away (`negativeG.cutTime`) | 0.2 | s | — | ASSUMPTION | estimate | No source; the float chamber empties quickly. |
 | Delay after positive g returns (flooding) (`negativeG.recoverDelay`) | 1 | s | — | ASSUMPTION | estimate | No source; the engine floods briefly before it picks up. |
 | Time for the power to return (`negativeG.recoverTime`) | 1 | s | — | ASSUMPTION | estimate | No source; power returns over about a second. |
-| Combat engine-speed limit (`maxSpeed`) | 3000 | rpm | 3000 rpm | S6 | medium | Not yet used (warnings come in Phase 8). |
+| Combat engine-speed limit (`maxSpeed`) | 3000 | rpm | 3000 rpm | S6 | medium | The red line: above it the time allowance runs, and the overspeed warning sounds (D240). |
 | Cylinders (`cylinders`) | 12 | — | 12-cylinder V-type | S7 | medium | A.P. 1590B p. 16. Four-stroke: sets the engine sound's firing frequency (D231). |
 
 ### Heat limits (Phase 5, D62)
@@ -650,6 +650,7 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Coolant limit (`heat.coolantLimit`) | 120 | °C | 120 (climbing ½ hr; all-out 5 mins limit) | S33 | high | Museum record. Past it the engine wears (D62). |
 | Oil limit (`heat.oilLimit`) | 95 | °C | 95 (all-out 5 mins limit) | S33 | high | Museum record. |
 | Over-revving limit (`heat.overRev`) | 3600 | rpm | maximum 3,600 r.p.m. (diving) | S6 | medium | Past it the engine wears out within seconds (D62). |
+| Time allowed over the combat limit (`heat.overRevTime`) | 20 | s | 3,000 may be exceeded only for 20 s with throttle at least one third open | S6 | medium | Past it the engine wears (D240); the throttle condition isn't modelled. |
 | Oil normal range, low end (`heat.oilNormal.from`) | 15 | °C | Minm. temp. for take-off: oil 15°C | S33 | medium | Green band of the oil temperature gauge (D85). |
 | Oil normal range, high end (`heat.oilNormal.to`) | 90 | °C | 90 (climbing ½ hr; cruising rich and weak) | S33 | medium | All-out (5 min) limit 95 °C. |
 | Coolant normal range, low end (`heat.coolantNormal.from`) | 60 | °C | Minm. temp. for take-off: coolant 60°C | S33 | medium | Green band of the radiator temperature gauge (D85). |
@@ -932,7 +933,7 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Closed-throttle manifold pressure (`idleMap`) | 0.35 | ata | — | ASSUMPTION | estimate | Gives about 50 PS at 2400 rpm, like the Merlin's idle. |
 | Change of power with engine speed at constant pressure (exponent) (`rpmPowerExponent`) | 0.5 | — | — | S18, ASSUMPTION | estimate | Fitted with the zero-power pressure above. |
 | Change of supercharger delivery with engine speed (exponent) (`mapSpeedExponent`) | 1 | — | — | S18, ASSUMPTION | estimate | Reproduces the gap between the 2200 and 2400 rpm full-throttle lines at 7 km within 1%. |
-| 5-minute engine-speed limit (`maxSpeed`) | 2400 | rpm | 2400 U/min | S15, S18 | high | Not yet used (warnings come in Phase 8). |
+| 5-minute engine-speed limit (`maxSpeed`) | 2400 | rpm | 2400 U/min | S15, S18 | high | The red line: above it the time allowance runs, and the overspeed warning sounds (D240). |
 | Cylinders (`cylinders`) | 12 | — | 12-cylinder inverted Vee-engine | S19 | medium | Four-stroke ("four-stroke Otto engine", S19): sets the engine sound's firing frequency (D231). |
 
 ### Cockpit gauge pressures (fuel and oil)
@@ -959,6 +960,7 @@ turns (scaled down at low rpm), with the normal range green and the low range re
 | Fall of the coolant limit with height (`heat.coolantLapse`) | 0.003 | °C/m | — | ASSUMPTION | estimate | As water's boiling point falls with pressure, about 3 °C per km low down. |
 | Oil limit (`heat.oilLimit`) | 105 | °C | 105–110 °C höchst. vorübergehend (outlet) | S18 | medium | The lower end of the brief maximum; S24 gives 105 °C for a short period only. |
 | Over-revving limit (`heat.overRev`) | 2500 | rpm | 2500 U/min 30 Sekunden lang (dive) | S18 | medium | |
+| Time allowed over the 5-minute limit (`heat.overRevTime`) | 30 | s | 2500 U/min 30 Sekunden lang | S18 | medium | Past it the engine wears (D240). |
 | Oil normal range, low end (`heat.oilNormal.from`) | 90 | °C | 90–100 °C normal (outlet) | S18 | medium | Green band of the Bf 110's oil temperature gauge (D63). |
 | Oil normal range, high end (`heat.oilNormal.to`) | 100 | °C | 90–100 °C normal (outlet) | S18 | medium | |
 | Coolant normal range, low end (`heat.coolantNormal.from`) | 75 | °C | 75 °C normal (inlet) | S18 | medium | Green band of the Bf 110's coolant gauge (D63). The manual gives the inlet's normal temperature; the gauge reads the outlet. |
@@ -1477,6 +1479,7 @@ cruising powers at 5,500 m. The full-throttle curve of the two-speed supercharge
 | Fall of the coolant limit with height (`heat.coolantLapse`) | 0.003 | °C/m | — | ASSUMPTION | estimate | As the DB 601A. |
 | Oil limit (`heat.oilLimit`) | 105 | °C | — | ASSUMPTION | estimate | As the DB 601A. |
 | Over-revving limit (`heat.overRev`) | 2700 | rpm | — | ASSUMPTION | estimate | 100 rpm over the take-off rating, as the DB 601A's diving limit is over its own. |
+| Time allowed over the take-off rating (`heat.overRevTime`) | 30 | s | — | ASSUMPTION | estimate | As the DB 601A's (no Jumo 211 limit found, D62). Past it the engine wears (D240). |
 
 ## Common flight-model parameters
 
@@ -1521,6 +1524,8 @@ Shared by all aircraft (`src/aircraft/common.js`). All are physical theory or es
 | Life at that overheat (`engineWear.overheatLife`) | 120 | s | — | ASSUMPTION | estimate | An engine 20 °C over a limit seizes in about two minutes. |
 | Over-revving that wears an engine out in overRevLife (`engineWear.overRevSpan`) | 300 | rpm over the limit | — | ASSUMPTION | estimate | Over the diving limit. |
 | Life at that over-revving (`engineWear.overRevLife`) | 10 | s | — | ASSUMPTION | estimate | Over-revving wrecks an engine in seconds. |
+| Life past the allowance over the red line (`engineWear.overTimeLife`) | 120 | s | — | ASSUMPTION | estimate | Slower than past the diving limit; as overheating by 20 °C (D240). |
+| Red-line margin (`engineWear.redLineMargin`) | 20 | rpm over the red line | — | ASSUMPTION | estimate | Over the red line by more than this counts: the governors hunt a little about their setting (D240). |
 | Wear before any power is lost (`engineWear.lossFrom`) | 0.3 | fraction | — | ASSUMPTION | estimate | A little wear shows no loss of power. |
 | Power lost by seizure (`engineWear.lossAtSeize`) | 0.6 | fraction | — | ASSUMPTION | estimate | A failing engine loses power before it stops. |
 | Coolant overheat at which it boils off (`engineWear.boilMargin`) | 15 | °C | — | ASSUMPTION | estimate | Over the coolant limit; the relief valve vents it. |

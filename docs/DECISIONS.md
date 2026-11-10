@@ -6557,3 +6557,48 @@ mouse flying.
 - centring, the wheel, and nothing until the mouse is taken;
 - the centring key;
 - the look keys' turns.
+
+## D240. Phase 8 checkpoint 3: overspeed time limits and warnings (10 Nov 2026)
+
+**The product owner's choice:** overspeed brings a warning and damage. Past each engine's diving limit, over-revving
+already wore it out within seconds (D62).
+
+**The time limits over the red line** (src/physics/cooling.js `stepHeat`): between the red line (`maxSpeed`: the
+Merlin's combat limit of 3,000 rpm, the DB 601A's 5-minute 2,400, the Jumo 211's take-off 2,600) and the diving limit,
+an engine may now run only for its allowance, `heat.overRevTime`:
+
+| Engine | Allowance | Source |
+|---|---|---|
+| Merlin | 20 s | S6: "3,000 may be exceeded only for 20 s with throttle at least one third open" (the throttle condition isn't modelled) |
+| DB 601A | 30 s | S18: "2500 U/min 30 Sekunden lang" |
+| Jumo 211 | 30 s | estimate, as the DB 601A's (no Jumo limit found, D62) |
+
+- **Past the allowance,** the engine wears out in `engineWear.overTimeLife` = 120 s (an estimate: as overheating by
+  20 °C). That is slower than past the diving limit, which is unchanged.
+- **The allowance returns** under the red line, second for second.
+- **Over the red line** means more than `engineWear.redLineMargin` = 20 rpm over it (an estimate), so the
+  constant-speed governors' small hunting doesn't count.
+- **Validation unchanged:** no flight in `npm run validate` goes over.
+- **The AI:** in headless duels the AI fighters' engines reached 3,235-3,617 rpm (Spitfire) and 2,523-2,595 rpm
+  (Bf 109, Bf 110) in dives. Their wear stayed under 5%, mostly from the D62 diving-limit rule; power is lost only
+  past 30%.
+
+**The overspeed warning:** a fifth assist, off by default.
+- "OVERSPEED — reduce the rpm" with any engine over its red line;
+- "DIVE LIMIT — ease out of the dive" above 95% of the airframe's diving limit (`limits.diveEas`);
+- a triple 750 Hz beep, and white on red as the other warnings (D232).
+- **Shown with the others:** in the settings, on the F2 strip and on the results.
+
+**Game design, flagged:** overTimeLife, redLineMargin, the Jumo 211's allowance, the 95% share and the tone.
+
+**Tests:** new tests/physics/overspeed.test.js:
+- the allowances;
+- no wear at or under the red line, within the margin, or within the allowance; wear beyond it, in both engines;
+- the allowance returning;
+- the diving-limit wear unchanged;
+- the warning (off by default, the red line, the dive limit).
+
+The assists and settings tests now include the fifth assist.
+
+**Not checked in Chrome:** the warning needs a dive past the red line, and the connected joystick holds the controls
+(as for D232's warnings). It uses the same message line, styling and tone path as the warnings already seen there.

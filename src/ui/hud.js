@@ -180,6 +180,8 @@ export class Hud {
    */
   warningFor(sim) {
     if (sim.warnings?.g) return 'G LIMIT — ease off the stick';
+    if (sim.warnings?.dive) return 'DIVE LIMIT — ease out of the dive';
+    if (sim.warnings?.overspeed) return 'OVERSPEED — reduce the rpm';
     if (sim.warnings?.stall) return 'STALL WARNING — stick forward';
     return gunWarning(sim) ?? heatWarning(sim);
   }

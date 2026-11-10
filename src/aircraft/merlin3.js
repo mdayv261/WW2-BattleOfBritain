@@ -33,6 +33,7 @@ export const merlin3 = {
     coolantLimit: 120, // climbing (½ hr) and all-out (5 min) limit, Pilot's Notes
     oilLimit: 95, // all-out (5 min) limit
     overRev: 3600 * UNIT.RPM, // diving limit (3,000 rpm may be exceeded for 20 s)
+    overRevTime: 20, // s above maxSpeed allowed: "3,000 may be exceeded only for 20 s" (S6, D240)
     // Normal ranges, the gauges' green bands (D85): from the minimum for take-off to the cruising limit (S33).
     oilNormal: { from: 15, to: 90 },
     coolantNormal: { from: 60, to: 95 },

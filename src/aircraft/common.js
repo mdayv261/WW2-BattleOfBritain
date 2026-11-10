@@ -38,6 +38,8 @@ export const common = {
     overheatLife: 120, // s: an engine 20 °C over a limit seizes in about two minutes
     overRevSpan: 300, // rpm over the diving limit at which wear builds up at 1 / overRevLife per second
     overRevLife: 10, // s
+    overTimeLife: 120, // s: past its allowance over the red line, an engine wears out in this long (D240)
+    redLineMargin: 20, // rpm: over the red line by more than this counts (the constant-speed governors' hunting)
     lossFrom: 0.3, // wear below this costs no power
     lossAtSeize: 0.6, // power lost by the time the engine seizes
     boilMargin: 15, // °C over the coolant limit at which the coolant boils off

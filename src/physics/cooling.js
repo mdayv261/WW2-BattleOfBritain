@@ -57,9 +57,12 @@ export function coolingConstants(ac, engine) {
   return ac._cooling;
 }
 
+/** Whether an engine turning at `omega` (rad/s) is over its red line, by more than the governor's hunting (D240). */
+export const overRedLine = (engine, omega) => omega > engine.maxSpeed + common.engineWear.redLineMargin * UNIT.RPM;
+
 /** Fresh heat state for one engine at temperatures (°C). */
 export function createHeat(coolant = 60, oil = 40) {
-  return { coolant, oil, coolantLeft: 1, coolantLeak: 0, oilLeft: 1, oilLeak: 0, wear: 0, seized: false };
+  return { coolant, oil, coolantLeft: 1, coolantLeak: 0, oilLeft: 1, oilLeak: 0, wear: 0, seized: false, overTime: 0 };
 }
 
 /** Conductances (W/K) of an engine's coolant radiator and oil cooler in the current flow. */
@@ -118,6 +121,10 @@ export function stepHeat(ac, engine, e, { altitude, q, radiator, power }, dt) {
   const rpm = e.omega / UNIT.RPM;
   const overRev = Math.max(0, rpm - engine.heat.overRev / UNIT.RPM) / w.overRevSpan;
   h.wear += ((over(h.coolant, limit) + over(h.oil, engine.heat.oilLimit)) / w.overheatLife + overRev / w.overRevLife) * dt;
+  // Above the red line (maxSpeed) the engine may run for its allowance (heat.overRevTime, D240): longer, it wears. The
+  // allowance comes back while under the red line, second for second.
+  h.overTime = overRedLine(engine, e.omega) ? (h.overTime ?? 0) + dt : Math.max(0, (h.overTime ?? 0) - dt);
+  if (h.overTime > engine.heat.overRevTime) h.wear += dt / w.overTimeLife;
   // Coolant well past its limit boils off through the relief valve.
   if (h.coolant > limit + w.boilMargin) h.coolantLeft = Math.max(0, h.coolantLeft - w.boilRate * dt);
   if (h.wear >= 1) h.seized = true;

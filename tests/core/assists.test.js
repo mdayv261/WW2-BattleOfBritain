@@ -35,7 +35,7 @@ describe('the assists', () => {
     sim.input.engineAssist = false;
     manageEngine(sim.ac, sim.plane, sim.input, sim.assists);
     expect(sim.input.engineAssist).toBe(false);
-    expect(warnings(sim.ac, sim.plane, sim.assists)).toEqual({ stall: false, g: false });
+    expect(warnings(sim.ac, sim.plane, sim.assists)).toEqual({ stall: false, g: false, overspeed: false, dive: false });
     expect(assistNames(sim.assists)).toBe('');
     expect(assistNames({ autoRudder: true, gWarning: true })).toBe('auto-rudder, g warning');
   });
