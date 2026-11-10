@@ -39,8 +39,8 @@ describe('pilot\'s speed card figures (D91)', () => {
     expect(values('spitfire')).toEqual([78, 68, 81, 140, 85]);
   });
 
-  it('Hurricane: stall 87 and 70 (S12), take-off 81 (product owner), best climb 164 (S2), approach 70 mph (product owner)', () => {
-    expect(values('hurricane')).toEqual([87, 70, 81, 164, 70]);
+  it('Hurricane: stall 87 and 70 (S12), take-off 81 (product owner), best climb 164 (S2), approach 88 mph (product owner, D241)', () => {
+    expect(values('hurricane')).toEqual([87, 70, 81, 164, 88]);
   });
 
   it('Bf 109: stall 150 and 100 (S20), take-off 120 (product owner), best climb 250 (S15), approach 145 km/h (S32)', () => {

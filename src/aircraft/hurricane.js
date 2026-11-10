@@ -117,7 +117,7 @@ export const hurricane = {
   sight: { type: 'Barr & Stroud GM 2', ringMils: 100 },
   // The pilot's speed card on the panel (D91), m/s as the airspeed indicator reads: stall flaps up and down (S12, the Mk
   // II), take-off and approach (the product owner's figures: no source), best rate of climb at sea level (S2).
-  pilotCard: { stallClean: 86.5 * UNIT.MPH, stallFlaps: 70.3 * UNIT.MPH, takeoff: 81 * UNIT.MPH, climb: 164 * UNIT.MPH, approach: 70 * UNIT.MPH },
+  pilotCard: { stallClean: 86.5 * UNIT.MPH, stallFlaps: 70.3 * UNIT.MPH, takeoff: 81 * UNIT.MPH, climb: 164 * UNIT.MPH, approach: 88 * UNIT.MPH },
   eye: { x: -0.89, y: 0.65 },
   // Crew (Phase 6, D80): where each sits (m, body axes; estimates on the model) and how long after deciding to bail
   // out he is clear of the aircraft (s, estimates: hood or hatch, harness, over the side; one after another).

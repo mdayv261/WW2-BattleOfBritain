@@ -269,7 +269,7 @@ assumed to lie on the thrust line, which makes the heights estimates.
 | Speed card: stalling speed, flaps down (`pilotCard.stallFlaps`) | 31.43 | m/s | 70.3 mph IAS | S12 | medium | Mk II, landing condition. |
 | Speed card: take-off speed (`pilotCard.takeoff`) | 36.21 | m/s | 81 mph | ASSUMPTION | estimate | Product owner's figure (D91); no source found (see gaps). |
 | Speed card: best rate-of-climb speed (`pilotCard.climb`) | 73.31 | m/s | 164 mph at sea level | S2 | medium | Read from the chart (TAS, close to the indicated speed at sea level). |
-| Speed card: final approach speed (`pilotCard.approach`) | 31.29 | m/s | 70 mph | ASSUMPTION | estimate | Product owner's figure (D91); no source found (see gaps). |
+| Speed card: final approach speed (`pilotCard.approach`) | 39.34 | m/s | 88 mph | ASSUMPTION | estimate | Product owner's figure (D241, was 70 mph, D91); no source found (see gaps). |
 | Flap positions besides up (`controls.flapStops`) | 4 | — | — | ASSUMPTION | estimate | Hydraulic flaps that could be stopped part-way assumed; the Mk I Pilot's Notes were not found (see gaps). |
 | Flap travel, fully down (`controls.flapTravel`) | 80 | deg | 80° down | S12 | medium | Split flaps. |
 | Flap setting for take-off, fraction of travel (`controls.flapTakeoff`) | 0 | fraction | — | ASSUMPTION | estimate | No take-off flap setting found (the Mk I Pilot's Notes were not found); flaps up assumed, as for the Spitfire (S33). |

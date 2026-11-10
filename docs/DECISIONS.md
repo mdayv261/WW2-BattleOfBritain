@@ -6602,3 +6602,44 @@ The assists and settings tests now include the fifth assist.
 
 **Not checked in Chrome:** the warning needs a dive past the red line, and the connected joystick holds the controls
 (as for D232's warnings). It uses the same message line, styling and tone path as the warnings already seen there.
+
+## D241. The Hurricane's final approach speed on its speed card: 88 mph (10 Nov 2026)
+
+**Decision (product owner):** "Change the Hurricane's 'Final Approach' speed pilot placard to 88."
+- The Hurricane's speed card now reads 88 mph for the final approach. It was 70 mph, also the product owner's figure
+  (D91).
+- No source was found for either figure, so the row stays an estimate (`pilotCard.approach`, AIRCRAFT_DATA.md).
+- Display only: nothing in the flight model or the AI reads it.
+
+## D242. The Phase 8 acceptance test, and sign-off (10 Nov 2026)
+
+**The phase list's acceptance:** "rebindings work in flight and survive a reload; each assist visibly changes the
+flight". The checks, with my own results:
+1. **Tests and build.** 1,981 tests pass; the validation output is unchanged (md5 c1732d9…); the deploys of D238,
+   D239 and D240 passed (runs 42772602601, 42773868942, 42782042762).
+2. **Keys rebind, work in flight and survive a reload.** In Chrome the radar was rebound from F4 to R: R switched it in
+   flight and F4 no longer did; the binding survived a reload, and the key list showed it (D238).
+3. **Joystick buttons rebind and survive a reload.** Assigned by pressing a button on the Controls screen and saved
+   with the joystick mapping.
+   - Covered by the tests (button swaps); the save is the same path as the J panel's.
+   - Not pressed in Chrome by me (it needs the physical stick).
+4. **A clash is offered as a swap; Reset restores the defaults.** Both seen in Chrome (D238).
+5. **Mouse flying, centring, off by default; look keys.** Seen in Chrome:
+   - a right bank from the mouse alone;
+   - Num 5 centred the stick;
+   - the wheel took the throttle from 100% to 85%;
+   - Num 4 looked left.
+   - It is off unless switched on (D239).
+6. **Each assist visibly changes the flight:**
+   - **Auto-rudder** halves the sideslip or better in all four fighters (D232).
+   - **Engine management** opens the radiator before the limit and holds automatic pitch (D232, D234).
+   - **The stall, g, overspeed and dive warnings** give their red lines and tones (D232, D240).
+   - **Not triggered by me in Chrome:** the warnings, since the joystick holds the stick there. The tests cover them.
+7. **Overspeed past its allowance wears the engine.** Covered by the tests (D240).
+8. **Frame rate.** 75 fps on this Mac in the checkpoints' Chrome checks.
+
+**Decision (product owner, 10 Nov 2026):** "Phase accepted." Phase 8 is signed off.
+
+**Carried forward:** the known limitations in D236 (the AI Bf 109 against a single RAF fighter, D220, among them).
+
+**Next:** Phase 9 (multiplayer), after its plan.
