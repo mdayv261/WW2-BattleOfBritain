@@ -6316,3 +6316,42 @@ be untrue). In the pilot's seat the AI gunner changes his drums without a messag
 - new tests/ai/defensive.test.js;
 - tests/ai/gunner.test.js gains the manned gun: the aim from the look, traverse and arc, the trigger only, drum
   changes, no target choice, and nothing above 2 g.
+
+## D235. Enemy pointers along the top of the screen (10 Nov 2026)
+
+**The product owner's request and choices (10 Nov 2026):** in every aircraft the player flies, small red arrowheads at
+the top of the screen show where the enemy aircraft are.
+- **A bearing strip:** the strip's middle is dead ahead, its ends dead astern (the left end behind-left, the right end
+  behind-right). One arrowhead per enemy, pointing up if it is above the player and down if below.
+- **Only enemies within 5 km;** the nearest is drawn larger.
+- **A setting,** "Enemy pointers", on by default.
+
+**What was built:**
+- **The pointers** (new src/core/enemyPointers.js):
+  - the bearing on the horizontal from the aircraft's heading, as the radar's (D230);
+  - above or below by height;
+  - every AI aircraft of the other side still flying (not abandoned, not lost);
+  - true positions with no delay;
+  - the nearest listed last, so it draws on top.
+- **The strip** (new src/ui/enemyPointers.js): an SVG across the top, from right of the radar to the right edge, above
+  the message line.
+  - Faint ticks mark dead ahead and 90° either side.
+  - Arrowheads are red with a dark outline, 14 px wide (20 px for the nearest).
+  - It shows while flying or paused, in the cockpit, the outside views and the Bf 110's gun. It is hidden on the menus
+    and after bailing out or a crash.
+- **The setting:** `enemyPointers` in src/core/settings.js (on unless switched off), with a row on the settings screen.
+
+**Game design, flagged:** an aid beyond the period's displays, like the modern HUD (D232); the 5 km range; the strip's
+layout.
+
+**Checked in Chrome** (no console errors):
+- an RAF dogfight showed four arrowheads near the middle, pointing up (the enemy starts above), the nearest larger;
+- switched off it hides, and the choice is remembered (set back on afterwards);
+- it shows on the Bf 110's rear gun.
+
+**Tests:**
+- new tests/core/enemyPointers.test.js: bearings ahead, either side and astern; above and below; the 5 km limit; no
+  friends, nothing lost or abandoned; the nearest; a Luftwaffe pilot pointed at the RAF;
+- tests/core/settings.test.js: the default and the round trip.
+
+The Phase 7 acceptance test (checkpoint 8) becomes D236.

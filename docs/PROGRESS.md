@@ -43,7 +43,16 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 **Known issues:**
 - Handing back mid-fight leaves the throttle where the AI had it.
 
-**Left in Phase 7:** checkpoint 8 (the acceptance test).
+**Left in Phase 7:** checkpoint 8 (the acceptance test, D236).
+
+## Enemy pointers (10 Nov 2026)
+
+**Done** (D235): small red arrowheads along the top of the screen for enemies within 5 km.
+- Placement: the middle is ahead, the ends are behind; up means above you, down means below; the nearest is larger.
+- In every aircraft the player flies.
+- "Enemy pointers" in the settings, on by default.
+
+**Tests:** 1,959 pass; the validation output is unchanged.
 
 ## Phase 7 checkpoint 6b: 3D cockpit sides (10 Nov 2026)
 

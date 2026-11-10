@@ -51,6 +51,9 @@ export function renderSettings(container, values, { onChange, onBack, onJoystick
     const hud = el('input', { type: 'checkbox', checked: v.hudInCockpit });
     hud.addEventListener('change', () => { v = onChange({ hudInCockpit: hud.checked }); });
     row('Modern HUD', el('label', {}, hud, ' in the cockpit too'));
+    const pointers = el('input', { type: 'checkbox', checked: v.enemyPointers });
+    pointers.addEventListener('change', () => { v = onChange({ enemyPointers: pointers.checked }); });
+    row('Enemy pointers', el('label', {}, pointers, ' on'), el('div', { className: 'menu-note', textContent: 'Red arrowheads along the top for enemies within 5 km: ahead in the middle, behind at the ends; pointing up above you, down below.' }));
     // Assists.
     for (const [key, label, about] of ASSISTS) {
       const box = el('input', { type: 'checkbox', checked: v.assists[key] });

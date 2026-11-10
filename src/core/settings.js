@@ -1,6 +1,6 @@
 // The player's settings (Phase 7 checkpoint 6, D232), kept in the browser's storage: the sound volume and the engines'
-// volume within it (D234), the graphics level, the modern HUD in the cockpit, and the assists (each off unless switched
-// on, D16). Storage that is missing, blocked or holds something unreadable gives the defaults, and the game carries on
+// volume within it (D234), the graphics level, the modern HUD in the cockpit, the enemy pointers (D235), and the
+// assists (each off unless switched on, D16). Storage that is missing, blocked or holds something unreadable gives the defaults, and the game carries on
 // without saving (as the career, src/core/career.js). Sound on or off keeps its own key (D231).
 
 import { browserStorage } from './career.js';
@@ -9,7 +9,9 @@ import { NO_ASSISTS } from './assists.js';
 export const SETTINGS_KEY = 'bob1940.settings';
 export const GRAPHICS_LEVELS = ['low', 'medium', 'high'];
 
-export const DEFAULT_SETTINGS = Object.freeze({ volume: 80, engineVolume: 25, graphics: 'high', hudInCockpit: false, assists: NO_ASSISTS });
+export const DEFAULT_SETTINGS = Object.freeze({
+  volume: 80, engineVolume: 25, graphics: 'high', hudInCockpit: false, enemyPointers: true, assists: NO_ASSISTS,
+});
 
 /** A settings object made sound: every field present and of the right kind, else its default. */
 export function cleanSettings(raw) {
@@ -20,6 +22,7 @@ export function cleanSettings(raw) {
     engineVolume: percent(s.engineVolume, DEFAULT_SETTINGS.engineVolume), // the engines' share (D234: 25% by default)
     graphics: GRAPHICS_LEVELS.includes(s.graphics) ? s.graphics : DEFAULT_SETTINGS.graphics,
     hudInCockpit: s.hudInCockpit === true,
+    enemyPointers: s.enemyPointers !== false, // the red arrowheads for enemies within 5 km (D235): on unless switched off
     assists: Object.fromEntries(Object.keys(NO_ASSISTS).map((k) => [k, s.assists?.[k] === true])),
   };
 }

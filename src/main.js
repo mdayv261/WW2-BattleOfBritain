@@ -31,6 +31,8 @@ import { Settings } from './core/settings.js';
 import { applyDetail, pixelRatioFor } from './render/graphics.js';
 import { HELP } from './ui/hud.js';
 import { GunnerHud } from './ui/gunnerHud.js';
+import { EnemyPointers } from './ui/enemyPointers.js';
+import { enemyPointers } from './core/enemyPointers.js';
 import { swapSeat } from './core/crewSeat.js';
 import { gunnerAim } from './render/cameras.js';
 import { common } from './aircraft/common.js';
@@ -62,6 +64,7 @@ const radarPlot = new RadarPlot(); // the RAF radar's plots and display, top lef
 const radar = new RadarDisplay();
 const nose = new Vector3();
 const gunnerHud = new GunnerHud(); // the Bf 110's rear gun: its sight and readout (D234)
+const pointers = new EnemyPointers(); // red arrowheads for enemies within 5 km, along the top (D235)
 let gunInput = null; // the player's keys and stick while he mans the rear gun: they work the gun, not the aircraft
 const GUN_LOOK = { yaw: 35 * (Math.PI / 180), pitchDown: -5 * (Math.PI / 180), pitchUp: 65 * (Math.PI / 180) }; // rad
 
@@ -223,6 +226,8 @@ renderer.setAnimationLoop((now) => {
   }
   flightHud.update(sim, (outside || (settings.values.hudInCockpit && !view.rig.atGun)) && !sim.playerJumper); // in the cockpit too if chosen (D232)
   gunnerHud.update(sim, view.rig.atGun && game.kind !== null && !sim.playerJumper, camera.fov);
+  const pointing = settings.values.enemyPointers && game.kind !== null && !sim.playerJumper && !sim.crashed;
+  pointers.update(pointing ? enemyPointers(sim) : [], pointing);
   const heading = headingOf(nose.set(1, 0, 0).applyQuaternion(sim.plane.body.quaternion));
   audio.update(sim, game.advancing);
   radar.draw(radarPlot, heading, { show: game.kind !== null && sim.ac.side === 'RAF' && !sim.playerJumper, fresh: plotted, dt });
