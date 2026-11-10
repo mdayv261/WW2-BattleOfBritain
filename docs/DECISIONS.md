@@ -6370,3 +6370,77 @@ layout.
 - tests/core/settings.test.js: the default and the round trip.
 
 The Phase 7 acceptance test (checkpoint 8) becomes D236.
+
+## D236. The Phase 7 acceptance test (10 Nov 2026, proposed)
+
+Phase 7 (missions and the game loop, D224) passes when the product owner has run these checks in the browser and is
+satisfied. My own results, run first (headless where possible, and in Chrome on this Mac), are given with each.
+
+1. **Tests and build.** Pass: `npm test` passes, `npm run validate` is unchanged, and the deploy passes.
+   - Mine: 1,960 tests pass; the validation output is unchanged (md5 c1732d9…).
+   - The deploy of D234-D235 is run 42768817480.
+2. **The game loop.** Pass:
+   - main menu → mission setup → fly → pause → results → main menu → fly again, with no reload;
+   - Settings is reached from both the main menu and the pause menu.
+   - Mine: done in Chrome. The pause menu offers Resume, Restart mission, End mission, Sound, Settings and Main menu.
+3. **Dogfight.** Pass: the setup's choices are flown (side, aircraft, enemy type and number, skill, height, time of
+   day), and the results credit kills, shared kills and damage.
+   - Mine: a Spitfire against three Bf 109s with two wingmen started at the chosen 3,000 m with five AI aircraft.
+     Flown hands-off it was shot down and bailed out at 99 s ("lost").
+   - The kill credit is covered by the tests (D225).
+4. **Interception (RAF).** Pass:
+   - the raid starts over mid-Channel;
+   - wingmen fly in a vic;
+   - the mission ends when the raid passes its target or is turned back;
+   - the results show the bombers' lines.
+   - Mine: Hawkinge, six He 111s, two wingmen: "6 of 6 bombers reached Hawkinge" at 282 s (D228). In Chrome, the
+     results showed bombers shot down, bombers that reached the target, the wingmen's kills and losses, and the career
+     line.
+5. **Escort (Luftwaffe).** Pass: the attackers appear; the mission ends back at mid-Channel; the bombers' fate is
+   shown.
+   - Mine: Lympne, three He 111s, two Hurricanes, a Rotte. The attackers appeared at 110 s; "3 of 3 bombers escorted
+     back to mid-Channel from Lympne" at 712 s.
+6. **Ranks.** Pass:
+   - mission kills raise the rank (2 kills to the second);
+   - the career survives a reload;
+   - the reset needs two clicks.
+   - Mine: checked in Chrome (D229). The promotion line itself is covered by the tests.
+7. **RAF radar.** Pass: a heading-up ring with a bearing-only blip per enemy group, updated every 20 s; F4 switches it;
+   none in Luftwaffe aircraft.
+   - Mine: checked in Chrome (D230), and shown again in the interception above.
+8. **Sound.** Pass:
+   - the engine follows the rpm and boost (Engine volume 25% by default);
+   - guns, cannon, hits and wind;
+   - nearby aircraft pass with a Doppler drop;
+   - the volume, the engine volume and Sound on/off work.
+   - Mine: the sound runs in flight and stops on the menus, and the controls work (D231, D234). I can't listen, so how
+     it sounds is the product owner's to judge.
+9. **Settings, HUD and cockpit.** Pass:
+   - the graphics levels;
+   - the modern HUD in the cockpit;
+   - each assist, with its red warnings;
+   - the 3D cockpit sides and the rear view to the tail in all four flyable aircraft.
+   - Mine: checked in Chrome (D232, D233). The warnings are covered by the tests only: the joystick held the stick.
+10. **Bf 110 rear gun.** Pass:
+    - Tab to the gun: the AI pilot takes over and flies defensively;
+    - the MG 15 aims, fires its tracer from the muzzle, stays clear of the fins and changes drums (with the
+      out-of-ammunition warning);
+    - Tab back.
+    - Mine: checked in Chrome and headless (D234).
+11. **Enemy pointers.** Pass: red arrowheads along the top for enemies within 5 km, up above and down below, the nearest
+    larger; the setting switches them.
+    - Mine: checked in Chrome (D235).
+12. **Frame rate.** Pass: a mission at the twelve-aircraft limit holds 60 fps on the product owner's machine.
+    - Mine: an interception with six He 111s, four Bf 109s and a wingman (eleven AI aircraft) held 75 fps, the longest
+      frame 14 ms, once settled.
+    - The first seconds of a flight ran at about 43 fps while the scene loaded.
+
+**Known limitations carried forward:**
+- the AI Bf 109 against a single RAF fighter (D220);
+- careers and settings are kept in one browser only;
+- the cockpit shapes are estimates;
+- radar cover isn't modelled;
+- handing the Bf 110 back mid-fight leaves the throttle where the AI had it;
+- a flight's first few seconds can run slower while the scene loads.
+
+Phase 8 doesn't start until the product owner signs Phase 7 off (CLAUDE.md).
