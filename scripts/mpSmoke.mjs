@@ -7,7 +7,8 @@
 
 import { PROTOCOL_VERSION, AIR_SPAWN } from '../src/mp/netConfig.js';
 import { encodeInputs, quantiseInput } from '../src/mp/binary.js';
-import { wait, health as askHealth, createRoom, player as join, check } from './mpPlayers.mjs';
+import { summarise } from './loadStats.mjs';
+import { wait, until, health as askHealth, createRoom, player as join, check } from './mpPlayers.mjs';
 
 const base = (process.argv[2] ?? 'http://localhost:8787').replace(/\/+$/, '');
 const player = (code, name, team) => join(base, code, name, team);
@@ -24,13 +25,14 @@ check(/^[A-HJ-NP-Z2-9]{6}$/.test(code), `room created: ${code}`);
 
 const ann = player(code, 'Ann', 'raf');
 await ann.opened;
-await wait(200);
+await until(() => ann.lobby);
 const max = player(code, 'Max', 'luftwaffe');
 const bob = player(code, 'Bob', 'raf');
 const udo = player(code, 'Udo', 'luftwaffe');
 const all = [ann, max, bob, udo];
 await Promise.all(all.map((p) => p.opened));
-await wait(300);
+const joined = await until(() => all.every((p) => p.lobby?.players.length === 4));
+console.log(`      (the lobby showed all four ${joined} ms after the last connection opened)`);
 check(ann.lobby?.players.length === 4, `all four are in the lobby (${ann.lobby?.players.map((p) => `${p.name} ${p.team}`).join(', ')})`);
 check(ann.lobby?.hostId === ann.id, 'Ann, who created it, is the host');
 
@@ -40,14 +42,15 @@ max.send({ type: 'setAircraft', aircraft: 'bf109e4' });
 udo.send({ type: 'setAircraft', aircraft: 'bf110c4' });
 for (const p of all) p.send({ type: 'setReady', ready: true });
 ann.send({ type: 'setSettings', settings: { start: 'air', respawn: 'apron', scoreLimit: 10 } });
-await wait(300);
+const picked = await until(() => ann.lobby?.canStart.ok && udo.lobby?.settings.scoreLimit === 10, 10000);
+console.log(`      (fighters, ready and settings shown ${picked} ms after they were sent)`);
 const kinds = Object.fromEntries((ann.lobby?.players ?? []).map((p) => [p.name, p.aircraft]));
 check(kinds.Ann === 'spitfire' && kinds.Bob === 'hurricane' && kinds.Max === 'bf109e4' && kinds.Udo === 'bf110c4', `fighters picked (${Object.entries(kinds).map(([n, a]) => `${n} ${a}`).join(', ')})`);
 check(ann.lobby?.canStart.ok === true, 'everyone is ready, so the host may start');
 check(udo.lobby?.settings.respawn === 'apron' && udo.lobby?.settings.scoreLimit === 10, 'the others see the host\'s settings');
 const asked = Date.now();
 ann.send({ type: 'start' });
-while (!all.every((p) => p.got.some((m) => m.type === 'matchStart')) && Date.now() - asked < 3000) await wait(20);
+await until(() => all.every((p) => p.got.some((m) => m.type === 'matchStart')), 10000);
 console.log(`      (the match started ${Date.now() - asked} ms after the host pressed Start)`);
 check(all.every((p) => p.got.some((m) => m.type === 'matchStart')), 'everyone was told the match started');
 
@@ -56,7 +59,10 @@ for (const p of all) p.snapshots.length = 0;
 const climb = quantiseInput({ pitch: 0.3, throttle: 1, rpm: 1, fireMg: true }); // Ann pulls up, firing
 const gunner = quantiseInput({ throttle: 0.8, rpm: 0.9, seat: 'gunner', gunAz: Math.PI, gunEl: 0.3, engines: [{ throttle: 0.8, rpm: 0.9 }, { throttle: 0.8, rpm: 0.9 }] });
 const t0 = Date.now();
-while (Date.now() - t0 < 3000) {
+// On Cloudflare the first seconds of a match bring a burst of extra snapshots (D246), so the rate is counted over the
+// last 2 s of the 5 s flown.
+const steady = performance.now() + 3000;
+while (Date.now() - t0 < 5000) {
   const tick = ann.snapshots.at(-1)?.tick ?? 0;
   ann.ws.send(encodeInputs(tick + 10, tick, [climb, climb, climb, climb]));
   const ut = udo.snapshots.at(-1)?.tick ?? 0;
@@ -66,7 +72,7 @@ while (Date.now() - t0 < 3000) {
 const y = (s) => s.you.numbers[1];
 const xz = (a, b) => Math.hypot(b.you.numbers[0] - a.you.numbers[0], b.you.numbers[2] - a.you.numbers[2]);
 for (const p of all) {
-  const rate = p.snapshots.length / 3;
+  const rate = summarise(p, steady, performance.now()).rate;
   const last = p.snapshots.at(-1);
   check(rate > 25 && rate < 35, `${p.name} gets ${rate.toFixed(1)} snapshots a second`);
   check(last?.you && last.others.length === 3, `${p.name}'s snapshot has their own aircraft and the 3 others`);
@@ -77,22 +83,22 @@ check(y(ann.snapshots.at(-1)) > y(first) + 5, `Ann's controls reach the server: 
 const seen = max.snapshots.reduce((n, s) => n + (s.others.find((o) => o.slot === first.you.slot)?.shots.mg ?? 0), 0);
 check(seen > 50, `Max is told of Ann's ${seen} rounds (for the tracers)`);
 const m0 = max.snapshots[0];
-check(xz(m0, max.snapshots.at(-1)) > 200, `Max's aircraft flies on by itself (${xz(m0, max.snapshots.at(-1)).toFixed(0)} m in 3 s)`);
+check(xz(m0, max.snapshots.at(-1)) > 200, `Max's aircraft flies on by itself (${xz(m0, max.snapshots.at(-1)).toFixed(0)} m in 5 s)`);
 const u = udo.snapshots.at(-1);
 check(Math.abs(y(u) - y(udo.snapshots[0])) < 150, `with Udo on the rear gun the AI pilot flies the Bf 110 (height change ${(y(u) - y(udo.snapshots[0])).toFixed(0)} m)`);
 
 // The host ends the match: everyone gets the results; then back to the lobby.
 ann.send({ type: 'toLobby' });
-await wait(400);
+await until(() => all.every((p) => p.got.some((m) => m.type === 'matchEnd')) && bob.lobby?.phase === 'results');
 const ends = all.map((p) => p.got.find((m) => m.type === 'matchEnd'));
 check(ends.every(Boolean), `everyone got the results (${ends[0]?.result.reason}, ${ends[0]?.result.winner}, ${ends[0]?.result.players.length} pilots)`);
 check(bob.lobby?.phase === 'results', 'the room shows the results');
 ann.send({ type: 'toLobby' });
-await wait(400);
+await until(() => bob.lobby?.phase === 'lobby');
 check(bob.lobby?.phase === 'lobby' && bob.lobby.players.every((p) => !p.ready), 'the host takes everyone back to the lobby, not ready');
 
 ann.send({ type: 'leave' });
-await wait(300);
+await until(() => bob.lobby?.players.length === 3);
 const next = ann.lobby.players[1]; // whoever joined second (the other three join at almost the same moment)
 const heir = all.find((p) => p.id === next.id);
 check(bob.lobby?.hostId === next.id, `when Ann leaves, ${heir?.name} (the next to join) becomes host`);

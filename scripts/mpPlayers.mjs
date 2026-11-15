@@ -7,6 +7,13 @@ import { decodeSnapshot } from '../src/mp/binary.js';
 
 export const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/** Waits until `ready()` is true or `limit` ms have passed; returns the ms it took (over the internet, not instant). */
+export async function until(ready, limit = 5000) {
+  const t = Date.now();
+  while (!ready() && Date.now() - t < limit) await wait(20);
+  return Date.now() - t;
+}
+
 /** The server at `base` (http or https): is it up? Returns its /health answer, or null. */
 export const health = (base) => fetch(`${base}/health`).then((r) => r.json()).catch(() => null);
 

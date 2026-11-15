@@ -6945,3 +6945,55 @@ Single player is unchanged. The family test's report depends on these lines.
   says so.
 
 **No deviation from historical figures.**
+
+### D246, part B: the deployment (15 Nov 2026)
+
+**Deployed** with the product owner's yes ("Yes, deploy and commit"):
+- the Worker `bob1940-mp` with the test copy, version a2f1b407, at https://bob1940-mp.dawn-patrol-mp-server.workers.dev;
+- 2,168 KiB in all (497 KiB compressed), with an 11 ms start-up.
+- Checks:
+  - `/health` answers;
+  - the page and the map file are served;
+  - another web site's request for a room is refused (403).
+- Part A was committed first (d1005aa). Nothing pushed.
+
+**The smoke test needed two changes for the internet.** Its first runs against Cloudflare failed:
+- **Fixed pauses:** its 300 ms waits were written for this Mac, where everything is instant. Over the internet the
+  joins took about 360 ms to open, and the fighters, ready flags and settings took 1.1 s to show. It now waits for each
+  step to happen (`until`, scripts/mpPlayers.mjs, up to 5-10 s) and prints how long each took.
+- **The start-up burst:** it counted 38-43 snapshots a second. On Cloudflare, the first seconds of a match bring extra
+  snapshots, measured from Node:
+  - about 180 ticks a second in the first half second, fading to 120 by 5 s;
+  - about 0.5-0.9 s of extra ticks in all;
+  - then exactly 120 ticks and 30 snapshots a second;
+  - on this Mac, 120 from the start.
+  The smoke test now flies 5 s and counts the last 2: 30.5 a second on Cloudflare. Both servers pass all its checks.
+- **The cause isn't confirmed.** The room steps by `Date.now()` and drops any backlog over 24 ticks per call, so it
+  shouldn't run ahead of real time. The likeliest explanation is a slow first second on a fresh Cloudflare machine (the
+  flight code not yet compiled), caught up 24 ticks at a time. Confirming it needs a timing reading from the server,
+  which means another deployment.
+
+**Chrome, on the deployed test copy** (one tab, with a scripted opponent from Node so the tab stayed in the
+foreground):
+- the menu;
+- create a room;
+- ready and start;
+- the match with the radar and score line;
+- F3:
+  - ping 10-16 ms, jitter 2-22 ms;
+  - lead 2-5 ticks, clock x1.00;
+  - one correction of 1.97 m at the start, the same size as on this Mac, so a fixed start-up nudge and not the
+    network; none after it;
+- over a measured 10 s, the server ran 120.0 ticks a second and the browser 120.1;
+- no console errors.
+The start-up burst caused no further correction and no clock jump in the browser.
+
+**The 10-minute load test against Cloudflare** (`npm run mp:load -- <url> 600`; four players, both Bf 110 AIs in
+turn) passed:
+- every player at 30.0 snapshots a second throughout, with nobody cut off, so the room stayed within Cloudflare's CPU
+  limit;
+- median ping 20-22 ms, worst 66-114 ms;
+- three gaps over 100 ms in the 10 minutes (worst 348 ms, one player): ordinary internet hiccups, not a pattern;
+- the scripted pilots held their banks throughout, climbing slowly from 8,000 to about 15,000 ft.
+
+**No deviation from historical figures.**
