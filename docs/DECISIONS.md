@@ -6997,3 +6997,24 @@ turn) passed:
 - the scripted pilots held their banks throughout, climbing slowly from 8,000 to about 15,000 ft.
 
 **No deviation from historical figures.**
+
+### D246: the live site connected (15 Nov 2026)
+
+**The product owner's decisions** (15 Nov 2026):
+- "Push to Github."
+- On the start-up burst: "Wait".
+- "Connect the live site to this server." This is now, before the family test. The plan had it after; the family can
+  use the live site instead.
+
+**Done:**
+- `.github/workflows/deploy.yml` builds the game with
+  `VITE_MP_SERVER=https://bob1940-mp.dawn-patrol-mp-server.workers.dev`, so the live site's Multiplayer screen uses the
+  Cloudflare server.
+- A test checks that the workflow's address is the deployed server, and that the server lets the live site in.
+- **Checked before pushing:**
+  - the production build with that setting, served at /WW2-BattleOfBritain/ on this Mac;
+  - Chrome: Multiplayer → Create a room made room P9JGGA on Cloudflare;
+  - no console errors.
+- The guide now points players at the live site. A room's code works from either address, since both use the same
+  server.
+- 2,059 tests pass.

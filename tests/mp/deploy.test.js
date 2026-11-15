@@ -28,6 +28,14 @@ describe('the deployed server\'s settings', () => {
     expect(toml).toMatch(/^name = "bob1940-mp"$/m);
   });
 
+  it('the live site is built to use the deployed server, which lets it in', () => {
+    const workflow = readFileSync(new URL('../../.github/workflows/deploy.yml', import.meta.url), 'utf8');
+    const built = workflow.match(/^\s+VITE_MP_SERVER: (\S+)$/m)[1];
+    expect(built).toBe(TEST_COPY);
+    expect(serverBase({ env: { VITE_MP_SERVER: built }, location: { protocol: 'https:', host: 'mdayv261.github.io', hostname: 'mdayv261.github.io' } })).toBe(TEST_COPY);
+    expect(originAllowed('https://mdayv261.github.io', ORIGINS)).toBe(true);
+  });
+
   it('the test copy finds the server at its own address', () => {
     const location = { protocol: 'https:', host: 'bob1940-mp.dawn-patrol-mp-server.workers.dev', hostname: 'bob1940-mp.dawn-patrol-mp-server.workers.dev' };
     const base = serverBase({ env: { VITE_MP_SERVER: 'same-origin' }, location });

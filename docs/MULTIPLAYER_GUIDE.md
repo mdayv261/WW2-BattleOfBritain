@@ -4,12 +4,11 @@ Battle of Britain 1940 lets 2-4 people fly fighters against each other, RAF agai
 joined with a code. You need Chrome or Firefox on a computer. There are no accounts and nothing to install.
 
 ## Where to play
-- **The test copy** (Phase 9 checkpoint 4, D246): https://bob1940-mp.dawn-patrol-mp-server.workers.dev/
-  It's the whole game, served by the multiplayer server itself.
-- **The live site:** https://mdayv261.github.io/WW2-BattleOfBritain/. Its Multiplayer will work once it's connected
-  to the server (after the family test). Until then its Multiplayer screen says there is no server.
+- **The live site:** https://mdayv261.github.io/WW2-BattleOfBritain/ (connected to the server on 15 Nov 2026, D246).
+- **The test copy:** https://bob1940-mp.dawn-patrol-mp-server.workers.dev/. It's the whole game, served by the
+  multiplayer server itself. Both use the same server, so a room's code works from either.
 
-Everyone in a room must use the same address.
+It's simplest if everyone uses the live site. If the two ever differ in version, the game asks the older page to reload.
 
 ## Making a room and joining it
 1. **One person (the host)** clicks **Multiplayer**, types a name, and clicks **Create a room**. The room's
@@ -48,7 +47,7 @@ Everyone in a room must use the same address.
 ## Testing with family on different home networks
 This checks the real thing: different houses, different internet.
 
-1. **Agree a time.** The organiser creates a room on the test copy and sends everyone the address and the code.
+1. **Agree a time.** The organiser creates a room on the live site and sends everyone the address and the code.
 2. **Everyone joins,** picks a side and a fighter, and clicks **I am ready**. The organiser starts the match.
 3. **Fly together for 5-10 minutes:**
    - fly towards each other and have a fight;
@@ -64,7 +63,7 @@ This checks the real thing: different houses, different internet.
    - anything that went wrong, and what you were doing at the time.
 6. **If someone can't join:**
    - check the code (it never uses I, O, 0 or 1);
-   - check they're on the same address as everyone else;
+   - ask them to reload the page (an old copy is asked to reload anyway);
    - very strict work or school networks can block the game's connection. A home network or a phone hotspot should
      work.
 

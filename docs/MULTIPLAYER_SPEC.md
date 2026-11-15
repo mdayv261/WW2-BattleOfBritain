@@ -5,7 +5,8 @@ Status: **design, Phase 9 (10 Nov 2026 to 15 Nov 2026, D243-D246).** Built and t
 - checkpoint 2: the room server in `server/`, run on this Mac;
 - checkpoint 3: the browser side, `src/net/` and the screens;
 - checkpoint 4 (D246): the test copy of the game served by the room server, the load test and the players' guide
-  (docs/MULTIPLAYER_GUIDE.md). The Cloudflare deployment and the family test each wait for the product owner's yes.
+  (docs/MULTIPLAYER_GUIDE.md). Deployed to Cloudflare on 15 Nov 2026, and the live site connected (its build sets
+  `VITE_MP_SERVER` in .github/workflows/deploy.yml). The family test follows.
 The design is Dawn Patrol's working multiplayer, adapted for 1940 with the product owner's approval (§9).
 
 ## 1. Goal and rules
