@@ -94,6 +94,16 @@ export class MatchSim {
     this.players.delete(id);
   }
 
+  /**
+   * A player whose connection dropped is `away`: their aircraft flies on in the match (its last controls, then hands off)
+   * so a reload within the room's grace takes back the same aircraft, not a fresh one (D251). An away player gets no
+   * snapshots and doesn't count as their team being there.
+   */
+  setAway(id, away) {
+    const p = this.players.get(id);
+    if (p) p.away = away;
+  }
+
   /** Into the air (or onto the apron): `where` 'air' or 'apron'; `start` at the match's start. */
   spawn(p, where, start = false) {
     const mates = [...this.players.values()].filter((q) => q.team === p.team).sort((a, b) => a.slot - b.slot);
@@ -267,7 +277,7 @@ export class MatchSim {
     if (teams.raf >= limit || teams.luftwaffe >= limit) return this.finish('score');
     if (t >= this.settings.timeLimit * 60 * TICK_HZ) return this.finish('time');
     for (const team of TEAM_IDS) {
-      if ([...this.players.values()].some((p) => p.team === team)) this.emptySince[team] = null;
+      if ([...this.players.values()].some((p) => p.team === team && !p.away)) this.emptySince[team] = null;
       else {
         this.emptySince[team] ??= t;
         if (t - this.emptySince[team] >= EMPTY_TEAM_S * TICK_HZ) return this.finish('left', team);
@@ -302,13 +312,14 @@ export class MatchSim {
       p.rearSince.shots = 0;
       return c;
     });
-    return all.map((p, i) => {
+    return all.flatMap((p, i) => {
+      if (p.away) return []; // nobody to send it to
       const { numbers, rest } = captureState(p.plane, p.armament);
       Object.assign(rest, { down: p.down, ai: p.aiInput, rearGun: compact[i].rearGun });
-      return {
+      return [{
         id: p.id,
         buffer: encodeSnapshot({ tick: this.tick, lead: p.lead, you: { slot: p.slot, spawn: p.spawn, numbers, rest }, others: compact.filter((_, k) => k !== i) }),
-      };
+      }];
     });
   }
 }

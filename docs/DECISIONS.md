@@ -7167,3 +7167,57 @@ with permission:
 4. **docs/RELEASE_CHECKLIST.md** and release notes; version 1.0.0. **The acceptance test is the product owner's sign-off
    on the checklist** (the phase list).
 Estimates and research gaps stay as documented limitations in the release notes.
+
+**The product owner's choice** (15 Nov 2026): none of the optional items go into 1.0. The AI Bf 109 against a lone RAF
+fighter (D220), the Cloudflare start-up burst and the late AI-gunner rounds stay as known limitations in the release
+notes. Checkpoint 1 is the five recommended fixes.
+
+## D251. Phase 10 checkpoint 1: bug fixes (15 Nov 2026)
+
+The five fixes the product owner chose (D250):
+
+1. **The crash message in a mission.** It said "press R to restart", but R works only in the test flight. It now says
+   "the results follow". The test flight keeps R, and a match keeps its respawn countdown (src/ui/hud.js; the flight's
+   kind is passed from src/main.js).
+2. **The Bf 110's levers after the rear-gun swap.** Back in the pilot's seat, the throttle, rpm, automatic pitch and
+   radiator had stayed where the AI pilot put them (D234). They now return to where the player left them
+   (src/core/crewSeat.js).
+3. **A host who reloads keeps the host role.** A dropped host keeps it for 15 s (`HOST_HOLD_S`, game design), enough
+   for a reload, then it passes on as before.
+   - Leaving the room still passes it at once.
+   - A newcomer meanwhile doesn't take it.
+   - When the hold runs out, everyone is sent the new lobby. A first version forgot this, and a test caught it.
+4. **The correction at the start of a match.** Found with a temporary log in the real page, which named the values that
+   differed. There were two causes:
+   - **Assists.** With engine management (or the auto-rudder) on, the browser's controls changed at once: the radiator
+     the air start opens was shut. But until your first controls reach the server, it flies the starting controls. The
+     browser now predicts those first ticks with the same starting controls (`startControls`).
+   - **A stall on the page's first frames.** When a snapshot showed the server ahead, the clock jumped without flying
+     the skipped ticks, so the aircraft was a tick behind its label: 1.4 m at 167 m/s, the "1.97 m" seen at D246. The
+     skipped ticks are now flown with the last controls, as the server does.
+   - The harness can now give a browser assists and a stall. Both new tests fail on the old code (2 and 1 corrections)
+     and pass on the new.
+   - **In Chrome** (this Mac's profile, with the assists on): every correction is now under a centimetre ("last
+     0.00 m"). A few still occur on the first frames, when your first controls arrive late and the server repeats the
+     start, and when the auto-rudder's tiny rudder differs by one rounding step (3 × 10⁻⁵). None can be seen.
+5. **A reload rejoins in the same aircraft.** A dropped player's aircraft stays in the match while their place is kept
+   (60 s), "away". It flies on with its last controls, then hands off, and can still be shot.
+   - An away player gets no snapshots, and doesn't count as their team being there, so "a team gone for 30 s" works as
+     before.
+   - A newcomer mid-match still takes the respawn setting.
+   - In Chrome: across a reload the height went on from 8,364 to 8,435 ft. A respawn would have been at 8,000 ft.
+
+**Checked:**
+- 2,086 tests pass (7 new, and 4 existing tests updated for the new behaviour). The validation output is unchanged
+  (md5 c1732d9).
+- The smoke test passes against the local server.
+- Chrome, against the local server with a scripted opponent:
+  - no correction over 1 cm;
+  - the host role kept across a reload;
+  - the same aircraft after the reload;
+  - no console errors.
+
+**Deployment:** items 3 and 5 are on the room server, so the Cloudflare server needs redeploying (with permission) before
+they work on the live site. The message format is unchanged, so old and new pages work with either server.
+
+**No deviation from historical figures.**

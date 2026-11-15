@@ -133,7 +133,10 @@ export class NetFlight {
       this.down = false;
       this.placeOwn(state);
       this.prediction.clear();
-      this.prediction.history.set(tick, { input: this.controls(), state });
+      // Until this browser's first controls reach it, the server flies the aircraft's starting controls (its own start,
+      // quantised): fly those ticks the same, not with your assists' controls (D251: that had made a correction at the
+      // start of every match with engine management or the auto-rudder on).
+      this.prediction.history.set(tick, { input: this.startControls(), state });
       this.prediction.replay(tick, this.clock.tick);
       this.pendingFrom = this.clock.tick + 1;
       this.pending = [];
@@ -186,11 +189,29 @@ export class NetFlight {
     }
   }
 
-  /** Moves the clock by `ticks` (rare: the connection changed a lot). Unsent controls go first. */
+  /**
+   * Moves the clock by `ticks` (rare: the connection changed a lot, or this page stalled, as on its first frames of a
+   * match). Unsent controls go first. Forward, the skipped ticks are flown with the last controls, as the server flies a
+   * tick it has no controls for; skipping them had left the aircraft a tick or more behind its label (D251: the 1-2 m
+   * correction at the start of a match).
+   */
   jumpClock(ticks) {
     this.flush();
-    this.clock.tick += ticks;
+    const flyable = this.ready && !this.down && !this.sim.crashed;
+    for (let k = 0; k < ticks && flyable; k += 1) {
+      const input = this.prediction.history.get(this.clock.tick)?.input ?? this.controls();
+      this.clock.tick += 1;
+      this.flyOwn(input, false);
+      this.prediction.record(this.clock.tick, input);
+    }
+    if (!flyable || ticks < 0) this.clock.tick += ticks;
     this.pendingFrom = this.clock.tick + 1;
+  }
+
+  /** The aircraft's starting controls as the server holds them (quantised, before any assist). */
+  startControls() {
+    const raw = this.sim.input;
+    return quantiseInput({ ...raw, engines: raw.engines?.map((e) => ({ ...e })) });
   }
 
   /**

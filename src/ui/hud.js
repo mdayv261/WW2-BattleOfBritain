@@ -168,7 +168,7 @@ export class Hud {
     if (extra.joystick) lines.push('Joystick connected');
     this.strip.textContent = lines.join('\n');
 
-    const text = this.messageFor(sim);
+    const text = this.messageFor(sim, extra.kind);
     this.showMessage(text, text !== null && text === this.warningFor(sim));
 
     if (this.showDebug) this.debug.textContent = this.debugText(sim, heading, extra.frame);
@@ -186,11 +186,17 @@ export class Hud {
     return gunWarning(sim) ?? heatWarning(sim);
   }
 
-  /** The message line: crash, pause, landing result, or what to do at the start. */
-  messageFor(sim) {
+  /** What follows a crash: a match's respawn (D245), a mission's results (D251), or R in the test flight. */
+  static afterCrash(sim, kind) {
+    if (sim.net) return sim.net.respawnText();
+    return kind === 'mission' ? 'the results follow' : 'press R to restart';
+  }
+
+  /** The message line: crash, pause, landing result, or what to do at the start. `kind`: the flight's (gameState). */
+  messageFor(sim, kind = 'test') {
     const { ac, plane } = sim;
     const g = plane.ground;
-    if (sim.crashed) return `${sim.crashCause ?? g.crash.cause} — ${sim.net ? sim.net.respawnText() : 'press R to restart'}`; // in a match, the respawn (D245)
+    if (sim.crashed) return `${sim.crashCause ?? g.crash.cause} — ${Hud.afterCrash(sim, kind)}`;
     if (sim.paused) return 'Paused — press P';
     if (sim.notice && plane.time < sim.notice.until) return sim.notice.text;
     const warning = this.warningFor(sim);

@@ -2,7 +2,7 @@
 // fighters, the host and the host's settings (start and respawn on the apron or in the air), and when a match can start.
 import { describe, it, expect } from 'vitest';
 import { RoomCore, aircraftOfTeam, checkName } from '../../src/mp/roomCore.js';
-import { PROTOCOL_VERSION, DEFAULT_SETTINGS, cleanSettings, AIR_SPAWN } from '../../src/mp/netConfig.js';
+import { PROTOCOL_VERSION, DEFAULT_SETTINGS, cleanSettings, AIR_SPAWN, HOST_HOLD_S } from '../../src/mp/netConfig.js';
 import { makeCode, tidyCode, isCode } from '../../src/mp/roomCode.js';
 import { parseClientMessage } from '../../src/mp/protocol.js';
 
@@ -50,16 +50,33 @@ describe('a room', () => {
     expect(cleanSettings({ start: '5000' }).start).toBe('air');
   });
 
-  it("keeps a dropped player's place for a reload, and passes the host on", () => {
+  it("keeps a dropped player's place for a reload, and passes the host on once the host's hold runs out", () => {
     const r = new RoomCore('ABCDEF');
     r.join(hello('Ann', 'tokentoken1'), 0);
     r.join(hello('Max', 'tokentoken2'), 0);
     r.disconnect('p1', 1000);
+    expect(r.hostId).toBe('p1'); // held for a reload (D251)
+    r.expire(1000 + HOST_HOLD_S * 1000);
     expect(r.hostId).toBe('p2');
-    expect(r.join(hello('Ann', 'tokentoken1'), 2000)).toEqual({ id: 'p1' });
-    r.disconnect('p1', 3000);
-    expect(r.expire(3000 + 61000)).toBe(false);
+    expect(r.join(hello('Ann', 'tokentoken1'), 20000)).toEqual({ id: 'p1' });
+    r.disconnect('p1', 21000);
+    expect(r.expire(21000 + 61000)).toBe(false);
     expect(r.players.has('p1')).toBe(false);
+  });
+
+  it('a host who reloads keeps the role; a newcomer meanwhile does not take it; leaving passes it at once (D251)', () => {
+    const r = new RoomCore('ABCDEF');
+    r.join(hello('Ann', 'tokentoken1'), 0);
+    r.join(hello('Max', 'tokentoken2'), 0);
+    r.disconnect('p1', 1000);
+    r.join(hello('Udo', 'tokentoken3'), 3000);
+    r.expire(5000);
+    expect(r.hostId).toBe('p1');
+    expect(r.join(hello('Ann', 'tokentoken1'), 6000)).toEqual({ id: 'p1' }); // back after the reload
+    r.expire(1000 + HOST_HOLD_S * 1000 + 1);
+    expect(r.hostId).toBe('p1');
+    r.handle('p1', { type: 'leave' }, 30000);
+    expect(r.hostId).toBe('p2');
   });
 
   it('room codes and messages are checked', () => {

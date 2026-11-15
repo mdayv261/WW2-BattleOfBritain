@@ -11,6 +11,7 @@ export const PROTOCOL_VERSION = 1;
 export const MIN_PLAYERS = 2;
 export const MAX_PLAYERS = 4;
 export const REJOIN_GRACE_S = 60; // a dropped player keeps their place this long
+export const HOST_HOLD_S = 15; // a dropped host keeps the host role this long, time for a reload (game design, D251)
 export const PING_INTERVAL_S = 2; // how often the browser measures its ping
 export const SILENT_DROP_S = 20; // a connection silent this long is treated as dropped (a laptop asleep, Wi-Fi lost)
 export const MAX_MESSAGE_BYTES = 4096; // larger text messages are ignored

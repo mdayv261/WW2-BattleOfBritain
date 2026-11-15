@@ -248,7 +248,7 @@ renderer.setAnimationLoop((now) => {
   effects.update(sim, dt, camera, renderer.domElement.height);
   updateScene(camera);
   game.mp.tags(camera); // the other players' names (D245)
-  hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info) });
+  hud.update(sim, { joystick: !!stick, view: view.rig.mode, frame: frameRate.text(renderer.info), kind: game.kind });
   const outside = !view.rig.inside;
   instruments.update(sim, { hidden: panelHidden(view.rig, sim) }); // no panel looking away, bailed out or outside (D97)
   const sight2D = showSight(sim, view.rig);

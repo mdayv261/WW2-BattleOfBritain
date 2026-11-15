@@ -56,6 +56,24 @@ describe('the Bf 110 crew positions', () => {
     for (const e of sim.input.engines) expect(e.throttle).toBeCloseTo(sim.input.throttle, 6);
   });
 
+  it('back in the seat, the engine levers are where the player left them, not where the AI pilot put them (D251)', () => {
+    const sim = new Simulation(aircraftById.bf110c4, 'air');
+    sim.input.throttle = 0.55;
+    sim.input.rpm = 0.7;
+    sim.input.engineAssist = false;
+    sim.applyLevers();
+    swapSeat(sim);
+    sim.input.throttle = 1; // the AI pilot opens up and takes the automatic pitch
+    for (let i = 0; i < 120; i += 1) sim.step(DT);
+    expect(sim.input.engineAssist).toBe(true);
+    swapSeat(sim);
+    expect(sim.input.throttle).toBe(0.55);
+    expect(sim.input.rpm).toBe(0.7);
+    expect(sim.input.engineAssist).toBe(false);
+    for (const e of sim.input.engines) expect(e.throttle).toBe(0.55);
+    expect(sim.pilotLevers).toBeNull();
+  });
+
   it('on the gun the player\'s aim and trigger work the MG 15, not the nose guns; back in the seat the AI lets go', () => {
     const sim = new Simulation(aircraftById.bf110c4, 'air');
     swapSeat(sim);

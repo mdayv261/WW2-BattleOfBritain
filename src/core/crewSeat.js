@@ -5,8 +5,9 @@
 //   - the player's aim and trigger (`sim.gunControl`, set by the page from the view and his fire button) work the gun
 //     (src/ai/gunner.js `crew.manned`), his rounds counting as his own;
 //   - his own keys and stick no longer reach the aircraft's controls (src/main.js gives them the gun instead).
-// Back in the pilot's seat the AI pilot lets go and the controls stand as he left them. Every flight starts in the
-// pilot's seat. In multiplayer the same swap works, with the server's AI pilot flying (D243, D245).
+// Back in the pilot's seat the AI pilot lets go and the engine levers return to where the player left them (D251: they
+// had stayed where the AI pilot put them, a known issue since D234); the stick and rudder are the player's at once.
+// Every flight starts in the pilot's seat. In multiplayer the same swap works, with the server's AI pilot flying (D243, D245).
 
 import { DefensivePilot } from '../ai/defensive.js';
 import { FRIENDLY_SKILL } from './wingmen.js';
@@ -20,12 +21,31 @@ export function resetSeat(sim) {
   sim.seat = 'pilot';
   sim.relief = null; // the AI pilot flying while the player is on the gun
   sim.gunControl = { aim: null, trigger: false };
+  sim.pilotLevers = null; // the player's engine levers, kept while he is on the gun (D251)
+}
+
+/** The player's engine levers as he leaves the pilot's seat. */
+function keepLevers(input) {
+  return {
+    throttle: input.throttle, rpm: input.rpm, engineAssist: input.engineAssist, radiator: input.radiator,
+    engines: input.engines?.map((e) => ({ throttle: e.throttle, rpm: e.rpm })),
+  };
+}
+
+/** Puts the player's engine levers back as he left them. */
+function restoreLevers(input, kept) {
+  Object.assign(input, { throttle: kept.throttle, rpm: kept.rpm, engineAssist: kept.engineAssist, radiator: kept.radiator });
+  kept.engines?.forEach((e, i) => {
+    if (input.engines?.[i]) Object.assign(input.engines[i], e);
+  });
 }
 
 /** Takes the player back to the pilot's seat. */
 function toPilot(sim) {
   sim.seat = 'pilot';
   sim.relief = null;
+  if (sim.pilotLevers) restoreLevers(sim.input, sim.pilotLevers);
+  sim.pilotLevers = null;
   if (sim.player.gunnery) sim.player.gunnery.manned = null;
   sim.gunControl.trigger = false;
 }
@@ -41,6 +61,7 @@ export function swapSeat(sim) {
   if (sim.crashed || sim.playerJumper || sim.bailout) return 'No time to change seats now';
   if (crewHealth(sim.plane, gun.spec.gunner) <= 0) return 'The gunner is out of action: the rear gun can\'t be manned';
   sim.seat = 'gunner';
+  sim.pilotLevers = keepLevers(sim.input);
   sim.relief = new DefensivePilot({ skill: FRIENDLY_SKILL, raid: sim.escortRaid ?? null });
   sim.player.gunnery.manned = { seat: gun.spec.gunner, aim: gun.bore.clone(), trigger: false };
   sim.gunControl = { aim: gun.bore.clone(), trigger: false };

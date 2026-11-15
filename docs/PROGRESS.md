@@ -25,10 +25,32 @@ Read this at the start of every session.
 - **Phase 9** (multiplayer): signed off (15 Nov 2026, D249), after the family test on different home networks.
   Checkpoints 1-4 done (D243-D246); fixes after the product owner's tests: the lobby's lists and buttons (D247). Also
   done: take-off help (D248). Multiplayer is live on the GitHub Pages site, with the room server on Cloudflare.
-- **Phase 10** (polish and release 1.0): plan approved 15 Nov 2026 (D250). Checkpoint 1 (bug fixes) is next; its list
-  waits for the product owner's choice of the optional items.
+- **Phase 10** (polish and release 1.0): plan approved 15 Nov 2026 (D250). Checkpoint 1 (bug fixes) done (D251); the room
+  server needs redeploying for two of them. Next: checkpoint 2 (performance and browsers).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
 runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026. D243 pushed on 10 Nov 2026 (run 42786653850). D244 pushed on 10 Nov 2026 (run 42788061601). D245 (checkpoint 3, the typing and bail-out fixes) pushed on 10 Nov 2026 (run 42797587119). D246 (checkpoint 4: the Cloudflare deployment and the live site connected) pushed on 15 Nov 2026 (run 43659514653); the live site's Multiplayer then created a room on the server in Chrome. D247 (the lobby's lists and buttons) pushed on 15 Nov 2026 (run 43662949217), and the test copy redeployed (version 6b3d6609); on the live site a real click and type-ahead changed "Score to win" in the lobby. D248 (take-off help) pushed on 15 Nov 2026 (run 43669206110).
+
+## Phase 10 checkpoint 1: bug fixes (15 Nov 2026)
+
+**Done** (D251):
+1. **After a crash in a mission,** the message says "the results follow", not "press R to restart".
+2. **Bf 110:** back from the rear gun, your engine levers are where you left them.
+3. **Multiplayer:** a host who reloads keeps the host role (held 15 s).
+4. **Multiplayer:** the 1-2 m correction at the start of a match is gone. It had two causes: assists such as engine
+   management, and a slow first frame. Corrections are now under 1 cm.
+5. **Multiplayer:** a reload rejoins in the same aircraft, not a fresh one.
+
+**Tests:** 2,086 pass. The validation output is unchanged. Checked in Chrome against the local server.
+
+**To try in the browser** (after the push and the server deployment):
+1. Fly a mission and get shot down: the message says the results follow.
+2. Bf 110: set a cruise throttle, Tab to the gun for a while, Tab back: the throttle is yours again.
+3. Multiplayer, as host: reload the page mid-match. You're still host (Esc shows "End the match"), in the same
+   aircraft at the same height.
+4. F3 at the start of a match: the corrections show 0.00 m.
+
+**Known issues:** the Cloudflare start-up burst, the AI Bf 109 against a lone RAF fighter, and the late AI-gunner rounds
+stay as known limitations (the product owner's choice).
 
 ## Take-off help: the S33 rudder trim and the auto-rudder on the ground (15 Nov 2026)
 

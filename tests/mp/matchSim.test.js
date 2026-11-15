@@ -193,6 +193,31 @@ describe('kill credit and the end of a match', () => {
     expect(run(m3, 29).result).toBeNull();
     expect(run(m3, 2).result).toMatchObject({ winner: 'raf', reason: 'left', leftTeam: 'luftwaffe' });
   });
+
+  it('a dropped player is away: the aircraft flies on, gets no snapshots, and their team counts as gone (D251)', () => {
+    const m = match();
+    m.setAway('p2', true);
+    const out = m.advanceTo(TICK_MS * 8);
+    expect([...new Set(out.snapshots.map((s) => s.id))]).toEqual(['p1']);
+    const plane = m.players.get('p2').plane;
+    const x = plane.body.position.x;
+    run(m, 1);
+    expect(plane.body.position.x).not.toBe(x); // still flying
+    expect(run(m, 28).result).toBeNull();
+    expect(run(m, 2).result).toMatchObject({ reason: 'left', leftTeam: 'luftwaffe' });
+  });
+
+  it('back from away within the match, the same aircraft and its snapshots again', () => {
+    const m = match();
+    const plane = m.players.get('p2').plane;
+    m.setAway('p2', true);
+    run(m, 5);
+    m.setAway('p2', false);
+    const out = m.advanceTo(m.tick * TICK_MS + TICK_MS * 8);
+    expect([...new Set(out.snapshots.map((s) => s.id))].sort()).toEqual(['p1', 'p2']);
+    expect(m.players.get('p2').plane).toBe(plane);
+    expect(run(m, 40).result).toBeNull(); // the team never went
+  });
 });
 
 describe('the server and a browser step alike', () => {

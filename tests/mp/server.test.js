@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { Room, useTerrain } from '../../server/room.js';
 import { handle, originAllowed } from '../../server/frontDoor.js';
-import { PROTOCOL_VERSION, MAX_BAD_MESSAGES, SILENT_DROP_S } from '../../src/mp/netConfig.js';
+import { PROTOCOL_VERSION, MAX_BAD_MESSAGES, SILENT_DROP_S, HOST_HOLD_S } from '../../src/mp/netConfig.js';
 import { FakeSocket, fakeTimers } from './fakes.js';
 import { decodeSnapshot, encodeInputs, quantiseInput } from '../../src/mp/binary.js';
 import { airfieldNamed, HOME } from '../../src/world/airfields.js';
@@ -48,7 +48,7 @@ describe('room server: connections', () => {
     expect(s.closed).toBeTruthy();
   });
 
-  it('when the host drops, the other player becomes host and sees them reconnecting; a reload takes the place back', () => {
+  it('when the host drops, the others see them reconnecting and the role is held; a reload takes the place back (D251)', () => {
     const { room, clock } = roomWithClock();
     room.claim('K7QPM2');
     const a = new FakeSocket();
@@ -61,7 +61,7 @@ describe('room server: connections', () => {
     a.close(1006);
     const seen = b.take();
     const lobby = seen.filter((m) => m.type === 'lobby').at(-1);
-    expect(lobby.hostId).toBe('p2');
+    expect(lobby.hostId).toBe('p1'); // held for HOST_HOLD_S, time for a reload
     expect(lobby.players[0]).toMatchObject({ name: 'Max', connected: false });
     expect(seen.some((m) => m.text === 'Max lost the connection')).toBe(true);
     clock.t += 10_000;
@@ -69,7 +69,9 @@ describe('room server: connections', () => {
     room.attach(again);
     again.receive(hello('Max'));
     expect(again.take()[0]).toMatchObject({ type: 'welcome', you: 'p1' });
-    expect(b.take().filter((m) => m.type === 'lobby').at(-1).players[0].connected).toBe(true);
+    const back = b.take().filter((m) => m.type === 'lobby').at(-1);
+    expect(back.players[0].connected).toBe(true);
+    expect(back.hostId).toBe('p1'); // still the host
     clearTimeout(room.timer);
   });
 
@@ -120,7 +122,11 @@ describe('room server: connections', () => {
     expect(b.closed).toBe(null);
     const lobby = b.take().filter((m) => m.type === 'lobby').at(-1);
     expect(lobby.players[0]).toMatchObject({ name: 'Max', connected: false });
-    expect(lobby.hostId).toBe('p2');
+    expect(lobby.hostId).toBe('p1'); // held for a reload (D251)...
+    clock.t += HOST_HOLD_S * 1000;
+    room.core.expire(clock.t);
+    room.flush();
+    expect(b.take().filter((m) => m.type === 'lobby').at(-1).hostId).toBe('p2'); // ...then passed on
     clearInterval(room.watch);
     clearTimeout(room.timer);
   });
@@ -166,13 +172,15 @@ describe('room server: a match', () => {
     expect(room.match.players.get('p2').inputs.size).toBe(1);
     b.emit('message', { data: new ArrayBuffer(4) });
     expect(room.match.players.get('p2').inputs.size).toBe(1);
-    // Albert drops out: the aircraft leaves the sky; back again, it returns.
+    // Albert drops out: the aircraft flies on, away; back again, it is his (the same aircraft, D251).
+    const spawn = room.match.players.get('p2').spawn;
     b.close(1006);
-    expect(room.match.players.has('p2')).toBe(false);
+    expect(room.match.players.get('p2').away).toBe(true);
     const b2 = new FakeSocket();
     room.attach(b2);
     b2.receive(hello('Albert'));
-    expect(room.match.players.has('p2')).toBe(true);
+    expect(room.match.players.get('p2').away).toBe(false);
+    expect(room.match.players.get('p2').spawn).toBe(spawn);
     // The host ends the match: back in the lobby, no match.
     a.receive({ type: 'toLobby' });
     expect(room.match).toBe(null);
@@ -182,7 +190,7 @@ describe('room server: a match', () => {
 });
 
 describe('room server: the host\'s start setting', () => {
-  it('an apron start puts each player on their side\'s home airfield; a rejoin mid-match uses the respawn setting', () => {
+  it('an apron start puts each player on their side\'s home airfield; a rejoin takes back the same aircraft; a newcomer mid-match uses the respawn setting', () => {
     const { room } = roomWithClock();
     room.claim('K7QPM2');
     const a = new FakeSocket();
@@ -200,11 +208,16 @@ describe('room server: the host\'s start setting', () => {
       const field = airfieldNamed(HOME[side]);
       expect(Math.hypot(at.x - field.x, at.z - field.z), id).toBeLessThan(500);
     }
+    const before = room.match.players.get('p2').plane;
     b.close(1006);
     const b2 = new FakeSocket();
     room.attach(b2);
     b2.receive(hello('Albert'));
-    expect(room.match.players.get('p2').plane.body.position.y).toBeCloseTo(8000 * 0.3048, 0);
+    expect(room.match.players.get('p2').plane).toBe(before); // still on the apron, the same aircraft (D251)
+    const c = new FakeSocket();
+    room.attach(c);
+    c.receive(hello('Udo'));
+    expect(room.match.players.get('p3').plane.body.position.y).toBeCloseTo(8000 * 0.3048, 0);
     a.receive({ type: 'toLobby' });
     clearInterval(room.watch);
     clearTimeout(room.timer);

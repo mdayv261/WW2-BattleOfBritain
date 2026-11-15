@@ -21,7 +21,9 @@ export function seeded(seed) {
 }
 
 /**
- * players: [{ id, slot, name, team, aircraft, pilot(seconds, sim) (sets sim.input; optional) }]; net: { ping, jitter,
+ * players: [{ id, slot, name, team, aircraft, pilot(seconds, sim) (sets sim.input; optional), assists (that browser's,
+ * optional), stall: { from, for } (s: that page frozen, handling no messages and no frames, then catching up in one
+ * frame of at most 0.25 s, as a browser does; optional, D251) }]; net: { ping, jitter,
  * loss }; settings: the match's. Returns { server, clients, run(seconds) }.
  */
 export function createHarness({ players, net = { ping: 0, jitter: 0, loss: 0 }, settings = DEFAULT_SETTINGS, seed = 5, world = flatWorld }) {
@@ -32,6 +34,7 @@ export function createHarness({ players, net = { ping: 0, jitter: 0, loss: 0 }, 
   const truth = new Map(players.map((p) => [p.id, new Map()])); // id -> tick -> position (the server's)
   const clients = players.map((p) => {
     const sim = new Simulation(aircraftById[p.aircraft], 'air', world);
+    Object.assign(sim.assists, p.assists ?? {});
     const c = { ...p, sim, up: createNetSim(net, rng), down: createNetSim(net, rng), toServer: [], toClient: [], shown: new Map(), ready: false };
     c.net = new NetFlight({
       send: (buffer) => c.toServer.push({ at: c.up.schedule(now), buffer }),
@@ -68,14 +71,19 @@ export function createHarness({ players, net = { ping: 0, jitter: 0, loss: 0 }, 
     }
     for (const c of clients) {
       if (out.fx.length) c.toClient.push({ at: c.down.schedule(now), fx: out.fx });
+      const t = now / 1000;
+      if (c.stall && t > c.stall.from && t <= c.stall.from + c.stall.for) continue; // frozen: nothing handled
+      const frozen = c.stall && t > c.stall.from + c.stall.for && !c.stall.over;
+      if (frozen) c.stall.over = true;
+      const dt = frozen ? Math.min(0.25, c.stall.for + FRAME_MS / 1000) : FRAME_MS / 1000;
       for (const m of c.toClient.filter((x) => x.at <= now)) {
         if (m.fx) c.net.onFx(m.fx);
         else c.net.receive(m.buffer);
       }
       c.toClient = c.toClient.filter((x) => x.at > now);
       c.pilot?.(now / 1000, c.sim);
-      c.sim.advance(FRAME_MS / 1000);
-      c.net.frame(FRAME_MS / 1000);
+      c.sim.advance(dt);
+      c.net.frame(dt);
     }
   }
 

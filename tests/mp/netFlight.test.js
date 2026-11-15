@@ -45,6 +45,26 @@ describe('your own aircraft', () => {
     expect(h.clients[0].net.prediction.largest).toBeLessThan(0.1);
   });
 
+  it('with engine management and the auto-rudder on, the start needs no correction (D251)', () => {
+    const assisted = { ...ann, pilot: undefined, assists: { engineManagement: true, autoRudder: true } };
+    const h = createHarness({ players: [assisted, max] });
+    h.run(6);
+    const c = h.clients[0];
+    expect(c.sim.input.radiator).toBe(0); // the assist did shut the radiator the air start opened
+    expect(c.net.prediction.corrections).toBe(0);
+    expect(h.ownError(c)).toBeLessThan(1e-6);
+  });
+
+  it('a page that stalls at the start (as on its first frames) catches up without a correction (D251)', () => {
+    const stalled = { ...ann, pilot: undefined, stall: { from: 0.4, for: 0.2 } };
+    const h = createHarness({ players: [stalled, max] });
+    h.run(4);
+    const c = h.clients[0];
+    expect(c.ready).toBe(true);
+    expect(c.net.prediction.corrections).toBe(0);
+    expect(h.ownError(c, Math.round(0.7 * TICK_HZ))).toBeLessThan(1e-6);
+  });
+
   it('the F3 panel shows the match\'s ping and corrections (D246); single player has no net lines', () => {
     const h = createHarness({ players: [ann, max], net: BAD });
     h.run(4);

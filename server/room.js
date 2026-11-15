@@ -218,10 +218,8 @@ export class Room {
     }
     const joining = [...core.players.values()].filter((p) => p.connected && !this.match.players.has(p.id)).sort((a, b) => a.order - b.order);
     this.match.addPlayers(joining.map((p) => ({ id: p.id, slot: p.order, name: p.name, team: p.team, aircraft: p.aircraft })), { start: starting });
-    for (const p of core.players.values()) {
-      const flying = this.match.players.has(p.id);
-      if (!p.connected && flying) this.match.removePlayer(p.id);
-    }
+    // A dropped player's aircraft stays in the match while their place is kept, so a reload takes it back (D251).
+    for (const p of core.players.values()) this.match.setAway(p.id, !p.connected);
     for (const id of [...this.match.players.keys()]) if (!core.players.has(id)) this.match.removePlayer(id);
   }
 

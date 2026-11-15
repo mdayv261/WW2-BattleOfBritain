@@ -4,13 +4,15 @@
 //
 // Players join with a name and a private token (kept by their browser tab, so a reload can
 // take back the same place). The first player is the host; when the host goes, the player who
-// joined earliest and is still connected takes over. Each player picks a team and an aircraft
-// of that team's side, and says when they are ready; the host sets the match and starts it.
+// joined earliest and is still connected takes over. A host whose connection drops keeps the role
+// for HOST_HOLD_S, so a reload keeps it (D251); leaving the room passes it on at once. Each player
+// picks a team and an aircraft of that team's side, and says when they are ready; the host sets
+// the match and starts it.
 //
 // Every call puts the messages to send in `outbox` ([{ to: playerId | 'all', msg }]); the
 // server empties it and sends them.
 
-import { PROTOCOL_VERSION, MIN_PLAYERS, MAX_PLAYERS, REJOIN_GRACE_S, TEAM_IDS, TEAM_AIRCRAFT, NAME_MAX, DEFAULT_SETTINGS, cleanSettings } from './netConfig.js';
+import { PROTOCOL_VERSION, MIN_PLAYERS, MAX_PLAYERS, REJOIN_GRACE_S, HOST_HOLD_S, TEAM_IDS, TEAM_AIRCRAFT, NAME_MAX, DEFAULT_SETTINGS, cleanSettings } from './netConfig.js';
 import { welcome, lobbyMessage, matchStart, matchEnd, notice, pong, errorMessage } from './protocol.js';
 
 /** The fighters a team may fly (ids). */
@@ -57,7 +59,7 @@ export class RoomCore {
     if (back) {
       back.connected = true;
       back.leftAt = null;
-      this.electHost();
+      this.electHost(now);
       this.send(back.id, welcome(back.id, this.code, back.token));
       this.catchUp(back.id);
       this.broadcastExcept(back.id, notice(`${back.name} is back`));
@@ -74,7 +76,7 @@ export class RoomCore {
       aircraft: aircraftOfTeam(team)[0], ready: false, connected: true, order, leftAt: null,
     };
     this.players.set(p.id, p);
-    this.electHost();
+    this.electHost(now);
     this.send(p.id, welcome(p.id, this.code, p.token));
     this.catchUp(p.id);
     this.broadcastExcept(p.id, notice(`${p.name} joined`));
@@ -119,7 +121,7 @@ export class RoomCore {
       case 'ping':
         return this.send(id, pong(msg.t));
       case 'leave':
-        return this.remove(id, `${p.name} left`);
+        return this.remove(id, `${p.name} left`, now);
       default:
         return;
     }
@@ -158,7 +160,7 @@ export class RoomCore {
     p.connected = false;
     p.ready = false;
     p.leftAt = now;
-    this.electHost();
+    this.electHost(now);
     this.send('all', notice(`${p.name} lost the connection`));
     this.sendLobby();
   }
@@ -167,21 +169,27 @@ export class RoomCore {
   // has nobody left (the server then forgets it).
   expire(now) {
     for (const p of [...this.players.values()]) {
-      if (!p.connected && now - p.leftAt >= REJOIN_GRACE_S * 1000) this.remove(p.id, `${p.name} did not come back`);
+      if (!p.connected && now - p.leftAt >= REJOIN_GRACE_S * 1000) this.remove(p.id, `${p.name} did not come back`, now);
     }
+    const host = this.hostId;
+    this.electHost(now); // a dropped host's hold may have run out: everyone is told the new host
+    if (this.hostId !== host) this.sendLobby();
     return this.players.size === 0;
   }
 
-  remove(id, text) {
+  remove(id, text, now = null) {
     if (!this.players.delete(id)) return;
-    this.electHost();
+    this.electHost(now);
     this.send('all', notice(text));
     this.sendLobby();
   }
 
-  // Keep a connected host: if the host has gone, the earliest joined player still connected.
-  electHost() {
-    if (this.players.get(this.hostId)?.connected) return;
+  // Keep a connected host: if the host has gone, the earliest joined player still connected. A host who dropped less
+  // than HOST_HOLD_S ago (`now` given) keeps the role, for a reload (D251); one who left the room is gone at once.
+  electHost(now = null) {
+    const host = this.players.get(this.hostId);
+    if (host?.connected) return;
+    if (host && now !== null && host.leftAt !== null && now - host.leftAt < HOST_HOLD_S * 1000) return;
     const next = this.connected.sort((a, b) => a.order - b.order)[0];
     if (!next || next.id === this.hostId) return;
     const hadHost = this.hostId !== null;
