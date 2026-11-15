@@ -7131,3 +7131,19 @@ is very hard. What was the Merlin's take-off power setting in 1940?
 (D16).
 
 **Confirmed by the product owner** (15 Nov 2026, on the live site): "I tested the take-off and it works well."
+
+## D249. Phase 9 signed off (15 Nov 2026)
+
+**The product owner:** "Family test and acceptance done."
+
+- **The acceptance test** (the phase list in docs/PROGRESS.md): "a family match on different home networks, with fair
+  hits". The product owner ran the family test and the checks proposed in D246's plan.
+- **Phase 9 is signed off.** Multiplayer is live on https://mdayv261.github.io/WW2-BattleOfBritain/, with the room server
+  `bob1940-mp` on Cloudflare's free plan.
+- **Carried forward to Phase 10:**
+  - the start-up burst on Cloudflare: the first few seconds of a match run fast (the product owner: "Wait");
+  - one small correction (about 2 m) at the start of each match;
+  - a reload rejoins in a fresh aircraft (not counted as going down);
+  - the AI gunner's rounds in your own Bf 110 show about one round trip late;
+  - a host who reloads loses the host role;
+  - the free plan's budget, shared with Dawn Patrol: about 4½ hours of four-player flying a day.

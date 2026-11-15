@@ -22,13 +22,10 @@ Read this at the start of every session.
 - **Phase 8** (controls screen, rebinding, mouse flying, warnings): signed off (10 Nov 2026, D242). Plan approved 10 Nov 2026 (D238). Checkpoint 1
   (rebinding and the Controls screen) done (D238); checkpoint 2 (mouse flying, look keys) done (D239); checkpoint 3
   (overspeed) done (D240); checkpoint 4, the acceptance test (D242), passed.
-- **Phase 9** (multiplayer): plan approved 10 Nov 2026 (D243). Checkpoint 1 (the shared core, src/mp) done (D243);
-  checkpoint 2 (the room server on this Mac) done (D244); checkpoint 3 (the browser side) done (D245). Checkpoint 4
-  (the Cloudflare test deployment and the family test): plan approved 15 Nov 2026; part A, everything ready on this
-  Mac, done (D246). **Deployed** on 15 Nov 2026 (with permission): the test copy is live at
-  https://bob1940-mp.dawn-patrol-mp-server.workers.dev/. **The live site is connected** to it (product owner, 15 Nov
-  2026), and both are pushed. Next: the family test, then the Phase 9 acceptance test. The start-up burst waits (product
-  owner: "Wait").
+- **Phase 9** (multiplayer): signed off (15 Nov 2026, D249), after the family test on different home networks.
+  Checkpoints 1-4 done (D243-D246); fixes after the product owner's tests: the lobby's lists and buttons (D247). Also
+  done: take-off help (D248). Multiplayer is live on the GitHub Pages site, with the room server on Cloudflare.
+- **Phase 10** (polish and release 1.0): next. Its plan waits for the product owner.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
 runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026. D243 pushed on 10 Nov 2026 (run 42786653850). D244 pushed on 10 Nov 2026 (run 42788061601). D245 (checkpoint 3, the typing and bail-out fixes) pushed on 10 Nov 2026 (run 42797587119). D246 (checkpoint 4: the Cloudflare deployment and the live site connected) pushed on 15 Nov 2026 (run 43659514653); the live site's Multiplayer then created a room on the server in Chrome. D247 (the lobby's lists and buttons) pushed on 15 Nov 2026 (run 43662949217), and the test copy redeployed (version 6b3d6609); on the live site a real click and type-ahead changed "Score to win" in the lobby. D248 (take-off help) pushed on 15 Nov 2026 (run 43669206110).
 
