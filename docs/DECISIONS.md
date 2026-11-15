@@ -7018,3 +7018,43 @@ turn) passed:
 - The guide now points players at the live site. A room's code works from either address, since both use the same
   server.
 - 2,059 tests pass.
+
+## D247. The multiplayer lobby's lists and buttons (15 Nov 2026)
+
+**The report** (the product owner, testing the live site): "the selections menues do not work and secondly the Start
+the game button is greyed out and does not function."
+
+**The causes:**
+- **The lobby was built afresh once a second** (to show the ping) and on every room update. An open drop-down list was
+  destroyed with it, so it closed within a second, before a choice could be made.
+- **Lost clicks:** a click whose press and release fell either side of a rebuild was lost. So "I am ready" often didn't
+  register, and "Start the match" stays greyed until everyone is ready and each side has a pilot. The side list needed
+  for that was the one closing.
+- **The results screen** was rebuilt every second for its countdown, with the same risk for its buttons.
+- **The game claimed arrows and Enter on a list:** those keys are bound to the controls, and the D245 exemption
+  covered text boxes only, so a list couldn't be worked from the keyboard either.
+- **Why the checks missed it:** my Chrome checks at D245 and D246 pressed these buttons from scripts, which a rebuild
+  doesn't interrupt, and never opened a list.
+
+**The fix:**
+- **`src/ui/panelRefresh.js`, new.** The lobby and the results are rebuilt only when what they show has changed.
+  Otherwise only the live text is set in place: the ping, the countdown.
+- **A rebuild waits while the player is choosing:** a list of the panel's own has the focus, or a mouse button is held
+  down on the panel. It catches up within a second after that.
+  - A list closed without a change keeps the focus, so the wait ends after 8 s regardless (game design).
+  - A list gives up the focus once a choice is made, so the room's answer shows at once.
+- **`typing` (src/input/keyboard.js):** a key on a drop-down list on screen is the list's. A list left focused behind
+  a closed menu doesn't count, so the arrows fly the aircraft again after Esc → Settings → Resume.
+
+**Checked:**
+- 6 new tests (2,065 in all). The validation output is unchanged, since no physics changed.
+- **Chrome, with real mouse clicks and keys,** against the local server and a scripted opponent:
+  - the Fighter list opened by a click was still the same list 3 s later, while the ping updated;
+  - a real Down arrow on the list reaches it, where it was blocked before;
+  - "I am ready" clicked four times at different moments against the 1 s refresh toggled each time;
+  - "Start the match" became active and a real click started the match;
+  - on the results screen, the "Back to the room now" button stayed the same element while the countdown ran, and a
+    real click on it went back to the room;
+  - no console errors.
+- **Not testable by script:** choosing from a list's pop-up with the mouse, because macOS draws it out of the test
+  tool's reach. The product owner's check covers it.

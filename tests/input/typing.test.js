@@ -19,6 +19,23 @@ describe('typing in a text box', () => {
     expect(typing(key('KeyA', null))).toBe(false);
   });
 
+  it('a drop-down list on screen takes the arrows and Enter; a hidden one leaves them to the aircraft (D246)', () => {
+    const shown = { tagName: 'SELECT', offsetParent: {} };
+    const hidden = { tagName: 'SELECT', offsetParent: null };
+    expect(typing(key('ArrowDown', shown))).toBe(true);
+    expect(typing(key('ArrowDown', hidden))).toBe(false);
+    const kb = new Keyboard(null);
+    for (const code of ['ArrowDown', 'ArrowUp', 'Enter']) {
+      const e = key(code, shown);
+      kb.keyDown(e);
+      expect(e.stopped, code).toBe(false);
+    }
+    expect(kb.down.size).toBe(0);
+    const e = key('ArrowDown', hidden);
+    kb.keyDown(e);
+    expect(kb.down.size).toBe(1); // the aircraft has it
+  });
+
   it('a key typed in a box neither flies the aircraft nor is stopped; elsewhere it flies as before', () => {
     const kb = new Keyboard(null);
     const box = { tagName: 'INPUT', type: 'text' };

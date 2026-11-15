@@ -5,6 +5,7 @@
 
 import { NAME_MAX, CODE_LENGTH, TEAMS } from '../mp/netConfig.js';
 import { NETSIM_LIMITS, cleanNetsim } from '../net/netSim.js';
+import { refreshPanel } from './panelRefresh.js';
 
 /** A new element: tag, its class, its text. */
 export function el(tag, className = '', text = '') {
@@ -88,6 +89,12 @@ const REASONS = { score: 'the score limit', time: 'the time limit', left: 'a tea
 
 /** The results: who won, the team scores, and each player's kills, deaths and accuracy. secondsLeft: until the lobby. */
 export function renderMpResults(panel, { result, isHost, secondsLeft, onLobby, onLeave }) {
+  // Redrawn once a second for the countdown: only the countdown changes, so the buttons keep working (D246).
+  const countdown = `Back to the room in ${Math.max(0, Math.ceil(secondsLeft))} s.`;
+  refreshPanel(panel, 'results', [result, isHost], () => buildResults(panel, { result, isHost, countdown, onLobby, onLeave }), { 'results-countdown': countdown });
+}
+
+function buildResults(panel, { result, isHost, countdown, onLobby, onLeave }) {
   const winner = result.winner === 'draw' ? 'A draw' : `${TEAMS[result.winner]} win`;
   panel.replaceChildren(el('h2', '', 'Results'), el('p', 'menu-score', `${winner}: ${scoreText({ teams: result.teams })}`));
   panel.appendChild(el('p', '', `Ended by ${REASONS[result.reason] ?? result.reason} after ${Math.floor(result.seconds / 60)}:${String(result.seconds % 60).padStart(2, '0')}.`));
@@ -99,7 +106,7 @@ export function renderMpResults(panel, { result, isHost, secondsLeft, onLobby, o
     const accuracy = p.shots ? ` (${Math.round((100 * p.hits) / p.shots)}%)` : '';
     for (const t of [p.name, TEAMS[p.team], String(p.kills), String(p.deaths), `${p.hits} / ${p.shots}${accuracy}`]) tr.appendChild(el('td', '', t));
   }
-  panel.appendChild(el('p', 'menu-note', `Back to the room in ${Math.max(0, Math.ceil(secondsLeft))} s.`));
+  panel.appendChild(el('p', 'menu-note results-countdown', countdown));
   const list = isHost ? [['Back to the room now', onLobby]] : [];
   list.push(['Leave the room', onLeave]);
   buttonRow(panel, list);

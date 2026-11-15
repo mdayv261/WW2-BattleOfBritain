@@ -8,6 +8,7 @@ import { timeLabel } from './missionSetup.js';
 import { aircraftById } from '../aircraft/index.js';
 import { TEAMS, TEAM_IDS, SETTING_CHOICES } from '../mp/netConfig.js';
 import { aircraftOfTeam } from '../mp/roomCore.js';
+import { refreshPanel } from './panelRefresh.js';
 
 const PLACES = { air: 'In the air: 8,000 ft, 5 km from the enemy', apron: 'On the airfield apron' };
 // The host's settings: [key, label, value → text].
@@ -28,17 +29,29 @@ function select(options, value, onPick, disabled = false) {
   for (const [v, text] of options) s.appendChild(Object.assign(el('option', '', text), { value: String(v) }));
   s.value = String(value);
   s.disabled = disabled;
-  s.addEventListener('change', () => onPick(options.find(([v]) => String(v) === s.value)?.[0]));
+  s.addEventListener('change', () => {
+    onPick(options.find(([v]) => String(v) === s.value)?.[0]);
+    s.blur(); // the choice is made: the room's answer may redraw the lobby (D246)
+  });
   return s;
 }
 
+const pingText = (ping, netsim) => `${ping === null ? 'Ping: measuring...' : `Ping ${Math.round(ping)} ms`}${netsim ? ` (test network: ${netsim})` : ''}`;
+
 /**
  * The lobby: client (src/net/mpClient.js), note (the room's latest notice), ping (ms or null), netsim (the test
- * network in words, '' when off), onLeave(). Called again whenever the room changes.
+ * network in words, '' when off), onLeave(). Called once a second and whenever the room changes; it is drawn afresh
+ * only when what it shows has changed, and not while the player is choosing (src/ui/panelRefresh.js, D246).
  */
 export function renderLobby(panel, { client, note = '', ping = null, netsim = '', onLeave }) {
-  const { lobby, status, message } = client.state;
+  const { lobby, status, message, you } = client.state;
   if (!lobby) return;
+  const content = [lobby, status, message, note, you, netsim];
+  refreshPanel(panel, 'lobby', content, () => buildLobby(panel, { client, note, ping, netsim, onLeave }), { 'lobby-ping': pingText(ping, netsim) });
+}
+
+function buildLobby(panel, { client, note, ping, netsim, onLeave }) {
+  const { lobby, status, message } = client.state;
   const me = client.me;
   const host = client.isHost;
   panel.replaceChildren(el('h2', '', 'Room'));
@@ -88,5 +101,5 @@ export function renderLobby(panel, { client, note = '', ping = null, netsim = ''
   list.push(['Leave the room', onLeave]);
   const [start] = buttonRow(panel, list);
   if (host) start.disabled = !can.ok;
-  panel.appendChild(el('p', 'menu-note', `${ping === null ? 'Ping: measuring...' : `Ping ${Math.round(ping)} ms`}${netsim ? ` (test network: ${netsim})` : ''}`));
+  panel.appendChild(el('p', 'menu-note lobby-ping', pingText(ping, netsim)));
 }

@@ -32,6 +32,24 @@ Read this at the start of every session.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
 runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026. D243 pushed on 10 Nov 2026 (run 42786653850). D244 pushed on 10 Nov 2026 (run 42788061601). D245 (checkpoint 3, the typing and bail-out fixes) pushed on 10 Nov 2026 (run 42797587119). D246 (checkpoint 4: the Cloudflare deployment and the live site connected) pushed on 15 Nov 2026 (run 43659514653); the live site's Multiplayer then created a room on the server in Chrome.
 
+## Fix: the multiplayer lobby's lists and Start button (15 Nov 2026)
+
+**Done** (D247, after the product owner's report):
+- **The cause:** the lobby rebuilt itself every second. Lists closed at once, and clicks on "I am ready" were lost, so
+  "Start the match" stayed grey.
+- **Now:** the lobby is redrawn only when something in it changes, and never while you are choosing. Arrows and Enter
+  work in the lists. The results screen's buttons are fixed the same way.
+- **Tests:** 2,065 pass. Checked in Chrome with real clicks against the local server.
+
+**To try in the browser** (after the push):
+1. Two windows on the live site; create and join a room.
+2. Open the Side and Fighter lists and choose: each list stays open until you pick.
+3. Put one player on each side. Both click "I am ready", and the host's "Start the match" turns dark: click it.
+4. End the match. On the results screen, "Back to the room now" works.
+
+**Note:** "Start the match" needs at least one pilot on each side, and everyone ready. The line above the button says
+what it's waiting for.
+
 ## Phase 9 checkpoint 4, part B: deployed to Cloudflare (15 Nov 2026)
 
 **Done** (D246, part B):

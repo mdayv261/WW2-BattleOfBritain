@@ -34,8 +34,10 @@ export function stepFlaps(ac, selected, direction) {
 }
 
 /**
- * Is a key event aimed at a text box (a name or room code being typed, D245)? Then it is the box's: the aircraft's
- * keys don't act on it and the browser's typing is not stopped.
+ * Is a key event aimed at a text box (a name or room code being typed, D245) or a drop-down list on screen (the lobby's
+ * side, fighter and settings, D246)? Then it is theirs: the aircraft's keys don't act on it and the browser's own
+ * handling (typing, or the arrows and Enter choosing in a list) is not stopped. A list that kept the focus after its
+ * menu closed (offsetParent null) doesn't count, so the arrows fly the aircraft again.
  */
 export function typing(e) {
   const t = e?.target;
@@ -43,6 +45,7 @@ export function typing(e) {
   if (t.isContentEditable) return true;
   const tag = String(t.tagName ?? '').toLowerCase();
   if (tag === 'textarea') return true;
+  if (tag === 'select') return t.offsetParent !== null && t.offsetParent !== undefined;
   return tag === 'input' && !['button', 'checkbox', 'radio', 'range', 'submit'].includes(String(t.type ?? 'text').toLowerCase());
 }
 
