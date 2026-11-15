@@ -14,6 +14,7 @@ function fakeMenus() {
   return {
     shown: null, actions: null, results: null, hidden: false,
     showMain(a) { this.shown = 'main'; this.actions = a; this.hidden = false; },
+    showGuide(a) { this.shown = 'guide'; this.actions = a; this.hidden = false; },
     showSetup(setup, a) { this.shown = 'setup'; this.setup = setup; this.actions = a; this.hidden = false; },
     showSettings(a) { this.shown = 'settings'; this.actions = a; this.hidden = false; },
     showPause(a) { this.shown = 'pause'; this.actions = a; this.hidden = false; },
@@ -32,6 +33,14 @@ function game() {
 }
 
 describe('the game\'s states', () => {
+  it('the main menu\'s Guide shows the player\'s guide, and Back returns to the menu (D253)', () => {
+    const { g, menus } = game();
+    menus.actions.onGuide();
+    expect([g.state, menus.shown, g.advancing]).toEqual(['guide', 'guide', false]);
+    menus.actions.onBack();
+    expect([g.state, menus.shown]).toEqual(['menu', 'main']);
+  });
+
   it('goes menu → setup → flying → paused → results → menu, advancing only while flying', () => {
     const { g, sim, menus, flights } = game();
     expect([g.state, menus.shown, g.advancing]).toEqual(['menu', 'main', false]);

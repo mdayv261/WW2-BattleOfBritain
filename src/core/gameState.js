@@ -71,10 +71,17 @@ export class GameState {
     this.menus.showMain({
       onMission: () => this.setupScreen(), onTest: () => this.testFlight(), onSettings: () => this.settings(),
       onMultiplayer: this.mp ? () => this.mp.open() : null,
+      onGuide: () => this.guide(),
       career: ['RAF', 'Luftwaffe'].map((side) => [side, careerText(side, this.career.of(side))]),
       onResetCareer: () => { this.career.reset(); this.menu(); },
       sound: this.soundButton(),
     });
+  }
+
+  /** The player's guide (D253); Back returns to the main menu. */
+  guide() {
+    this.state = 'guide';
+    this.menus.showGuide({ onBack: () => this.menu() });
   }
 
   setupScreen() {

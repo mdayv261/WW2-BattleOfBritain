@@ -7250,3 +7250,39 @@ say so.
 not worth a build change for 1.0. The build's warning about the 1.1 MB file is only advice.
 
 No code changed.
+
+## D253. Phase 10 checkpoint 3: the player's guide, the README and the About line (15 Nov 2026)
+
+**The product owner's choice:** a Guide button on the main menu (recommended), not a document only.
+
+**Built:**
+- **docs/PLAYER_GUIDE.md:**
+  - getting started (the test flight);
+  - the controls (keyboard, joystick, mouse flying, views);
+  - the engines and their handling;
+  - take-off (with the S33 trim, D248), landing and trouble;
+  - the missions and ranks; the RAF radar; settings and assists; multiplayer;
+  - what to do if something goes wrong;
+  - About: sources, map data, software licences, markings.
+  It states only what the game does and what the sourced data say. The aircraft figures stay in docs/AIRCRAFT_DATA.md.
+- **The Guide button** (main menu, after Settings): the guide in the menu panel, scrolling, with Back.
+  - The game bundles that same file (`?raw`), so the two can't drift apart.
+  - A small Markdown reader (src/ui/guide.js) makes headings, paragraphs, nested lists, tables, bold and code. It
+    escapes everything first.
+- **The About line** under the main menu: "Version … · Sources, credits and licences: Guide → About". The version comes
+  from package.json, which becomes 1.0.0 at checkpoint 4.
+- **README.md** for the repository: what the game is, the live link, how to run, test and build it (multiplayer too),
+  the documents, and the sources and licences.
+
+**Tests:** 7 new (2,093 in all):
+- the reader's output, and its escaping;
+- the bundled guide's balanced lists;
+- the guide's keys, ranks, raid targets and skill names checked against the game's own data, so a later change that
+  makes the guide wrong fails a test;
+- the menu's Guide and Back;
+- the About line.
+
+**Checked in Chrome** (the dev server): the Guide button and the About line; the guide rendered, scrolled to the end
+(the ranks table, About); Back to the main menu; no console errors.
+
+**No deviation from historical figures.**

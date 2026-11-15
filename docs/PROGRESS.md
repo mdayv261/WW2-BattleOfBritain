@@ -27,9 +27,24 @@ Read this at the start of every session.
   done: take-off help (D248). Multiplayer is live on the GitHub Pages site, with the room server on Cloudflare.
 - **Phase 10** (polish and release 1.0): plan approved 15 Nov 2026 (D250). Checkpoint 1 (bug fixes) done (D251), pushed
   and the room server redeployed. Checkpoint 2 (performance and browsers) done (D252): no benchmark, Chrome only for
-  1.0, load time fine (about 660 KB). Next: checkpoint 3 (the player guide and the README).
+  1.0, load time fine (about 660 KB). Checkpoint 3 (the player's guide, Guide button, README, About line) done (D253).
+  Next: checkpoint 4 (the release checklist and 1.0).
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
 runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026. D243 pushed on 10 Nov 2026 (run 42786653850). D244 pushed on 10 Nov 2026 (run 42788061601). D245 (checkpoint 3, the typing and bail-out fixes) pushed on 10 Nov 2026 (run 42797587119). D246 (checkpoint 4: the Cloudflare deployment and the live site connected) pushed on 15 Nov 2026 (run 43659514653); the live site's Multiplayer then created a room on the server in Chrome. D247 (the lobby's lists and buttons) pushed on 15 Nov 2026 (run 43662949217), and the test copy redeployed (version 6b3d6609); on the live site a real click and type-ahead changed "Score to win" in the lobby. D248 (take-off help) pushed on 15 Nov 2026 (run 43669206110). D251 (Phase 10 checkpoint 1) pushed on 15 Nov 2026 (run 43673729451), and the room server redeployed (version d0be553a; the smoke test passes against it).
+
+## Phase 10 checkpoint 3: the player's guide (15 Nov 2026)
+
+**Done** (D253):
+- **Main menu → Guide:** the player's guide in the game. It covers getting started, the controls, the engines,
+  take-off and landing, the missions and ranks, the radar, the assists, multiplayer, troubleshooting, and About
+  (sources and licences).
+- **The same guide** is docs/PLAYER_GUIDE.md in the repository. The game shows that very file.
+- **A README** for the GitHub repository.
+- **An About line** under the main menu with the version.
+
+**Tests:** 2,093 pass. Checked in Chrome.
+
+**To try in the browser** (after the push): Main menu → Guide; scroll through it; Back.
 
 ## Phase 10 checkpoint 1: bug fixes (15 Nov 2026)
 

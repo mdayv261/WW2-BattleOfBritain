@@ -5,6 +5,11 @@
 import { renderSetup } from './missionSetup.js';
 import { renderSettings } from './settingsScreen.js';
 import { renderControls } from './controlsScreen.js';
+import { renderGuide } from './guide.js';
+import { version } from '../../package.json';
+
+/** The main menu's About line (D253). */
+export const aboutLine = () => `Version ${version} · Sources, credits and licences: Guide → About`;
 
 const STYLE = `
 .menu-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
@@ -23,6 +28,11 @@ const STYLE = `
   border: none; cursor: pointer; text-align: left; }
 .menu-buttons button:hover { background: #77734f; }
 .menu-note { font-size: 13px; color: #555046; }
+.menu-guide { max-width: 760px; max-height: 72vh; overflow-y: auto; padding-right: 12px; font-size: 15px; line-height: 1.45; }
+.menu-guide h2 { font-size: 22px; } .menu-guide h3 { font-size: 18px; margin: 18px 0 6px; } .menu-guide h4 { font-size: 16px; margin: 14px 0 4px; }
+.menu-guide ul, .menu-guide ol { margin: 4px 0 10px; padding-left: 22px; } .menu-guide li { margin: 2px 0; }
+.menu-guide table { margin: 6px 0 12px; } .menu-guide th, .menu-guide td { padding: 2px 14px 2px 0; text-align: left; }
+.menu-guide code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
 .menu-panel { max-height: 92vh; overflow: auto; }
 .settings-keys { max-width: 620px; margin-top: 10px; }
 .settings-keys td { padding: 1px 8px 1px 0; vertical-align: top; }
@@ -111,10 +121,11 @@ export class Menus {
    * The main menu, with each side's career (`career`: [[side, text]], D229). "Reset careers" asks for a second click
    * before `onResetCareer` clears them.
    */
-  showMain({ onMission, onTest, onSettings, onMultiplayer, career = [], onResetCareer, sound }) {
+  showMain({ onMission, onTest, onSettings, onMultiplayer, onGuide, career = [], onResetCareer, sound }) {
     const buttons = [{ label: 'Fly a mission', action: onMission }];
     if (onMultiplayer) buttons.push({ label: 'Multiplayer', action: onMultiplayer }); // D245
     buttons.push({ label: 'Test flight', action: onTest }, { label: 'Settings', action: onSettings });
+    if (onGuide) buttons.push({ label: 'Guide', action: onGuide }); // the player's guide (D253)
     if (sound) buttons.push(soundButton(sound));
     if (onResetCareer) {
       buttons.push({
@@ -132,6 +143,15 @@ export class Menus {
       buttons,
       note: 'In flight: Esc pauses. H lists the keys. Ranks come from mission kills only.',
     });
+    // The About line (D253): the version, and where the sources and credits are.
+    this.panel.appendChild(Object.assign(document.createElement('p'), { className: 'menu-note', textContent: aboutLine() }));
+  }
+
+  /** The player's guide (D253), with Back to `onBack`. */
+  showGuide({ onBack }) {
+    this.screen = 'guide';
+    renderGuide(this.panel, { onBack });
+    this.overlay.style.display = 'flex';
   }
 
   /** A screen drawn by `render(panel)` (the multiplayer screens, D245); returns what render returns. */
