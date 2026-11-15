@@ -7221,3 +7221,8 @@ The five fixes the product owner chose (D250):
 they work on the live site. The message format is unchanged, so old and new pages work with either server.
 
 **No deviation from historical figures.**
+
+**Checkpoint 2 changed by the product owner** (15 Nov 2026): "Don't bother with the mid-range laptop test. I only have
+a high range laptop which will work fine." So GAME_SPEC §2's "60 fps on a mid-range laptop" stays unverified (flagged).
+The frame rate is measured on this Mac, and on the product owner's high-range laptop if wanted. The release notes will
+say so.
