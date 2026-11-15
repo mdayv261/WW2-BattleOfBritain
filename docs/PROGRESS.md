@@ -46,6 +46,8 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 
 **Tests:** 2,079 pass. The validation output is unchanged.
 
+**Confirmed:** the product owner tested the take-off on the live site on 15 Nov 2026: "it works well."
+
 **To try in the browser:**
 1. Settings → Assists → Auto-rudder on.
 2. Test flight → 2 (Spitfire), on the ground. Start the engine (L).

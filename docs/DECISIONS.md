@@ -7129,3 +7129,5 @@ is very hard. What was the Merlin's take-off power setting in 1940?
 
 **No deviation from historical figures.** The preset follows S33. The auto-rudder is an optional assist, off by default
 (D16).
+
+**Confirmed by the product owner** (15 Nov 2026, on the live site): "I tested the take-off and it works well."
