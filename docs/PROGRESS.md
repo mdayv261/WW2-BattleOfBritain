@@ -47,6 +47,11 @@ runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 425967738
 3. Put one player on each side. Both click "I am ready", and the host's "Start the match" turns dark: click it.
 4. End the match. On the results screen, "Back to the room now" works.
 
+**Confirmed:** the product owner tested multiplayer on the live site on 15 Nov 2026: "all is working correctly."
+
+**Left in Phase 9:** the family test on different home networks, then the Phase 9 acceptance test (D246's plan).
+The start-up burst on Cloudflare waits (product owner: "Wait").
+
 **Note:** "Start the match" needs at least one pilot on each side, and everyone ready. The line above the button says
 what it's waiting for.
 

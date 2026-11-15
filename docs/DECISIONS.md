@@ -7058,3 +7058,6 @@ the game button is greyed out and does not function."
   - no console errors.
 - **Not testable by script:** choosing from a list's pop-up with the mouse, because macOS draws it out of the test
   tool's reach. The product owner's check covers it.
+
+**Confirmed by the product owner** (15 Nov 2026, on the live site): "I tested the multiplayer and all is working
+correctly."
