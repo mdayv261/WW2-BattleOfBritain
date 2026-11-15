@@ -7226,3 +7226,27 @@ they work on the live site. The message format is unchanged, so old and new page
 a high range laptop which will work fine." So GAME_SPEC §2's "60 fps on a mid-range laptop" stays unverified (flagged).
 The frame rate is measured on this Mac, and on the product owner's high-range laptop if wanted. The release notes will
 say so.
+
+## D252. Phase 10 checkpoint 2: performance and browsers (15 Nov 2026)
+
+**The product owner's choices:**
+- no frame-rate benchmark: the existing measurements stand;
+- Chrome only for 1.0: Firefox is untested (GAME_SPEC §2 targets it; flagged, and stated in the release notes).
+
+**Frame rate, as measured in earlier checkpoints** (Chrome on this Mac):
+- 75 fps in missions and matches, including an interception with eleven AI aircraft (D236);
+- the twelve-aircraft check (Shift+7) passes in the automated tests' timing budget (D221, D230);
+- about 43 fps in the first seconds of a flight while the scene loads.
+
+**Load time** (the live site, measured today):
+- **a first visit downloads about 660 KB, compressed:**
+  - the page, 342 bytes;
+  - the game, 304 KB (1.07 MB uncompressed);
+  - the map, 356 KB (1.5 MB uncompressed);
+  - under a second here;
+- GitHub Pages compresses both (gzip) and caches for 10 minutes. The file names change with their contents.
+
+**Left as it is:** splitting three.js into its own file would save about 150 KB on a return visit after an update. That's
+not worth a build change for 1.0. The build's warning about the 1.1 MB file is only advice.
+
+No code changed.
