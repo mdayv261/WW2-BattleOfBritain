@@ -7061,3 +7061,71 @@ the game button is greyed out and does not function."
 
 **Confirmed by the product owner** (15 Nov 2026, on the live site): "I tested the multiplayer and all is working
 correctly."
+
+## D248. Help on the take-off: the S33 rudder trim, and the auto-rudder on the ground (15 Nov 2026)
+
+**The question** (the product owner): does the auto-rudder work from a ground start? Keeping straight while opening up
+is very hard. What was the Merlin's take-off power setting in 1940?
+
+**Found:**
+- **The auto-rudder acted only in the air** (D232: it rudders against sideslip).
+- **A ground start left the rudder trim neutral.**
+- **Hands off, every fighter ground-loops on take-off:** the Spitfire, Hurricane and Bf 109 strike a wingtip, and the
+  Bf 110 swings right round. With the scripted pilot steering, the swing is 4-5° in the single-engined fighters and
+  2° in the Bf 110.
+
+**Read from S33** (the Spitfire I Pilot's Notes, Museum of Flight, in its page viewer):
+- **Take-off to 1,000 ft: 3,000 rpm, +6¼ lb/sq in** (principal engine limitations, Section 2). This page is dated
+  January 1942; it agrees with the 1940 figures already held.
+- **The drill before take-off:** rudder trim "fully to starboard"; elevator trim about one division nose down;
+  airscrew control fully forward; flaps up; radiator fully open.
+- **The take-off:** "Open the throttle fully" (the automatic boost control holds +6¼ lb); hold any swing with coarse
+  rudder; the boost cut-out only from a small aerodrome at full load.
+- **The rudder trim tab "is not provided with an indicator".**
+
+**The product owner's decisions:**
+- the auto-rudder on the take-off run: yes;
+- a ground start preset to the take-off trim, plus a key to toggle it and neutral;
+- no HUD indicator. This replaces their first request, and agrees with S33;
+- in the Bf 110 the key does nothing. No setting is sourced, and its engines turn the other way: full right trim made
+  its swing worse, 2.2° to 5.6°, measured.
+
+**Built:**
+- **`controls.takeoffRudderTrim: 1`** in the Spitfire's data (S33). None for the others: the Hurricane (no tab, S12),
+  the Bf 109 (no tab), the Bf 110 (not found; listed as a research gap).
+- **src/core/takeoffTrim.js:** the setting, and the toggle with its messages.
+- **A ground start begins at the take-off trim:** single player, a mission's airfield start, and a match's apron start
+  and respawn.
+- **Key "/":** "Rudder trim: take-off / neutral", rebindable, with a message on the message line.
+  - Saved keys gain it, unless "/" was already in use; then it starts unbound, rather than every key being reset.
+  - A joystick button can be assigned in the J panel.
+- **The auto-rudder on the ground:** with the pilot's feet off the pedals, it holds the heading taken when the hold
+  begins (a ground start, a touchdown, or letting go of the rudder), up to full rudder. It lets go at lift-off, where
+  the air behaviour takes over. Gains 30 per radian and 8 per rad/s (game design).
+  - In a match the browser sends the assisted rudder, so the server agrees.
+- **The settings text** says what it does in the air and on the ground.
+
+**Measured** (the scripted take-off; worst swing on the ground; ground runs within 1 m):
+
+| Fighter | Test pilot | Auto-rudder | Auto-rudder + S33 trim |
+|---|---|---|---|
+| Spitfire | 4.4° left | 2.2° | 1.9° |
+| Hurricane | 4.8° left | 2.2° | (no tab) |
+| Bf 109 E | 4.9° right | 1.6° | (no tab) |
+| Bf 110 C | 2.2° | 0.6° | (none set) |
+
+- With the test pilot steering, the Spitfire's take-off trim alone takes its swing from 4.4° to 2.5°.
+- **Short of the plan's target of "about 1°":** most of the swing comes in the first second or two, at walking pace,
+  before the rudder has the airflow to act. Gains three times higher took off only 0.1-0.3°. The assist moves only the
+  rudder (D232), not the brakes, so this is the limit.
+
+**Checked:**
+- 14 new tests (2,079 in all). The validation output is unchanged (md5 c1732d9).
+- Chrome:
+  - Spitfire ground start: "/" goes neutral → take-off → neutral, with its messages;
+  - the Hurricane and Bf 110 messages;
+  - "/" in the key list;
+  - no console errors.
+
+**No deviation from historical figures.** The preset follows S33. The auto-rudder is an optional assist, off by default
+(D16).

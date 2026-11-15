@@ -49,6 +49,7 @@ export const spitfire = {
     flapTravel: 85 * DEG, // fully down
     flapTakeoff: 0, // flap setting for take-off (fraction of travel)
     flapLanding: 1, // and for landing
+    takeoffRudderTrim: 1, // rudder trim for take-off: "Rudder fully to starboard" (S33, drill of vital actions; D248)
     elevatorUp: 29 * DEG, // elevator travel, full up (display and checks; the moments use aero.elevatorCm)
     trimTime: 8, // s: elevator trim from one end to the other
   },

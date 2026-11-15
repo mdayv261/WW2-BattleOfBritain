@@ -45,7 +45,7 @@ export const DEFAULT_MAPPING = {
   yaw: { axis: 5, invert: false, curve: 1, deadzone: DEADZONE },
   throttle: { axis: 6, invert: true },
   hat: { axis: 9 },
-  buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1, bailOut: 7, pitchFine: 6, pitchCoarse: 8, seat: -1 },
+  buttons: { trimUp: 4, trimDown: 2, flapsUp: 3, flapsDown: 5, brake: 11, gear: 10, view: 9, fireMg: 0, fireCannon: 1, bailOut: 7, pitchFine: 6, pitchCoarse: 8, seat: -1, takeoffTrim: -1 },
   centres: {}, // the reading of each calibrated axis at its neutral, by axis number (D70)
 };
 
@@ -187,7 +187,7 @@ export class Joystick {
    * Writes stick, rudder, (once moved) throttle, elevator trim (while its buttons are held, at the aircraft's
    * own trim speed), brakes, flaps and undercarriage into the control input, for a frame of dt seconds.
    * Returns null with no joystick, else { hat: direction or null, view: true on a press of the view button, seat: true
-   * on a press of the seat-swap button (D234) }.
+   * on a press of the seat-swap button (D234), takeoffTrim: true on a press of the take-off rudder trim button (D248) }.
    */
   update(input, ac, dt = 0) {
     if (!this.poll()) return null;
@@ -222,6 +222,6 @@ export class Joystick {
     const pitch = (this.held('pitchCoarse') ? 1 : 0) - (this.held('pitchFine') ? 1 : 0);
     if (pitch && ac.propeller.type === 'constantSpeed') input.rpm = clamp(input.rpm - pitch * LEVER_RATE * dt, 0, 1);
     else if (pitch) input.pitchSwitch = pitch;
-    return { hat: hatDirection(this.pad.axes[this.mapping.hat.axis]), view: this.pressed('view'), seat: this.pressed('seat') };
+    return { hat: hatDirection(this.pad.axes[this.mapping.hat.axis]), view: this.pressed('view'), seat: this.pressed('seat'), takeoffTrim: this.pressed('takeoffTrim') };
   }
 }

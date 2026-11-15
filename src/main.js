@@ -42,6 +42,7 @@ import { aircraftList } from './aircraft/index.js';
 import { loadTerrain } from './world/terrain.js';
 import { realWorld } from './world/world.js';
 import { attachMultiplayer } from './net/multiplayer.js';
+import { toggleTakeoffTrim } from './core/takeoffTrim.js';
 
 // The real map's terrain (D51), loaded before anything else.
 const terrain = await loadTerrain(import.meta.env.BASE_URL);
@@ -214,6 +215,9 @@ renderer.setAnimationLoop((now) => {
       gunInput = null;
       keyboard.update(sim.input, sim.ac, dt);
       stick = joystick.update(sim.input, sim.ac, dt);
+      if (stick?.takeoffTrim) keyboard.message = toggleTakeoffTrim(sim.ac, sim.input); // the J panel's button (D248)
+      if (keyboard.message) sim.notice = { text: keyboard.message, until: sim.plane.time + 3 }; // the take-off trim key
+      keyboard.message = null;
       mouseFlight.apply(sim.input); // with mouse flying on, the mouse holds the stick and works the throttle (D239)
       sim.applyLevers();
       if (stick?.view) view.rig.toggleCockpit();

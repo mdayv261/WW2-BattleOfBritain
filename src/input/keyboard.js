@@ -16,6 +16,7 @@
 
 import { clamp } from '../physics/interp.js';
 import { Bindings, comboOf } from './bindings.js';
+import { toggleTakeoffTrim } from '../core/takeoffTrim.js';
 
 const STICK_RATE = 2.5; // full deflection in 0.4 s
 const CENTRE_RATE = 4;
@@ -137,6 +138,8 @@ export class Keyboard {
     if (this.tookAction('flapsDown')) input.flaps = stepFlaps(ac, input.flaps, 1);
     if (this.tookAction('flapsUp')) input.flaps = stepFlaps(ac, input.flaps, -1);
     if (this.tookAction('gear')) input.gear = input.gear ? 0 : 1;
+    // The take-off rudder trim and neutral (D248); the message is shown on the message line (src/main.js).
+    if (this.tookAction('rudderTrimTakeoff')) this.message = toggleTakeoffTrim(ac, input);
     if (this.tookAction('radiator')) input.radiator = input.radiator ? 0 : 1;
     if (this.tookAction('boost') && ac.side === 'RAF') input.emergency = !input.emergency;
     if (this.tookAction('autoPitch') && ac.propeller.type === 'manualPitch') input.engineAssist = !input.engineAssist;

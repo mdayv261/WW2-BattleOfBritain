@@ -32,6 +32,28 @@ Read this at the start of every session.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
 runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026. D243 pushed on 10 Nov 2026 (run 42786653850). D244 pushed on 10 Nov 2026 (run 42788061601). D245 (checkpoint 3, the typing and bail-out fixes) pushed on 10 Nov 2026 (run 42797587119). D246 (checkpoint 4: the Cloudflare deployment and the live site connected) pushed on 15 Nov 2026 (run 43659514653); the live site's Multiplayer then created a room on the server in Chrome. D247 (the lobby's lists and buttons) pushed on 15 Nov 2026 (run 43662949217), and the test copy redeployed (version 6b3d6609); on the live site a real click and type-ahead changed "Score to win" in the lobby.
 
+## Take-off help: the S33 rudder trim and the auto-rudder on the ground (15 Nov 2026)
+
+**Done** (D248):
+- **The Merlin's take-off setting,** confirmed from S33: 3,000 rpm and +6¼ lb/sq in. In practice that's full throttle,
+  since the boost control holds +6¼ lb. +12 lb (the cut-out, Q) is for a small field at full load only.
+- **A Spitfire ground start begins with the rudder trim fully right,** as the Pilot's Notes drill says.
+- **"/"** toggles take-off trim and neutral, with a message. In the Hurricane and Bf 109 (no tab) and the Bf 110
+  (no setting given) it says why it does nothing.
+- **The auto-rudder now also holds your heading on the take-off and landing runs** while your feet are off the
+  pedals, if you've switched it on (Settings → Assists).
+- **Measured:** the worst swing roughly halves (Spitfire 4.4° → 1.9° with the trim). The ground runs are unchanged.
+
+**Tests:** 2,079 pass. The validation output is unchanged.
+
+**To try in the browser:**
+1. Settings → Assists → Auto-rudder on.
+2. Test flight → 2 (Spitfire), on the ground. Start the engine (L).
+3. Open the throttle fully (hold W) and keep your feet off the rudder; ease the stick forward to raise the tail. It
+   should run straight and lift off.
+4. Press "/": "Rudder trim: neutral"; press again: "Rudder trim: take-off (fully right)".
+5. Try 1 (Hurricane) and 3 (Bf 109) with the auto-rudder; and with it off, to feel the difference.
+
 ## Fix: the multiplayer lobby's lists and Start button (15 Nov 2026)
 
 **Done** (D247, after the product owner's report):

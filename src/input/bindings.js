@@ -9,6 +9,8 @@ import { browserStorage } from '../core/career.js';
 
 export const KEYS_KEY = 'bob1940.keys';
 const VERSION = 1;
+/** Actions added after the first saved keys (D238), which a saved set may lack: the take-off rudder trim (D248). */
+const ADDED = ['rudderTrimTakeoff'];
 
 /** Every rebindable action: [id, label, group, kind ('hold' or 'press'), default keys]. */
 const LIST = [
@@ -22,6 +24,7 @@ const LIST = [
   ['trimDown', 'Elevator trim nose down', 'Flight', 'hold', ['KeyG']],
   ['rudderTrimLeft', 'Rudder trim left', 'Flight', 'hold', ['Comma']],
   ['rudderTrimRight', 'Rudder trim right', 'Flight', 'hold', ['Period']],
+  ['rudderTrimTakeoff', 'Rudder trim: take-off / neutral', 'Flight', 'press', ['Slash']],
   ['flapsDown', 'Flaps down a stop', 'Flight', 'press', ['KeyF']],
   ['flapsUp', 'Flaps up a stop', 'Flight', 'press', ['Shift+KeyF']],
   ['gear', 'Undercarriage', 'Flight', 'press', ['KeyU']],
@@ -97,6 +100,10 @@ export class Bindings {
         for (const [id, list] of Object.entries(saved.keys)) {
           if (byId.has(id) && Array.isArray(list) && list.every((k) => typeof k === 'string' && !RESERVED.has(k))) keys[id] = list;
         }
+        // An action added since saving began takes its default key, unless the player has put that key to another
+        // use: then it starts unbound, rather than every key going back to the defaults (D248).
+        const taken = new Set(Object.values(saved.keys).flat());
+        for (const id of ADDED) if (!(id in saved.keys)) keys[id] = keys[id].filter((k) => !taken.has(k));
         if (!clash(keys)) return keys;
       }
     } catch {

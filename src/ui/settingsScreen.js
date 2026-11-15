@@ -3,7 +3,7 @@
 // D16), and the controls (the Controls screen for keys and joystick buttons, D238; the key list; the joystick panel).
 
 const ASSISTS = [
-  ['autoRudder', 'Auto-rudder', 'Rudder against the sideslip while your feet are off the pedals.'],
+  ['autoRudder', 'Auto-rudder', 'While your feet are off the pedals: in the air, rudder against the sideslip; on the ground, it holds your heading on the take-off and landing runs.'],
   ['stallWarning', 'Stall warning', 'A beep and a red line close to the stall.'],
   ['gWarning', 'g warning', 'A double beep and a red line near the airframe\'s g limit.'],
   ['engineManagement', 'Engine management', 'Automatic airscrew pitch (Bf 109, Bf 110) and radiator.'],

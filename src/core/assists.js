@@ -1,13 +1,15 @@
 // The optional assists (Phase 7 checkpoint 6, D232; GAME_SPEC §5): each off unless the player switches it on (D16).
 // They act on the player's aircraft in every physics step (src/core/simulation.js), with the same controls the pilot
 // has: they move the rudder, the radiator flap and the airscrew pitch, and nothing else.
-//   Auto-rudder: while airborne and the pilot's own rudder is near the middle, rudder against the sideslip.
+//   Auto-rudder: while the pilot's own rudder is near the middle: in the air, rudder against the sideslip; on the
+//     ground (D248), hold the heading on the take-off and landing runs, so the swing of opening up is caught.
 //   Engine management: the automatic airscrew pitch (`engineAssist`, D18) on the manual-pitch aircraft, and the
 //     radiator opened as the coolant nears its limit and shut once it has cooled.
 //   Stall warning and g warning: flags for the warning line and tone (src/ui/hud.js, src/audio/audioEngine.js).
 //   Overspeed warning (D240): an engine over its red line, or the airframe near its diving limit.
 // Every threshold here is game design (D232): none of this was period equipment.
 
+import { Vector3 } from 'three';
 import { UNIT } from './constants.js';
 import { common } from '../aircraft/common.js';
 import { stallAlpha } from '../physics/aero.js';
@@ -17,6 +19,12 @@ export const ASSIST = {
   rudderGain: 3, // rudder per radian of sideslip
   rudderMax: 0.5, // the most rudder the auto-rudder uses (of full travel)
   pilotRudder: 0.05, // the pilot's rudder beyond this overrides the auto-rudder
+  // On the ground (D248): rudder = -(groundHeadingGain x heading error + groundYawRateGain x yaw rate), up to full travel.
+  // Tuned with the scripted take-off (src/dev/groundTests.js): higher gains barely reduce the swing, which is largest
+  // in the first second or two, before the rudder has the airflow to act.
+  groundHeadingGain: 30, // rudder per radian off the held heading
+  groundYawRateGain: 8, // rudder per rad/s of yaw rate (damping)
+  groundRudderMax: 1, // full travel: at low speed the rudder needs it
   radiatorOpen: 15, // °C below the coolant limit at which the radiator is opened...
   radiatorShut: 25, // ...and below which it is shut again
   stallMargin: 2 * UNIT.DEG, // the stall warning sounds this close to the stall angle
@@ -40,12 +48,38 @@ export function assistNames(assists = {}) {
 }
 
 const airborne = (plane) => plane.last && !plane.last.onGround;
+const clampTo = (v, max) => Math.max(-max, Math.min(max, v));
+const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+const NOSE = new Vector3();
 
-/** The rudder the aircraft flies with this step: the pilot's, or with auto-rudder against the sideslip. */
-export function assistedYaw(plane, input, assists) {
-  if (!assists.autoRudder || !airborne(plane) || Math.abs(input.yaw) > ASSIST.pilotRudder) return input.yaw;
+/** The nose's heading (rad, clockwise from north; world -Z is north). */
+function noseHeading(plane) {
+  NOSE.set(1, 0, 0).applyQuaternion(plane.body.quaternion);
+  return Math.atan2(NOSE.x, -NOSE.z);
+}
+
+/**
+ * The rudder the aircraft flies with this step: the pilot's, or the auto-rudder's while the pilot's feet are off the
+ * pedals: against the sideslip in the air; on the ground, holding the heading held in `memory` (D248), taken when the
+ * hold begins (a ground start, a touchdown, or the pilot letting go of the rudder) and let go at lift-off.
+ */
+export function assistedYaw(plane, input, assists, memory = {}) {
+  if (!assists.autoRudder) return input.yaw;
+  if (Math.abs(input.yaw) > ASSIST.pilotRudder) {
+    memory.heading = null; // the pilot steers; letting go holds the new heading
+    return input.yaw;
+  }
+  if (!plane.last) return input.yaw; // before the first step
+  if (!airborne(plane)) {
+    const heading = noseHeading(plane);
+    memory.heading ??= heading;
+    const off = wrap(heading - memory.heading);
+    // Positive rudder yaws the nose right (heading up); body +y yaw rate is the nose swinging left.
+    return clampTo(-ASSIST.groundHeadingGain * off + ASSIST.groundYawRateGain * plane.body.angularVelocity.y, ASSIST.groundRudderMax);
+  }
+  memory.heading = null;
   const want = ASSIST.rudderGain * plane.last.beta; // positive rudder yaws the nose towards positive sideslip
-  return Math.max(-ASSIST.rudderMax, Math.min(ASSIST.rudderMax, want));
+  return clampTo(want, ASSIST.rudderMax);
 }
 
 /** Engine management: the automatic airscrew pitch, and the radiator by the hottest engine's coolant. */

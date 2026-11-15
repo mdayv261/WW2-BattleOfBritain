@@ -30,6 +30,7 @@ import { stepBailouts, playerBailout, playerJumped, playerLanding } from './bail
 import { stepCollisions } from './collisions.js';
 import { NO_ASSISTS, assistedYaw, manageEngine, warnings } from './assists.js';
 import { resetSeat, stepCrewSeat } from './crewSeat.js';
+import { takeoffRudderTrim } from './takeoffTrim.js';
 
 export const START = { altitude: 1500, speed: 110, heading: 0, rpm: 0.8 };
 export const START_MODES = ['ground', 'approach', 'air'];
@@ -95,7 +96,8 @@ export function startPlane(ac, mode, world, override = null) {
   const starts = world.starts(ac.side);
   if (mode === 'ground') {
     const plane = createOnGround(ac, { ...starts.ground, ...override, terrain });
-    return { plane, input: { ...createInput(plane, 0), rpm: 1, gear: 1 } };
+    // The take-off rudder trim already set, as in the drill before take-off (S33, D248).
+    return { plane, input: { ...createInput(plane, 0), rpm: 1, gear: 1, rudderTrim: takeoffRudderTrim(ac) ?? 0 } };
   }
   if (mode === 'approach') {
     const { altitude, heading, x, z } = starts.approach;
@@ -149,6 +151,7 @@ export class Simulation {
     this.scenario = null; // the scenario on (keys 6 and 7)
     this.targetIndex = -1;
     this.notice = null; // a short message for the pilot: { text, until } (simulation time)
+    this.assistMemory = {}; // the auto-rudder's held heading on the ground (D248)
     this.crashed = false;
     this.crashCause = null;
     this.hitsBy = null; // who has hit the player, for the missions (D225)
@@ -259,7 +262,7 @@ export class Simulation {
     // The assists (D232): the auto-rudder flies this step's rudder; the pilot's own stays in the input.
     manageEngine(this.ac, this.plane, this.input, this.assists);
     const pilotYaw = this.input.yaw;
-    this.input.yaw = assistedYaw(this.plane, this.input, this.assists);
+    this.input.yaw = assistedYaw(this.plane, this.input, this.assists, this.assistMemory);
     stepAircraft(this.plane, this.input, dt);
     this.input.yaw = pilotYaw;
     this.warnings = warnings(this.ac, this.plane, this.assists);

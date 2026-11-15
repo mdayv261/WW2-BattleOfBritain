@@ -76,15 +76,17 @@ export function runUp(ac, { seconds = 6 } = {}) {
  * it) ease the nose up toward the three-point attitude so the aircraft flies itself off; then climb away. Flaps as
  * each aircraft's technique (the Bf 109 used 20 degrees, S32; the RAF fighters none).
  *   screen: height of the screen in m (50 ft for the RAF trials, 20 m for the German figures)
+ *   rudder: who works the rudder on the ground: the test pilot holding the heading (default), 'none' (hands off), or a
+ *     function (plane, input) returning the rudder, such as the auto-rudder (D248); rudderTrim: its setting (-1..1)
  * Returns ground run, distance to the screen, lift-off speed (equivalent airspeed) and time, and the
  * largest heading excursion while on the ground (positive = right).
  */
-export function takeoffTest(ac, { screen = 15.24, flaps = 0, mass, tailUpPitch = 2 * DEG, rotateAt = 0.9, climbAt = 1, trace } = {}) {
+export function takeoffTest(ac, { screen = 15.24, flaps = 0, mass, tailUpPitch = 2 * DEG, rotateAt = 0.9, climbAt = 1, rudder = 'pilot', rudderTrim = 0, trace } = {}) {
   const craft = mass ? { ...ac, mass: { ...ac.mass, flying: mass } } : ac;
   const vs = equivalentAirspeed(stallSpeed(craft, { speed: craft.propeller.rpmMax, throttle: 0 }, 0, { flaps, gear: 1 }), 0);
   const plane = createOnGround(craft);
   const start = plane.body.position.clone();
-  const input = { throttle: 0, rpm: 1, gear: 1, flaps, brake: 0, trim: 0, pitch: 0, roll: 0, yaw: 0, engineAssist: true };
+  const input = { throttle: 0, rpm: 1, gear: 1, flaps, brake: 0, trim: 0, pitch: 0, roll: 0, yaw: 0, engineAssist: true, rudderTrim };
   const flyOffPitch = craft.gear.groundAngle - 1 * DEG;
   const climbSpeed = climbAt * vs;
   let climbPitch = flyOffPitch;
@@ -108,6 +110,7 @@ export function takeoffTest(ac, { screen = 15.24, flaps = 0, mass, tailUpPitch =
     } else if (tailUp && plane.last.eas > rotateAt * vs) target = flyOffPitch;
     else target = tailUp ? tailUpPitch : -10 * DEG;
     hold(plane, input, { pitch: target });
+    if (rudder !== 'pilot' && plane.ground.onGround) input.yaw = rudder === 'none' ? 0 : rudder(plane, input);
     if (plane.ground.onGround) {
       const h = wrap(headingRad(plane));
       if (Math.abs(h) > Math.abs(maxSwing)) maxSwing = h;

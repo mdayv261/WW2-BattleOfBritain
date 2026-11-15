@@ -206,7 +206,7 @@ export class NetFlight {
     if (onGun) {
       const { az, el } = anglesOf(sim.gunControl.aim ?? rearGun(sim).bore);
       Object.assign(c, { seat: 'gunner', gunAz: az, gunEl: el, gunTrigger: !!sim.gunControl.trigger });
-    } else c.yaw = assistedYaw(sim.plane, raw, sim.assists);
+    } else c.yaw = assistedYaw(sim.plane, raw, sim.assists, sim.assistMemory);
     return quantiseInput(c);
   }
 
