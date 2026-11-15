@@ -1,6 +1,7 @@
 node_modules
 dist
 server/.wrangler
+server/public
 .DS_Store
 *.log
 

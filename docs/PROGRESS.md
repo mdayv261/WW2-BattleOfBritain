@@ -2,7 +2,7 @@
 
 Read this at the start of every session.
 
-## Current status (10 Nov 2026)
+## Current status (15 Nov 2026)
 
 - **Phase 0** (foundations and research): signed off (24 Oct 2026, D14). The game is live at
   https://mdayv261.github.io/WW2-BattleOfBritain/ (repository https://github.com/mdayv261/WW2-BattleOfBritain).
@@ -23,11 +23,52 @@ Read this at the start of every session.
   (rebinding and the Controls screen) done (D238); checkpoint 2 (mouse flying, look keys) done (D239); checkpoint 3
   (overspeed) done (D240); checkpoint 4, the acceptance test (D242), passed.
 - **Phase 9** (multiplayer): plan approved 10 Nov 2026 (D243). Checkpoint 1 (the shared core, src/mp) done (D243);
-  checkpoint 2 (the room server on this Mac) done (D244); checkpoint 3 (the browser side) done (D245). Next,
-  checkpoint 4: a Cloudflare test deployment and the family test (each deployment with permission). Its plan waits
-  for the product owner (10 Nov 2026: "I'll come back to the Checkpoint 4 plan later").
+  checkpoint 2 (the room server on this Mac) done (D244); checkpoint 3 (the browser side) done (D245). Checkpoint 4
+  (the Cloudflare test deployment and the family test): plan approved 15 Nov 2026; part A, everything ready on this
+  Mac, done (D246). Part B waits for the product owner's yes, one step at a time: deploy, then the family test.
 - **Pushed:** Phases 1-4 pushed and deployed on 26 Oct 2026; Phase 5 pushed on 27 Oct 2026; Phase 6 work to D88 pushed and deployed on 1 Nov 2026; D106-D116 pushed and deployed on 3 Nov 2026; D117-D193 (the Bf 110 cockpit and panel, the flap pitch change) pushed and deployed on 3 Nov 2026 (run 41637042751); D194-D215 pushed on 5 Nov 2026; D216-D223 (Phase 6 checkpoint 5 and sign-off) pushed and deployed on 8 Nov 2026 (run 42451157383); D224-D226 (Phase 7 plan, checkpoint 1, joystick) pushed and deployed on 9 Nov 2026 (run 42568733677); D227-D228 (checkpoint 2, shorter raids) pushed and deployed on 9 Nov 2026 (run 42590639571). D229 pushed on 9 Nov 2026 (run 42594376048: its first try failed on the twelve-aircraft timing test on GitHub's
 runner, 120 ms against 100 ms; re-run). D230 pushed on 9 Nov 2026 (run 42596773822). D231 pushed on 10 Nov 2026 (run 42742141022). D232 pushed on 10 Nov 2026 (run 42747140942). D233 pushed on 10 Nov 2026 (the product owner: the cockpit views "will do for now"). D234-D237 pushed on 10 Nov 2026. D238 pushed on 10 Nov 2026 (run 42772602601). D239 pushed on 10 Nov 2026 (run 42773868942). D240 pushed on 10 Nov 2026 (run 42782042762). D241-D242 pushed on 10 Nov 2026. D243 pushed on 10 Nov 2026 (run 42786653850). D244 pushed on 10 Nov 2026 (run 42788061601). D245 (checkpoint 3, the typing and bail-out fixes) pushed on 10 Nov 2026 (run 42797587119).
+
+## Phase 9 checkpoint 4, part A: ready to deploy (15 Nov 2026)
+
+**Done** (D246; nothing deployed, no account used, not pushed):
+- **The test copy:** the room server now also serves the whole game. On Cloudflare it will be at
+  https://bob1940-mp.dawn-patrol-mp-server.workers.dev/, so the family can play before the live site is connected.
+  - `npm run mp:testcopy` builds it;
+  - `npm run mp:deploy` builds it and deploys (each time with permission).
+- **The load test:** `npm run mp:load -- URL SECONDS`. Four scripted players circle and fire. It fails if anyone is
+  cut off or the snapshots drop below 25 a second.
+- **The players' guide:** docs/MULTIPLAYER_GUIDE.md, with the family test's steps and what to report.
+- **Fixed:** the F3 panel now shows the two `net` lines in a match (ping, corrections). They existed but weren't shown.
+
+**Tests:** 2,058 pass. The validation output is unchanged, and the build works.
+- **Smoke test:** passes against the local server serving the test copy.
+- **Load test, 70 s:** 30 snapshots a second each, no gap over 100 ms.
+- **Dry run:** 2.2 MB (0.5 MB compressed).
+
+**Checked in Chrome** (two tabs on the local test copy):
+- create, join, start;
+- the match;
+- F3's net lines;
+- a reload rejoins;
+- end of match and the results;
+- no console errors.
+
+**Left (part B; each step needs your yes):**
+1. Deploy to Cloudflare (`npm run mp:deploy`). Then the smoke test and a 10-minute load test against it.
+2. I check the deployed copy in Chrome.
+3. The family test (the guide's last section).
+4. Push to GitHub.
+5. After the family test passes: connect the live site (`VITE_MP_SERVER` in the GitHub workflow) and push.
+6. The Phase 9 acceptance test (proposed in the plan; to be recorded as part of D246's sign-off).
+
+**Known issues:**
+- **A deployment ends every open room** (they live in memory). Never deploy during a game.
+- **A host who reloads loses the host role** to another player.
+- **Free-plan budget,** shared with Dawn Patrol: about 4½ hours of four-player flying a day. Over it, rooms fail with
+  an error until 00:00 UTC. There is never a charge.
+- From checkpoint 3: a reload brings you back in a fresh aircraft; the AI gunner's rounds in your own Bf 110 show
+  about one round trip late.
 
 ## Phase 9 checkpoint 3: multiplayer in the browser (10 Nov 2026)
 

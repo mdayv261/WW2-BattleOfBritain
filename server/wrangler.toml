@@ -1,6 +1,8 @@
 # The multiplayer room server (Phase 9, D244): one Worker, and one Durable Object per room (see
 # docs/MULTIPLAYER_SPEC.md). `npm run mp:server` (from the project folder) runs it on this Mac at
 # http://localhost:8787 with no Cloudflare account. Deploying needs the product owner's permission each time.
+# It also serves a test copy of the game (server/public, built by `npm run mp:testcopy`; Phase 9 checkpoint 4, D246),
+# so the family test can run before the live site is connected.
 
 name = "bob1940-mp"
 main = "worker.js"
@@ -22,9 +24,14 @@ type = "Data"
 globs = ["**/*.bin"]
 fallthrough = false
 
+# The test copy of the game. Requests for its files are answered first; everything else (/health, /rooms) goes to
+# worker.js.
+[assets]
+directory = "./public"
+
 [vars]
 # Web pages allowed to open a room connection. An entry without a port allows any port.
-ALLOWED_ORIGINS = "https://mdayv261.github.io,http://localhost,http://127.0.0.1"
+ALLOWED_ORIGINS = "https://mdayv261.github.io,http://localhost,http://127.0.0.1,https://bob1940-mp.dawn-patrol-mp-server.workers.dev"
 
 # No request logs are kept.
 [observability]

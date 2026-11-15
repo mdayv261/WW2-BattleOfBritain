@@ -6874,3 +6874,74 @@ cover them; the family test at checkpoint 4 shows them.
   - holding Backspace: "Bailing out!", then the parachute with the view following it down;
   - the countdown;
   - after 10 s, a fresh aircraft at 8,000 ft, seen from the cockpit.
+
+## D246. Phase 9 checkpoint 4: the Cloudflare test deployment, part A (15 Nov 2026)
+
+**The plan** (approved by the product owner, 15 Nov 2026):
+- **Part A:** get everything ready on this Mac. Nothing deployed and no account used.
+- **Part B:** each step needs its own yes:
+  1. deploy to Cloudflare;
+  2. the smoke and load tests against it;
+  3. a Chrome check;
+  4. the family test;
+  5. push;
+  6. connect the live site (`VITE_MP_SERVER` in the GitHub workflow), only after the family test passes.
+
+**Built (part A):**
+- **A test copy of the game served by the room server,** as Dawn Patrol did:
+  - `server/wrangler.toml` serves `server/public` (`[assets]`);
+  - `npm run mp:testcopy` builds the game into `server/public` with `VITE_MP_SERVER=same-origin` and base `/`;
+  - `npm run mp:deploy` builds it, then runs `wrangler deploy`;
+  - `server/public` isn't kept in git.
+  The page and the server then share one address, https://bob1940-mp.dawn-patrol-mp-server.workers.dev, which is
+  added to `ALLOWED_ORIGINS`. The live GitHub Pages site doesn't change until the family test passes.
+- **`npm run mp:load -- URL SECONDS`** (scripts/mpLoad.mjs, new; built from this game's own `mpSmoke.mjs`, no new
+  Dawn Patrol code):
+  - four scripted players hold 30° banked circles, firing a 2 s burst every 10 s;
+  - the Bf 110's player swaps between the controls and the rear gun every minute, so both AIs run;
+  - every 30 s it prints each player's snapshots a second, ping, height and bank, then a table at the end;
+  - it fails if anyone is cut off or gets fewer than 25 snapshots a second.
+  On Cloudflare, a room over its CPU limit would be reset and everyone cut off, so a clean 10-minute run shows the room
+  stays within the limit.
+  - The smoke test and the load test share `scripts/mpPlayers.mjs`.
+  - The numbers are in `scripts/loadStats.mjs`, which is tested.
+- **docs/MULTIPLAYER_GUIDE.md, new:** the players' guide and the family test's steps and report.
+
+**Found and fixed: the F3 panel didn't show the net lines.** The match had them (`NetFlight.debugLines`, D245), but
+nothing put them on the panel. The panel now adds them in a match:
+- `net  ping … jitter … lead … clock …`;
+- `net  corrections N (last X m)  others … ms behind  tick …`.
+Single player is unchanged. The family test's report depends on these lines.
+
+**Cloudflare's Durable Objects pricing page** (read 15 Nov 2026):
+- The free plan includes 100,000 requests and 13,000 GB-s a day, reset at 00:00 UTC. Incoming WebSocket messages count
+  20 to 1. Messages out are free.
+- Over a limit, the free plan fails with an error. It doesn't charge.
+- The account is shared with Dawn Patrol's server. Four players send 120 control messages a second, about 21,600
+  requests an hour, so the budget is about 4½ hours of four-player flying a day (9 with two players). That's enough for
+  the family test. Recorded in the guide and the spec.
+
+**Checked on this Mac:**
+- `npm test`: 2,058 pass. The validation output is unchanged (md5 c1732d9).
+- `npm run mp:smoke` passes against `npm run mp:server`, with the local Worker serving the test copy.
+- `npm run mp:load`, 70 s locally:
+  - 30.0 snapshots a second for each of the four players;
+  - the worst gap 48 ms, none over 100 ms;
+  - the bank held at ±30°.
+- `wrangler deploy --dry-run` (deploys nothing): 2,168 KiB in all (497 KiB compressed), with the game's files.
+- **Chrome, two tabs on http://localhost:8787/ (the test copy as Cloudflare will serve it):**
+  - create and join with a code; ready; start;
+  - the match with the score line, the radar, the red name tag;
+  - F3 with the net lines: ping 1 ms, one correction of 1.97 m at the start (the tab was in the background while the
+    match began), then none in 20 s of steady flight;
+  - a reload mid-match rejoins;
+  - the host ends the match; the results; leave;
+  - no console errors.
+
+**Seen, and recorded as known:**
+- **A redeployment ends every open room.** Rooms are held in memory. The local Worker reloads when `server/public` is
+  rebuilt, and a Cloudflare deployment does the same. The guide says never to deploy during a game.
+- **A host who reloads loses the host role.** It passes on as soon as the connection drops (D244's design). The guide
+  says so.
+
+**No deviation from historical figures.**

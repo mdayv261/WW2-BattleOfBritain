@@ -252,6 +252,5 @@ export function attachMultiplayer({ game, sim, menus, onFlight, onRespawn }) {
       const on = Boolean(flight?.net.ready) && screen !== 'settings';
       nameTags.update(camera, sim.plane.body.position, on ? flight.net.drawn() : [], client.me?.team, on);
     },
-    debugLines: () => flight?.net.debugLines() ?? [],
   };
 }

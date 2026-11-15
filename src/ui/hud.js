@@ -248,6 +248,7 @@ export class Hud {
       aiLine(sim),
       `Damage    ${damageSummary(plane) || 'none'}`,
       `Airframe  overstress ${(plane.damage.airframe * 100).toFixed(0)}%  flutter ${(plane.damage.flutter * 100).toFixed(0)}%  radiator ${sim.input.radiator ? 'open' : 'closed'}`,
+      ...(sim.net?.debugLines() ?? []), // in a match: ping, corrections, how far behind the others are drawn (D246)
     ].join('\n');
   }
 }

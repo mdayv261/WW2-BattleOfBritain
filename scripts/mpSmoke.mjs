@@ -6,46 +6,20 @@
 //   npm run mp:smoke -- https://server    (another server)
 
 import { PROTOCOL_VERSION, AIR_SPAWN } from '../src/mp/netConfig.js';
-import { decodeSnapshot, encodeInputs, quantiseInput } from '../src/mp/binary.js';
+import { encodeInputs, quantiseInput } from '../src/mp/binary.js';
+import { wait, health as askHealth, createRoom, player as join, check } from './mpPlayers.mjs';
 
 const base = (process.argv[2] ?? 'http://localhost:8787').replace(/\/+$/, '');
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const player = (code, name, team) => join(base, code, name, team);
 
-function player(code, name, team) {
-  const ws = new WebSocket(`${base.replace(/^http/, 'ws')}/rooms/${code}`);
-  ws.binaryType = 'arraybuffer';
-  const p = { name, ws, got: [], lobby: null, id: null, snapshots: [] };
-  ws.addEventListener('message', (e) => {
-    if (typeof e.data !== 'string') return p.snapshots.push(decodeSnapshot(e.data));
-    const m = JSON.parse(e.data);
-    p.got.push(m);
-    if (m.type === 'welcome') p.id = m.you;
-    if (m.type === 'lobby') p.lobby = m;
-  });
-  p.send = (m) => ws.send(JSON.stringify(m));
-  p.opened = new Promise((resolve, reject) => {
-    ws.addEventListener('open', () => {
-      p.send({ type: 'hello', v: PROTOCOL_VERSION, name, token: `smoke-${name}-${Date.now()}`, team });
-      resolve();
-    });
-    ws.addEventListener('error', () => reject(new Error(`${name} could not connect to ${base}`)));
-  });
-  return p;
-}
-
-function check(ok, text) {
-  console.log(`${ok ? 'ok  ' : 'FAIL'}  ${text}`);
-  if (!ok) process.exitCode = 1;
-}
-
-const health = await fetch(`${base}/health`).then((r) => r.json()).catch(() => null);
+const health = await askHealth(base);
 if (!health) {
   console.error(`No server at ${base}. Start it with: npm run mp:server`);
   process.exit(1);
 }
 check(health.version === PROTOCOL_VERSION, `server is up and speaks message version ${health.version}`);
 
-const { code } = await fetch(`${base}/rooms`, { method: 'POST' }).then((r) => r.json());
+const { code } = await createRoom(base);
 check(/^[A-HJ-NP-Z2-9]{6}$/.test(code), `room created: ${code}`);
 
 const ann = player(code, 'Ann', 'raf');

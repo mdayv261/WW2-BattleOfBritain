@@ -5,6 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { createHarness } from './netHarness.js';
 import { swapSeat } from '../../src/core/crewSeat.js';
 import { TICK_HZ } from '../../src/mp/netConfig.js';
+import { Hud } from '../../src/ui/hud.js';
 
 const weave = (t, sim) => {
   sim.input.pitch = 0.2 * Math.sin(t);
@@ -42,6 +43,17 @@ describe('your own aircraft', () => {
     h.run(10);
     for (const c of h.clients) expect(h.ownError(c), c.name).toBeLessThan(0.1);
     expect(h.clients[0].net.prediction.largest).toBeLessThan(0.1);
+  });
+
+  it('the F3 panel shows the match\'s ping and corrections (D246); single player has no net lines', () => {
+    const h = createHarness({ players: [ann, max], net: BAD });
+    h.run(4);
+    const c = h.clients[0];
+    const text = Hud.prototype.debugText.call(null, c.sim, 0, '');
+    expect(text).toMatch(/net {2}ping \d+ ms/);
+    expect(text).toMatch(/net {2}corrections \d+ \(last \d+\.\d\d m\)/);
+    c.sim.net = null; // as in single player
+    expect(Hud.prototype.debugText.call(null, c.sim, 0, '')).not.toMatch(/net {2}ping/);
   });
 });
 

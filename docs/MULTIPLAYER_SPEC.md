@@ -1,10 +1,11 @@
 # Multiplayer Specification: RAF against Luftwaffe
 
-Status: **design, Phase 9 (10 Nov 2026, D243-D245).** Built and tested so far:
+Status: **design, Phase 9 (10 Nov 2026 to 15 Nov 2026, D243-D246).** Built and tested so far:
 - checkpoint 1: the shared core in `src/mp/`;
 - checkpoint 2: the room server in `server/`, run on this Mac;
-- checkpoint 3: the browser side, `src/net/` and the screens.
-The Cloudflare deployment (checkpoint 4) follows.
+- checkpoint 3: the browser side, `src/net/` and the screens;
+- checkpoint 4 (D246): the test copy of the game served by the room server, the load test and the players' guide
+  (docs/MULTIPLAYER_GUIDE.md). The Cloudflare deployment and the family test each wait for the product owner's yes.
 The design is Dawn Patrol's working multiplayer, adapted for 1940 with the product owner's approval (§9).
 
 ## 1. Goal and rules
@@ -26,7 +27,9 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
 ## 2. Approach
 - **An authoritative room server:** a separate Worker, `bob1940-mp`, on Dawn Patrol's existing Cloudflare account
   (D16), with one Durable Object per room. Browsers send only their controls.
-- **The game itself** stays on GitHub Pages.
+- **The game itself** stays on GitHub Pages. The Worker also serves a **test copy** of the game (`server/public`, built
+  by `npm run mp:testcopy` with `VITE_MP_SERVER=same-origin`) at https://bob1940-mp.dawn-patrol-mp-server.workers.dev/,
+  so the family test can run before the live site is connected (D246).
 - **Cost:** the room's step for four aircraft was measured at checkpoint 1 (§8).
 - **Cloudflare's own limit pages** (read 10 Nov 2026):
   - a free-plan Worker gets 10 ms of CPU per request and 100,000 requests a day;
@@ -35,6 +38,13 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
     checkpoint 4 is the real check;
   - a Worker may be 64 MiB uncompressed and must start within 1 s. This one is 2.1 MB (0.5 MB compressed), and its
     modules load in about 40 ms.
+- **Cloudflare's Durable Objects pricing page** (read 15 Nov 2026, D246):
+  - the free plan includes 100,000 requests and 13,000 GB-s of room time a day, reset at 00:00 UTC, shared with Dawn
+    Patrol's server;
+  - incoming WebSocket messages count 20 to 1, and messages out are free;
+  - over a limit, the free plan fails with an error. It doesn't charge.
+  - So four players (120 control messages a second) use about 21,600 requests an hour: about 4½ hours of four-player
+    flying a day, or 9 hours with two.
 
 ## 3. Network design
 - **Ticks:** the server steps every aircraft at 120 Hz with the single-player simulation code (`stepAircraft`,
@@ -129,6 +139,8 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
 - **Testing on the Mac:** `wrangler dev`, with no account needed.
 - **Cloudflare account:** Dawn Patrol's existing free account (product owner, 24 Oct 2026).
 - **Permission each time:** every deployment to Cloudflare and every push to GitHub. No spending.
+- **Deploying** (`npm run mp:deploy`): builds the test copy, then `wrangler deploy`. A deployment ends every open room,
+  so never deploy during a game.
 
 ## 8. Code layout and measurements
 - **`src/mp/` (checkpoint 1; shared by the server and the tests):**
@@ -192,7 +204,7 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
   - `tests/mp/netHarness.js`.
 
 ## 10. Testing
-- **Automated** (`tests/mp/`, 64 tests):
+- **Automated** (`tests/mp/`, 75 tests):
   - message encoding and clamping;
   - the lobby rules and host settings;
   - exact state capture;
@@ -207,8 +219,13 @@ The design is Dawn Patrol's working multiplayer, adapted for 1940 with the produ
     controls, the apron start and a mid-match rejoin, the end of a match, and the front door's checks.
   - the browser against the server simulation over the test network: prediction exact with no delay and within 2 cm
     at 150 ms ping and 2% loss; the others drawn within 0.5 m of where they were; the Bf 110's rear gun; respawning;
-  - the client, the test network, the score line and the name tags.
-- **The smoke test** (`npm run mp:smoke` against `npm run mp:server`): four players in a real local server.
+  - the client, the test network, the score line and the name tags;
+  - the deployed settings (which pages may connect, the test copy, no logs), the test copy's server address, the load
+    test's numbers, and the F3 panel's net lines (D246).
+- **The smoke test** (`npm run mp:smoke` against `npm run mp:server`, or `-- URL` for another server): four players in
+  a real server.
+- **The load test** (`npm run mp:load -- URL SECONDS`, D246): four scripted players circle and fire, the Bf 110's
+  player swapping seats every minute. It fails if anyone is cut off or gets fewer than 25 snapshots a second.
 - **By hand:**
   - several Chrome windows on this Mac against the local server (checkpoint 3);
   - then the family on different home networks against a Cloudflare test deployment (checkpoint 4).
