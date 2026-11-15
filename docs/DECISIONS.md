@@ -7312,3 +7312,20 @@ No code changed.
 - permission to push, and to redeploy the room server's test copy so it carries the guide and the version;
 - the checklist's four items, and the sign-off;
 - whether to tag v1.0.0 and make a GitHub release.
+
+## D255. Phase 10 signed off: version 1.0.0 released (15 Nov 2026)
+
+**Decision:** the product owner signed off the release checklist ("just sign off"), so Phase 10 passes its acceptance
+test (D250). The four items left for the product owner (M4, C7, C8 and P3) are recorded as accepted at the sign-off.
+C8 was also confirmed by Claude: version 1.0.0 is in the live site's script after the push (run 43688200791).
+
+**Released:**
+- the push of D252-D254 and the room server's redeployment (version 9ee8536e; the smoke test passes);
+- the git tag v1.0.0 and a GitHub release whose text is docs/RELEASE_NOTES.md (the product owner chose "tag and
+  release page").
+
+**Not wanted for 1.0:** a key to switch the modern HUD on and off (asked about at the sign-off; it stays a Settings
+option).
+
+**Why:** the checklist is complete. Firefox and the mid-range laptop stay "Not tested" by the product owner's choice
+(D250, D252), and the release notes say so.

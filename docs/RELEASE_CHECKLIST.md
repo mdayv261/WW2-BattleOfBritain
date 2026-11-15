@@ -32,7 +32,7 @@ decision that records it.
 | M1 | A dogfight from the menu to the results and back | Earlier: Pass | Phase 7 (D236, D237) |
 | M2 | An RAF interception and a Luftwaffe escort | Earlier: Pass | Phase 7 (D236) |
 | M3 | Ranks change with kills; a reload keeps them | Earlier: Pass | Phase 7 (D229, D236) |
-| M4 | After a crash in a mission, the message says the results follow | | New in D251 |
+| M4 | After a crash in a mission, the message says the results follow | Pass | New in D251; Accepted at the sign-off (15 Nov 2026) |
 
 ## Controls and settings (product owner)
 
@@ -44,8 +44,8 @@ decision that records it.
 | C4 | Rebinding survives a reload | Earlier: Pass | Phase 8 (D242) |
 | C5 | Settings, sound, HUD, assists | Earlier: Pass | Phase 7 (D232, D236) |
 | C6 | The take-off trim key (/) and the auto-rudder on the ground | Earlier: Pass | D248 ("it works well") |
-| C7 | Main menu → Guide: the guide reads correctly; Back | | New in D253 |
-| C8 | The About line shows version 1.0.0 | | Set at this checkpoint |
+| C7 | Main menu → Guide: the guide reads correctly; Back | Pass | New in D253; Accepted at the sign-off (15 Nov 2026) |
+| C8 | The About line shows version 1.0.0 | Pass | 1.0.0 confirmed in the live site's script after the push; Accepted at the sign-off (15 Nov 2026) |
 
 ## Multiplayer (product owner)
 
@@ -53,7 +53,7 @@ decision that records it.
 |---|---|---|---|
 | P1 | A match between different home networks, with fair hits | Earlier: Pass | Phase 9 acceptance (D249) |
 | P2 | The lobby's lists, "I am ready" and Start | Earlier: Pass | D247 |
-| P3 | A host who reloads stays host, in the same aircraft | | New in D251 |
+| P3 | A host who reloads stays host, in the same aircraft | Pass | New in D251; Accepted at the sign-off (15 Nov 2026) |
 | P4 | The Bf 110's rear-gun swap in a match | Earlier: Pass | D245, D249 |
 
 ## Browsers and performance
@@ -74,5 +74,7 @@ decision that records it.
 
 ## Sign-off
 
-- [ ] The product owner has checked M4, C7, C8 and P3 (after the push and the server deployment) and accepts the
+- [x] The product owner has checked M4, C7, C8 and P3 (after the push and the server deployment) and accepts the
   checklist and the release notes as they stand.
+
+Signed off by the product owner on 15 Nov 2026 (D255): Phase 10 passes its acceptance test.
