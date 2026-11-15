@@ -7286,3 +7286,29 @@ No code changed.
 (the ranks table, About); Back to the main menu; no console errors.
 
 **No deviation from historical figures.**
+
+## D254. Phase 10 checkpoint 4: the release checklist, the release notes and version 1.0.0 (15 Nov 2026)
+
+**Built:**
+- **docs/RELEASE_CHECKLIST.md:** automated, flying, missions, controls, multiplayer, browsers and records, each with a
+  result.
+  - Items confirmed at earlier sign-offs cite their decision.
+  - Firefox and the mid-range laptop are "Not tested" (the product owner's choices, D250, D252).
+  - Four new items need the product owner's check after the push and deployment: the mission crash message, the Guide,
+    the version, and a host's reload.
+  - **Its sign-off is Phase 10's acceptance test.**
+- **docs/RELEASE_NOTES.md:** what 1.0.0 contains, what was and wasn't tested, the known limitations, the remaining
+  deviations from published figures (detail in FLIGHT_VALIDATION.md and here), the estimates, and the flagged
+  playability choices.
+- **Version 1.0.0** in package.json, shown in the main menu's About line.
+
+**Automated checks** (15 Nov 2026):
+- `npm test`: 2,093 pass;
+- validation output unchanged (md5 c1732d9);
+- the build works;
+- the smoke test passes against the Cloudflare server.
+
+**Waiting for the product owner:**
+- permission to push, and to redeploy the room server's test copy so it carries the guide and the version;
+- the checklist's four items, and the sign-off;
+- whether to tag v1.0.0 and make a GitHub release.
