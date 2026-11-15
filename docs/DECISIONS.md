@@ -7147,3 +7147,23 @@ is very hard. What was the Merlin's take-off power setting in 1940?
   - the AI gunner's rounds in your own Bf 110 show about one round trip late;
   - a host who reloads loses the host role;
   - the free plan's budget, shared with Dawn Patrol: about 4½ hours of four-player flying a day.
+
+## D250. Phase 10 plan: polish and release 1.0 (15 Nov 2026)
+
+**Approved by the product owner** (15 Nov 2026). Four checkpoints, each tested and reported; each push and deployment
+with permission:
+1. **Bug fixes.** Recommended:
+   - the "press R to restart" message in missions;
+   - the Bf 110 throttle left where the AI had it after the rear-gun swap;
+   - multiplayer: a host who reloads keeps the role;
+   - multiplayer: the 2 m correction at the start of a match;
+   - multiplayer: a reload rejoins in the same aircraft.
+   For the product owner to choose: the Cloudflare start-up burst, the AI Bf 109 attacking a lone RAF fighter (D220),
+   and the late AI-gunner rounds in a match.
+2. **Performance and browsers:** an in-game benchmark at each graphics level, load time, and the product owner's runs
+   on a mid-range laptop and in Firefox (never recorded before).
+3. **The player guide** (docs/PLAYER_GUIDE.md, perhaps opened from the menu), a README for the repository, and an About
+   line.
+4. **docs/RELEASE_CHECKLIST.md** and release notes; version 1.0.0. **The acceptance test is the product owner's sign-off
+   on the checklist** (the phase list).
+Estimates and research gaps stay as documented limitations in the release notes.
